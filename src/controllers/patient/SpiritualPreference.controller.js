@@ -1,0 +1,134 @@
+import { db } from "../../config/db.drizzle.js";
+import { spiritual_preference } from "../../db/schemas/spiritualPreference.schema.js";
+import { eq } from "drizzle-orm";
+
+import { logger } from '../../utils/logger.js';
+class SpiritualPreferenceController {
+    // Get all spiritual preferences
+    async index(request, reply) {
+        try {
+            const spiritualPreferences = await db.select({
+                id: spiritual_preference.id,
+                patient_id: spiritual_preference.patient_id,
+                patient_spiritual: spiritual_preference.patient_spiritual,
+                not_religious: spiritual_preference.not_religious,
+                comments: spiritual_preference.comments,
+                createdAt: spiritual_preference.createdAt,
+                updatedAt: spiritual_preference.updatedAt
+            }).from(spiritual_preference);
+            reply.code(200);
+            return spiritualPreferences;
+        } catch (error) {
+            logger.error("Error fetching spiritual preferences:", error)
+            reply.code(500);
+            return {
+                message: "Internal server error",
+                error: error.message,
+            };
+        }
+    }
+
+    // Store or update spiritual preference
+    async store(request, reply) {
+        try {
+            const { patient_id, patient_spiritual, not_religious, comments } =
+                request.body;
+
+            // Validate required fields
+            if (!patient_id) {
+                reply.code(400);
+            return {
+                    message: "Patient ID is required",
+                };
+            }
+
+            // Check if spiritual preference already exists for this patient
+            const existingPreferences = await db.select({
+                id: spiritual_preference.id
+            }).from(spiritual_preference).where(eq(spiritual_preference.patient_id, patient_id)).limit(1);
+            const existingPreference = existingPreferences[0];
+
+            // Prepare data for update or create
+            const now = new Date();
+            const spiritualPreferenceData = {
+                patient_id: patient_id,
+                patient_spiritual: patient_spiritual || null,
+                not_religious:
+                    not_religious !== undefined ? not_religious : null,
+                comments: comments || null,
+            };
+
+            let result;
+            if (existingPreference) {
+                // Update existing spiritual preference
+                spiritualPreferenceData.updatedAt = now;
+                result = await db.update(spiritual_preference).set(spiritualPreferenceData).where(eq(spiritual_preference.patient_id, patient_id)).returning();
+                result = result[0];
+            } else {
+                // Create new spiritual preference
+                spiritualPreferenceData.createdAt = now;
+                spiritualPreferenceData.updatedAt = now;
+                result = await db.insert(spiritual_preference).values(spiritualPreferenceData).returning();
+                result = result[0];
+            }
+
+            reply.code(201);
+            return {
+                message: "Spiritual Preference créé ou mis à jour avec succès.",
+                data: result,
+            };
+        } catch (error) {
+            logger.error("Error saving spiritual preference:", error)
+            reply.code(500);
+            return {
+                message: "Internal server error",
+                error: error.message,
+            };
+        }
+    }
+
+    // Show spiritual preference for a specific patient
+    // Returns empty data if no preference exists (to allow frontend to render form)
+    async show(request, reply) {
+        try {
+            const { id } = request.params;
+
+            const spiritualPreferences = await db.select({
+                id: spiritual_preference.id,
+                patient_id: spiritual_preference.patient_id,
+                patient_spiritual: spiritual_preference.patient_spiritual,
+                not_religious: spiritual_preference.not_religious,
+                comments: spiritual_preference.comments,
+                createdAt: spiritual_preference.createdAt,
+                updatedAt: spiritual_preference.updatedAt
+            }).from(spiritual_preference).where(eq(spiritual_preference.patient_id, id)).limit(1);
+            const spiritualPreferenceRecord = spiritualPreferences[0];
+
+            if (!spiritualPreferenceRecord) {
+                // Return 200 with empty data instead of 404, so frontend can render form
+                reply.code(200);
+                return {
+                    id: null,
+                    patient_id: parseInt(id),
+                    patient_spiritual: null,
+                    not_religious: null,
+                    comments: null,
+                    createdAt: null,
+                    updatedAt: null,
+                };
+            }
+
+            reply.code(200);
+            return spiritualPreferenceRecord;
+        } catch (error) {
+            logger.error("Error fetching spiritual preference:", error)
+            reply.code(500);
+            return {
+                message: "Internal server error",
+                error: error.message,
+            };
+        }
+    }
+}
+
+export default new SpiritualPreferenceController();

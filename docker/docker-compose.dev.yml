@@ -1,0 +1,179 @@
+version: '3.8'
+
+# =============================================================================
+# Docker Compose Configuration for Development Environment
+# =============================================================================
+# Usage: docker-compose -f docker-compose.dev.yml up
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database (Development)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: hospice-ehr-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hospice_ehr_dev
+      POSTGRES_USER: hospice_dev
+      POSTGRES_PASSWORD: hospice_dev_pass
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - hospice-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hospice_dev -d hospice_ehr_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache (Development)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: hospice-ehr-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - hospice-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Hospice EHR Backend API (Development)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: hospice-ehr-api-dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_NAME: Hospice EHR API (Dev)
+      APP_ENV: development
+      APP_DEBUG: true
+      APP_URL: http://localhost:8000
+      NODE_ENV: development
+      LOG_LEVEL: debug
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: hospice_ehr_dev
+      DB_USERNAME: hospice_dev
+      DB_PASSWORD: hospice_dev_pass
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+
+      JWT_SECRET: dev-secret-key-change-in-production
+      JWT_EXPIRES_IN: 24h
+      ADMIN_CREATION_SECRET: dev-admin-secret
+
+      CORS_ORIGIN: "*"
+
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM_ADDRESS: dev@hospice-ehr.local
+      MAIL_FROM_NAME: Hospice EHR Dev
+    ports:
+      - "8000:8000"
+      - "9229:9229"  # Node.js debugger
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src
+      - ./server.js:/app/server.js
+      - ./start.js:/app/start.js
+      - ./logs:/app/logs
+      - ./storage:/app/storage
+      - ./uploads:/app/uploads
+      # Prevent overwriting node_modules
+      - /app/node_modules
+    networks:
+      - hospice-dev-network
+    command: npm run dev
+
+  # ---------------------------------------------------------------------------
+  # Mailhog for Email Testing
+  # ---------------------------------------------------------------------------
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: hospice-ehr-mailhog-dev
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - hospice-dev-network
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin for Database Management
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hospice-ehr-pgadmin-dev
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dev.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    networks:
+      - hospice-dev-network
+    depends_on:
+      - postgres
+
+  # ---------------------------------------------------------------------------
+  # Redis Commander for Redis Management
+  # ---------------------------------------------------------------------------
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: hospice-ehr-redis-commander-dev
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+    ports:
+      - "8081:8081"
+    networks:
+      - hospice-dev-network
+    depends_on:
+      - redis
+
+networks:
+  hospice-dev-network:
+    driver: bridge
+    name: hospice-ehr-dev-network
+
+volumes:
+  postgres_dev_data:
+    name: hospice-ehr-postgres-dev-data
+  redis_dev_data:
+    name: hospice-ehr-redis-dev-data
+  pgadmin_dev_data:
+    name: hospice-ehr-pgadmin-dev-data

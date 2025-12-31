@@ -1,0 +1,93 @@
+version: '3.8'
+
+# =============================================================================
+# Docker Compose Configuration for CI/CD Testing
+# =============================================================================
+# Used by GitHub Actions and other CI/CD pipelines
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database (Test)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: hospice-ehr-postgres-test
+    environment:
+      POSTGRES_DB: hospice_ehr_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d hospice_ehr_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache (Test)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: hospice-ehr-redis-test
+    command: redis-server --appendonly yes
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Hospice EHR Backend API (Test)
+  # ---------------------------------------------------------------------------
+  api:
+    image: hospice-ehr-api:test
+    container_name: hospice-ehr-api-test
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_NAME: Hospice EHR API Test
+      APP_ENV: test
+      APP_DEBUG: true
+      APP_URL: http://localhost:8000
+      NODE_ENV: test
+      LOG_LEVEL: error
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: hospice_ehr_test
+      DB_USERNAME: test_user
+      DB_PASSWORD: test_password
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+
+      JWT_SECRET: test-jwt-secret-for-ci-cd-only
+      JWT_EXPIRES_IN: 1h
+      ADMIN_CREATION_SECRET: test-admin-secret
+
+      CORS_ORIGIN: "*"
+    ports:
+      - "8000:8000"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  test-network:
+    driver: bridge
