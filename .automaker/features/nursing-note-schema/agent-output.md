@@ -512,3 +512,19 @@ Input: {
   "command": "node -e \"\nimport('./src/controllers/patient/NursingClinicalNote.controller.js').then(module => {\n  console.log('Controller loaded successfully');\n  console.log('Exported functions:');\n  Object.keys(module).forEach(key => {\n    console.log('- ' + key);\n  });\n}).catch(err => {\n  console.error('Error loading controller:', err.message);\n  console.error(err.stack);\n});\n\" 2>&1",
   "description": "Verify controller module loads correctly"
 }
+
+All the new controller functions are exported. Now let me verify the routes load correctly.
+
+🔧 Tool: Bash
+Input: {
+  "command": "node -e \"\nimport('./src/routes/patient/NursingClinicalNote.routes.js').then(module => {\n  console.log('Routes loaded successfully');\n  console.log('Default export type:', typeof module.default);\n  if (typeof module.default === 'function') {\n    console.log('Route handler is a valid Fastify plugin function');\n  }\n}).catch(err => {\n  console.error('Error loading routes:', err.message);\n  console.error(err.stack);\n});\n\" 2>&1",
+  "description": "Verify routes module loads correctly"
+}
+
+All modules load correctly. The tests failed only because the API server was not running. Let me now clean up by deleting the verification test file as instructed.
+
+🔧 Tool: Bash
+Input: {
+  "command": "rm /Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/tests/nursing-clinical-notes-verification.spec.ts",
+  "description": "Delete temporary verification test"
+}
