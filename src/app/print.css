@@ -1,0 +1,17 @@
+/* print.css */
+@media print {
+    body {
+      -webkit-print-color-adjust: exact; /* Pour forcer les couleurs */
+    }
+    .print-container {
+      width: 80%; /* Ajustez la largeur selon vos besoins */
+      margin: 0 auto; /* Centrer le contenu */
+      page-break-inside: avoid; /* Eviter les coupures de page à l'intérieur des éléments */
+    }
+    .main-card {
+      border: none; /* Supprimer les bordures pour l'impression */
+      box-shadow: none; /* Supprimer les ombres pour l'impression */
+      margin-bottom: 16px; /* Ajouter un espace entre les cartes */
+    }
+  }
+  
