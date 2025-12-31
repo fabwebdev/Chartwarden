@@ -12,8 +12,11 @@
  * - HIPAA-compliant logging (no sensitive data in logs)
  */
 
+import fs from 'fs';
 import config from '../config/index.js';
 import { logger } from '../utils/logger.js';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Redis client instance (lazy loaded)
 let redisClient = null;
@@ -28,6 +31,60 @@ const connectionState = {
   lastConnectedAt: null,
   lastDisconnectedAt: null,
 };
+
+/**
+ * Build TLS configuration for Redis
+ *
+ * HIPAA Requirement: 164.312(e)(2)(ii) - Encryption in transit
+ * TLS is enabled by default in production unless explicitly disabled
+ */
+function buildRedisTLSConfig() {
+  // TLS is enabled by default in production
+  const tlsEnabled = isProduction
+    ? process.env.REDIS_TLS !== 'false' // Default to true in production
+    : process.env.REDIS_TLS === 'true'; // Default to false in development
+
+  if (!tlsEnabled) {
+    if (isProduction) {
+      logger.warn(
+        'SECURITY WARNING: Redis TLS is disabled in production. ' +
+        'Set REDIS_TLS=true and provide certificates for encrypted connections.'
+      );
+    }
+    return undefined;
+  }
+
+  const tlsConfig = {
+    // Verify server certificate by default
+    rejectUnauthorized: process.env.REDIS_TLS_REJECT_UNAUTHORIZED !== 'false',
+
+    // Minimum TLS version
+    minVersion: 'TLSv1.2',
+  };
+
+  // Load CA certificate if provided
+  if (process.env.REDIS_TLS_CA) {
+    try {
+      tlsConfig.ca = fs.readFileSync(process.env.REDIS_TLS_CA);
+      logger.info('Loaded Redis CA certificate');
+    } catch (err) {
+      logger.error('Failed to load Redis CA certificate', { error: err.message });
+    }
+  }
+
+  // Load client certificate for mTLS
+  if (process.env.REDIS_TLS_CERT && process.env.REDIS_TLS_KEY) {
+    try {
+      tlsConfig.cert = fs.readFileSync(process.env.REDIS_TLS_CERT);
+      tlsConfig.key = fs.readFileSync(process.env.REDIS_TLS_KEY);
+      logger.info('Loaded Redis client certificate for mTLS');
+    } catch (err) {
+      logger.error('Failed to load Redis client certificates', { error: err.message });
+    }
+  }
+
+  return tlsConfig;
+}
 
 // Configuration with defaults
 const redisConfig = {
@@ -49,8 +106,8 @@ const redisConfig = {
   // Keep-alive
   keepAlive: 30000,
 
-  // TLS for production (if configured)
-  tls: process.env.REDIS_TLS === 'true' ? {} : undefined,
+  // TLS configuration - enabled by default in production
+  tls: buildRedisTLSConfig(),
 };
 
 /**

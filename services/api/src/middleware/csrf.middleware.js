@@ -31,7 +31,9 @@ export const csrfExemptRoutes = [
   '/api/auth/sign-out',
   '/api/health',
   '/health',
-  '/api/status'
+  '/api/status',
+  // Validation test routes (development only)
+  '/api/validation-test'
 ];
 
 /**
@@ -42,6 +44,11 @@ export const csrfExemptRoutes = [
 function shouldSkipCsrf(url) {
   // Exact match check
   if (csrfExemptRoutes.includes(url)) {
+    return true;
+  }
+
+  // Prefix match for validation test routes (development only)
+  if (url.startsWith('/api/validation-test')) {
     return true;
   }
 

@@ -20,6 +20,7 @@ export * from './carePlanning.schema.js';
 export * from './cardiovascularData.schema.js';
 export * from './certifications.schema.js';
 export * from './comprehensivePainAssessment.schema.js';
+export * from './detailedPainAssessment.schema.js';
 export * from './discharge.schema.js';
 export * from './dischargeSection.schema.js';
 export * from './dmeProvider.schema.js';

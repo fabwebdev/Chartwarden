@@ -11,6 +11,11 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  */
 export default async function cbsaRoutes(fastify, options) {
 
+  // Autocomplete search for CBSA titles/cities
+  fastify.get('/cbsa/autocomplete', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.autocomplete);
+
   // Lookup CBSA by ZIP code
   fastify.get('/cbsa/lookup/:zip', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
@@ -40,4 +45,9 @@ export default async function cbsaRoutes(fastify, options) {
   fastify.post('/cbsa/clear-cache', {
     preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SYSTEM)]
   }, controller.clearCache);
+
+  // Get CBSA cache statistics (admin only)
+  fastify.get('/cbsa/cache-stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SYSTEM)]
+  }, controller.getCacheStats);
 }

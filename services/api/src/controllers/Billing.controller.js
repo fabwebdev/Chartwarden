@@ -9,9 +9,14 @@ import {
   billing_periods,
   ar_aging,
   contracts,
-  patients
+  patients,
+  billing_codes,
+  claim_submission_history,
+  claim_status_history,
+  claim_diagnosis_codes,
+  claim_procedure_codes
 } from '../db/schemas/index.js';
-import { eq, and, gte, lte, desc, sql, or, isNull, inArray } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, asc, sql, or, isNull, inArray, like, ilike } from 'drizzle-orm';
 
 import { logger } from '../utils/logger.js';
 /**
@@ -27,6 +32,9 @@ import { logger } from '../utils/logger.js';
  * - Payment processing and application
  * - AR aging reports
  * - Billing period tracking
+ * - Billing codes reference (ICD-10, CPT, HCPCS, Revenue)
+ * - Claim submission history tracking
+ * - Claim status history tracking
  */
 class BillingController {
   // ============================================
@@ -941,6 +949,846 @@ class BillingController {
       return {
         status: 500,
         message: 'Error fetching billing periods',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // BILLING CODES MANAGEMENT
+  // ============================================
+
+  /**
+   * Get all billing codes with optional filters
+   * GET /billing/codes
+   */
+  async getBillingCodes(request, reply) {
+    try {
+      const {
+        limit = 50,
+        offset = 0,
+        code_type,
+        search,
+        hospice_only,
+        level_of_care
+      } = request.query;
+
+      let query = db
+        .select()
+        .from(billing_codes)
+        .where(eq(billing_codes.is_active, true));
+
+      const filters = [eq(billing_codes.is_active, true)];
+
+      if (code_type) {
+        filters.push(eq(billing_codes.code_type, code_type));
+      }
+
+      if (search) {
+        filters.push(
+          or(
+            ilike(billing_codes.code, `%${search}%`),
+            ilike(billing_codes.short_description, `%${search}%`)
+          )
+        );
+      }
+
+      if (hospice_only === 'true') {
+        filters.push(eq(billing_codes.hospice_applicable, true));
+      }
+
+      if (level_of_care) {
+        filters.push(eq(billing_codes.level_of_care, level_of_care));
+      }
+
+      const results = await db
+        .select()
+        .from(billing_codes)
+        .where(and(...filters))
+        .orderBy(billing_codes.code)
+        .limit(parseInt(limit))
+        .offset(parseInt(offset));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching billing codes:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching billing codes',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get billing code by ID
+   * GET /billing/codes/:id
+   */
+  async getBillingCodeById(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const result = await db
+        .select()
+        .from(billing_codes)
+        .where(eq(billing_codes.id, parseInt(id)))
+        .limit(1);
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Billing code not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error fetching billing code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching billing code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Create a new billing code
+   * POST /billing/codes
+   */
+  async createBillingCode(request, reply) {
+    try {
+      const data = request.body;
+
+      if (!data.code || !data.code_type || !data.short_description) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required fields: code, code_type, short_description'
+        };
+      }
+
+      const result = await db
+        .insert(billing_codes)
+        .values({
+          code: data.code,
+          code_type: data.code_type,
+          short_description: data.short_description,
+          long_description: data.long_description,
+          category: data.category,
+          subcategory: data.subcategory,
+          effective_date: data.effective_date,
+          termination_date: data.termination_date,
+          default_rate: data.default_rate,
+          rate_type: data.rate_type,
+          hospice_applicable: data.hospice_applicable || false,
+          level_of_care: data.level_of_care,
+          is_active: true,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Billing code created successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error creating billing code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error creating billing code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update a billing code
+   * PUT /billing/codes/:id
+   */
+  async updateBillingCode(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      const result = await db
+        .update(billing_codes)
+        .set({
+          ...data,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(billing_codes.id, parseInt(id)))
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Billing code not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Billing code updated successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating billing code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating billing code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // CLAIM SUBMISSION HISTORY
+  // ============================================
+
+  /**
+   * Get submission history for a claim
+   * GET /claims/:id/submissions
+   */
+  async getClaimSubmissionHistory(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const results = await db
+        .select()
+        .from(claim_submission_history)
+        .where(eq(claim_submission_history.claim_id, parseInt(id)))
+        .orderBy(desc(claim_submission_history.submission_date));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching claim submission history:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching claim submission history',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Record a new submission attempt for a claim
+   * POST /claims/:id/submissions
+   */
+  async recordClaimSubmission(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      // Get the current submission count for this claim
+      const existingSubmissions = await db
+        .select({ count: sql`count(*)` })
+        .from(claim_submission_history)
+        .where(eq(claim_submission_history.claim_id, parseInt(id)));
+
+      const submissionNumber = parseInt(existingSubmissions[0]?.count || 0) + 1;
+
+      // Get claim's current charges
+      const claim = await db
+        .select()
+        .from(claims)
+        .where(eq(claims.id, parseInt(id)))
+        .limit(1);
+
+      if (!claim[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      const result = await db
+        .insert(claim_submission_history)
+        .values({
+          claim_id: parseInt(id),
+          submission_number: submissionNumber,
+          submission_type: data.submission_type || 'ORIGINAL',
+          submission_date: new Date(),
+          submission_method: data.submission_method || 'ELECTRONIC',
+          clearinghouse_id: data.clearinghouse_id,
+          edi_interchange_control_number: data.edi_interchange_control_number,
+          edi_group_control_number: data.edi_group_control_number,
+          edi_transaction_control_number: data.edi_transaction_control_number,
+          clearinghouse_trace_number: data.clearinghouse_trace_number,
+          clearinghouse_status: 'PENDING',
+          submitted_charges: claim[0].total_charges,
+          outbound_file_reference: data.outbound_file_reference,
+          submitted_by_id: request.user?.id,
+          notes: data.notes
+        })
+        .returning();
+
+      // Also record status history
+      await this.recordStatusChange(
+        parseInt(id),
+        claim[0].claim_status,
+        'SUBMITTED',
+        'USER_ACTION',
+        'MANUAL',
+        result[0].id,
+        request.user?.id
+      );
+
+      // Update claim status
+      await db
+        .update(claims)
+        .set({
+          claim_status: 'SUBMITTED',
+          submission_date: new Date(),
+          submission_method: data.submission_method || 'ELECTRONIC',
+          clearinghouse_trace_number: data.clearinghouse_trace_number,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(claims.id, parseInt(id)));
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Claim submission recorded successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error recording claim submission:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error recording claim submission',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update submission response (from clearinghouse/payer)
+   * PUT /claims/:claimId/submissions/:submissionId
+   */
+  async updateSubmissionResponse(request, reply) {
+    try {
+      const { claimId, submissionId } = request.params;
+      const data = request.body;
+
+      const result = await db
+        .update(claim_submission_history)
+        .set({
+          clearinghouse_response_date: data.clearinghouse_response_date,
+          clearinghouse_status: data.clearinghouse_status,
+          payer_claim_number: data.payer_claim_number,
+          payer_response_date: data.payer_response_date,
+          payer_status: data.payer_status,
+          response_code: data.response_code,
+          response_message: data.response_message,
+          rejection_reasons: data.rejection_reasons,
+          inbound_file_reference: data.inbound_file_reference,
+          notes: data.notes,
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(claim_submission_history.id, parseInt(submissionId)),
+            eq(claim_submission_history.claim_id, parseInt(claimId))
+          )
+        )
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Submission record not found'
+        };
+      }
+
+      // If payer responded with final status, update claim status accordingly
+      if (data.payer_status === 'ACCEPTED' || data.payer_status === 'REJECTED') {
+        const claim = await db
+          .select()
+          .from(claims)
+          .where(eq(claims.id, parseInt(claimId)))
+          .limit(1);
+
+        const newClaimStatus = data.payer_status === 'ACCEPTED' ? 'ACCEPTED' : 'REJECTED';
+
+        await this.recordStatusChange(
+          parseInt(claimId),
+          claim[0]?.claim_status,
+          newClaimStatus,
+          'PAYER_RESPONSE',
+          'PAYER',
+          parseInt(submissionId),
+          request.user?.id
+        );
+
+        await db
+          .update(claims)
+          .set({
+            claim_status: newClaimStatus,
+            denial_reason: data.payer_status === 'REJECTED' ? data.response_message : null,
+            denial_date: data.payer_status === 'REJECTED' ? new Date() : null,
+            updated_by_id: request.user?.id,
+            updatedAt: new Date()
+          })
+          .where(eq(claims.id, parseInt(claimId)));
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Submission response updated successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating submission response:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating submission response',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // CLAIM STATUS HISTORY
+  // ============================================
+
+  /**
+   * Get status history for a claim
+   * GET /claims/:id/status-history
+   */
+  async getClaimStatusHistory(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const results = await db
+        .select()
+        .from(claim_status_history)
+        .where(eq(claim_status_history.claim_id, parseInt(id)))
+        .orderBy(desc(claim_status_history.status_date));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching claim status history:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching claim status history',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update claim status with history tracking
+   * PUT /claims/:id/status
+   */
+  async updateClaimStatus(request, reply) {
+    try {
+      const { id } = request.params;
+      const { new_status, reason, notes } = request.body;
+
+      if (!new_status) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required field: new_status'
+        };
+      }
+
+      // Get current claim
+      const claim = await db
+        .select()
+        .from(claims)
+        .where(eq(claims.id, parseInt(id)))
+        .limit(1);
+
+      if (!claim[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      // Record status change in history
+      await this.recordStatusChange(
+        parseInt(id),
+        claim[0].claim_status,
+        new_status,
+        reason || 'USER_ACTION',
+        'MANUAL',
+        null,
+        request.user?.id,
+        notes
+      );
+
+      // Update claim status
+      const result = await db
+        .update(claims)
+        .set({
+          claim_status: new_status,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(claims.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Claim status updated successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating claim status:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating claim status',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Helper method to record status changes
+   */
+  async recordStatusChange(
+    claimId,
+    previousStatus,
+    newStatus,
+    changeReason,
+    changeSource,
+    submissionHistoryId,
+    userId,
+    notes = null
+  ) {
+    const claim = await db
+      .select()
+      .from(claims)
+      .where(eq(claims.id, claimId))
+      .limit(1);
+
+    await db.insert(claim_status_history).values({
+      claim_id: claimId,
+      previous_status: previousStatus,
+      new_status: newStatus,
+      status_date: new Date(),
+      change_reason: changeReason,
+      change_source: changeSource,
+      submission_history_id: submissionHistoryId,
+      charges_at_change: claim[0]?.total_charges,
+      paid_at_change: claim[0]?.total_paid,
+      balance_at_change: claim[0]?.balance,
+      notes: notes,
+      changed_by_id: userId
+    });
+  }
+
+  // ============================================
+  // CLAIM DIAGNOSIS CODES
+  // ============================================
+
+  /**
+   * Get diagnosis codes for a claim
+   * GET /claims/:id/diagnosis-codes
+   */
+  async getClaimDiagnosisCodes(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const results = await db
+        .select()
+        .from(claim_diagnosis_codes)
+        .where(eq(claim_diagnosis_codes.claim_id, parseInt(id)))
+        .orderBy(asc(claim_diagnosis_codes.sequence_number));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching claim diagnosis codes:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching claim diagnosis codes',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Add diagnosis code to a claim
+   * POST /claims/:id/diagnosis-codes
+   */
+  async addClaimDiagnosisCode(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      if (!data.diagnosis_code || !data.diagnosis_type) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required fields: diagnosis_code, diagnosis_type'
+        };
+      }
+
+      // Get next sequence number if not provided
+      let sequenceNumber = data.sequence_number;
+      if (!sequenceNumber) {
+        const existing = await db
+          .select({ max: sql`max(sequence_number)` })
+          .from(claim_diagnosis_codes)
+          .where(eq(claim_diagnosis_codes.claim_id, parseInt(id)));
+        sequenceNumber = (parseInt(existing[0]?.max) || 0) + 1;
+      }
+
+      const result = await db
+        .insert(claim_diagnosis_codes)
+        .values({
+          claim_id: parseInt(id),
+          diagnosis_code: data.diagnosis_code,
+          diagnosis_code_qualifier: data.diagnosis_code_qualifier || '0',
+          sequence_number: sequenceNumber,
+          diagnosis_type: data.diagnosis_type,
+          poa_indicator: data.poa_indicator
+        })
+        .returning();
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Diagnosis code added successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error adding claim diagnosis code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error adding claim diagnosis code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Delete diagnosis code from a claim
+   * DELETE /claims/:claimId/diagnosis-codes/:codeId
+   */
+  async deleteClaimDiagnosisCode(request, reply) {
+    try {
+      const { claimId, codeId } = request.params;
+
+      const result = await db
+        .delete(claim_diagnosis_codes)
+        .where(
+          and(
+            eq(claim_diagnosis_codes.id, parseInt(codeId)),
+            eq(claim_diagnosis_codes.claim_id, parseInt(claimId))
+          )
+        )
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Diagnosis code not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Diagnosis code deleted successfully'
+      };
+    } catch (error) {
+      logger.error('Error deleting claim diagnosis code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error deleting claim diagnosis code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // CLAIM PROCEDURE CODES
+  // ============================================
+
+  /**
+   * Get procedure codes for a claim
+   * GET /claims/:id/procedure-codes
+   */
+  async getClaimProcedureCodes(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const results = await db
+        .select()
+        .from(claim_procedure_codes)
+        .where(eq(claim_procedure_codes.claim_id, parseInt(id)))
+        .orderBy(asc(claim_procedure_codes.sequence_number));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching claim procedure codes:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching claim procedure codes',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Add procedure code to a claim
+   * POST /claims/:id/procedure-codes
+   */
+  async addClaimProcedureCode(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      if (!data.procedure_code || !data.procedure_code_type) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required fields: procedure_code, procedure_code_type'
+        };
+      }
+
+      // Get next sequence number if not provided
+      let sequenceNumber = data.sequence_number;
+      if (!sequenceNumber) {
+        const existing = await db
+          .select({ max: sql`max(sequence_number)` })
+          .from(claim_procedure_codes)
+          .where(eq(claim_procedure_codes.claim_id, parseInt(id)));
+        sequenceNumber = (parseInt(existing[0]?.max) || 0) + 1;
+      }
+
+      const result = await db
+        .insert(claim_procedure_codes)
+        .values({
+          claim_id: parseInt(id),
+          service_line_id: data.service_line_id ? parseInt(data.service_line_id) : null,
+          procedure_code: data.procedure_code,
+          procedure_code_type: data.procedure_code_type,
+          modifier_1: data.modifier_1,
+          modifier_2: data.modifier_2,
+          modifier_3: data.modifier_3,
+          modifier_4: data.modifier_4,
+          procedure_date: data.procedure_date,
+          units: data.units || 1,
+          charges: data.charges,
+          sequence_number: sequenceNumber
+        })
+        .returning();
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Procedure code added successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error adding claim procedure code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error adding claim procedure code',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Delete procedure code from a claim
+   * DELETE /claims/:claimId/procedure-codes/:codeId
+   */
+  async deleteClaimProcedureCode(request, reply) {
+    try {
+      const { claimId, codeId } = request.params;
+
+      const result = await db
+        .delete(claim_procedure_codes)
+        .where(
+          and(
+            eq(claim_procedure_codes.id, parseInt(codeId)),
+            eq(claim_procedure_codes.claim_id, parseInt(claimId))
+          )
+        )
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Procedure code not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Procedure code deleted successfully'
+      };
+    } catch (error) {
+      logger.error('Error deleting claim procedure code:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error deleting claim procedure code',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }

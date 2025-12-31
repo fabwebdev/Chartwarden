@@ -1,38 +1,141 @@
 import * as NursingClinicalNoteController from "../../controllers/patient/NursingClinicalNote.controller.js";
 import authenticate from "../../middleware/betterAuth.middleware.js";
+import { PERMISSIONS } from "../../config/rbac.js";
+import { requireAnyPermission } from "../../middleware/rbac.middleware.js";
 
-// Fastify plugin for nursing clinical note routes
+/**
+ * Nursing Clinical Note Routes
+ * Clinical documentation for nursing visits with rich text content
+ */
 async function nursingClinicalNoteRoutes(fastify, options) {
-  // Nursing Clinical Note Routes (clean path)
+  // ============================================================================
+  // Main CRUD Routes
+  // ============================================================================
+
+  // List all nursing clinical notes with filters
+  fastify.get(
+    "/",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.index
+  );
+
+  // Create new nursing clinical note
+  fastify.post(
+    "/",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.create
+  );
+
+  // Get nursing clinical note by ID
   fastify.get(
     "/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.show
   );
 
+  // Update nursing clinical note
   fastify.put(
     "/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.update
   );
 
+  fastify.patch(
+    "/:id",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.update
+  );
+
+  // Store (create or update) nursing clinical note
   fastify.post(
     "/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES, PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.store
   );
+
+  // Delete nursing clinical note (soft delete)
+  fastify.delete(
+    "/:id",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.destroy
+  );
+
+  // ============================================================================
+  // Signature Routes (21 CFR Part 11 Compliance)
+  // ============================================================================
+
+  // Sign nursing clinical note
+  fastify.post(
+    "/:id/sign",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.sign
+  );
+
+  // Update note status
+  fastify.patch(
+    "/:id/status",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.updateStatus
+  );
+
+  // ============================================================================
+  // Query Routes
+  // ============================================================================
+
+  // Get unsigned notes
+  fastify.get(
+    "/unsigned",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.getUnsignedNotes
+  );
+
+  // Get notes by nurse
+  fastify.get(
+    "/by-nurse/:nurse_id",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
+    },
+    NursingClinicalNoteController.getNotesByNurse
+  );
+
+  // Get notes by patient
+  fastify.get(
+    "/by-patient/:patient_id",
+    {
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_PATIENT)],
+    },
+    NursingClinicalNoteController.getNotesByPatient
+  );
+
+  // ============================================================================
+  // Backward Compatibility Routes
+  // ============================================================================
 
   // Backward compatibility: support double path for existing frontend
   fastify.get(
     "/nursing-clinical-notes/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.show
   );
@@ -40,7 +143,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.put(
     "/nursing-clinical-notes/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.update
   );
@@ -48,16 +151,20 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/nursing-clinical-notes/:id",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES, PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.store
   );
+
+  // ============================================================================
+  // Related Clinical Data Routes
+  // ============================================================================
 
   // Vital signs routes
   fastify.get(
     "/vital_signs/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)],
     },
     NursingClinicalNoteController.getVitalSigns
   );
@@ -65,7 +172,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/vital_signs/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.CREATE_VITAL_SIGNS, PERMISSIONS.UPDATE_VITAL_SIGNS)],
     },
     NursingClinicalNoteController.autoSaveVitalSigns
   );
@@ -74,7 +181,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/scales_tools_lab_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexScaleToolLabData
   );
@@ -82,7 +189,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/scales_tools_lab_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveScaleToolLabData
   );
@@ -91,7 +198,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/pain_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexPainData
   );
@@ -99,7 +206,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/pain_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSavePainData
   );
@@ -108,7 +215,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/painad_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexPainadData
   );
@@ -116,7 +223,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/painad_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSavePainadData
   );
@@ -125,7 +232,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/flacc_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexFlaccData
   );
@@ -133,7 +240,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/flacc_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveFlaccData
   );
@@ -142,7 +249,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/cardiovascular_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexCardiovascularData
   );
@@ -150,7 +257,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/cardiovascular_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveCardiovascularData
   );
@@ -159,7 +266,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/respiratory_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexRespiratoryData
   );
@@ -167,7 +274,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/respiratory_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveRespiratoryData
   );
@@ -176,7 +283,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/genitourinary_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexGenitourinaryData
   );
@@ -184,7 +291,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/genitourinary_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveGenitourinaryData
   );
@@ -193,7 +300,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.get(
     "/gastrointestinal_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.indexGastrointestinalData
   );
@@ -201,7 +308,7 @@ async function nursingClinicalNoteRoutes(fastify, options) {
   fastify.post(
     "/gastrointestinal_data/:noteId",
     {
-      preHandler: [authenticate],
+      preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)],
     },
     NursingClinicalNoteController.autoSaveGastrointestinalData
   );

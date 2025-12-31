@@ -1,6 +1,7 @@
 import { db } from "../config/db.drizzle.js";
 import redisService from "../services/RedisService.js";
 import authRoutes from "./auth.routes.js";
+import securityRoutes from "./security.routes.js";
 import benefitPeriodRoutes from "./patient/BenefitPeriod.routes.js";
 import cardiacAssessmentRoutes from "./patient/CardiacAssessment.routes.js";
 import dischargeRoutes from "./patient/Discharge.routes.js";
@@ -11,6 +12,7 @@ import nursingClinicalNoteRoutes from "./patient/NursingClinicalNote.routes.js";
 import nutritionRoutes from "./patient/Nutrition.routes.js";
 import painRoutes from "./patient/Pain.routes.js";
 import painTypeRoutes from "./pain-type.routes.js";
+import detailedPainAssessmentRoutes from "./detailedPainAssessment.routes.js";
 import patientRoutes from "./patient/Patient.routes.js";
 import prognosisRoutes from "./patient/Prognosis.routes.js";
 import selectRoutes from "./patient/Select.routes.js";
@@ -60,8 +62,10 @@ import abacDemoRoutes from "./abac-demo.routes.js";
 import caslDemoRoutes from "./casl-demo.routes.js";
 import userRoutes from "./user.routes.js";
 import permissionRoutes from "./permission.routes.js";
+import metricsEngineRoutes from "./metricsEngine.routes.js";
 import { authenticate } from "../middleware/betterAuth.middleware.js";
 import errorTestRoutes from "./errorTest.routes.js";
+// Note: validationTestRoutes is registered in server.js (public route)
 
 // Fastify plugin for API routes
 async function apiRoutes(fastify, options) {
@@ -136,6 +140,9 @@ async function apiRoutes(fastify, options) {
   // Public routes
   await fastify.register(authRoutes);
 
+  // Security health check routes (public for monitoring)
+  await fastify.register(securityRoutes, { prefix: "/security" });
+
   // Apply authentication middleware to all routes below this point
   fastify.addHook("onRequest", authenticate);
 
@@ -172,6 +179,7 @@ async function apiRoutes(fastify, options) {
   await fastify.register(visitInformationRoutes, { prefix: "/visit-information" });
   await fastify.register(hisPdfRoutes, { prefix: "/his-pdf" });
   await fastify.register(hopeAssessmentRoutes); // HOPE assessments (no prefix, routes define their own paths)
+  await fastify.register(detailedPainAssessmentRoutes); // Detailed Pain Assessments (no prefix, routes define their own paths)
   await fastify.register(encounterRoutes); // Encounters (no prefix, routes define their own paths)
   await fastify.register(carePlanRoutes); // Care planning (no prefix, routes define their own paths)
   await fastify.register(idgMeetingRoutes); // IDG meetings (no prefix, routes define their own paths)
@@ -213,6 +221,7 @@ async function apiRoutes(fastify, options) {
   await fastify.register(caslDemoRoutes, { prefix: "/casl-demo" });
   await fastify.register(userRoutes);
   await fastify.register(permissionRoutes);
+  await fastify.register(metricsEngineRoutes); // Metrics Engine & Dashboard Aggregation
 
   // Error handling test routes (development/testing only)
   if (process.env.NODE_ENV !== 'production') {

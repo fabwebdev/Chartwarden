@@ -15,6 +15,10 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * - Payment processing and application
  * - AR aging reports
  * - Billing period tracking
+ * - Billing codes reference (ICD-10, CPT, HCPCS, Revenue)
+ * - Claim submission history tracking
+ * - Claim status history tracking
+ * - Claim diagnosis and procedure codes
  */
 export default async function billingRoutes(fastify, options) {
   // ============================================================================
@@ -55,6 +59,77 @@ export default async function billingRoutes(fastify, options) {
   fastify.get('/claims/rejected', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
   }, controller.getRejectedClaims);
+
+  // Update claim status with history tracking
+  fastify.put('/claims/:id/status', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateClaimStatus);
+
+  // ============================================================================
+  // CLAIM SUBMISSION HISTORY ROUTES
+  // ============================================================================
+
+  // Get submission history for a claim
+  fastify.get('/claims/:id/submissions', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimSubmissionHistory);
+
+  // Record a new submission attempt
+  fastify.post('/claims/:id/submissions', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.recordClaimSubmission);
+
+  // Update submission response (from clearinghouse/payer)
+  fastify.put('/claims/:claimId/submissions/:submissionId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateSubmissionResponse);
+
+  // ============================================================================
+  // CLAIM STATUS HISTORY ROUTES
+  // ============================================================================
+
+  // Get status history for a claim
+  fastify.get('/claims/:id/status-history', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimStatusHistory);
+
+  // ============================================================================
+  // CLAIM DIAGNOSIS CODES ROUTES
+  // ============================================================================
+
+  // Get diagnosis codes for a claim
+  fastify.get('/claims/:id/diagnosis-codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimDiagnosisCodes);
+
+  // Add diagnosis code to a claim
+  fastify.post('/claims/:id/diagnosis-codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.addClaimDiagnosisCode);
+
+  // Delete diagnosis code from a claim
+  fastify.delete('/claims/:claimId/diagnosis-codes/:codeId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.deleteClaimDiagnosisCode);
+
+  // ============================================================================
+  // CLAIM PROCEDURE CODES ROUTES
+  // ============================================================================
+
+  // Get procedure codes for a claim
+  fastify.get('/claims/:id/procedure-codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimProcedureCodes);
+
+  // Add procedure code to a claim
+  fastify.post('/claims/:id/procedure-codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.addClaimProcedureCode);
+
+  // Delete procedure code from a claim
+  fastify.delete('/claims/:claimId/procedure-codes/:codeId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.deleteClaimProcedureCode);
 
   // ============================================================================
   // NOTICE OF ELECTION (NOE) ROUTES
@@ -97,4 +172,28 @@ export default async function billingRoutes(fastify, options) {
   fastify.get('/billing/periods', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
   }, controller.getBillingPeriods);
+
+  // ============================================================================
+  // BILLING CODES ROUTES
+  // ============================================================================
+
+  // Get all billing codes (with filters)
+  fastify.get('/billing/codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getBillingCodes);
+
+  // Get billing code by ID
+  fastify.get('/billing/codes/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getBillingCodeById);
+
+  // Create billing code
+  fastify.post('/billing/codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createBillingCode);
+
+  // Update billing code
+  fastify.put('/billing/codes/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateBillingCode);
 }

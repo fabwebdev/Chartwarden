@@ -262,16 +262,17 @@ class CBSAController {
    * Clear CBSA lookup cache
    * POST /api/cbsa/clear-cache
    *
-   * Response: { status, message }
+   * Response: { status, message, data: { cleared, timestamp } }
    */
   async clearCache(request, reply) {
     try {
-      CBSALookupService.clearCache();
+      const result = await CBSALookupService.clearCache();
 
       reply.code(200);
       return {
         status: 'success',
-        message: 'CBSA cache cleared successfully'
+        message: 'CBSA cache cleared successfully',
+        data: result
       };
     } catch (error) {
       logger.error('Error in clearCache:', error)
@@ -279,6 +280,75 @@ class CBSAController {
       return {
         status: 'error',
         message: error.message || 'Failed to clear cache',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
+
+  /**
+   * Autocomplete search for CBSA titles/cities
+   * GET /api/cbsa/autocomplete?q=query&limit=10&state=NY
+   *
+   * Query params: q (search query, required), limit (optional), state (optional)
+   * Response: { status, data: [...] }
+   */
+  async autocomplete(request, reply) {
+    try {
+      const { q, limit = 10, state } = request.query;
+
+      if (!q || q.trim().length < 2) {
+        reply.code(200);
+        return {
+          status: 'success',
+          data: [],
+          message: 'Query must be at least 2 characters'
+        };
+      }
+
+      const options = {
+        limit: Math.min(parseInt(limit), 25), // Max 25 results for autocomplete
+        state: state || null
+      };
+
+      const results = await CBSALookupService.autocomplete(q, options);
+
+      reply.code(200);
+      return {
+        status: 'success',
+        data: results
+      };
+    } catch (error) {
+      logger.error('Error in autocomplete:', error);
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to search CBSA codes',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
+
+  /**
+   * Get CBSA cache statistics
+   * GET /api/cbsa/cache-stats
+   *
+   * Response: { status, data: { driver, cachePrefix, cacheTTL, ... } }
+   */
+  async getCacheStats(request, reply) {
+    try {
+      const stats = await CBSALookupService.getCacheStats();
+
+      reply.code(200);
+      return {
+        status: 'success',
+        data: stats
+      };
+    } catch (error) {
+      logger.error('Error in getCacheStats:', error)
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to get cache stats',
         error: process.env.NODE_ENV === 'development' ? error.stack : undefined
       };
     }

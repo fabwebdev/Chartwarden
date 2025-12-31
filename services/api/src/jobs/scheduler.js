@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { recalculateAllCaps } from './capRecalculation.job.js';
 import { processCertificationAlerts, checkOverdueCertifications } from './certificationAlerts.job.js';
+import { runRetentionJob, checkRetentionCompliance } from './auditRetention.job.js';
 
 import { logger } from '../utils/logger.js';
 /**
@@ -63,6 +64,36 @@ class JobScheduler {
       })
     );
 
+    // Audit Retention Compliance Check - Daily at 3:00 AM
+    this.jobs.push(
+      cron.schedule('0 3 * * *', async () => {
+        logger.info('Running scheduled audit retention compliance check')
+        try {
+          await checkRetentionCompliance();
+        } catch (error) {
+          logger.error('Audit retention compliance check failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
+    // Audit Log Archival - Weekly on Sunday at 1:00 AM
+    this.jobs.push(
+      cron.schedule('0 1 * * 0', async () => {
+        logger.info('Running scheduled audit log retention job')
+        try {
+          await runRetentionJob();
+        } catch (error) {
+          logger.error('Audit log retention job failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
     logger.info(`Initialized ${this.jobs.length} scheduled jobs`)
   }
 
@@ -88,6 +119,10 @@ class JobScheduler {
         return await processCertificationAlerts();
       case 'overdue-certifications':
         return await checkOverdueCertifications();
+      case 'audit-retention':
+        return await runRetentionJob();
+      case 'audit-compliance-check':
+        return await checkRetentionCompliance();
       default:
         throw new Error(`Unknown job: ${jobName}`);
     }

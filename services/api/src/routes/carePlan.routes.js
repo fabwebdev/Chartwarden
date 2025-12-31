@@ -42,6 +42,14 @@ export default async function carePlanRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createProblem);
 
+  fastify.patch('/problems/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateProblem);
+
+  fastify.post('/problems/:id/resolve', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.resolveProblem);
+
   // Goals
   fastify.get('/patients/:id/goals', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
@@ -51,6 +59,14 @@ export default async function carePlanRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createGoal);
 
+  fastify.patch('/goals/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateGoal);
+
+  fastify.post('/goals/:id/progress', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateGoalProgress);
+
   // Interventions
   fastify.get('/patients/:id/interventions', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
@@ -59,4 +75,25 @@ export default async function carePlanRoutes(fastify, options) {
   fastify.post('/patients/:id/interventions', {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createIntervention);
+
+  fastify.patch('/interventions/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateIntervention);
+
+  fastify.post('/interventions/:id/performed', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.recordInterventionPerformed);
+
+  fastify.post('/interventions/:id/discontinue', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.discontinueIntervention);
+
+  // Care Plan Templates
+  fastify.get('/care-plan-templates', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getTemplates);
+
+  fastify.post('/care-plan-templates', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createTemplate);
 }

@@ -79,6 +79,7 @@ class MedicationController {
           patient_id: parseInt(id),
           medication_name: data.medication_name,
           generic_name: data.generic_name,
+          ndc_code: data.ndc_code,
           medication_status: data.medication_status || 'ACTIVE',
           medication_route: data.medication_route,
           dosage: data.dosage,
@@ -245,6 +246,124 @@ class MedicationController {
       return {
         status: 500,
         message: 'Error holding medication',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Pause medication
+   * POST /patients/:id/medications/:medId/pause
+   */
+  async pauseMedication(request, reply) {
+    try {
+      const { id, medId } = request.params;
+      const { reason, pause_until } = request.body;
+
+      const existing = await db
+        .select()
+        .from(medications)
+        .where(and(
+          eq(medications.id, parseInt(medId)),
+          eq(medications.patient_id, parseInt(id)),
+          isNull(medications.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Medication not found'
+        };
+      }
+
+      const result = await db
+        .update(medications)
+        .set({
+          medication_status: 'PAUSED',
+          end_date: pause_until,
+          instructions: `${existing[0].instructions || ''}\nPaused: ${reason}`.trim(),
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(medications.id, parseInt(medId)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Medication paused',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error pausing medication:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error pausing medication',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Resume medication
+   * POST /patients/:id/medications/:medId/resume
+   */
+  async resumeMedication(request, reply) {
+    try {
+      const { id, medId } = request.params;
+
+      const existing = await db
+        .select()
+        .from(medications)
+        .where(and(
+          eq(medications.id, parseInt(medId)),
+          eq(medications.patient_id, parseInt(id)),
+          isNull(medications.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Medication not found'
+        };
+      }
+
+      if (!['PAUSED', 'HELD'].includes(existing[0].medication_status)) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Medication is not paused or held'
+        };
+      }
+
+      const result = await db
+        .update(medications)
+        .set({
+          medication_status: 'ACTIVE',
+          end_date: null,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(medications.id, parseInt(medId)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Medication resumed',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error resuming medication:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error resuming medication',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }

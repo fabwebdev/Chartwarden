@@ -105,8 +105,8 @@ async function patientRoutes(fastify, options) {
   // Admission Information Routes
   await fastify.register(admissionInformationRoutes, { prefix: "/admission" });
 
-  // Benefit Period Routes
-  await fastify.register(benefitPeriodRoutes);
+  // Benefit Period Routes (mounted with prefix to avoid route conflicts)
+  await fastify.register(benefitPeriodRoutes, { prefix: "/benefit-period" });
 
   // Cardiac Assessment Routes
   await fastify.register(cardiacAssessmentRoutes);

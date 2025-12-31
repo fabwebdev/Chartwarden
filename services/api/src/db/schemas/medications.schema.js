@@ -22,9 +22,10 @@ export const medications = pgTable('medications', {
   // Medication identification
   medication_name: varchar('medication_name', { length: 255 }).notNull(),
   generic_name: varchar('generic_name', { length: 255 }),
+  ndc_code: varchar('ndc_code', { length: 20 }), // National Drug Code (NDC) - FDA standard identifier (format: 5-4-2 or 4-4-2)
 
   // Status and route
-  medication_status: varchar('medication_status', { length: 50 }).default('ACTIVE').notNull(), // ACTIVE, DISCONTINUED, COMPLETED, HELD, ON_HOLD
+  medication_status: varchar('medication_status', { length: 50 }).default('ACTIVE').notNull(), // ACTIVE, DISCONTINUED, PAUSED, HELD, COMPLETED
   medication_route: varchar('medication_route', { length: 50 }), // ORAL, IV, IM, SQ, RECTAL, TOPICAL, etc.
 
   // Dosing information

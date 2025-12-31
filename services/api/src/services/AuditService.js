@@ -1,13 +1,64 @@
 import { db } from "../config/db.drizzle.js";
 import { audit_logs } from "../db/schemas/auditLog.schema.js";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql, count, between } from "drizzle-orm";
 import axios from "axios";
 
 import { logger } from '../utils/logger.js';
+import { phiRedactionService } from './PHIRedactionService.js';
+import { isCriticalAction, isSecurityAlertAction, getRetentionYears } from '../constants/auditActions.js';
+
+/**
+ * HIPAA-Compliant Audit Logging Service
+ *
+ * Features:
+ * - Immutable audit logs (database-enforced)
+ * - PHI/PII redaction before logging
+ * - Batch processing for high-volume scenarios
+ * - External logger integration (Splunk, Elasticsearch, CloudWatch)
+ * - 6-year retention compliance
+ * - Security alert detection
+ */
 class AuditService {
   constructor() {
     this.externalLoggers = [];
+    this.batchQueue = [];
+    this.batchSize = parseInt(process.env.AUDIT_BATCH_SIZE || '50', 10);
+    this.batchFlushInterval = parseInt(process.env.AUDIT_BATCH_FLUSH_MS || '5000', 10);
+    this.batchTimer = null;
+    this.isProcessingBatch = false;
+    this.stats = {
+      totalLogs: 0,
+      batchedLogs: 0,
+      immediatelogs: 0,
+      errors: 0,
+      securityAlerts: 0,
+    };
     this.initializeExternalLoggers();
+    this.startBatchProcessor();
+  }
+
+  /**
+   * Start the batch processor timer
+   */
+  startBatchProcessor() {
+    if (this.batchTimer) {
+      clearInterval(this.batchTimer);
+    }
+    this.batchTimer = setInterval(() => this.flushBatch(), this.batchFlushInterval);
+    logger.info(`Audit batch processor started (size: ${this.batchSize}, interval: ${this.batchFlushInterval}ms)`);
+  }
+
+  /**
+   * Stop the batch processor
+   */
+  async stopBatchProcessor() {
+    if (this.batchTimer) {
+      clearInterval(this.batchTimer);
+      this.batchTimer = null;
+    }
+    // Flush remaining items
+    await this.flushBatch();
+    logger.info('Audit batch processor stopped');
   }
 
   /**
@@ -423,36 +474,387 @@ class AuditService {
    * Does NOT log actual health data - only metadata
    *
    * @param {Object} data - Audit log data (should not contain health data)
+   * @param {Object} meta - Additional metadata for external loggers
+   * @param {Object} options - Options for logging behavior
    * @returns {Object} Created audit log
    */
-  async createAuditLog(data, meta = {}) {
+  async createAuditLog(data, meta = {}, options = {}) {
+    const { immediate = false, skipExternal = false } = options;
+
     try {
+      // Redact any PHI/PII from metadata
+      const redactedMeta = phiRedactionService.safeRedact(meta);
+
       // Ensure we never log actual health data
       const sanitizedData = {
         ...data,
         old_value: null, // Never log actual health data
         new_value: null, // Never log actual health data
+        // Redact metadata field if present
+        metadata: data.metadata ? JSON.stringify(phiRedactionService.safeRedact(
+          typeof data.metadata === 'string' ? JSON.parse(data.metadata) : data.metadata
+        )) : null,
       };
 
-      // Insert into database
-      const result = await db
-        .insert(audit_logs)
-        .values(sanitizedData)
-        .returning();
-      const auditLog = result[0];
-      const externalPayload = {
-        ...auditLog,
-        ...meta,
-      };
+      // Check for security alerts
+      if (isSecurityAlertAction(data.action)) {
+        this.stats.securityAlerts++;
+        this.handleSecurityAlert(sanitizedData, redactedMeta);
+      }
 
-      // Send to external loggers (async, don't wait)
+      // Critical actions must be logged immediately
+      const mustBeImmediate = immediate || isCriticalAction(data.action);
+
+      if (mustBeImmediate) {
+        return await this.createImmediateLog(sanitizedData, redactedMeta, skipExternal);
+      }
+
+      // Queue for batch processing
+      return this.queueForBatch(sanitizedData, redactedMeta, skipExternal);
+    } catch (error) {
+      this.stats.errors++;
+      logger.error('Failed to create audit log:', { error: error.message, action: data.action });
+      throw new Error(`Failed to create audit log: ${error.message}`);
+    }
+  }
+
+  /**
+   * Create audit log immediately (bypass batch queue)
+   */
+  async createImmediateLog(data, meta, skipExternal = false) {
+    this.stats.immediatelogs++;
+    this.stats.totalLogs++;
+
+    const result = await db
+      .insert(audit_logs)
+      .values(data)
+      .returning();
+    const auditLog = result[0];
+
+    if (!skipExternal) {
+      const externalPayload = { ...auditLog, ...meta };
       this.sendToExternalLoggers(externalPayload).catch((err) => {
-        logger.error("External logging error:", err.message)
+        logger.error("External logging error:", err.message);
+      });
+    }
+
+    return auditLog;
+  }
+
+  /**
+   * Queue audit log for batch processing
+   */
+  queueForBatch(data, meta, skipExternal) {
+    this.batchQueue.push({ data, meta, skipExternal, queuedAt: Date.now() });
+    this.stats.batchedLogs++;
+    this.stats.totalLogs++;
+
+    // Flush if batch size reached
+    if (this.batchQueue.length >= this.batchSize) {
+      this.flushBatch().catch(err => {
+        logger.error('Batch flush error:', err.message);
+      });
+    }
+
+    // Return a pending result
+    return { id: null, status: 'queued', queueSize: this.batchQueue.length };
+  }
+
+  /**
+   * Flush the batch queue to database
+   */
+  async flushBatch() {
+    if (this.isProcessingBatch || this.batchQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessingBatch = true;
+    const itemsToProcess = [...this.batchQueue];
+    this.batchQueue = [];
+
+    try {
+      // Batch insert
+      const values = itemsToProcess.map(item => item.data);
+      const results = await db
+        .insert(audit_logs)
+        .values(values)
+        .returning();
+
+      // Send to external loggers (async)
+      for (let i = 0; i < results.length; i++) {
+        if (!itemsToProcess[i].skipExternal) {
+          const externalPayload = { ...results[i], ...itemsToProcess[i].meta };
+          this.sendToExternalLoggers(externalPayload).catch(() => {});
+        }
+      }
+
+      logger.debug(`Flushed ${results.length} audit logs`);
+    } catch (error) {
+      // On error, try to re-queue items
+      logger.error('Batch flush failed:', error.message);
+      this.stats.errors += itemsToProcess.length;
+      // Re-queue failed items (with retry limit)
+      itemsToProcess.forEach(item => {
+        if (!item.retries || item.retries < 3) {
+          item.retries = (item.retries || 0) + 1;
+          this.batchQueue.push(item);
+        }
+      });
+    } finally {
+      this.isProcessingBatch = false;
+    }
+  }
+
+  /**
+   * Handle security alert actions
+   */
+  handleSecurityAlert(data, meta) {
+    logger.warn('SECURITY ALERT detected in audit log', {
+      action: data.action,
+      user_id: data.user_id,
+      ip_address: data.ip_address,
+      resource_type: data.resource_type,
+    });
+
+    // Could trigger additional alerting here (email, Slack, PagerDuty, etc.)
+  }
+
+  /**
+   * Get audit statistics
+   */
+  getStats() {
+    return {
+      ...this.stats,
+      queueSize: this.batchQueue.length,
+      externalLoggers: this.externalLoggers.length,
+    };
+  }
+
+  /**
+   * Get compliance report for a date range
+   * @param {Date} startDate - Start of date range
+   * @param {Date} endDate - End of date range
+   * @returns {Object} Compliance report
+   */
+  async getComplianceReport(startDate, endDate) {
+    try {
+      // Total logs in period
+      const totalResult = await db
+        .select({ count: count() })
+        .from(audit_logs)
+        .where(between(audit_logs.created_at, startDate, endDate));
+
+      // Logs by action
+      const byAction = await db
+        .select({
+          action: audit_logs.action,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(between(audit_logs.created_at, startDate, endDate))
+        .groupBy(audit_logs.action)
+        .orderBy(desc(count()));
+
+      // Logs by resource type
+      const byResource = await db
+        .select({
+          resource_type: audit_logs.resource_type,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(between(audit_logs.created_at, startDate, endDate))
+        .groupBy(audit_logs.resource_type)
+        .orderBy(desc(count()));
+
+      // Logs by status
+      const byStatus = await db
+        .select({
+          status: audit_logs.status,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(between(audit_logs.created_at, startDate, endDate))
+        .groupBy(audit_logs.status);
+
+      // Failed operations
+      const failedOps = await db
+        .select({
+          action: audit_logs.action,
+          user_id: audit_logs.user_id,
+          created_at: audit_logs.created_at,
+          ip_address: audit_logs.ip_address,
+        })
+        .from(audit_logs)
+        .where(and(
+          between(audit_logs.created_at, startDate, endDate),
+          eq(audit_logs.status, 'failure')
+        ))
+        .limit(100);
+
+      // Unique users
+      const uniqueUsers = await db
+        .select({ count: sql`COUNT(DISTINCT ${audit_logs.user_id})` })
+        .from(audit_logs)
+        .where(between(audit_logs.created_at, startDate, endDate));
+
+      return {
+        period: { startDate, endDate },
+        summary: {
+          totalLogs: Number(totalResult[0]?.count || 0),
+          uniqueUsers: Number(uniqueUsers[0]?.count || 0),
+        },
+        byAction: byAction.map(r => ({ action: r.action, count: Number(r.count) })),
+        byResource: byResource.map(r => ({ resource_type: r.resource_type, count: Number(r.count) })),
+        byStatus: byStatus.map(r => ({ status: r.status, count: Number(r.count) })),
+        failedOperations: failedOps,
+        generatedAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new Error(`Failed to generate compliance report: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get user activity report
+   * @param {string} userId - User ID
+   * @param {Date} startDate - Start of date range
+   * @param {Date} endDate - End of date range
+   * @returns {Object} User activity report
+   */
+  async getUserActivityReport(userId, startDate, endDate) {
+    try {
+      const conditions = [eq(audit_logs.user_id, userId)];
+      if (startDate && endDate) {
+        conditions.push(between(audit_logs.created_at, startDate, endDate));
+      }
+
+      // Total actions
+      const totalResult = await db
+        .select({ count: count() })
+        .from(audit_logs)
+        .where(and(...conditions));
+
+      // Actions by type
+      const byAction = await db
+        .select({
+          action: audit_logs.action,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(and(...conditions))
+        .groupBy(audit_logs.action)
+        .orderBy(desc(count()));
+
+      // Resources accessed
+      const resourcesAccessed = await db
+        .select({
+          resource_type: audit_logs.resource_type,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(and(...conditions))
+        .groupBy(audit_logs.resource_type)
+        .orderBy(desc(count()));
+
+      // IP addresses used
+      const ipAddresses = await db
+        .select({
+          ip_address: audit_logs.ip_address,
+          count: count(),
+        })
+        .from(audit_logs)
+        .where(and(...conditions))
+        .groupBy(audit_logs.ip_address);
+
+      // Recent activity
+      const recentActivity = await db
+        .select()
+        .from(audit_logs)
+        .where(and(...conditions))
+        .orderBy(desc(audit_logs.created_at))
+        .limit(50);
+
+      return {
+        userId,
+        period: { startDate, endDate },
+        summary: {
+          totalActions: Number(totalResult[0]?.count || 0),
+          uniqueIPs: ipAddresses.length,
+        },
+        byAction: byAction.map(r => ({ action: r.action, count: Number(r.count) })),
+        resourcesAccessed: resourcesAccessed.map(r => ({ resource_type: r.resource_type, count: Number(r.count) })),
+        ipAddresses: ipAddresses.map(r => ({ ip: r.ip_address, count: Number(r.count) })),
+        recentActivity,
+        generatedAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      throw new Error(`Failed to generate user activity report: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get resource access history
+   * @param {string} resourceType - Resource type (e.g., 'patients')
+   * @param {string} resourceId - Resource ID
+   * @returns {Object} Resource access history
+   */
+  async getResourceAccessHistory(resourceType, resourceId) {
+    try {
+      const accessLogs = await db
+        .select()
+        .from(audit_logs)
+        .where(and(
+          eq(audit_logs.resource_type, resourceType),
+          eq(audit_logs.resource_id, resourceId)
+        ))
+        .orderBy(desc(audit_logs.created_at))
+        .limit(500);
+
+      // Unique accessors
+      const uniqueUsers = new Set(accessLogs.map(log => log.user_id).filter(Boolean));
+
+      // Access by action type
+      const byAction = {};
+      accessLogs.forEach(log => {
+        byAction[log.action] = (byAction[log.action] || 0) + 1;
       });
 
-      return auditLog;
+      return {
+        resourceType,
+        resourceId,
+        totalAccesses: accessLogs.length,
+        uniqueUsers: uniqueUsers.size,
+        byAction,
+        accessHistory: accessLogs,
+        generatedAt: new Date().toISOString(),
+      };
     } catch (error) {
-      throw new Error(`Failed to create audit log: ${error.message}`);
+      throw new Error(`Failed to get resource access history: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get logs eligible for archival based on retention policy
+   * @param {number} retentionYears - Retention period in years (default: 6 for HIPAA)
+   * @returns {Object} Archival candidates
+   */
+  async getArchivalCandidates(retentionYears = 6) {
+    const cutoffDate = new Date();
+    cutoffDate.setFullYear(cutoffDate.getFullYear() - retentionYears);
+
+    try {
+      const candidates = await db
+        .select({ count: count() })
+        .from(audit_logs)
+        .where(lte(audit_logs.created_at, cutoffDate));
+
+      return {
+        cutoffDate,
+        retentionYears,
+        eligibleCount: Number(candidates[0]?.count || 0),
+      };
+    } catch (error) {
+      throw new Error(`Failed to get archival candidates: ${error.message}`);
     }
   }
 }

@@ -581,6 +581,457 @@ class CarePlanController {
       };
     }
   }
+
+  /**
+   * Update problem
+   * PATCH /problems/:id
+   */
+  async updateProblem(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      const existing = await db
+        .select()
+        .from(problems)
+        .where(eq(problems.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Problem not found'
+        };
+      }
+
+      const result = await db
+        .update(problems)
+        .set({
+          ...data,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(problems.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Problem updated',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating problem:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating problem',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update goal
+   * PATCH /goals/:id
+   */
+  async updateGoal(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      const existing = await db
+        .select()
+        .from(goals)
+        .where(eq(goals.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Goal not found'
+        };
+      }
+
+      const result = await db
+        .update(goals)
+        .set({
+          ...data,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(goals.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Goal updated',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating goal:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating goal',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update goal progress - specialized endpoint for progress tracking
+   * POST /goals/:id/progress
+   */
+  async updateGoalProgress(request, reply) {
+    try {
+      const { id } = request.params;
+      const { progress_level, progress_notes, barriers_to_achievement, modifications_needed } = request.body;
+
+      const existing = await db
+        .select()
+        .from(goals)
+        .where(eq(goals.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Goal not found'
+        };
+      }
+
+      const updateData = {
+        updated_by_id: request.user?.id,
+        updatedAt: new Date()
+      };
+
+      if (progress_level) updateData.progress_level = progress_level;
+      if (progress_notes) updateData.progress_notes = progress_notes;
+      if (barriers_to_achievement) updateData.barriers_to_achievement = barriers_to_achievement;
+      if (modifications_needed) updateData.modifications_needed = modifications_needed;
+
+      // Auto-update goal_status based on progress_level
+      if (progress_level === 'GOAL_ACHIEVED') {
+        updateData.goal_status = 'ACHIEVED';
+        updateData.achieved_date = new Date().toISOString().split('T')[0];
+      } else if (progress_level === 'REGRESSION') {
+        updateData.goal_status = 'IN_PROGRESS'; // Keep in progress but note regression
+      } else if (['MINIMAL_PROGRESS', 'MODERATE_PROGRESS', 'SIGNIFICANT_PROGRESS'].includes(progress_level)) {
+        updateData.goal_status = 'IN_PROGRESS';
+      }
+
+      const result = await db
+        .update(goals)
+        .set(updateData)
+        .where(eq(goals.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Goal progress updated',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating goal progress:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating goal progress',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update intervention
+   * PATCH /interventions/:id
+   */
+  async updateIntervention(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      const existing = await db
+        .select()
+        .from(interventions)
+        .where(eq(interventions.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Intervention not found'
+        };
+      }
+
+      const result = await db
+        .update(interventions)
+        .set({
+          ...data,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(interventions.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Intervention updated',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating intervention:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating intervention',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Record intervention performed - increment counter and update dates
+   * POST /interventions/:id/performed
+   */
+  async recordInterventionPerformed(request, reply) {
+    try {
+      const { id } = request.params;
+      const { effectiveness_rating, evaluation_notes, patient_response, next_scheduled_date } = request.body;
+
+      const existing = await db
+        .select()
+        .from(interventions)
+        .where(eq(interventions.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Intervention not found'
+        };
+      }
+
+      const updateData = {
+        last_performed_date: new Date().toISOString().split('T')[0],
+        times_performed: (existing[0].times_performed || 0) + 1,
+        intervention_status: 'IN_PROGRESS',
+        updated_by_id: request.user?.id,
+        updatedAt: new Date()
+      };
+
+      if (effectiveness_rating) updateData.effectiveness_rating = effectiveness_rating;
+      if (evaluation_notes) updateData.evaluation_notes = evaluation_notes;
+      if (patient_response) updateData.patient_response = patient_response;
+      if (next_scheduled_date) updateData.next_scheduled_date = next_scheduled_date;
+
+      const result = await db
+        .update(interventions)
+        .set(updateData)
+        .where(eq(interventions.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Intervention performed recorded',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error recording intervention performed:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error recording intervention performed',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Discontinue intervention
+   * POST /interventions/:id/discontinue
+   */
+  async discontinueIntervention(request, reply) {
+    try {
+      const { id } = request.params;
+      const { discontinuation_reason } = request.body;
+
+      const existing = await db
+        .select()
+        .from(interventions)
+        .where(eq(interventions.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Intervention not found'
+        };
+      }
+
+      const result = await db
+        .update(interventions)
+        .set({
+          intervention_status: 'DISCONTINUED',
+          discontinued_date: new Date().toISOString().split('T')[0],
+          discontinuation_reason: discontinuation_reason,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(interventions.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Intervention discontinued',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error discontinuing intervention:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error discontinuing intervention',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Resolve problem
+   * POST /problems/:id/resolve
+   */
+  async resolveProblem(request, reply) {
+    try {
+      const { id } = request.params;
+      const { notes } = request.body;
+
+      const existing = await db
+        .select()
+        .from(problems)
+        .where(eq(problems.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Problem not found'
+        };
+      }
+
+      const result = await db
+        .update(problems)
+        .set({
+          problem_status: 'RESOLVED',
+          resolved_date: new Date().toISOString().split('T')[0],
+          notes: notes || existing[0].notes,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(problems.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Problem resolved',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error resolving problem:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error resolving problem',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get care plan templates
+   * GET /care-plan-templates
+   */
+  async getTemplates(request, reply) {
+    try {
+      const { diagnosis_category, is_public } = request.query;
+
+      let query = db
+        .select()
+        .from(care_plan_templates)
+        .where(eq(care_plan_templates.is_active, true));
+
+      if (diagnosis_category) {
+        query = query.where(eq(care_plan_templates.diagnosis_category, diagnosis_category));
+      }
+
+      if (is_public === 'true') {
+        query = query.where(eq(care_plan_templates.is_public, true));
+      }
+
+      const templates = await query.orderBy(desc(care_plan_templates.use_count));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: templates
+      };
+    } catch (error) {
+      logger.error('Error fetching care plan templates:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching templates',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Create care plan template
+   * POST /care-plan-templates
+   */
+  async createTemplate(request, reply) {
+    try {
+      const data = request.body;
+
+      const result = await db
+        .insert(care_plan_templates)
+        .values({
+          ...data,
+          created_by_id: request.user?.id
+        })
+        .returning();
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Template created',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error creating template:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error creating template',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
 }
 
 export default new CarePlanController();

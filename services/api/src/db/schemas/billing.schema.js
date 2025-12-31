@@ -425,3 +425,194 @@ export const contracts = pgTable('contracts', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+/**
+ * Billing Codes Reference Table
+ * Stores ICD-10, CPT, HCPCS, and revenue codes for claims billing
+ * Used for code validation, lookup, and auto-complete in claim creation
+ */
+export const billing_codes = pgTable('billing_codes', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Code identification
+  code: varchar('code', { length: 20 }).notNull(),
+  code_type: varchar('code_type', { length: 30 }).notNull(), // ICD10_DX, ICD10_PCS, CPT, HCPCS, REVENUE, MODIFIER
+
+  // Code details
+  short_description: varchar('short_description', { length: 255 }).notNull(),
+  long_description: text('long_description'),
+
+  // Categorization
+  category: varchar('category', { length: 100 }), // For grouping related codes
+  subcategory: varchar('subcategory', { length: 100 }),
+
+  // Validity period (some codes are retired/deprecated)
+  effective_date: date('effective_date'),
+  termination_date: date('termination_date'),
+
+  // Pricing information (optional, for fee schedule)
+  default_rate: integer('default_rate'), // Default rate in cents
+  rate_type: varchar('rate_type', { length: 20 }), // UNIT, PER_DIEM, FLAT
+
+  // Hospice-specific flags
+  hospice_applicable: boolean('hospice_applicable').default(false),
+  level_of_care: varchar('level_of_care', { length: 50 }), // ROUTINE_HOME_CARE, CONTINUOUS_HOME_CARE, etc.
+
+  // Usage tracking
+  usage_count: integer('usage_count').default(0),
+  last_used_at: timestamp('last_used_at'),
+
+  is_active: boolean('is_active').default(true).notNull(),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Claim Submission History Table
+ * Tracks every submission attempt for a claim including response details
+ * Essential for compliance, auditing, and troubleshooting failed submissions
+ */
+export const claim_submission_history = pgTable('claim_submission_history', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  claim_id: bigint('claim_id', { mode: 'number' }).references(() => claims.id).notNull(),
+
+  // Submission details
+  submission_number: integer('submission_number').notNull(), // Attempt number (1, 2, 3, etc.)
+  submission_type: varchar('submission_type', { length: 30 }).notNull(), // ORIGINAL, REPLACEMENT, VOID, RESUBMISSION
+  submission_date: timestamp('submission_date').notNull(),
+
+  // Submission method
+  submission_method: varchar('submission_method', { length: 30 }).notNull(), // ELECTRONIC, PAPER, DIRECT_ENTRY
+  clearinghouse_id: varchar('clearinghouse_id', { length: 50 }), // Clearinghouse identifier
+
+  // EDI tracking numbers (for 837 submissions)
+  edi_interchange_control_number: varchar('edi_interchange_control_number', { length: 50 }), // ISA13
+  edi_group_control_number: varchar('edi_group_control_number', { length: 50 }), // GS06
+  edi_transaction_control_number: varchar('edi_transaction_control_number', { length: 50 }), // ST02
+
+  // Clearinghouse response
+  clearinghouse_trace_number: varchar('clearinghouse_trace_number', { length: 100 }),
+  clearinghouse_response_date: timestamp('clearinghouse_response_date'),
+  clearinghouse_status: varchar('clearinghouse_status', { length: 50 }), // ACCEPTED, REJECTED, PENDING
+
+  // Payer response (from 277/999 responses)
+  payer_claim_number: varchar('payer_claim_number', { length: 100 }), // Payer's internal claim ID
+  payer_response_date: timestamp('payer_response_date'),
+  payer_status: varchar('payer_status', { length: 50 }), // ACCEPTED, REJECTED, PENDING, ADDITIONAL_INFO_REQUESTED
+
+  // Response details
+  response_code: varchar('response_code', { length: 20 }),
+  response_message: text('response_message'),
+  rejection_reasons: jsonb('rejection_reasons'), // Array of rejection reason codes and descriptions
+
+  // Financial details at time of submission
+  submitted_charges: integer('submitted_charges'), // Total charges in cents at submission
+
+  // File references (for EDI files)
+  outbound_file_reference: varchar('outbound_file_reference', { length: 255 }), // Reference to 837 file
+  inbound_file_reference: varchar('inbound_file_reference', { length: 255 }), // Reference to response file
+
+  // Audit trail
+  submitted_by_id: text('submitted_by_id').references(() => users.id),
+  notes: text('notes'),
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Claim Status History Table
+ * Tracks all status changes for a claim throughout its lifecycle
+ * Provides complete audit trail of claim workflow
+ */
+export const claim_status_history = pgTable('claim_status_history', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  claim_id: bigint('claim_id', { mode: 'number' }).references(() => claims.id).notNull(),
+
+  // Status change details
+  previous_status: varchar('previous_status', { length: 50 }),
+  new_status: varchar('new_status', { length: 50 }).notNull(),
+  status_date: timestamp('status_date').notNull(),
+
+  // Change reason/trigger
+  change_reason: varchar('change_reason', { length: 100 }), // USER_ACTION, SYSTEM_UPDATE, PAYER_RESPONSE, ERA_PROCESSING
+  change_source: varchar('change_source', { length: 50 }), // MANUAL, AUTOMATIC, CLEARINGHOUSE, PAYER
+
+  // Related submission (if status change is from submission)
+  submission_history_id: bigint('submission_history_id', { mode: 'number' }).references(() => claim_submission_history.id),
+
+  // Financial snapshot at status change
+  charges_at_change: integer('charges_at_change'), // Total charges in cents
+  paid_at_change: integer('paid_at_change'), // Amount paid in cents
+  balance_at_change: integer('balance_at_change'), // Balance in cents
+
+  // Additional context
+  notes: text('notes'),
+  metadata: jsonb('metadata'), // Additional status-specific data
+
+  // Audit fields
+  changed_by_id: text('changed_by_id').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull()
+});
+
+/**
+ * Claim Diagnosis Codes Table
+ * Links diagnosis codes to claims for proper ICD-10 tracking
+ * Supports multiple diagnosis codes per claim with sequencing
+ */
+export const claim_diagnosis_codes = pgTable('claim_diagnosis_codes', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  claim_id: bigint('claim_id', { mode: 'number' }).references(() => claims.id).notNull(),
+
+  // Diagnosis code details
+  diagnosis_code: varchar('diagnosis_code', { length: 10 }).notNull(), // ICD-10 code
+  diagnosis_code_qualifier: varchar('diagnosis_code_qualifier', { length: 2 }).default('0'), // 0 = ICD-10-CM
+
+  // Sequencing
+  sequence_number: integer('sequence_number').notNull(), // 1 = principal, 2+ = secondary
+  diagnosis_type: varchar('diagnosis_type', { length: 30 }).notNull(), // PRINCIPAL, ADMITTING, SECONDARY, EXTERNAL_CAUSE
+
+  // Present on admission indicator (required for some claims)
+  poa_indicator: varchar('poa_indicator', { length: 1 }), // Y, N, U, W, 1
+
+  // Audit fields
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Claim Procedure Codes Table
+ * Links procedure codes (CPT/HCPCS) to claims
+ * Supports multiple procedures with dates and modifiers
+ */
+export const claim_procedure_codes = pgTable('claim_procedure_codes', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  claim_id: bigint('claim_id', { mode: 'number' }).references(() => claims.id).notNull(),
+  service_line_id: bigint('service_line_id', { mode: 'number' }).references(() => claim_service_lines.id),
+
+  // Procedure code details
+  procedure_code: varchar('procedure_code', { length: 10 }).notNull(), // CPT or HCPCS code
+  procedure_code_type: varchar('procedure_code_type', { length: 10 }).notNull(), // CPT, HCPCS, ICD10_PCS
+
+  // Modifiers (up to 4)
+  modifier_1: varchar('modifier_1', { length: 2 }),
+  modifier_2: varchar('modifier_2', { length: 2 }),
+  modifier_3: varchar('modifier_3', { length: 2 }),
+  modifier_4: varchar('modifier_4', { length: 2 }),
+
+  // Procedure details
+  procedure_date: date('procedure_date'),
+  units: integer('units').default(1),
+  charges: integer('charges'), // Charges in cents
+
+  // Sequencing
+  sequence_number: integer('sequence_number').notNull(),
+
+  // Audit fields
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});

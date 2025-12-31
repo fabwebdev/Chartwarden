@@ -13,6 +13,7 @@ import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./src/config/betterAuth.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import emailRoutes from "./src/routes/email.routes.js";
+import validationTestRoutes from "./src/routes/validationTest.routes.js";
 import seedDatabase from "./src/database/seed.js";
 import fixUserHasRolesTable from "./scripts/fix_user_has_roles.js";
 import fixPatientsColumns from "./scripts/fix_patients_columns.js";
@@ -244,22 +245,33 @@ app.addHook("onSend", async (request, reply) => {
 // Register cookie fix middleware as a hook
 app.addHook("onRequest", cookieFixMiddleware);
 
-// Register audit logging hook for patient routes
-// This will log all health data operations
+// Register comprehensive audit logging middleware
+// Captures request start time for duration tracking
+app.addHook("onRequest", async (request, reply) => {
+  try {
+    const { auditPreHandler } = await import("./src/middleware/audit.middleware.js");
+    await auditPreHandler(request, reply);
+  } catch (err) {
+    // Don't fail the request if audit timing capture fails
+    debug("Audit pre-handler timing capture error", err);
+  }
+});
+
+// Register comprehensive audit logging hook for all API requests
+// This automatically logs all API requests, responses, and data modifications
+// Features:
+// - Automatic resource type detection from URL
+// - HTTP method to audit action mapping
+// - Request duration tracking
+// - Response status logging
+// - HIPAA-compliant (never logs actual health data)
 app.addHook("onResponse", async (request, reply) => {
-  // Only log audit for patient-related routes
-  if (request.url.startsWith("/api/patient") || 
-      request.url.startsWith("/api/discharge") ||
-      request.url.startsWith("/api/admission-information") ||
-      request.url.startsWith("/api/cardiac-assessment") ||
-      request.url.startsWith("/api/benefit-period")) {
-    try {
-      const { auditLogHandler } = await import("./src/middleware/audit.middleware.js");
-      await auditLogHandler(request, reply);
-    } catch (err) {
-      // Don't fail the request if audit logging fails
-      error("Audit logging hook error", err);
-    }
+  try {
+    const { comprehensiveAuditHandler } = await import("./src/middleware/audit.middleware.js");
+    await comprehensiveAuditHandler(request, reply);
+  } catch (err) {
+    // Don't fail the request if audit logging fails
+    error("Comprehensive audit logging hook error", err);
   }
 });
 
@@ -293,6 +305,11 @@ app.addHook("preHandler", csrfAutoProtect);
 // Register routes (will be registered after plugins are loaded)
 app.register(authRoutes, { prefix: "/api/auth" });
 app.register(emailRoutes, { prefix: "/api/email" });
+
+// Validation test routes (development/testing only - public, no authentication)
+if (process.env.NODE_ENV !== 'production') {
+  app.register(validationTestRoutes, { prefix: "/api/validation-test" });
+}
 
 // Better Auth handler - handles Better Auth's built-in endpoints
 // This must be registered AFTER custom auth routes to avoid conflicts

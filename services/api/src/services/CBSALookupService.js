@@ -3,6 +3,7 @@ import { cbsa_codes } from '../db/schemas/cbsa.schema.js';
 import { claims } from '../db/schemas/billing.schema.js';
 import { claim_service_lines } from '../db/schemas/billing.schema.js';
 import { eq, and, lte, gte, isNull, or, sql } from 'drizzle-orm';
+import CacheService from './CacheService.js';
 
 import { logger } from '../utils/logger.js';
 /**
@@ -13,11 +14,16 @@ import { logger } from '../utils/logger.js';
  * CMS Requirement: Track Core Based Statistical Area (CBSA) for:
  *   - Value Code 61: Routine/Continuous Home Care (revenue 0651, 0652)
  *   - Value Code G8: Inpatient Care (revenue 0655, 0656)
+ *
+ * Caching: Uses CacheService for distributed caching with TTL support
+ * - ZIP lookups cached for 24 hours (CBSA mappings rarely change)
+ * - Cache key pattern: cbsa:zip:{zipCode}
  */
 class CBSALookupService {
   constructor() {
     this.cacheEnabled = true;
-    this.cache = new Map(); // Simple in-memory cache for ZIP lookups
+    this.cachePrefix = 'cbsa:zip:';
+    this.cacheTTL = 86400; // 24 hours in seconds
   }
 
   /**
@@ -29,10 +35,15 @@ class CBSALookupService {
     try {
       // 1. Normalize ZIP (remove ZIP+4, validate format)
       const normalizedZip = this.normalizeZip(zipCode);
+      const cacheKey = `${this.cachePrefix}${normalizedZip}`;
 
-      // 2. Check cache first
-      if (this.cacheEnabled && this.cache.has(normalizedZip)) {
-        return this.cache.get(normalizedZip);
+      // 2. Check cache first (using CacheService for distributed caching)
+      if (this.cacheEnabled) {
+        const cached = await CacheService.get(cacheKey);
+        if (cached) {
+          logger.debug(`CBSA cache hit for ZIP ${normalizedZip}`);
+          return cached;
+        }
       }
 
       // 3. Query cbsa_codes table (get current effective record)
@@ -68,9 +79,10 @@ class CBSALookupService {
 
       const cbsa = cbsaResults[0] || null;
 
-      // 4. Cache the result
+      // 4. Cache the result with TTL (using CacheService)
       if (cbsa && this.cacheEnabled) {
-        this.cache.set(normalizedZip, cbsa);
+        await CacheService.set(cacheKey, cbsa, this.cacheTTL);
+        logger.debug(`CBSA cached for ZIP ${normalizedZip} (TTL: ${this.cacheTTL}s)`);
       }
 
       return cbsa;
@@ -391,8 +403,8 @@ class CBSALookupService {
         }
       });
 
-      // Clear cache after import
-      this.cache.clear();
+      // Clear CBSA cache after import
+      await this.clearCache();
 
       const duration = Date.now() - startTime;
 
@@ -464,9 +476,136 @@ class CBSALookupService {
 
   /**
    * Clear the CBSA cache
+   * Uses CacheService to clear all CBSA-related cache entries
+   * @returns {Promise<object>} Cache clear result
    */
-  clearCache() {
-    this.cache.clear();
+  async clearCache() {
+    try {
+      // Use CacheService flush to clear all cached items
+      // Note: For more granular control with Redis, we could use pattern deletion
+      await CacheService.flush();
+      logger.info('CBSA cache cleared successfully');
+      return { cleared: true, timestamp: new Date().toISOString() };
+    } catch (error) {
+      logger.error('Error clearing CBSA cache:', error);
+      throw new Error(`Failed to clear CBSA cache: ${error.message}`);
+    }
+  }
+
+  /**
+   * Autocomplete search for CBSA titles/cities
+   * @param {string} query - Search query (partial title or city name)
+   * @param {object} options - Search options
+   * @returns {Promise<Array>} Matching CBSA records (limited)
+   */
+  async autocomplete(query, options = {}) {
+    try {
+      const {
+        limit = 10,
+        state = null
+      } = options;
+
+      if (!query || query.trim().length < 2) {
+        return [];
+      }
+
+      const searchTerm = query.trim();
+      const cacheKey = `cbsa:autocomplete:${searchTerm.toLowerCase()}:${state || 'all'}`;
+
+      // Check cache first
+      if (this.cacheEnabled) {
+        const cached = await CacheService.get(cacheKey);
+        if (cached) {
+          logger.debug(`CBSA autocomplete cache hit for "${searchTerm}"`);
+          return cached;
+        }
+      }
+
+      // Build search query using ILIKE for case-insensitive partial matching
+      let query_builder = db.select({
+        cbsa_code: cbsa_codes.cbsa_code,
+        cbsa_title: cbsa_codes.cbsa_title,
+        state: cbsa_codes.state,
+        county: cbsa_codes.county,
+        is_metropolitan: cbsa_codes.is_metropolitan,
+        zip_code: cbsa_codes.zip_code
+      }).from(cbsa_codes);
+
+      // Apply search filter on cbsa_title (which contains city/metro area names)
+      const conditions = [
+        sql`${cbsa_codes.cbsa_title} ILIKE ${'%' + searchTerm + '%'}`,
+        lte(cbsa_codes.effective_date, sql`CURRENT_DATE`),
+        or(
+          isNull(cbsa_codes.expiration_date),
+          gte(cbsa_codes.expiration_date, sql`CURRENT_DATE`)
+        )
+      ];
+
+      // Add state filter if provided
+      if (state) {
+        conditions.push(eq(cbsa_codes.state, state.toUpperCase()));
+      }
+
+      query_builder = query_builder.where(and(...conditions));
+
+      // Get distinct CBSA codes (avoid duplicate entries from multiple ZIP mappings)
+      // Order by title for predictable results, limit for autocomplete performance
+      const results = await query_builder
+        .orderBy(cbsa_codes.cbsa_title)
+        .limit(limit * 5); // Get more to allow deduplication
+
+      // Deduplicate by cbsa_code (keep first occurrence)
+      const seenCodes = new Set();
+      const uniqueResults = [];
+      for (const record of results) {
+        if (!seenCodes.has(record.cbsa_code)) {
+          seenCodes.add(record.cbsa_code);
+          uniqueResults.push({
+            cbsa_code: record.cbsa_code,
+            cbsa_title: record.cbsa_title,
+            state: record.state,
+            county: record.county,
+            is_metropolitan: record.is_metropolitan,
+            display_name: `${record.cbsa_title}, ${record.state} (${record.cbsa_code})`
+          });
+          if (uniqueResults.length >= limit) break;
+        }
+      }
+
+      // Cache results with shorter TTL for autocomplete (1 hour)
+      if (uniqueResults.length > 0 && this.cacheEnabled) {
+        await CacheService.set(cacheKey, uniqueResults, 3600);
+        logger.debug(`CBSA autocomplete cached for "${searchTerm}" (TTL: 3600s)`);
+      }
+
+      return uniqueResults;
+    } catch (error) {
+      logger.error(`Error in CBSA autocomplete for "${query}":`, error);
+      throw new Error(`CBSA autocomplete failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get cache statistics for monitoring
+   * @returns {Promise<object>} Cache statistics
+   */
+  async getCacheStats() {
+    try {
+      const stats = await CacheService.stats();
+      return {
+        driver: stats.driver,
+        cachePrefix: this.cachePrefix,
+        cacheTTL: this.cacheTTL,
+        cacheEnabled: this.cacheEnabled,
+        ...stats
+      };
+    } catch (error) {
+      logger.error('Error getting CBSA cache stats:', error);
+      return {
+        error: error.message,
+        cacheEnabled: this.cacheEnabled
+      };
+    }
   }
 }
 

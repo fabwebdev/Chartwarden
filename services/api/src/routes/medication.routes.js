@@ -32,6 +32,16 @@ export default async function medicationRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.holdMedication);
 
+  // Pause medication
+  fastify.post('/patients/:id/medications/:medId/pause', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.pauseMedication);
+
+  // Resume medication
+  fastify.post('/patients/:id/medications/:medId/resume', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.resumeMedication);
+
   // ============================================================================
   // MAR (MEDICATION ADMINISTRATION RECORD) ROUTES
   // ============================================================================
