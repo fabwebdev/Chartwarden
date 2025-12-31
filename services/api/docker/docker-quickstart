@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# =============================================================================
+# Hospice EHR Backend - Quick Docker Start (Wrapper)
+# This is a convenience wrapper that calls the actual docker-init.sh script
+# =============================================================================
+
+# Change to project root directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR"
+
+# Run the actual init script
+exec ./docker/docker-init.sh "$@"

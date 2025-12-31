@@ -1,0 +1,1520 @@
+openapi: 3.0.3
+info:
+  title: Hospice EHR API - Certifications & Medications
+  description: |
+    API for managing Medicare certifications, Face-to-Face encounters, physician orders,
+    medications, and medication administration in a hospice EHR system.
+
+    ## Key Features
+    - **Medicare Compliance**: Track certification periods (INITIAL_90, SUBSEQUENT_90, SUBSEQUENT_60)
+    - **Electronic Signatures**: 21 CFR Part 11 compliant with SHA-256 hashing
+    - **Face-to-Face Tracking**: Required encounters within 30 days of recertification
+    - **Controlled Substances**: DEA-compliant tracking and logging
+    - **MAR System**: Complete medication administration documentation
+    - **RBAC**: Role-based access control on all endpoints
+    - **Audit Logging**: Full audit trail for HIPAA compliance
+
+    ## Authentication
+    All endpoints require Bearer token authentication with appropriate RBAC permissions.
+
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api-support@hospice-ehr.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://staging-api.hospice-ehr.com/api
+    description: Staging server
+  - url: https://api.hospice-ehr.com/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Certifications
+    description: Medicare certification periods management
+  - name: Face-to-Face Encounters
+    description: F2F encounter tracking for recertification
+  - name: Orders
+    description: Physician orders for medications, DME, treatments
+  - name: Medications
+    description: Patient medication management
+  - name: MAR
+    description: Medication Administration Record
+  - name: Comfort Kits
+    description: Emergency medication kits
+  - name: Medication Reconciliation
+    description: CMS-required medication reconciliation
+
+paths:
+  # ============================================================================
+  # CERTIFICATIONS
+  # ============================================================================
+  /patients/{patientId}/certifications:
+    get:
+      tags:
+        - Certifications
+      summary: Get patient certifications
+      description: Retrieve all certifications for a patient, ordered by start date descending
+      operationId: getPatientCertifications
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Certification'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      tags:
+        - Certifications
+      summary: Create certification
+      description: Create a new Medicare certification period for a patient
+      operationId: createCertification
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificationCreate'
+            examples:
+              initial90:
+                summary: Initial 90-day certification
+                value:
+                  certification_period: INITIAL_90
+                  start_date: '2024-01-01'
+                  end_date: '2024-03-31'
+                  terminal_illness_narrative: 'Patient has end-stage heart failure with NYHA Class IV symptoms. Expected prognosis of 6 months or less based on clinical progression and declining functional status.'
+                  clinical_progression: 'Progressive decline in functional status over past 3 months. Multiple hospitalizations for acute decompensation.'
+                  decline_indicators: 'Weight loss of 15 lbs, increasing dyspnea at rest, decreased appetite, increased fatigue'
+              subsequent60:
+                summary: Subsequent 60-day certification
+                value:
+                  certification_period: SUBSEQUENT_60
+                  start_date: '2024-04-01'
+                  end_date: '2024-05-30'
+                  terminal_illness_narrative: 'Continued end-stage heart failure with persistent NYHA Class IV symptoms despite optimal medical management.'
+                  clinical_progression: 'Further decline with increased dependency on ADLs, oxygen-dependent, multiple ER visits.'
+                  decline_indicators: 'Bed-bound majority of day, minimal oral intake, confusion episodes'
+      responses:
+        '201':
+          description: Certification created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /certifications/{certificationId}/sign:
+    post:
+      tags:
+        - Certifications
+      summary: Sign certification
+      description: Sign a certification with electronic signature (SHA-256 hash)
+      operationId: signCertification
+      parameters:
+        - name: certificationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Certification signed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Certification signed successfully
+                  data:
+                    $ref: '#/components/schemas/Certification'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /certifications/due:
+    get:
+      tags:
+        - Certifications
+      summary: Get certifications due
+      description: Get certifications due within the next 30 days
+      operationId: getCertificationsDue
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Certification'
+                  count:
+                    type: integer
+                    example: 5
+
+  /certifications/overdue:
+    get:
+      tags:
+        - Certifications
+      summary: Get overdue certifications
+      description: Get certifications that are past their end date and still PENDING or ACTIVE
+      operationId: getCertificationsOverdue
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Certification'
+                  count:
+                    type: integer
+                    example: 2
+
+  # ============================================================================
+  # FACE-TO-FACE ENCOUNTERS
+  # ============================================================================
+  /patients/{patientId}/f2f:
+    get:
+      tags:
+        - Face-to-Face Encounters
+      summary: Get patient F2F encounters
+      description: Retrieve all Face-to-Face encounters for a patient
+      operationId: getPatientF2F
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FaceToFaceEncounter'
+
+    post:
+      tags:
+        - Face-to-Face Encounters
+      summary: Create F2F encounter
+      description: Create a Face-to-Face encounter (required within 30 days of recertification)
+      operationId: createF2F
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/F2FCreate'
+      responses:
+        '201':
+          description: F2F encounter created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/F2FResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /f2f/{f2fId}/attestation:
+    post:
+      tags:
+        - Face-to-Face Encounters
+      summary: Attest F2F encounter
+      description: Add hospice physician attestation to F2F encounter
+      operationId: attestF2F
+      parameters:
+        - name: f2fId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: F2F attested successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/FaceToFaceEncounter'
+
+  # ============================================================================
+  # ORDERS
+  # ============================================================================
+  /patients/{patientId}/orders:
+    get:
+      tags:
+        - Orders
+      summary: Get patient orders
+      description: Retrieve all orders for a patient with optional filtering
+      operationId: getPatientOrders
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/OrderType'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+
+    post:
+      tags:
+        - Orders
+      summary: Create order
+      description: Create a new physician order
+      operationId: createOrder
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+            examples:
+              medication:
+                summary: Medication order
+                value:
+                  order_type: MEDICATION
+                  order_priority: ROUTINE
+                  order_description: 'Morphine Sulfate 15mg PO every 4 hours PRN pain'
+                  start_date: '2024-01-01'
+              verbal:
+                summary: Verbal order
+                value:
+                  order_type: MEDICATION
+                  order_priority: URGENT
+                  order_description: 'Lorazepam 0.5mg SL every 6 hours PRN anxiety'
+                  start_date: '2024-01-15'
+                  is_verbal_order: true
+                  physician_name: 'Dr. Robert Williams'
+                  read_back_verified: true
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /orders/{orderId}/sign:
+    post:
+      tags:
+        - Orders
+      summary: Sign order
+      description: Sign an order with physician electronic signature
+      operationId: signOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order signed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+
+  # ============================================================================
+  # MEDICATIONS
+  # ============================================================================
+  /patients/{patientId}/medications:
+    get:
+      tags:
+        - Medications
+      summary: Get patient medications
+      description: Retrieve all medications for a patient with optional filtering
+      operationId: getPatientMedications
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/MedicationStatus'
+        - name: is_hospice_related
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Medication'
+                  count:
+                    type: integer
+
+    post:
+      tags:
+        - Medications
+      summary: Create medication
+      description: Create a new medication for a patient
+      operationId: createMedication
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationCreate'
+      responses:
+        '201':
+          description: Medication created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationResponse'
+
+  /patients/{patientId}/medications/{medicationId}/discontinue:
+    post:
+      tags:
+        - Medications
+      summary: Discontinue medication
+      description: Discontinue a medication with reason
+      operationId: discontinueMedication
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  example: 'No longer needed for symptom management'
+      responses:
+        '200':
+          description: Medication discontinued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Medication'
+
+  /patients/{patientId}/medications/{medicationId}/hold:
+    post:
+      tags:
+        - Medications
+      summary: Hold medication
+      description: Temporarily hold a medication
+      operationId: holdMedication
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  example: 'Patient nausea, hold until resolved'
+                hold_until:
+                  type: string
+                  format: date
+                  example: '2024-01-25'
+      responses:
+        '200':
+          description: Medication held
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Medication'
+
+  # ============================================================================
+  # MAR (Medication Administration Record)
+  # ============================================================================
+  /patients/{patientId}/mar:
+    get:
+      tags:
+        - MAR
+      summary: Get patient MAR
+      description: Retrieve MAR entries for a patient with optional filtering
+      operationId: getPatientMAR
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: medication_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MAREntry'
+                  count:
+                    type: integer
+
+    post:
+      tags:
+        - MAR
+      summary: Record MAR entry
+      description: Record a medication administration
+      operationId: createMAREntry
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MARCreate'
+            examples:
+              given:
+                summary: Medication given
+                value:
+                  medication_id: 1
+                  scheduled_time: '2024-01-15T10:00:00Z'
+                  actual_time: '2024-01-15T10:05:00Z'
+                  mar_status: GIVEN
+                  dosage_given: '15mg'
+                  route_used: ORAL
+                  administered_by_name: 'Nurse Johnson'
+                  patient_response: 'Patient tolerated medication well. Pain reduced from 8/10 to 4/10 after 30 minutes.'
+              refused:
+                summary: Medication refused
+                value:
+                  medication_id: 1
+                  scheduled_time: '2024-01-15T14:00:00Z'
+                  mar_status: REFUSED
+                  administered_by_name: 'Nurse Johnson'
+                  reason_not_given: 'Patient stated pain level only 2/10, declined medication at this time.'
+      responses:
+        '201':
+          description: MAR entry created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MARResponse'
+
+  # ============================================================================
+  # COMFORT KITS
+  # ============================================================================
+  /patients/{patientId}/comfort-kit:
+    get:
+      tags:
+        - Comfort Kits
+      summary: Get patient comfort kits
+      description: Retrieve all comfort kits for a patient
+      operationId: getPatientComfortKit
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ComfortKit'
+                  count:
+                    type: integer
+
+    post:
+      tags:
+        - Comfort Kits
+      summary: Create comfort kit
+      description: Create an emergency medication kit for a patient
+      operationId: createComfortKit
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComfortKitCreate'
+      responses:
+        '201':
+          description: Comfort kit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComfortKitResponse'
+
+  /patients/{patientId}/comfort-kit/destroy:
+    post:
+      tags:
+        - Comfort Kits
+      summary: Destroy comfort kit
+      description: Destroy a comfort kit with witness logging (DEA requirement)
+      operationId: destroyComfortKit
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - kit_id
+              properties:
+                kit_id:
+                  type: integer
+                witness_id:
+                  type: string
+                witness_name:
+                  type: string
+                  example: 'Pharmacist Brown'
+                destruction_notes:
+                  type: string
+                  example: 'Patient deceased. All remaining medications destroyed per policy.'
+      responses:
+        '200':
+          description: Comfort kit destroyed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/ComfortKit'
+
+  # ============================================================================
+  # MEDICATION RECONCILIATION
+  # ============================================================================
+  /patients/{patientId}/medication-reconciliation:
+    post:
+      tags:
+        - Medication Reconciliation
+      summary: Create medication reconciliation
+      description: Create a CMS-required medication reconciliation
+      operationId: createMedicationReconciliation
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationReconciliationCreate'
+      responses:
+        '201':
+          description: Medication reconciliation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationReconciliationResponse'
+
+# ============================================================================
+# COMPONENTS
+# ============================================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+
+  parameters:
+    PatientId:
+      name: patientId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Patient ID
+
+  responses:
+    BadRequest:
+      description: Bad request - validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 400
+            message: 'Invalid input data'
+            error: 'certification_period must be INITIAL_90, SUBSEQUENT_90, or SUBSEQUENT_60'
+
+    Unauthorized:
+      description: Unauthorized - missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 401
+            message: 'Unauthorized'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 403
+            message: 'Forbidden - insufficient permissions'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 404
+            message: 'Resource not found'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 500
+            message: 'Internal server error'
+
+  schemas:
+    # ========================================================================
+    # COMMON
+    # ========================================================================
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+          description: 'Detailed error message (development mode only)'
+
+    Signature:
+      type: object
+      properties:
+        signedBy:
+          type: string
+          description: User ID
+        signedByName:
+          type: string
+          description: Full name of signer
+        signedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp
+        signatureType:
+          type: string
+          enum: [ELECTRONIC, VERBAL, WRITTEN, ATTESTATION]
+        signatureHash:
+          type: string
+          description: SHA-256 hash (64 characters)
+          pattern: '^[a-f0-9]{64}$'
+        ipAddress:
+          type: string
+        userAgent:
+          type: string
+        meaning:
+          type: string
+          description: Purpose of signature
+        credentials:
+          type: string
+          description: Role/title of signer
+
+    # ========================================================================
+    # CERTIFICATIONS
+    # ========================================================================
+    CertificationPeriod:
+      type: string
+      enum:
+        - INITIAL_90
+        - SUBSEQUENT_90
+        - SUBSEQUENT_60
+
+    CertificationStatus:
+      type: string
+      enum:
+        - PENDING
+        - ACTIVE
+        - COMPLETED
+        - EXPIRED
+        - REVOKED
+
+    Certification:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        certification_period:
+          $ref: '#/components/schemas/CertificationPeriod'
+        certification_status:
+          $ref: '#/components/schemas/CertificationStatus'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        terminal_illness_narrative:
+          type: string
+        clinical_progression:
+          type: string
+        decline_indicators:
+          type: string
+        physician_signature:
+          $ref: '#/components/schemas/Signature'
+        created_by_id:
+          type: string
+        updated_by_id:
+          type: string
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CertificationCreate:
+      type: object
+      required:
+        - certification_period
+        - start_date
+        - end_date
+        - terminal_illness_narrative
+      properties:
+        certification_period:
+          $ref: '#/components/schemas/CertificationPeriod'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        terminal_illness_narrative:
+          type: string
+        clinical_progression:
+          type: string
+        decline_indicators:
+          type: string
+
+    CertificationResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Certification created'
+        data:
+          $ref: '#/components/schemas/Certification'
+
+    # ========================================================================
+    # FACE-TO-FACE ENCOUNTERS
+    # ========================================================================
+    FaceToFaceEncounter:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        certification_id:
+          type: integer
+          nullable: true
+        encounter_date:
+          type: string
+          format: date
+        performed_by_id:
+          type: string
+        performed_by_name:
+          type: string
+        performed_by_type:
+          type: string
+          enum: [PHYSICIAN, NP, PA]
+        visit_type:
+          type: string
+          enum: [IN_PERSON, TELEHEALTH]
+        findings:
+          type: string
+        terminal_prognosis_confirmed:
+          type: boolean
+        attestation:
+          $ref: '#/components/schemas/Signature'
+        attestation_date:
+          type: string
+          format: date
+          nullable: true
+        created_by_id:
+          type: string
+        updated_by_id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    F2FCreate:
+      type: object
+      required:
+        - encounter_date
+        - findings
+      properties:
+        certification_id:
+          type: integer
+        encounter_date:
+          type: string
+          format: date
+        performed_by_name:
+          type: string
+        performed_by_type:
+          type: string
+          enum: [PHYSICIAN, NP, PA]
+        visit_type:
+          type: string
+          enum: [IN_PERSON, TELEHEALTH]
+          default: IN_PERSON
+        findings:
+          type: string
+        terminal_prognosis_confirmed:
+          type: boolean
+          default: true
+
+    F2FResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Face-to-Face encounter created'
+        data:
+          $ref: '#/components/schemas/FaceToFaceEncounter'
+
+    # ========================================================================
+    # ORDERS
+    # ========================================================================
+    OrderType:
+      type: string
+      enum:
+        - MEDICATION
+        - TREATMENT
+        - DME
+        - LABORATORY
+        - IMAGING
+        - CONSULTATION
+
+    OrderStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - COMPLETED
+        - DISCONTINUED
+        - EXPIRED
+        - PENDING
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        order_type:
+          $ref: '#/components/schemas/OrderType'
+        order_status:
+          $ref: '#/components/schemas/OrderStatus'
+        order_priority:
+          type: string
+          enum: [ROUTINE, URGENT, STAT]
+        order_description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        ordered_by_id:
+          type: string
+        physician_signature:
+          $ref: '#/components/schemas/Signature'
+        created_by_id:
+          type: string
+        updated_by_id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrderCreate:
+      type: object
+      required:
+        - order_type
+        - order_description
+        - start_date
+      properties:
+        order_type:
+          $ref: '#/components/schemas/OrderType'
+        order_priority:
+          type: string
+          enum: [ROUTINE, URGENT, STAT]
+          default: ROUTINE
+        order_description:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        is_verbal_order:
+          type: boolean
+        physician_name:
+          type: string
+        read_back_verified:
+          type: boolean
+
+    OrderResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Order created'
+        data:
+          $ref: '#/components/schemas/Order'
+
+    # ========================================================================
+    # MEDICATIONS
+    # ========================================================================
+    MedicationStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - DISCONTINUED
+        - COMPLETED
+        - HELD
+        - ON_HOLD
+
+    ControlledSchedule:
+      type: string
+      enum:
+        - SCHEDULE_II
+        - SCHEDULE_III
+        - SCHEDULE_IV
+        - SCHEDULE_V
+
+    Medication:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        medication_name:
+          type: string
+        generic_name:
+          type: string
+        medication_status:
+          $ref: '#/components/schemas/MedicationStatus'
+        medication_route:
+          type: string
+          example: 'ORAL'
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        discontinued_date:
+          type: string
+          format: date
+          nullable: true
+        discontinuation_reason:
+          type: string
+          nullable: true
+        controlled_schedule:
+          $ref: '#/components/schemas/ControlledSchedule'
+        is_hospice_related:
+          type: boolean
+        prescriber_id:
+          type: string
+        order_id:
+          type: integer
+        created_by_id:
+          type: string
+        updated_by_id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MedicationCreate:
+      type: object
+      required:
+        - medication_name
+        - start_date
+      properties:
+        medication_name:
+          type: string
+        generic_name:
+          type: string
+        medication_route:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        controlled_schedule:
+          $ref: '#/components/schemas/ControlledSchedule'
+        is_hospice_related:
+          type: boolean
+          default: true
+        prescriber_id:
+          type: string
+        order_id:
+          type: integer
+        initial_quantity:
+          type: string
+
+    MedicationResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Medication created'
+        data:
+          $ref: '#/components/schemas/Medication'
+
+    # ========================================================================
+    # MAR
+    # ========================================================================
+    MARStatus:
+      type: string
+      enum:
+        - GIVEN
+        - NOT_GIVEN
+        - REFUSED
+        - HELD
+        - LATE
+        - MISSED
+
+    MAREntry:
+      type: object
+      properties:
+        mar_entry:
+          type: object
+          properties:
+            id:
+              type: integer
+            patient_id:
+              type: integer
+            medication_id:
+              type: integer
+            scheduled_time:
+              type: string
+              format: date-time
+            actual_time:
+              type: string
+              format: date-time
+            mar_status:
+              $ref: '#/components/schemas/MARStatus'
+            dosage_given:
+              type: string
+            route_used:
+              type: string
+            administered_by_id:
+              type: string
+            administered_by_name:
+              type: string
+            reason_not_given:
+              type: string
+              nullable: true
+            patient_response:
+              type: string
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+        medication:
+          type: object
+          properties:
+            id:
+              type: integer
+            medication_name:
+              type: string
+            dosage:
+              type: string
+            frequency:
+              type: string
+
+    MARCreate:
+      type: object
+      required:
+        - medication_id
+        - scheduled_time
+        - mar_status
+      properties:
+        medication_id:
+          type: integer
+        scheduled_time:
+          type: string
+          format: date-time
+        actual_time:
+          type: string
+          format: date-time
+        mar_status:
+          $ref: '#/components/schemas/MARStatus'
+        dosage_given:
+          type: string
+        route_used:
+          type: string
+        administered_by_name:
+          type: string
+        reason_not_given:
+          type: string
+          description: 'Required when mar_status is NOT_GIVEN, REFUSED, or HELD'
+        patient_response:
+          type: string
+
+    MARResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'MAR entry created'
+        data:
+          type: object
+
+    # ========================================================================
+    # COMFORT KITS
+    # ========================================================================
+    ComfortKit:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        kit_number:
+          type: string
+        issue_date:
+          type: string
+          format: date
+        expiration_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [ACTIVE, EXPIRED, DESTROYED, RETURNED]
+        medications:
+          type: array
+          items:
+            type: object
+            properties:
+              medication:
+                type: string
+              quantity:
+                type: string
+              lot_number:
+                type: string
+              ndc:
+                type: string
+        location:
+          type: string
+        created_by_id:
+          type: string
+        updated_by_id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ComfortKitCreate:
+      type: object
+      required:
+        - medications
+      properties:
+        kit_number:
+          type: string
+        issue_date:
+          type: string
+          format: date
+        expiration_date:
+          type: string
+          format: date
+        medications:
+          type: array
+          items:
+            type: object
+            required:
+              - medication
+              - quantity
+            properties:
+              medication:
+                type: string
+              quantity:
+                type: string
+              lot_number:
+                type: string
+              ndc:
+                type: string
+        location:
+          type: string
+
+    ComfortKitResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Comfort kit created'
+        data:
+          $ref: '#/components/schemas/ComfortKit'
+
+    # ========================================================================
+    # MEDICATION RECONCILIATION
+    # ========================================================================
+    MedicationReconciliationCreate:
+      type: object
+      properties:
+        reconciliation_type:
+          type: string
+          enum: [ADMISSION, TRANSFER, DISCHARGE, ROUTINE]
+          default: ROUTINE
+        medications_reviewed:
+          type: array
+          items:
+            type: object
+            properties:
+              medication:
+                type: string
+              action:
+                type: string
+                enum: [CONTINUED, DISCONTINUED, ADDED, MODIFIED]
+              reason:
+                type: string
+        discrepancies_found:
+          type: string
+        actions_taken:
+          type: string
+        performed_by_name:
+          type: string
+
+    MedicationReconciliationResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: 'Medication reconciliation created'
+        data:
+          type: object

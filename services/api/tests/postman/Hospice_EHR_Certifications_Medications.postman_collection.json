@@ -1,0 +1,513 @@
+{
+  "info": {
+    "name": "Hospice EHR - Certifications & Medications API",
+    "description": "API endpoints for Certifications and Medications modules",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "patientId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "certificationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "f2fId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "medicationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "comfortKitId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Certifications",
+      "item": [
+        {
+          "name": "Get Patient Certifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/certifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "certifications"]
+            }
+          }
+        },
+        {
+          "name": "Create Initial 90-Day Certification",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has certification ID', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('id');",
+                  "    pm.collectionVariables.set('certificationId', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certification_period\": \"INITIAL_90\",\n  \"start_date\": \"2024-01-01\",\n  \"end_date\": \"2024-03-31\",\n  \"terminal_illness_narrative\": \"Patient has end-stage heart failure with NYHA Class IV symptoms. Expected prognosis of 6 months or less based on clinical progression and declining functional status.\",\n  \"clinical_progression\": \"Progressive decline in functional status over past 3 months. Multiple hospitalizations for acute decompensation.\",\n  \"decline_indicators\": \"Weight loss of 15 lbs, increasing dyspnea at rest, decreased appetite, increased fatigue\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/certifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "certifications"]
+            }
+          }
+        },
+        {
+          "name": "Sign Certification",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/certifications/{{certificationId}}/sign",
+              "host": ["{{baseUrl}}"],
+              "path": ["certifications", "{{certificationId}}", "sign"]
+            }
+          }
+        },
+        {
+          "name": "Get Certifications Due (30 days)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/certifications/due",
+              "host": ["{{baseUrl}}"],
+              "path": ["certifications", "due"]
+            }
+          }
+        },
+        {
+          "name": "Get Overdue Certifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/certifications/overdue",
+              "host": ["{{baseUrl}}"],
+              "path": ["certifications", "overdue"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Face-to-Face Encounters",
+      "item": [
+        {
+          "name": "Get Patient F2F Encounters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/f2f",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "f2f"]
+            }
+          }
+        },
+        {
+          "name": "Create F2F Encounter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('f2fId', jsonData.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certification_id\": {{certificationId}},\n  \"encounter_date\": \"2024-03-01\",\n  \"performed_by_name\": \"Dr. Jane Smith\",\n  \"performed_by_type\": \"PHYSICIAN\",\n  \"visit_type\": \"IN_PERSON\",\n  \"findings\": \"Patient examined in home. Continues to exhibit signs of end-stage heart failure. Shortness of breath at rest, 2+ pitting edema bilateral lower extremities. Patient is appropriate for continued hospice care. Terminal prognosis confirmed.\",\n  \"terminal_prognosis_confirmed\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/f2f",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "f2f"]
+            }
+          }
+        },
+        {
+          "name": "Attest F2F Encounter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/f2f/{{f2fId}}/attestation",
+              "host": ["{{baseUrl}}"],
+              "path": ["f2f", "{{f2fId}}", "attestation"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get Patient Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Create Medication Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('orderId', jsonData.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_type\": \"MEDICATION\",\n  \"order_priority\": \"ROUTINE\",\n  \"order_description\": \"Morphine Sulfate 15mg PO every 4 hours PRN pain\",\n  \"start_date\": \"2024-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Create Verbal Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_type\": \"MEDICATION\",\n  \"order_priority\": \"URGENT\",\n  \"order_description\": \"Lorazepam 0.5mg SL every 6 hours PRN anxiety\",\n  \"start_date\": \"2024-01-15\",\n  \"is_verbal_order\": true,\n  \"physician_name\": \"Dr. Robert Williams\",\n  \"read_back_verified\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Sign Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}/sign",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{orderId}}", "sign"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Medications",
+      "item": [
+        {
+          "name": "Get Patient Medications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medications",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medications"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Hospice Medications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medications?status=ACTIVE&is_hospice_related=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medications"],
+              "query": [
+                {"key": "status", "value": "ACTIVE"},
+                {"key": "is_hospice_related", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Medication (Controlled)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('medicationId', jsonData.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medication_name\": \"Morphine Sulfate\",\n  \"generic_name\": \"morphine\",\n  \"medication_route\": \"ORAL\",\n  \"dosage\": \"15mg\",\n  \"frequency\": \"Every 4 hours PRN\",\n  \"instructions\": \"Take for moderate to severe pain. May cause drowsiness.\",\n  \"start_date\": \"2024-01-01\",\n  \"controlled_schedule\": \"SCHEDULE_II\",\n  \"is_hospice_related\": true,\n  \"initial_quantity\": \"120 tablets\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medications",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medications"]
+            }
+          }
+        },
+        {
+          "name": "Discontinue Medication",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"No longer needed for symptom management\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medications/{{medicationId}}/discontinue",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medications", "{{medicationId}}", "discontinue"]
+            }
+          }
+        },
+        {
+          "name": "Hold Medication",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Patient nausea, hold until resolved\",\n  \"hold_until\": \"2024-01-20\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medications/{{medicationId}}/hold",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medications", "{{medicationId}}", "hold"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "MAR (Medication Administration)",
+      "item": [
+        {
+          "name": "Get Patient MAR",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/mar",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "mar"]
+            }
+          }
+        },
+        {
+          "name": "Get MAR by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/mar?start_date=2024-01-01&end_date=2024-01-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "mar"],
+              "query": [
+                {"key": "start_date", "value": "2024-01-01"},
+                {"key": "end_date", "value": "2024-01-31"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Record Medication Given",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medication_id\": {{medicationId}},\n  \"scheduled_time\": \"2024-01-15T10:00:00Z\",\n  \"actual_time\": \"2024-01-15T10:05:00Z\",\n  \"mar_status\": \"GIVEN\",\n  \"dosage_given\": \"15mg\",\n  \"route_used\": \"ORAL\",\n  \"administered_by_name\": \"Nurse Johnson\",\n  \"patient_response\": \"Patient tolerated medication well. Pain reduced from 8/10 to 4/10 after 30 minutes.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/mar",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "mar"]
+            }
+          }
+        },
+        {
+          "name": "Record Medication Refused",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medication_id\": {{medicationId}},\n  \"scheduled_time\": \"2024-01-15T14:00:00Z\",\n  \"mar_status\": \"REFUSED\",\n  \"administered_by_name\": \"Nurse Johnson\",\n  \"reason_not_given\": \"Patient stated pain level only 2/10, declined medication at this time.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/mar",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "mar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comfort Kits",
+      "item": [
+        {
+          "name": "Get Patient Comfort Kits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/comfort-kit",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "comfort-kit"]
+            }
+          }
+        },
+        {
+          "name": "Create Comfort Kit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set('comfortKitId', jsonData.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kit_number\": \"CK-2024-001\",\n  \"issue_date\": \"2024-01-01\",\n  \"expiration_date\": \"2024-07-01\",\n  \"medications\": [\n    {\n      \"medication\": \"Morphine Sulfate Concentrate 20mg/mL\",\n      \"quantity\": \"30mL bottle\",\n      \"lot_number\": \"LOT123456\",\n      \"ndc\": \"00054-3589-49\"\n    },\n    {\n      \"medication\": \"Lorazepam 2mg/mL\",\n      \"quantity\": \"10mL bottle\",\n      \"lot_number\": \"LOT789012\",\n      \"ndc\": \"00054-3587-49\"\n    }\n  ],\n  \"location\": \"Patient home - refrigerator\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/comfort-kit",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "comfort-kit"]
+            }
+          }
+        },
+        {
+          "name": "Destroy Comfort Kit",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kit_id\": {{comfortKitId}},\n  \"witness_name\": \"Pharmacist Brown\",\n  \"destruction_notes\": \"Patient deceased. All remaining medications destroyed per policy. Two-person verification completed.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/comfort-kit/destroy",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "comfort-kit", "destroy"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Medication Reconciliation",
+      "item": [
+        {
+          "name": "Create Admission Reconciliation",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reconciliation_type\": \"ADMISSION\",\n  \"medications_reviewed\": [\n    {\n      \"medication\": \"Metoprolol 25mg BID\",\n      \"action\": \"CONTINUED\",\n      \"reason\": \"Patient taking at home, continue for heart failure management\"\n    },\n    {\n      \"medication\": \"Warfarin 5mg daily\",\n      \"action\": \"DISCONTINUED\",\n      \"reason\": \"No longer appropriate for hospice care, goals of care discussion with family\"\n    },\n    {\n      \"medication\": \"Morphine Sulfate 15mg q4h PRN\",\n      \"action\": \"ADDED\",\n      \"reason\": \"New hospice medication for pain management\"\n    }\n  ],\n  \"discrepancies_found\": \"Patient had been taking OTC ibuprofen not documented in previous records.\",\n  \"actions_taken\": \"Updated medication list in chart. Educated family on appropriate pain management.\",\n  \"performed_by_name\": \"Nurse Johnson RN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/medication-reconciliation",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patientId}}", "medication-reconciliation"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

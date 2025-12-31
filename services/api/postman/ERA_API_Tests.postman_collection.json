@@ -1,0 +1,406 @@
+{
+  "info": {
+    "name": "Phase 3B - ERA Processing API",
+    "description": "Complete test collection for ERA Processing & Auto-Posting endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "era-phase3b-collection",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "era_file_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "era_file_db_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "exception_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API is running and database is connected"
+      },
+      "response": []
+    },
+    {
+      "name": "1. Upload 835 ERA File",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has success property\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('success', true);",
+              "});",
+              "",
+              "pm.test(\"ERA file ID is returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data).to.have.property('eraFileId');",
+              "    pm.collectionVariables.set('era_file_db_id', jsonData.data.eraFileId);",
+              "});",
+              "",
+              "pm.test(\"Processing summary is present\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.summary).to.have.property('totalClaims');",
+              "    pm.expect(jsonData.data.summary).to.have.property('autoPosted');",
+              "    pm.expect(jsonData.data.summary).to.have.property('exceptions');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fileName\": \"TEST_POSTMAN_20250127.835\",\n  \"fileContent\": \"ISA*00*          *00*          *ZZ*PAYERID        *ZZ*PROVIDERID     *250127*1200*^*00501*000000001*0*P*:~GS*HP*PAYERID*PROVIDERID*20250127*1200*1*X*005010X221A1~ST*835*0001*005010X221A1~BPR*I*37350.00*C*ACH*CTX*01*123456789*DA*987654321*1234567890**01*987654321*20250127~TRN*1*1234567890*1234567890~REF*EV*987654321~DTM*405*20250127~N1*PR*TEST MEDICARE~N3*123 MEDICARE BLVD~N4*BALTIMORE*MD*21244~REF*2U*12-3456789~N1*PE*HOSPICE CARE CENTER*XX*1234567890~N3*456 PROVIDER ST~N4*CITY*ST*12345~REF*TJ*98-7654321~LX*1~CLP*POSTMAN-001*1*12450.00*12450.00*0.00*MC*ICN-PM-001*11*1~NM1*QC*1*POSTMAN*TEST****MI*ABC123456A~NM1*82*1*SMITH*JANE****XX*9876543210~DTM*232*20250101~DTM*233*20250131~REF*1K*CLM-PM-1~AMT*AU*12450.00~SVC*HC:Q5001*12450.00*12450.00**31~DTM*472*20250101~AMT*B6*12450.00~LX*2~CLP*POSTMAN-002*1*24900.00*22400.00*2500.00*MC*ICN-PM-002*11*1~NM1*QC*1*POSTMAN*TEST****MI*ABC123456A~NM1*82*1*SMITH*JANE****XX*9876543210~DTM*232*20250101~DTM*233*20250131~REF*1K*CLM-PM-2~AMT*AU*24900.00~SVC*HC:Q5001*24900.00*22400.00**31~DTM*472*20250101~AMT*B6*22400.00~CAS*CO*45*2500.00~LX*3~CLP*NONEXISTENT-999*1*10000.00*10000.00*0.00*MC*ICN-PM-999*11*1~NM1*QC*1*UNKNOWN*PATIENT****MI*XXX999999X~NM1*82*1*SMITH*JANE****XX*9876543210~DTM*232*20250101~DTM*233*20250131~AMT*AU*10000.00~SVC*HC:Q5001*10000.00*10000.00**31~DTM*472*20250101~AMT*B6*10000.00~SE*52*0001~GE*1*1~IEA*1*000000001~\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/era/upload",
+          "host": ["{{base_url}}"],
+          "path": ["era", "upload"]
+        },
+        "description": "Upload and automatically process an 835 ERA file. The file is parsed, payments are matched to claims, and auto-posting occurs where possible."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get ERA Files List",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Files array is returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "});",
+              "",
+              "if (pm.response.json().data.length > 0) {",
+              "    pm.collectionVariables.set('era_file_id', pm.response.json().data[0].file_id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/files?status=COMPLETED&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["era", "files"],
+          "query": [
+            {
+              "key": "status",
+              "value": "COMPLETED",
+              "description": "Filter by status: PENDING, PROCESSING, COMPLETED, ERROR, PARTIALLY_POSTED"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Maximum number of results (1-200)"
+            }
+          ]
+        },
+        "description": "Get a list of all ERA files with optional status filter"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get ERA File Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/file/:fileId",
+          "host": ["{{base_url}}"],
+          "path": ["era", "file", ":fileId"],
+          "variable": [
+            {
+              "key": "fileId",
+              "value": "{{era_file_id}}",
+              "description": "ERA file ID (string)"
+            }
+          ]
+        },
+        "description": "Get detailed information about a specific ERA file including metadata, payer info, and processing summary"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get ERA Payments for File",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Payments array is returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/payments/:fileId",
+          "host": ["{{base_url}}"],
+          "path": ["era", "payments", ":fileId"],
+          "variable": [
+            {
+              "key": "fileId",
+              "value": "{{era_file_db_id}}",
+              "description": "ERA file database ID (integer)"
+            }
+          ]
+        },
+        "description": "Get all payment records extracted from a specific ERA file"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get Posting Exceptions",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains exception data\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('count');",
+              "    pm.expect(jsonData).to.have.property('overdueCount');",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "});",
+              "",
+              "if (pm.response.json().data.length > 0) {",
+              "    pm.collectionVariables.set('exception_id', pm.response.json().data[0].exception_id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/exceptions?status=PENDING&severity=HIGH&limit=50",
+          "host": ["{{base_url}}"],
+          "path": ["era", "exceptions"],
+          "query": [
+            {
+              "key": "status",
+              "value": "PENDING",
+              "description": "Exception status: PENDING, ASSIGNED, IN_REVIEW, RESOLVED, CLOSED"
+            },
+            {
+              "key": "severity",
+              "value": "HIGH",
+              "description": "Exception severity: LOW, MEDIUM, HIGH, CRITICAL",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "50",
+              "description": "Maximum results (1-200)"
+            }
+          ]
+        },
+        "description": "Get posting exceptions requiring manual review. Supports filtering by status and severity."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Resolve Posting Exception",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resolutionType\": \"MANUAL_POSTED\",\n  \"notes\": \"Manually posted to claim after verification. Patient account number was corrected in the system.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/era/resolve-exception/:id",
+          "host": ["{{base_url}}"],
+          "path": ["era", "resolve-exception", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "{{exception_id}}",
+              "description": "Exception ID (string)"
+            }
+          ]
+        },
+        "description": "Resolve a posting exception with resolution type and notes.\n\nValid resolution types:\n- MANUAL_POSTED\n- CLAIM_CORRECTED\n- PAYER_CONTACTED\n- WRITTEN_OFF\n- REFUNDED"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Get Reconciliation Batches",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/reconciliation?batchDate=2025-01-27",
+          "host": ["{{base_url}}"],
+          "path": ["era", "reconciliation"],
+          "query": [
+            {
+              "key": "batchDate",
+              "value": "2025-01-27",
+              "description": "Filter by batch date (YYYY-MM-DD)",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Get daily reconciliation batches. Optionally filter by batch date."
+      },
+      "response": []
+    },
+    {
+      "name": "8. Create Reconciliation Batch",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"batchDate\": \"2025-01-27\",\n  \"depositAmount\": 3735000,\n  \"bankStatementAmount\": 3735000\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/era/reconcile-batch",
+          "host": ["{{base_url}}"],
+          "path": ["era", "reconcile-batch"]
+        },
+        "description": "Run daily deposit reconciliation.\n\nAmounts should be in cents:\n- depositAmount: Expected deposit from ERAs\n- bankStatementAmount: Actual amount from bank\n\nExample: $373.50 = 37350 cents"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Process Existing ERA File",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/era/process/:fileId",
+          "host": ["{{base_url}}"],
+          "path": ["era", "process", ":fileId"],
+          "variable": [
+            {
+              "key": "fileId",
+              "value": "{{era_file_id}}",
+              "description": "ERA file ID to reprocess"
+            }
+          ]
+        },
+        "description": "Reprocess an existing ERA file. Useful for error recovery or after claim corrections."
+      },
+      "response": []
+    },
+    {
+      "name": "10. Auto-Post Individual Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"claimId\": 123\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/era/auto-post/:paymentId",
+          "host": ["{{base_url}}"],
+          "path": ["era", "auto-post", ":paymentId"],
+          "variable": [
+            {
+              "key": "paymentId",
+              "value": "",
+              "description": "ERA payment ID"
+            }
+          ]
+        },
+        "description": "Manually trigger auto-posting for a specific payment.\n\nNote: Currently returns 501 (Not Implemented) as posting happens automatically during file upload."
+      },
+      "response": []
+    }
+  ]
+}

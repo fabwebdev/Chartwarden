@@ -1,0 +1,1306 @@
+// ============================================================================
+// HOSPICE EHR - COMPREHENSIVE ENUMS
+// ============================================================================
+// This file contains all enum definitions used throughout the hospice EHR system.
+// Organized by functional domain for easy maintenance and reference.
+// ============================================================================
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Get all values from an enum object (excludes helper methods)
+ * @param {Object} enumObj - The enum object
+ * @returns {Array} Array of enum values
+ */
+export const getEnumValues = (enumObj) => {
+  return Object.keys(enumObj)
+    .filter(key => typeof enumObj[key] !== 'function')
+    .map(key => enumObj[key]);
+};
+
+/**
+ * Check if a value is valid for a given enum
+ * @param {Object} enumObj - The enum object
+ * @param {*} value - The value to check
+ * @returns {boolean} True if valid
+ */
+export const isValidEnumValue = (enumObj, value) => {
+  return getEnumValues(enumObj).includes(value);
+};
+
+/**
+ * Get the key for a given enum value
+ * @param {Object} enumObj - The enum object
+ * @param {*} value - The value to find
+ * @returns {string|null} The key or null if not found
+ */
+export const getEnumKey = (enumObj, value) => {
+  const entry = Object.entries(enumObj).find(([key, val]) =>
+    val === value && typeof val !== 'function'
+  );
+  return entry ? entry[0] : null;
+};
+
+// ============================================================================
+// PATIENT ENUMS
+// ============================================================================
+
+export const PatientStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  PENDING_ADMISSION: 'PENDING_ADMISSION',
+  DISCHARGED: 'DISCHARGED',
+  DECEASED: 'DECEASED',
+  TRANSFERRED: 'TRANSFERRED',
+  REVOKED: 'REVOKED',
+  ON_HOLD: 'ON_HOLD'
+};
+
+export const DischargeReason = {
+  DECEASED: 'DECEASED',
+  REVOKED: 'REVOKED',
+  TRANSFERRED_ANOTHER_HOSPICE: 'TRANSFERRED_ANOTHER_HOSPICE',
+  TRANSFERRED_HOSPITAL: 'TRANSFERRED_HOSPITAL',
+  TRANSFERRED_SNF: 'TRANSFERRED_SNF',
+  MOVED_OUT_OF_AREA: 'MOVED_OUT_OF_AREA',
+  NO_LONGER_TERMINAL: 'NO_LONGER_TERMINAL',
+  CONDITION_STABILIZED: 'CONDITION_STABILIZED',
+  PATIENT_REQUEST: 'PATIENT_REQUEST',
+  FAMILY_REQUEST: 'FAMILY_REQUEST',
+  FINANCIAL_REASONS: 'FINANCIAL_REASONS',
+  NON_COMPLIANCE: 'NON_COMPLIANCE',
+  OTHER: 'OTHER'
+};
+
+export const LevelOfCare = {
+  ROUTINE_HOME_CARE: 'ROUTINE_HOME_CARE',
+  CONTINUOUS_HOME_CARE: 'CONTINUOUS_HOME_CARE',
+  INPATIENT_RESPITE_CARE: 'INPATIENT_RESPITE_CARE',
+  GENERAL_INPATIENT_CARE: 'GENERAL_INPATIENT_CARE'
+};
+
+export const ReferralSource = {
+  PHYSICIAN: 'PHYSICIAN',
+  HOSPITAL: 'HOSPITAL',
+  NURSING_HOME: 'NURSING_HOME',
+  HOME_HEALTH_AGENCY: 'HOME_HEALTH_AGENCY',
+  FAMILY: 'FAMILY',
+  PATIENT_SELF: 'PATIENT_SELF',
+  SOCIAL_WORKER: 'SOCIAL_WORKER',
+  CLERGY: 'CLERGY',
+  ANOTHER_HOSPICE: 'ANOTHER_HOSPICE',
+  COMMUNITY_ORGANIZATION: 'COMMUNITY_ORGANIZATION',
+  OTHER: 'OTHER'
+};
+
+export const ReferralStatus = {
+  PENDING: 'PENDING',
+  CONTACTED: 'CONTACTED',
+  SCHEDULED: 'SCHEDULED',
+  ADMITTED: 'ADMITTED',
+  DECLINED: 'DECLINED',
+  INELIGIBLE: 'INELIGIBLE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+};
+
+// ============================================================================
+// CLINICAL ENUMS
+// ============================================================================
+
+export const Discipline = {
+  REGISTERED_NURSE: 'REGISTERED_NURSE',
+  LICENSED_PRACTICAL_NURSE: 'LICENSED_PRACTICAL_NURSE',
+  PHYSICIAN: 'PHYSICIAN',
+  NURSE_PRACTITIONER: 'NURSE_PRACTITIONER',
+  PHYSICIAN_ASSISTANT: 'PHYSICIAN_ASSISTANT',
+  SOCIAL_WORKER: 'SOCIAL_WORKER',
+  CHAPLAIN: 'CHAPLAIN',
+  HOME_HEALTH_AIDE: 'HOME_HEALTH_AIDE',
+  PHYSICAL_THERAPIST: 'PHYSICAL_THERAPIST',
+  OCCUPATIONAL_THERAPIST: 'OCCUPATIONAL_THERAPIST',
+  SPEECH_THERAPIST: 'SPEECH_THERAPIST',
+  DIETITIAN: 'DIETITIAN',
+  PHARMACIST: 'PHARMACIST',
+  BEREAVEMENT_COUNSELOR: 'BEREAVEMENT_COUNSELOR',
+  VOLUNTEER: 'VOLUNTEER',
+  OTHER: 'OTHER'
+};
+
+export const EncounterType = {
+  ADMISSION_VISIT: 'ADMISSION_VISIT',
+  ROUTINE_VISIT: 'ROUTINE_VISIT',
+  PRN_VISIT: 'PRN_VISIT',
+  COMPREHENSIVE_ASSESSMENT: 'COMPREHENSIVE_ASSESSMENT',
+  RECERTIFICATION_VISIT: 'RECERTIFICATION_VISIT',
+  DISCHARGE_VISIT: 'DISCHARGE_VISIT',
+  DEATH_VISIT: 'DEATH_VISIT',
+  BEREAVEMENT_VISIT: 'BEREAVEMENT_VISIT',
+  TELEHEALTH: 'TELEHEALTH',
+  PHONE_CALL: 'PHONE_CALL',
+  IDG_MEETING: 'IDG_MEETING',
+  FAMILY_CONFERENCE: 'FAMILY_CONFERENCE',
+  CRISIS_VISIT: 'CRISIS_VISIT',
+  CONTINUOUS_CARE: 'CONTINUOUS_CARE',
+  RESPITE_ADMISSION: 'RESPITE_ADMISSION',
+  GIP_ADMISSION: 'GIP_ADMISSION',
+  OTHER: 'OTHER'
+};
+
+export const EncounterStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  UNSIGNED: 'UNSIGNED',
+  SIGNED: 'SIGNED',
+  COSIGNED: 'COSIGNED',
+  AMENDED: 'AMENDED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW',
+  MISSED: 'MISSED'
+};
+
+export const VisitLocation = {
+  PATIENT_HOME: 'PATIENT_HOME',
+  ASSISTED_LIVING_FACILITY: 'ASSISTED_LIVING_FACILITY',
+  NURSING_HOME: 'NURSING_HOME',
+  HOSPITAL: 'HOSPITAL',
+  HOSPICE_INPATIENT_UNIT: 'HOSPICE_INPATIENT_UNIT',
+  HOSPICE_OFFICE: 'HOSPICE_OFFICE',
+  TELEHEALTH: 'TELEHEALTH',
+  PHONE: 'PHONE',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// HOPE (CMS) ENUMS
+// ============================================================================
+
+export const HOPEAssessmentType = {
+  ADMISSION: 'ADMISSION',
+  HUV1: 'HUV1',  // Hospice Update Visit 1 (days 6-15)
+  HUV2: 'HUV2',  // Hospice Update Visit 2 (days 16-30)
+  DISCHARGE: 'DISCHARGE',
+  SYMPTOM_FOLLOWUP: 'SYMPTOM_FOLLOWUP'  // SFV within 48hrs of moderate/severe symptoms
+};
+
+export const HOPEAssessmentStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  SIGNED: 'SIGNED',
+  SUBMITTED: 'SUBMITTED',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  OVERDUE: 'OVERDUE',
+  CANCELLED: 'CANCELLED'
+};
+
+export const SymptomSeverity = {
+  NONE: 'NONE',
+  MILD: 'MILD',
+  MODERATE: 'MODERATE',
+  SEVERE: 'SEVERE',
+  VERY_SEVERE: 'VERY_SEVERE',
+  UNABLE_TO_ANSWER: 'UNABLE_TO_ANSWER'
+};
+
+export const SymptomFrequency = {
+  NEVER: 'NEVER',
+  RARELY: 'RARELY',
+  OCCASIONALLY: 'OCCASIONALLY',
+  FREQUENTLY: 'FREQUENTLY',
+  ALMOST_CONSTANTLY: 'ALMOST_CONSTANTLY',
+  UNABLE_TO_ANSWER: 'UNABLE_TO_ANSWER'
+};
+
+export const FunctionalScore = {
+  INDEPENDENT: 0,
+  SETUP_HELP_ONLY: 1,
+  SUPERVISION_REQUIRED: 2,
+  LIMITED_ASSISTANCE: 3,
+  EXTENSIVE_ASSISTANCE: 4,
+  MAXIMAL_ASSISTANCE: 5,
+  TOTAL_DEPENDENCE: 6,
+  ACTIVITY_NOT_OCCUR: 8,
+  NOT_APPLICABLE: 9
+};
+
+export const CognitiveStatus = {
+  INTACT: 'INTACT',
+  BORDERLINE_INTACT: 'BORDERLINE_INTACT',
+  MODERATELY_IMPAIRED: 'MODERATELY_IMPAIRED',
+  SEVERELY_IMPAIRED: 'SEVERELY_IMPAIRED',
+  UNABLE_TO_ASSESS: 'UNABLE_TO_ASSESS'
+};
+
+// ============================================================================
+// ORDERS ENUMS
+// ============================================================================
+
+export const OrderType = {
+  MEDICATION: 'MEDICATION',
+  TREATMENT: 'TREATMENT',
+  DIET: 'DIET',
+  ACTIVITY: 'ACTIVITY',
+  DME: 'DME',
+  OXYGEN: 'OXYGEN',
+  THERAPY: 'THERAPY',
+  LABS: 'LABS',
+  IMAGING: 'IMAGING',
+  HOSPICE_SERVICES: 'HOSPICE_SERVICES',
+  DNR: 'DNR',
+  OTHER: 'OTHER'
+};
+
+export const OrderStatus = {
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING',
+  DISCONTINUED: 'DISCONTINUED',
+  COMPLETED: 'COMPLETED',
+  ON_HOLD: 'ON_HOLD',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  RENEWED: 'RENEWED'
+};
+
+export const OrderPriority = {
+  ROUTINE: 'ROUTINE',
+  URGENT: 'URGENT',
+  STAT: 'STAT',
+  PRN: 'PRN'
+};
+
+// ============================================================================
+// MEDICATIONS ENUMS
+// ============================================================================
+
+export const MedicationStatus = {
+  ACTIVE: 'ACTIVE',
+  DISCONTINUED: 'DISCONTINUED',
+  ON_HOLD: 'ON_HOLD',
+  COMPLETED: 'COMPLETED',
+  PENDING: 'PENDING',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+export const MedicationRoute = {
+  ORAL: 'ORAL',
+  SUBLINGUAL: 'SUBLINGUAL',
+  BUCCAL: 'BUCCAL',
+  RECTAL: 'RECTAL',
+  TOPICAL: 'TOPICAL',
+  TRANSDERMAL: 'TRANSDERMAL',
+  SUBCUTANEOUS: 'SUBCUTANEOUS',
+  INTRAMUSCULAR: 'INTRAMUSCULAR',
+  INTRAVENOUS: 'INTRAVENOUS',
+  INHALATION: 'INHALATION',
+  NEBULIZER: 'NEBULIZER',
+  OPHTHALMIC: 'OPHTHALMIC',
+  OTIC: 'OTIC',
+  NASAL: 'NASAL',
+  VAGINAL: 'VAGINAL',
+  GASTROSTOMY_TUBE: 'GASTROSTOMY_TUBE',
+  JEJUNOSTOMY_TUBE: 'JEJUNOSTOMY_TUBE',
+  NASOGASTRIC_TUBE: 'NASOGASTRIC_TUBE',
+  OTHER: 'OTHER'
+};
+
+export const MARStatus = {
+  GIVEN: 'GIVEN',
+  NOT_GIVEN: 'NOT_GIVEN',
+  REFUSED: 'REFUSED',
+  HELD: 'HELD',
+  UNAVAILABLE: 'UNAVAILABLE',
+  PATIENT_ASLEEP: 'PATIENT_ASLEEP',
+  PATIENT_OUT: 'PATIENT_OUT',
+  MISSED: 'MISSED',
+  LATE: 'LATE'
+};
+
+export const ControlledSchedule = {
+  SCHEDULE_I: 'SCHEDULE_I',
+  SCHEDULE_II: 'SCHEDULE_II',
+  SCHEDULE_III: 'SCHEDULE_III',
+  SCHEDULE_IV: 'SCHEDULE_IV',
+  SCHEDULE_V: 'SCHEDULE_V',
+  NON_CONTROLLED: 'NON_CONTROLLED'
+};
+
+// ============================================================================
+// CARE PLAN ENUMS
+// ============================================================================
+
+export const CarePlanStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  REVISED: 'REVISED',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  PENDING_SIGNATURE: 'PENDING_SIGNATURE',
+  SIGNED: 'SIGNED'
+};
+
+export const ProblemCategory = {
+  PHYSICAL: 'PHYSICAL',
+  PSYCHOLOGICAL: 'PSYCHOLOGICAL',
+  SOCIAL: 'SOCIAL',
+  SPIRITUAL: 'SPIRITUAL',
+  ENVIRONMENTAL: 'ENVIRONMENTAL',
+  CAREGIVER: 'CAREGIVER',
+  BEREAVEMENT: 'BEREAVEMENT',
+  OTHER: 'OTHER'
+};
+
+export const ProblemStatus = {
+  ACTIVE: 'ACTIVE',
+  RESOLVED: 'RESOLVED',
+  ONGOING: 'ONGOING',
+  WORSENING: 'WORSENING',
+  IMPROVING: 'IMPROVING',
+  STABLE: 'STABLE',
+  DISCONTINUED: 'DISCONTINUED'
+};
+
+export const ProblemPriority = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW'
+};
+
+export const GoalStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  ACHIEVED: 'ACHIEVED',
+  PARTIALLY_ACHIEVED: 'PARTIALLY_ACHIEVED',
+  NOT_ACHIEVED: 'NOT_ACHIEVED',
+  DISCONTINUED: 'DISCONTINUED',
+  REVISED: 'REVISED'
+};
+
+export const ProgressLevel = {
+  NO_PROGRESS: 'NO_PROGRESS',
+  MINIMAL_PROGRESS: 'MINIMAL_PROGRESS',
+  MODERATE_PROGRESS: 'MODERATE_PROGRESS',
+  SIGNIFICANT_PROGRESS: 'SIGNIFICANT_PROGRESS',
+  GOAL_ACHIEVED: 'GOAL_ACHIEVED',
+  REGRESSION: 'REGRESSION'
+};
+
+export const InterventionCategory = {
+  NURSING: 'NURSING',
+  PHYSICIAN: 'PHYSICIAN',
+  SOCIAL_WORK: 'SOCIAL_WORK',
+  SPIRITUAL: 'SPIRITUAL',
+  THERAPY: 'THERAPY',
+  AIDE: 'AIDE',
+  VOLUNTEER: 'VOLUNTEER',
+  MEDICATION: 'MEDICATION',
+  DME: 'DME',
+  EDUCATION: 'EDUCATION',
+  COORDINATION: 'COORDINATION',
+  OTHER: 'OTHER'
+};
+
+export const InterventionStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  DISCONTINUED: 'DISCONTINUED',
+  ON_HOLD: 'ON_HOLD'
+};
+
+// ============================================================================
+// IDG (INTERDISCIPLINARY GROUP) ENUMS
+// ============================================================================
+
+export const IDGMeetingType = {
+  INITIAL: 'INITIAL',
+  ROUTINE: 'ROUTINE',
+  RECERTIFICATION: 'RECERTIFICATION',
+  EMERGENCY: 'EMERGENCY',
+  SPECIAL: 'SPECIAL'
+};
+
+export const IDGMeetingStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  RESCHEDULED: 'RESCHEDULED'
+};
+
+export const IDGReviewStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  SKIPPED: 'SKIPPED',
+  DEFERRED: 'DEFERRED'
+};
+
+// ============================================================================
+// CERTIFICATIONS ENUMS
+// ============================================================================
+
+export const CertificationPeriod = {
+  INITIAL_90: 'INITIAL_90',          // Initial 90-day period
+  SUBSEQUENT_90: 'SUBSEQUENT_90',    // First subsequent 90-day
+  SUBSEQUENT_60: 'SUBSEQUENT_60'     // Subsequent 60-day periods
+};
+
+export const CertificationStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  RECERTIFIED: 'RECERTIFIED',
+  DISCONTINUED: 'DISCONTINUED',
+  PENDING_SIGNATURE: 'PENDING_SIGNATURE',
+  SIGNED: 'SIGNED'
+};
+
+export const F2FStatus = {
+  NOT_REQUIRED: 'NOT_REQUIRED',
+  REQUIRED: 'REQUIRED',
+  SCHEDULED: 'SCHEDULED',
+  COMPLETED: 'COMPLETED',
+  OVERDUE: 'OVERDUE',
+  ATTESTATION_PENDING: 'ATTESTATION_PENDING',
+  ATTESTATION_COMPLETED: 'ATTESTATION_COMPLETED'
+};
+
+// ============================================================================
+// SCHEDULING ENUMS
+// ============================================================================
+
+export const VisitStatus = {
+  SCHEDULED: 'SCHEDULED',
+  CONFIRMED: 'CONFIRMED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CHECKED_IN: 'CHECKED_IN',
+  CHECKED_OUT: 'CHECKED_OUT',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW',
+  MISSED: 'MISSED',
+  RESCHEDULED: 'RESCHEDULED'
+};
+
+export const VisitType = {
+  ROUTINE: 'ROUTINE',
+  PRN: 'PRN',
+  ADMISSION: 'ADMISSION',
+  COMPREHENSIVE_ASSESSMENT: 'COMPREHENSIVE_ASSESSMENT',
+  RECERTIFICATION: 'RECERTIFICATION',
+  DISCHARGE: 'DISCHARGE',
+  CRISIS: 'CRISIS',
+  CONTINUOUS_CARE: 'CONTINUOUS_CARE',
+  RESPITE: 'RESPITE',
+  GIP: 'GIP',
+  DEATH_VISIT: 'DEATH_VISIT',
+  BEREAVEMENT: 'BEREAVEMENT',
+  OTHER: 'OTHER'
+};
+
+export const VisitPriority = {
+  ROUTINE: 'ROUTINE',
+  URGENT: 'URGENT',
+  EMERGENCY: 'EMERGENCY',
+  STAT: 'STAT'
+};
+
+export const CancellationReason = {
+  PATIENT_REQUEST: 'PATIENT_REQUEST',
+  FAMILY_REQUEST: 'FAMILY_REQUEST',
+  PATIENT_HOSPITALIZED: 'PATIENT_HOSPITALIZED',
+  PATIENT_EXPIRED: 'PATIENT_EXPIRED',
+  PATIENT_DISCHARGED: 'PATIENT_DISCHARGED',
+  STAFF_UNAVAILABLE: 'STAFF_UNAVAILABLE',
+  WEATHER: 'WEATHER',
+  EMERGENCY: 'EMERGENCY',
+  DUPLICATE: 'DUPLICATE',
+  SCHEDULING_ERROR: 'SCHEDULING_ERROR',
+  OTHER: 'OTHER'
+};
+
+export const OnCallAction = {
+  PHONE_ADVICE: 'PHONE_ADVICE',
+  VISIT_DISPATCHED: 'VISIT_DISPATCHED',
+  REFERRED_TO_PHYSICIAN: 'REFERRED_TO_PHYSICIAN',
+  TRANSFERRED_TO_ER: 'TRANSFERRED_TO_ER',
+  COMFORT_KIT_AUTHORIZATION: 'COMFORT_KIT_AUTHORIZATION',
+  MEDICATION_CHANGE: 'MEDICATION_CHANGE',
+  DME_ORDERED: 'DME_ORDERED',
+  DEATH_PRONOUNCED: 'DEATH_PRONOUNCED',
+  BEREAVEMENT_SUPPORT: 'BEREAVEMENT_SUPPORT',
+  OTHER: 'OTHER'
+};
+
+export const OnCallSeverity = {
+  LOW: 'LOW',
+  MODERATE: 'MODERATE',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+};
+
+// ============================================================================
+// BILLING ENUMS
+// ============================================================================
+
+export const ClaimStatus = {
+  DRAFT: 'DRAFT',
+  READY_TO_BILL: 'READY_TO_BILL',
+  SUBMITTED: 'SUBMITTED',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  DENIED: 'DENIED',
+  APPEALED: 'APPEALED',
+  VOIDED: 'VOIDED',
+  ON_HOLD: 'ON_HOLD'
+};
+
+export const ClaimType = {
+  INSTITUTIONAL: 'INSTITUTIONAL',  // UB-04
+  PROFESSIONAL: 'PROFESSIONAL',    // CMS-1500
+  HOSPICE: 'HOSPICE',
+  ADJUSTMENT: 'ADJUSTMENT',
+  VOID: 'VOID',
+  REPLACEMENT: 'REPLACEMENT'
+};
+
+export const PayerType = {
+  MEDICARE: 'MEDICARE',
+  MEDICAID: 'MEDICAID',
+  COMMERCIAL_INSURANCE: 'COMMERCIAL_INSURANCE',
+  MANAGED_CARE: 'MANAGED_CARE',
+  MEDICARE_ADVANTAGE: 'MEDICARE_ADVANTAGE',
+  VA: 'VA',
+  TRICARE: 'TRICARE',
+  WORKERS_COMP: 'WORKERS_COMP',
+  PRIVATE_PAY: 'PRIVATE_PAY',
+  CHARITY: 'CHARITY',
+  OTHER: 'OTHER'
+};
+
+export const PaymentMethod = {
+  CASH: 'CASH',
+  CHECK: 'CHECK',
+  CREDIT_CARD: 'CREDIT_CARD',
+  ACH: 'ACH',
+  EFT: 'EFT',
+  WIRE_TRANSFER: 'WIRE_TRANSFER',
+  INSURANCE: 'INSURANCE',
+  OTHER: 'OTHER'
+};
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  APPLIED: 'APPLIED',
+  PARTIALLY_APPLIED: 'PARTIALLY_APPLIED',
+  UNAPPLIED: 'UNAPPLIED',
+  VOIDED: 'VOIDED',
+  REFUNDED: 'REFUNDED'
+};
+
+export const NOEStatus = {
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  AMENDED: 'AMENDED',
+  TERMINATED: 'TERMINATED'
+};
+
+export const NOETimeliness = {
+  TIMELY: 'TIMELY',        // Within 5 calendar days
+  LATE: 'LATE',            // After 5 calendar days
+  RETROACTIVE: 'RETROACTIVE'
+};
+
+export const AppealStatus = {
+  NOT_APPEALED: 'NOT_APPEALED',
+  APPEAL_PLANNED: 'APPEAL_PLANNED',
+  APPEAL_SUBMITTED: 'APPEAL_SUBMITTED',
+  APPEAL_PENDING: 'APPEAL_PENDING',
+  APPEAL_WON: 'APPEAL_WON',
+  APPEAL_LOST: 'APPEAL_LOST',
+  APPEAL_PARTIALLY_WON: 'APPEAL_PARTIALLY_WON',
+  APPEAL_WITHDRAWN: 'APPEAL_WITHDRAWN'
+};
+
+// ============================================================================
+// BEREAVEMENT ENUMS
+// ============================================================================
+
+export const BereavementStatus = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  DECLINED: 'DECLINED',
+  UNABLE_TO_CONTACT: 'UNABLE_TO_CONTACT',
+  MOVED: 'MOVED',
+  DECEASED: 'DECEASED',
+  REQUESTED_NO_CONTACT: 'REQUESTED_NO_CONTACT'
+};
+
+export const BereavementRiskLevel = {
+  LOW: 'LOW',
+  MODERATE: 'MODERATE',
+  HIGH: 'HIGH',
+  VERY_HIGH: 'VERY_HIGH'
+};
+
+export const BereavementRiskFactor = {
+  SUDDEN_DEATH: 'SUDDEN_DEATH',
+  TRAUMATIC_DEATH: 'TRAUMATIC_DEATH',
+  SUICIDE: 'SUICIDE',
+  VIOLENT_DEATH: 'VIOLENT_DEATH',
+  LOSS_OF_CHILD: 'LOSS_OF_CHILD',
+  MULTIPLE_LOSSES: 'MULTIPLE_LOSSES',
+  HISTORY_MENTAL_ILLNESS: 'HISTORY_MENTAL_ILLNESS',
+  HISTORY_SUBSTANCE_ABUSE: 'HISTORY_SUBSTANCE_ABUSE',
+  LACK_SOCIAL_SUPPORT: 'LACK_SOCIAL_SUPPORT',
+  FINANCIAL_STRESS: 'FINANCIAL_STRESS',
+  CAREGIVER_BURDEN: 'CAREGIVER_BURDEN',
+  AMBIVALENT_RELATIONSHIP: 'AMBIVALENT_RELATIONSHIP',
+  DEPENDENT_RELATIONSHIP: 'DEPENDENT_RELATIONSHIP',
+  OTHER: 'OTHER'
+};
+
+export const BereavementContactType = {
+  PHONE_CALL: 'PHONE_CALL',
+  HOME_VISIT: 'HOME_VISIT',
+  OFFICE_VISIT: 'OFFICE_VISIT',
+  EMAIL: 'EMAIL',
+  LETTER: 'LETTER',
+  CARD: 'CARD',
+  SUPPORT_GROUP: 'SUPPORT_GROUP',
+  MEMORIAL_SERVICE: 'MEMORIAL_SERVICE',
+  OTHER: 'OTHER'
+};
+
+export const GriefSymptom = {
+  SADNESS: 'SADNESS',
+  ANGER: 'ANGER',
+  GUILT: 'GUILT',
+  ANXIETY: 'ANXIETY',
+  DEPRESSION: 'DEPRESSION',
+  LONELINESS: 'LONELINESS',
+  FATIGUE: 'FATIGUE',
+  INSOMNIA: 'INSOMNIA',
+  LOSS_OF_APPETITE: 'LOSS_OF_APPETITE',
+  DIFFICULTY_CONCENTRATING: 'DIFFICULTY_CONCENTRATING',
+  SOCIAL_WITHDRAWAL: 'SOCIAL_WITHDRAWAL',
+  NUMBNESS: 'NUMBNESS',
+  YEARNING: 'YEARNING',
+  PHYSICAL_PAIN: 'PHYSICAL_PAIN',
+  OTHER: 'OTHER'
+};
+
+export const CopingStatus = {
+  COPING_WELL: 'COPING_WELL',
+  COPING_ADEQUATELY: 'COPING_ADEQUATELY',
+  STRUGGLING: 'STRUGGLING',
+  SEVERE_DIFFICULTY: 'SEVERE_DIFFICULTY',
+  UNABLE_TO_ASSESS: 'UNABLE_TO_ASSESS'
+};
+
+export const SupportGroupType = {
+  GENERAL_GRIEF: 'GENERAL_GRIEF',
+  LOSS_OF_SPOUSE: 'LOSS_OF_SPOUSE',
+  LOSS_OF_CHILD: 'LOSS_OF_CHILD',
+  LOSS_OF_PARENT: 'LOSS_OF_PARENT',
+  TRAUMATIC_LOSS: 'TRAUMATIC_LOSS',
+  SUICIDE_SURVIVORS: 'SUICIDE_SURVIVORS',
+  MENS_GROUP: 'MENS_GROUP',
+  WOMENS_GROUP: 'WOMENS_GROUP',
+  YOUNG_ADULTS: 'YOUNG_ADULTS',
+  CHILDREN_TEENS: 'CHILDREN_TEENS',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// QAPI (QUALITY ASSURANCE & PERFORMANCE IMPROVEMENT) ENUMS
+// ============================================================================
+
+export const IncidentType = {
+  MEDICATION_ERROR: 'MEDICATION_ERROR',
+  FALL: 'FALL',
+  PRESSURE_INJURY: 'PRESSURE_INJURY',
+  INFECTION: 'INFECTION',
+  EQUIPMENT_FAILURE: 'EQUIPMENT_FAILURE',
+  DOCUMENTATION_ERROR: 'DOCUMENTATION_ERROR',
+  COMMUNICATION_ERROR: 'COMMUNICATION_ERROR',
+  DELAY_IN_SERVICE: 'DELAY_IN_SERVICE',
+  PATIENT_ELOPEMENT: 'PATIENT_ELOPEMENT',
+  VERBAL_ABUSE: 'VERBAL_ABUSE',
+  PHYSICAL_ABUSE: 'PHYSICAL_ABUSE',
+  NEGLECT: 'NEGLECT',
+  BREACH_OF_CONFIDENTIALITY: 'BREACH_OF_CONFIDENTIALITY',
+  HIPAA_VIOLATION: 'HIPAA_VIOLATION',
+  NEAR_MISS: 'NEAR_MISS',
+  OTHER: 'OTHER'
+};
+
+export const IncidentSeverity = {
+  NO_HARM: 'NO_HARM',
+  MINOR: 'MINOR',
+  MODERATE: 'MODERATE',
+  SEVERE: 'SEVERE',
+  CATASTROPHIC: 'CATASTROPHIC',
+  DEATH: 'DEATH'
+};
+
+export const IncidentStatus = {
+  REPORTED: 'REPORTED',
+  UNDER_INVESTIGATION: 'UNDER_INVESTIGATION',
+  INVESTIGATION_COMPLETED: 'INVESTIGATION_COMPLETED',
+  ACTION_PLAN_DEVELOPED: 'ACTION_PLAN_DEVELOPED',
+  ACTION_PLAN_IMPLEMENTED: 'ACTION_PLAN_IMPLEMENTED',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+};
+
+export const GrievanceType = {
+  QUALITY_OF_CARE: 'QUALITY_OF_CARE',
+  STAFF_BEHAVIOR: 'STAFF_BEHAVIOR',
+  COMMUNICATION: 'COMMUNICATION',
+  TIMELINESS: 'TIMELINESS',
+  BILLING: 'BILLING',
+  PRIVACY: 'PRIVACY',
+  FACILITIES: 'FACILITIES',
+  EQUIPMENT: 'EQUIPMENT',
+  MEDICATION: 'MEDICATION',
+  ACCESS_TO_CARE: 'ACCESS_TO_CARE',
+  DISCRIMINATION: 'DISCRIMINATION',
+  OTHER: 'OTHER'
+};
+
+export const GrievanceSeverity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+};
+
+export const GrievanceStatus = {
+  RECEIVED: 'RECEIVED',
+  ACKNOWLEDGED: 'ACKNOWLEDGED',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  INVESTIGATION_IN_PROGRESS: 'INVESTIGATION_IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED',
+  ESCALATED: 'ESCALATED',
+  APPEALED: 'APPEALED'
+};
+
+export const PIPStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  ON_HOLD: 'ON_HOLD',
+  CANCELLED: 'CANCELLED',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED'
+};
+
+export const PIPPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+};
+
+export const QualityMeasureCategory = {
+  PATIENT_SAFETY: 'PATIENT_SAFETY',
+  CLINICAL_QUALITY: 'CLINICAL_QUALITY',
+  PATIENT_SATISFACTION: 'PATIENT_SATISFACTION',
+  CARE_COORDINATION: 'CARE_COORDINATION',
+  HOSPICE_QUALITY_REPORTING: 'HOSPICE_QUALITY_REPORTING',
+  STAR_RATING: 'STAR_RATING',
+  HOPE_MEASURES: 'HOPE_MEASURES',
+  COMPLIANCE: 'COMPLIANCE',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// STAFF ENUMS
+// ============================================================================
+
+export const EmploymentType = {
+  FULL_TIME: 'FULL_TIME',
+  PART_TIME: 'PART_TIME',
+  PRN: 'PRN',
+  CONTRACT: 'CONTRACT',
+  TEMPORARY: 'TEMPORARY',
+  INTERN: 'INTERN',
+  VOLUNTEER: 'VOLUNTEER'
+};
+
+export const EmploymentStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  ON_LEAVE: 'ON_LEAVE',
+  SUSPENDED: 'SUSPENDED',
+  TERMINATED: 'TERMINATED',
+  RESIGNED: 'RESIGNED',
+  RETIRED: 'RETIRED'
+};
+
+export const CredentialType = {
+  LICENSE: 'LICENSE',
+  CERTIFICATION: 'CERTIFICATION',
+  REGISTRATION: 'REGISTRATION',
+  DEA: 'DEA',
+  NPI: 'NPI',
+  CPR_BLS: 'CPR_BLS',
+  ACLS: 'ACLS',
+  PALS: 'PALS',
+  TB_TEST: 'TB_TEST',
+  PHYSICAL_EXAM: 'PHYSICAL_EXAM',
+  BACKGROUND_CHECK: 'BACKGROUND_CHECK',
+  DRUG_SCREEN: 'DRUG_SCREEN',
+  IMMUNIZATION: 'IMMUNIZATION',
+  OTHER: 'OTHER'
+};
+
+export const CredentialStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  EXPIRING_SOON: 'EXPIRING_SOON',
+  PENDING: 'PENDING',
+  SUSPENDED: 'SUSPENDED',
+  REVOKED: 'REVOKED',
+  NOT_APPLICABLE: 'NOT_APPLICABLE'
+};
+
+export const VolunteerStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  APPLICANT: 'APPLICANT',
+  IN_TRAINING: 'IN_TRAINING',
+  ON_HOLD: 'ON_HOLD',
+  RETIRED: 'RETIRED',
+  DISMISSED: 'DISMISSED'
+};
+
+export const VolunteerServiceType = {
+  PATIENT_SUPPORT: 'PATIENT_SUPPORT',
+  FAMILY_SUPPORT: 'FAMILY_SUPPORT',
+  BEREAVEMENT: 'BEREAVEMENT',
+  ADMINISTRATIVE: 'ADMINISTRATIVE',
+  FUNDRAISING: 'FUNDRAISING',
+  COMMUNITY_OUTREACH: 'COMMUNITY_OUTREACH',
+  SPECIAL_EVENTS: 'SPECIAL_EVENTS',
+  VIGIL: 'VIGIL',
+  COMPANIONSHIP: 'COMPANIONSHIP',
+  RESPITE: 'RESPITE',
+  OTHER: 'OTHER'
+};
+
+export const TrainingType = {
+  ORIENTATION: 'ORIENTATION',
+  CLINICAL_SKILLS: 'CLINICAL_SKILLS',
+  DOCUMENTATION: 'DOCUMENTATION',
+  COMPLIANCE: 'COMPLIANCE',
+  HIPAA: 'HIPAA',
+  SAFETY: 'SAFETY',
+  INFECTION_CONTROL: 'INFECTION_CONTROL',
+  CULTURAL_SENSITIVITY: 'CULTURAL_SENSITIVITY',
+  ETHICS: 'ETHICS',
+  COMMUNICATION: 'COMMUNICATION',
+  BEREAVEMENT: 'BEREAVEMENT',
+  PAIN_MANAGEMENT: 'PAIN_MANAGEMENT',
+  CONTINUING_EDUCATION: 'CONTINUING_EDUCATION',
+  SPECIALTY: 'SPECIALTY',
+  OTHER: 'OTHER'
+};
+
+export const TrainingStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW',
+  FAILED: 'FAILED',
+  PASSED: 'PASSED'
+};
+
+// ============================================================================
+// DME (DURABLE MEDICAL EQUIPMENT) ENUMS
+// ============================================================================
+
+export const DMEType = {
+  HOSPITAL_BED: 'HOSPITAL_BED',
+  WHEELCHAIR: 'WHEELCHAIR',
+  WALKER: 'WALKER',
+  CANE: 'CANE',
+  COMMODE: 'COMMODE',
+  BEDSIDE_COMMODE: 'BEDSIDE_COMMODE',
+  SHOWER_CHAIR: 'SHOWER_CHAIR',
+  OXYGEN_CONCENTRATOR: 'OXYGEN_CONCENTRATOR',
+  OXYGEN_TANK: 'OXYGEN_TANK',
+  NEBULIZER: 'NEBULIZER',
+  SUCTION_MACHINE: 'SUCTION_MACHINE',
+  HOYER_LIFT: 'HOYER_LIFT',
+  TRAPEZE_BAR: 'TRAPEZE_BAR',
+  PRESSURE_MATTRESS: 'PRESSURE_MATTRESS',
+  IV_POLE: 'IV_POLE',
+  INFUSION_PUMP: 'INFUSION_PUMP',
+  FEEDING_PUMP: 'FEEDING_PUMP',
+  CPAP_BIPAP: 'CPAP_BIPAP',
+  VENTILATOR: 'VENTILATOR',
+  OTHER: 'OTHER'
+};
+
+export const DMEStatus = {
+  ORDERED: 'ORDERED',
+  DELIVERED: 'DELIVERED',
+  IN_USE: 'IN_USE',
+  RETURNED: 'RETURNED',
+  PICKED_UP: 'PICKED_UP',
+  LOST: 'LOST',
+  DAMAGED: 'DAMAGED',
+  MAINTENANCE_REQUIRED: 'MAINTENANCE_REQUIRED',
+  DISCONTINUED: 'DISCONTINUED'
+};
+
+export const SupplyCategory = {
+  WOUND_CARE: 'WOUND_CARE',
+  INCONTINENCE: 'INCONTINENCE',
+  NUTRITIONAL: 'NUTRITIONAL',
+  RESPIRATORY: 'RESPIRATORY',
+  CATHETER_SUPPLIES: 'CATHETER_SUPPLIES',
+  IV_SUPPLIES: 'IV_SUPPLIES',
+  OSTOMY: 'OSTOMY',
+  DIABETIC: 'DIABETIC',
+  GLOVES_PPE: 'GLOVES_PPE',
+  PERSONAL_CARE: 'PERSONAL_CARE',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// DOCUMENTS ENUMS
+// ============================================================================
+
+export const DocumentType = {
+  CONSENT_FORM: 'CONSENT_FORM',
+  ADVANCE_DIRECTIVE: 'ADVANCE_DIRECTIVE',
+  DNR: 'DNR',
+  POWER_OF_ATTORNEY: 'POWER_OF_ATTORNEY',
+  HIPAA_AUTHORIZATION: 'HIPAA_AUTHORIZATION',
+  ELECTION_OF_HOSPICE: 'ELECTION_OF_HOSPICE',
+  REVOCATION: 'REVOCATION',
+  PHYSICIAN_ORDER: 'PHYSICIAN_ORDER',
+  FACE_TO_FACE: 'FACE_TO_FACE',
+  CERTIFICATION: 'CERTIFICATION',
+  ASSESSMENT: 'ASSESSMENT',
+  CARE_PLAN: 'CARE_PLAN',
+  CLINICAL_NOTE: 'CLINICAL_NOTE',
+  IDG_MINUTES: 'IDG_MINUTES',
+  INSURANCE_CARD: 'INSURANCE_CARD',
+  ID_CARD: 'ID_CARD',
+  LAB_RESULT: 'LAB_RESULT',
+  IMAGING_REPORT: 'IMAGING_REPORT',
+  HOSPITAL_RECORD: 'HOSPITAL_RECORD',
+  MEDICATION_LIST: 'MEDICATION_LIST',
+  CORRESPONDENCE: 'CORRESPONDENCE',
+  OTHER: 'OTHER'
+};
+
+export const DocumentStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_SIGNATURE: 'PENDING_SIGNATURE',
+  SIGNED: 'SIGNED',
+  COMPLETED: 'COMPLETED',
+  ARCHIVED: 'ARCHIVED',
+  EXPIRED: 'EXPIRED',
+  VOIDED: 'VOIDED'
+};
+
+export const DocumentCategory = {
+  CLINICAL: 'CLINICAL',
+  ADMINISTRATIVE: 'ADMINISTRATIVE',
+  LEGAL: 'LEGAL',
+  FINANCIAL: 'FINANCIAL',
+  CONSENT: 'CONSENT',
+  COMPLIANCE: 'COMPLIANCE',
+  CORRESPONDENCE: 'CORRESPONDENCE',
+  EDUCATION: 'EDUCATION',
+  OTHER: 'OTHER'
+};
+
+export const DocumentSource = {
+  SCANNED: 'SCANNED',
+  UPLOADED: 'UPLOADED',
+  GENERATED: 'GENERATED',
+  IMPORTED: 'IMPORTED',
+  FAXED: 'FAXED',
+  EMAILED: 'EMAILED',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// OTHER ENUMS
+// ============================================================================
+
+export const SignatureType = {
+  ELECTRONIC: 'ELECTRONIC',
+  VERBAL: 'VERBAL',
+  WRITTEN: 'WRITTEN',
+  ATTESTATION: 'ATTESTATION',
+  COSIGNATURE: 'COSIGNATURE'
+};
+
+export const AdvanceDirectiveType = {
+  LIVING_WILL: 'LIVING_WILL',
+  DURABLE_POWER_OF_ATTORNEY_HEALTH: 'DURABLE_POWER_OF_ATTORNEY_HEALTH',
+  DNR: 'DNR',
+  DNI: 'DNI',
+  POLST: 'POLST',
+  MOLST: 'MOLST',
+  FIVE_WISHES: 'FIVE_WISHES',
+  OTHER: 'OTHER',
+  NONE: 'NONE'
+};
+
+export const CodeStatus = {
+  FULL_CODE: 'FULL_CODE',
+  DNR: 'DNR',
+  DNI: 'DNI',
+  DNR_DNI: 'DNR_DNI',
+  AND: 'AND',  // Allow Natural Death
+  COMFORT_MEASURES_ONLY: 'COMFORT_MEASURES_ONLY',
+  OTHER: 'OTHER'
+};
+
+export const AllergyType = {
+  MEDICATION: 'MEDICATION',
+  FOOD: 'FOOD',
+  ENVIRONMENTAL: 'ENVIRONMENTAL',
+  LATEX: 'LATEX',
+  CONTRAST_DYE: 'CONTRAST_DYE',
+  OTHER: 'OTHER',
+  NO_KNOWN_ALLERGIES: 'NO_KNOWN_ALLERGIES'
+};
+
+export const AllergySeverity = {
+  MILD: 'MILD',
+  MODERATE: 'MODERATE',
+  SEVERE: 'SEVERE',
+  LIFE_THREATENING: 'LIFE_THREATENING',
+  UNKNOWN: 'UNKNOWN'
+};
+
+export const NotificationType = {
+  ADMISSION: 'ADMISSION',
+  DISCHARGE: 'DISCHARGE',
+  DEATH: 'DEATH',
+  HOSPITALIZATION: 'HOSPITALIZATION',
+  LEVEL_OF_CARE_CHANGE: 'LEVEL_OF_CARE_CHANGE',
+  VISIT_REMINDER: 'VISIT_REMINDER',
+  MEDICATION_CHANGE: 'MEDICATION_CHANGE',
+  IDG_MEETING: 'IDG_MEETING',
+  CERTIFICATION_DUE: 'CERTIFICATION_DUE',
+  HOPE_ASSESSMENT_DUE: 'HOPE_ASSESSMENT_DUE',
+  INCIDENT_REPORT: 'INCIDENT_REPORT',
+  GRIEVANCE: 'GRIEVANCE',
+  SYSTEM_ALERT: 'SYSTEM_ALERT',
+  OTHER: 'OTHER'
+};
+
+export const TaskType = {
+  CLINICAL: 'CLINICAL',
+  ADMINISTRATIVE: 'ADMINISTRATIVE',
+  FOLLOW_UP: 'FOLLOW_UP',
+  DOCUMENTATION: 'DOCUMENTATION',
+  COORDINATION: 'COORDINATION',
+  COMPLIANCE: 'COMPLIANCE',
+  QUALITY: 'QUALITY',
+  BILLING: 'BILLING',
+  OTHER: 'OTHER'
+};
+
+export const TaskStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  OVERDUE: 'OVERDUE',
+  DEFERRED: 'DEFERRED'
+};
+
+export const UserRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  PHYSICIAN: 'PHYSICIAN',
+  NURSE_PRACTITIONER: 'NURSE_PRACTITIONER',
+  REGISTERED_NURSE: 'REGISTERED_NURSE',
+  LPN: 'LPN',
+  SOCIAL_WORKER: 'SOCIAL_WORKER',
+  CHAPLAIN: 'CHAPLAIN',
+  HOME_HEALTH_AIDE: 'HOME_HEALTH_AIDE',
+  VOLUNTEER_COORDINATOR: 'VOLUNTEER_COORDINATOR',
+  VOLUNTEER: 'VOLUNTEER',
+  BILLING_SPECIALIST: 'BILLING_SPECIALIST',
+  CASE_MANAGER: 'CASE_MANAGER',
+  QUALITY_COORDINATOR: 'QUALITY_COORDINATOR',
+  BEREAVEMENT_COORDINATOR: 'BEREAVEMENT_COORDINATOR',
+  SCHEDULER: 'SCHEDULER',
+  RECEPTIONIST: 'RECEPTIONIST',
+  STAFF: 'STAFF',
+  READ_ONLY: 'READ_ONLY'
+};
+
+export const IntegrationType = {
+  PHARMACY: 'PHARMACY',
+  LAB: 'LAB',
+  DME_SUPPLIER: 'DME_SUPPLIER',
+  HOSPITAL: 'HOSPITAL',
+  PHYSICIAN_OFFICE: 'PHYSICIAN_OFFICE',
+  INSURANCE: 'INSURANCE',
+  IQIES: 'IQIES',  // CMS HOPE submission
+  CLEARINGHOUSE: 'CLEARINGHOUSE',
+  EHR: 'EHR',
+  ACCOUNTING: 'ACCOUNTING',
+  HR: 'HR',
+  OTHER: 'OTHER'
+};
+
+// ============================================================================
+// EXPORT ALL ENUMS AS DEFAULT
+// ============================================================================
+
+export default {
+  // Patient
+  PatientStatus,
+  DischargeReason,
+  LevelOfCare,
+  ReferralSource,
+  ReferralStatus,
+
+  // Clinical
+  Discipline,
+  EncounterType,
+  EncounterStatus,
+  VisitLocation,
+
+  // HOPE (CMS)
+  HOPEAssessmentType,
+  HOPEAssessmentStatus,
+  SymptomSeverity,
+  SymptomFrequency,
+  FunctionalScore,
+  CognitiveStatus,
+
+  // Orders
+  OrderType,
+  OrderStatus,
+  OrderPriority,
+
+  // Medications
+  MedicationStatus,
+  MedicationRoute,
+  MARStatus,
+  ControlledSchedule,
+
+  // Care Plan
+  CarePlanStatus,
+  ProblemCategory,
+  ProblemStatus,
+  ProblemPriority,
+  GoalStatus,
+  ProgressLevel,
+  InterventionCategory,
+  InterventionStatus,
+
+  // IDG
+  IDGMeetingType,
+  IDGMeetingStatus,
+  IDGReviewStatus,
+
+  // Certifications
+  CertificationPeriod,
+  CertificationStatus,
+  F2FStatus,
+
+  // Scheduling
+  VisitStatus,
+  VisitType,
+  VisitPriority,
+  CancellationReason,
+  OnCallAction,
+  OnCallSeverity,
+
+  // Billing
+  ClaimStatus,
+  ClaimType,
+  PayerType,
+  PaymentMethod,
+  PaymentStatus,
+  NOEStatus,
+  NOETimeliness,
+  AppealStatus,
+
+  // Bereavement
+  BereavementStatus,
+  BereavementRiskLevel,
+  BereavementRiskFactor,
+  BereavementContactType,
+  GriefSymptom,
+  CopingStatus,
+  SupportGroupType,
+
+  // QAPI
+  IncidentType,
+  IncidentSeverity,
+  IncidentStatus,
+  GrievanceType,
+  GrievanceSeverity,
+  GrievanceStatus,
+  PIPStatus,
+  PIPPriority,
+  QualityMeasureCategory,
+
+  // Staff
+  EmploymentType,
+  EmploymentStatus,
+  CredentialType,
+  CredentialStatus,
+  VolunteerStatus,
+  VolunteerServiceType,
+  TrainingType,
+  TrainingStatus,
+
+  // DME
+  DMEType,
+  DMEStatus,
+  SupplyCategory,
+
+  // Documents
+  DocumentType,
+  DocumentStatus,
+  DocumentCategory,
+  DocumentSource,
+
+  // Other
+  SignatureType,
+  AdvanceDirectiveType,
+  CodeStatus,
+  AllergyType,
+  AllergySeverity,
+  NotificationType,
+  TaskType,
+  TaskStatus,
+  UserRole,
+  IntegrationType,
+
+  // Helper functions
+  getEnumValues,
+  isValidEnumValue,
+  getEnumKey
+};
