@@ -1,0 +1,42 @@
+{
+  "name": "chartwarden",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chartwarden - HIPAA-compliant Hospice EHR System",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run dev -w services/api",
+    "build": "turbo run build",
+    "build:web": "npm run build -w apps/web",
+    "build:api": "npm run build -w services/api",
+    "test": "turbo run test",
+    "test:api": "npm run test -w services/api",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:migrate": "npm run migrate:run -w services/api",
+    "db:generate": "npm run migrate:generate -w services/api",
+    "db:studio": "npm run db:studio -w services/api",
+    "clean": "rm -rf node_modules apps/*/node_modules services/*/node_modules packages/*/node_modules .turbo",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "sync:frontend": "git fetch frontend-upstream && git subtree pull --prefix=apps/web frontend-upstream main --squash",
+    "sync:backend": "git fetch backend-upstream && git subtree pull --prefix=services/api backend-upstream main --squash",
+    "push:frontend": "git subtree push --prefix=apps/web frontend-upstream main",
+    "push:backend": "git subtree push --prefix=services/api backend-upstream main"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "turbo": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "npm@10.0.0"
+}
