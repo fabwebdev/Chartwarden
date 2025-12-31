@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  functions = "out_functions" # Si vous utilisez des fonctions serveless avec Next.js
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[dev]
+  command = "npm run dev"
