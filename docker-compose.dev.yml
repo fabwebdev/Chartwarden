@@ -1,0 +1,218 @@
+# =============================================================================
+# Docker Compose Configuration for Development Environment
+# =============================================================================
+# Usage: docker-compose -f docker-compose.dev.yml up
+# This configuration includes hot reload for both frontend and backend
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database (Development)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: chartwarden-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chartwarden
+      POSTGRES_PASSWORD: chartwarden_dev_password
+      POSTGRES_DB: chartwarden
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./infra/docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - chartwarden-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chartwarden -d chartwarden"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Redis Cache (Development)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: chartwarden-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - chartwarden-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Chartwarden API (Development with Hot Reload)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+      target: development
+    container_name: chartwarden-api-dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Application
+      NODE_ENV: development
+      PORT: 3001
+      HOST: 0.0.0.0
+      APP_NAME: Chartwarden API (Dev)
+      LOG_LEVEL: debug
+
+      # Database
+      DATABASE_URL: postgresql://chartwarden:chartwarden_dev_password@postgres:5432/chartwarden
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: chartwarden
+      DB_USER: chartwarden
+      DB_PASSWORD: chartwarden_dev_password
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # Authentication
+      BETTER_AUTH_SECRET: dev-secret-change-in-production-min-32-chars!!
+      BETTER_AUTH_URL: http://localhost:3001
+      JWT_SECRET: dev-jwt-secret-change-in-production-min-32-chars!!
+      JWT_EXPIRES_IN: 24h
+      ADMIN_CREATION_SECRET: dev-admin-secret
+
+      # CORS (allow all in development)
+      CORS_ORIGIN: "*"
+    ports:
+      - "3001:3001"
+      - "9229:9229"  # Node.js debugger
+    volumes:
+      # Mount source code for hot reload
+      - ./services/api/src:/app/src
+      - ./services/api/server.js:/app/server.js
+      - ./services/api/start.js:/app/start.js
+      - ./services/api/package.json:/app/package.json
+      - ./services/api/drizzle.config.js:/app/drizzle.config.js
+      # Logs and storage
+      - ./services/api/logs:/app/logs
+      - ./services/api/storage:/app/storage
+      - ./services/api/uploads:/app/uploads
+      # Prevent overwriting node_modules
+      - /app/node_modules
+    networks:
+      - chartwarden-dev-network
+    command: npm run dev
+
+  # ---------------------------------------------------------------------------
+  # Chartwarden Web (Development with Hot Reload)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: development
+    container_name: chartwarden-web-dev
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      WATCHPACK_POLLING: "true"  # Enable polling for hot reload in Docker
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source code for hot reload
+      - ./apps/web/src:/app/src
+      - ./apps/web/public:/app/public
+      - ./apps/web/next.config.js:/app/next.config.js
+      - ./apps/web/tailwind.config.ts:/app/tailwind.config.ts
+      - ./apps/web/postcss.config.js:/app/postcss.config.js
+      - ./apps/web/tsconfig.json:/app/tsconfig.json
+      # Prevent overwriting node_modules and .next
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - chartwarden-dev-network
+    command: npm run dev
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin for Database Management
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: chartwarden-pgadmin-dev
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@chartwarden.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    networks:
+      - chartwarden-dev-network
+    depends_on:
+      - postgres
+
+  # ---------------------------------------------------------------------------
+  # Redis Commander for Redis Management
+  # ---------------------------------------------------------------------------
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: chartwarden-redis-commander-dev
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+    ports:
+      - "8081:8081"
+    networks:
+      - chartwarden-dev-network
+    depends_on:
+      - redis
+
+  # ---------------------------------------------------------------------------
+  # Mailhog for Email Testing
+  # ---------------------------------------------------------------------------
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: chartwarden-mailhog-dev
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - chartwarden-dev-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  chartwarden-dev-network:
+    driver: bridge
+    name: chartwarden-dev-network
+
+# =============================================================================
+# Volumes (Development Data)
+# =============================================================================
+volumes:
+  postgres_dev_data:
+    name: chartwarden-postgres-dev-data
+  redis_dev_data:
+    name: chartwarden-redis-dev-data
+  pgadmin_dev_data:
+    name: chartwarden-pgadmin-dev-data

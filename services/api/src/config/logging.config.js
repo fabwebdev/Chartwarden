@@ -7,6 +7,7 @@
  * - Redacts all PII (Personally Identifiable Information)
  * - Structured logging for audit trails
  * - Environment-specific log levels
+ * - Log aggregation support (DataDog, LogDNA, Papertrail, etc.)
  */
 
 import pino from 'pino';
@@ -14,6 +15,136 @@ import pino from 'pino';
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isProduction = process.env.NODE_ENV === 'production';
 const isTest = process.env.NODE_ENV === 'test';
+
+/**
+ * Log Aggregation Configuration
+ * Supports multiple log aggregation services via environment variables
+ *
+ * Supported services:
+ * - DataDog: Set LOG_AGGREGATOR=datadog and DD_API_KEY
+ * - LogDNA: Set LOG_AGGREGATOR=logdna and LOGDNA_KEY
+ * - Papertrail: Set LOG_AGGREGATOR=papertrail and PAPERTRAIL_HOST/PORT
+ * - Logtail: Set LOG_AGGREGATOR=logtail and LOGTAIL_TOKEN
+ * - Console: Default (JSON in production, pretty in development)
+ */
+const getLogTransport = () => {
+  const aggregator = process.env.LOG_AGGREGATOR?.toLowerCase();
+
+  // In test mode, no transport needed
+  if (isTest) {
+    return undefined;
+  }
+
+  // Development mode: pretty print
+  if (isDevelopment && !aggregator) {
+    return {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'SYS:standard',
+        ignore: 'pid,hostname',
+        singleLine: false,
+        messageFormat: '{levelLabel} - {msg}'
+      }
+    };
+  }
+
+  // Log aggregation transports for production
+  switch (aggregator) {
+    case 'datadog':
+      // DataDog transport - logs are sent to stdout in JSON format
+      // DataDog agent or Fluent Bit collects and forwards them
+      return {
+        target: 'pino/file',
+        options: {
+          destination: 1, // stdout
+          mkdir: false
+        }
+      };
+
+    case 'logdna':
+      // LogDNA/Mezmo transport
+      // Requires: npm install pino-logdna
+      if (process.env.LOGDNA_KEY) {
+        return {
+          target: 'pino-logdna',
+          options: {
+            key: process.env.LOGDNA_KEY,
+            app: process.env.LOG_APP_NAME || 'chartwarden-api',
+            env: process.env.NODE_ENV || 'production',
+            hostname: process.env.HOSTNAME || 'chartwarden'
+          }
+        };
+      }
+      break;
+
+    case 'logtail':
+      // Logtail (Better Stack) transport
+      // Requires: npm install @logtail/pino
+      if (process.env.LOGTAIL_TOKEN) {
+        return {
+          target: '@logtail/pino',
+          options: {
+            sourceToken: process.env.LOGTAIL_TOKEN
+          }
+        };
+      }
+      break;
+
+    case 'loki':
+      // Grafana Loki transport
+      // Requires: npm install pino-loki
+      if (process.env.LOKI_HOST) {
+        return {
+          target: 'pino-loki',
+          options: {
+            host: process.env.LOKI_HOST,
+            labels: {
+              app: process.env.LOG_APP_NAME || 'chartwarden-api',
+              env: process.env.NODE_ENV || 'production'
+            }
+          }
+        };
+      }
+      break;
+
+    case 'file':
+      // File-based logging for log aggregation via file shipping
+      if (process.env.LOG_FILE_PATH) {
+        return {
+          target: 'pino/file',
+          options: {
+            destination: process.env.LOG_FILE_PATH,
+            mkdir: true
+          }
+        };
+      }
+      break;
+
+    default:
+      // Default: JSON to stdout (works with most log aggregators)
+      // Cloud platforms like Render, Railway, Fly.io capture stdout automatically
+      if (isProduction) {
+        return undefined; // Pino outputs JSON to stdout by default
+      }
+  }
+
+  // Fallback to pretty print in development
+  if (isDevelopment) {
+    return {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'SYS:standard',
+        ignore: 'pid,hostname',
+        singleLine: false,
+        messageFormat: '{levelLabel} - {msg}'
+      }
+    };
+  }
+
+  return undefined;
+};
 
 /**
  * HIPAA PHI/PII Redaction Paths
@@ -211,17 +342,8 @@ export const loggerConfig = {
     }
   },
 
-  // Pretty print in development, JSON in production
-  transport: isDevelopment && !isTest ? {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'SYS:standard',
-      ignore: 'pid,hostname',
-      singleLine: false,
-      messageFormat: '{levelLabel} - {msg}'
-    }
-  } : undefined,
+  // Transport configuration based on environment and aggregator settings
+  transport: getLogTransport(),
 
   // Custom serializers for objects
   serializers: {

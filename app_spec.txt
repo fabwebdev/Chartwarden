@@ -1,0 +1,2530 @@
+# Chartwarden - Comprehensive Project Overview
+
+---
+
+## Executive Summary
+
+**Chartwarden** is a HIPAA-compliant Electronic Health Record (EHR) system specifically designed for hospice care providers. Built on modern web technologies, it combines regulatory compliance with superior developer experience and user-centric design.
+
+### Key Highlights
+- **Industry Focus:** Hospice and palliative care
+- **Compliance:** HIPAA, CMS, 21 CFR Part 11 (Electronic Signatures)
+- **Architecture:** Monorepo with Turborepo orchestration
+- **Stack:** Fastify (Backend) + Next.js (Frontend) + PostgreSQL + Redis
+- **Security:** RBAC, ABAC, CASL, Better Auth, Argon2 hashing
+- **Performance:** High-performance Fastify API, optimized queries, caching
+- **Developer Experience:** TypeScript, shared types, hot reload, integrated testing
+
+### Project Goals
+1. **Clinical Excellence:** Streamline hospice care workflows and documentation
+2. **Regulatory Compliance:** Meet HIPAA, CMS, and FDA requirements out-of-the-box
+3. **Revenue Optimization:** Comprehensive revenue cycle management (eligibility, claims, ERA, denials)
+4. **User Experience:** Intuitive, responsive interface for clinical staff
+5. **Scalability:** Support multi-facility hospice organizations
+6. **Interoperability:** EDI integration, clearinghouse support, standard formats
+
+---
+
+## Architecture Overview
+
+### High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Chartwarden Monorepo                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐ │
+│  │  Frontend    │    │   Backend    │    │   Shared     │ │
+│  │  (Next.js)   │◄──►│  (Fastify)   │◄──►│  Packages    │ │
+│  │  Port 3000   │    │  Port 3001   │    │  (Types/     │ │
+│  │              │    │              │    │   Utils)     │ │
+│  └──────┬───────┘    └──────┬───────┘    └──────────────┘ │
+│         │                   │                              │
+│         │                   │                              │
+│         │            ┌──────▼───────┐                      │
+│         │            │  PostgreSQL  │                      │
+│         │            │   (Drizzle   │                      │
+│         │            │     ORM)     │                      │
+│         │            └──────┬───────┘                      │
+│         │                   │                              │
+│         │            ┌──────▼───────┐                      │
+│         └───────────►│    Redis     │                      │
+│                      │   (Cache/    │                      │
+│                      │   Sessions)  │                      │
+│                      └──────────────┘                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+External Integrations:
+├── Clearinghouses (EDI 837, 270, 835)
+├── Email (SMTP)
+├── OAuth Providers (Google, GitHub)
+└── PDF Generation (jsPDF)
+```
+
+### Design Principles
+
+1. **Separation of Concerns:** Clear boundaries between frontend, backend, and shared code
+2. **Type Safety:** End-to-end TypeScript with shared type definitions
+3. **API-First:** RESTful API design with consistent response formats
+4. **Security by Default:** Authentication, authorization, audit logging on every request
+5. **Performance:** Caching, connection pooling, optimized queries
+6. **Maintainability:** Modular code, comprehensive tests, clear documentation
+7. **Compliance:** HIPAA, CMS, 21 CFR Part 11 baked into the architecture
+
+---
+
+## Technology Stack
+
+### Backend (services/api)
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **Node.js** | >=20.0.0 | Runtime environment |
+| **Fastify** | Latest | High-performance web framework |
+| **Drizzle ORM** | Latest | Type-safe database ORM |
+| **PostgreSQL** | 16 | Primary database |
+| **Better Auth** | Latest | Authentication library |
+| **Redis** | 7 | Caching and session storage |
+| **Socket.IO** | Latest | Real-time communication |
+| **Jest** | Latest | Testing framework |
+| **Pino** | Latest | High-performance logging |
+| **Argon2** | Latest | Password hashing (HIPAA-compliant) |
+| **Nodemailer** | Latest | Email notifications |
+| **Helmet** | Latest | Security headers |
+| **CASL** | Latest | Authorization (ABAC) |
+
+### Frontend (apps/web)
+
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| **Next.js** | 14+ | React framework with App Router |
+| **React** | 18+ | UI library |
+| **TypeScript** | Latest | Type safety |
+| **Material-UI** | 5+ | Component library |
+| **Tailwind CSS** | Latest | Utility-first CSS |
+| **Zustand** | Latest | State management |
+| **Axios** | Latest | HTTP client |
+| **Formik** | Latest | Form management |
+| **Yup** | Latest | Form validation |
+| **jsPDF** | Latest | PDF generation |
+| **Framer Motion** | Latest | Animations |
+| **React Table** | 7 | Data tables |
+| **Notistack** | Latest | Toast notifications |
+| **date-fns** | Latest | Date utilities |
+
+### Build & Development Tools
+
+| Technology | Purpose |
+|-----------|---------|
+| **Turborepo** | Monorepo build orchestration |
+| **npm Workspaces** | Package management |
+| **Docker Compose** | Local development environment |
+| **Drizzle Kit** | Database migrations |
+| **ESLint** | Code linting |
+| **Prettier** | Code formatting |
+
+---
+
+## Monorepo Structure
+
+### Directory Layout
+
+```
+Chartwarden/
+├── apps/
+│   └── web/                          # Next.js frontend application
+│       ├── src/
+│       │   ├── app/                  # Next.js App Router pages
+│       │   ├── components/           # Reusable UI components
+│       │   ├── sections/             # Feature-specific sections
+│       │   ├── layout/               # Layout components
+│       │   ├── api/                  # API client functions
+│       │   ├── store/                # Zustand state stores
+│       │   ├── hooks/                # Custom React hooks
+│       │   ├── contexts/             # React contexts
+│       │   ├── themes/               # MUI theme configuration
+│       │   ├── types/                # Frontend-specific types
+│       │   ├── utils/                # Frontend utilities
+│       │   └── menu-items/           # Navigation menu config
+│       ├── public/                   # Static assets
+│       ├── package.json
+│       └── next.config.js
+│
+├── services/
+│   └── api/                          # Fastify backend API
+│       ├── src/
+│       │   ├── routes/               # API route definitions
+│       │   ├── controllers/          # Request handlers
+│       │   │   ├── patient/          # Patient-specific controllers (30 files)
+│       │   │   └── *.controller.js   # Core controllers (31 files)
+│       │   ├── services/             # Business logic (30 files)
+│       │   ├── middleware/           # Request middleware (15 files)
+│       │   ├── config/               # Configuration files (28 files)
+│       │   ├── db/
+│       │   │   ├── schemas/          # Database schemas (95 files)
+│       │   │   └── index.js          # Database connection
+│       │   ├── console/              # CLI utilities
+│       │   └── utils/                # Backend utilities
+│       ├── database/
+│       │   └── migrations/           # Database migration files
+│       ├── tests/                    # Jest test files (20+ files)
+│       ├── server.js                 # Main server file (773 lines)
+│       ├── start.js                  # Server startup script
+│       ├── package.json
+│       └── drizzle.config.js         # Drizzle ORM configuration
+│
+├── packages/
+│   ├── types/                        # @chartwarden/types
+│   │   └── src/
+│   │       ├── models.ts             # Domain models (User, Patient, etc.)
+│   │       ├── api.ts                # API request/response types
+│   │       └── index.ts              # Barrel exports
+│   │
+│   └── utils/                        # @chartwarden/utils
+│       └── src/
+│           └── index.ts              # Shared utility functions
+│
+├── infra/                            # Infrastructure configuration
+│   └── docker/
+│       └── init-db.sql               # Database initialization
+│
+├── .automaker/                       # AutoMaker working directory
+│   ├── categories.json               # AutoMaker categories
+│   └── context/                      # Context metadata
+│
+├── docker-compose.yml                # Local dev services (PostgreSQL, Redis, pgAdmin)
+├── turbo.json                        # Turborepo configuration
+├── package.json                      # Root workspace configuration
+├── .env.example                      # Environment variable template
+├── CLAUDE.md                         # Project instructions for AI
+└── README.md                         # Quick start guide
+```
+
+### Workspace Configuration
+
+**Root package.json workspaces:**
+- `apps/*` - Frontend applications
+- `services/*` - Backend services
+- `packages/*` - Shared packages
+
+**Inter-package dependencies:**
+- Backend depends on: `@chartwarden/types`, `@chartwarden/utils`
+- Frontend depends on: `@chartwarden/types` (future), `@chartwarden/utils` (future)
+- Enables type sharing and code reuse across the monorepo
+
+---
+
+## Backend Architecture
+
+### Server Configuration (server.js)
+
+**File:** `services/api/server.js` (773 lines)
+
+**Key Features:**
+- Fastify server with Better Auth integration
+- Socket.IO for real-time features (team communication, notifications)
+- HIPAA-compliant logging with Pino (PHI/PII redaction)
+- Comprehensive security middleware
+- Session management (8-hour max, 15-minute idle timeout)
+- Graceful shutdown handling
+
+**Security Middleware Stack:**
+1. **Helmet** - Security headers (XSS, clickjacking, MIME sniffing protection)
+2. **CORS** - Cross-origin resource sharing (configured for localhost dev)
+3. **Rate Limiting** - 100 requests/minute per IP (configurable)
+4. **CSRF Protection** - Token-based CSRF prevention
+5. **Cookie Security** - Secure, httpOnly, sameSite cookies
+6. **Origin Verification** - Validate request origins
+7. **Session Timeout** - Automatic session expiration (HIPAA requirement)
+
+**Performance Features:**
+- Connection pooling (PostgreSQL)
+- Redis caching (sessions, frequently accessed data)
+- Compression (gzip/deflate)
+- Keep-alive connections
+
+### API Route Structure
+
+**Main Router:** `services/api/src/routes/api.routes.js`
+
+All routes are prefixed with `/api` and organized by domain:
+
+#### Patient Management Routes (35+ endpoints)
+- `/api/patient` - CRUD operations
+- `/api/address` - Patient addresses
+- `/api/admission-information` - Admission data
+- `/api/benefit-periods` - Benefit period tracking
+- `/api/cardiac-assessment` - Cardiac assessments
+- `/api/discharge` - Discharge management
+- `/api/dme-provider` - DME provider information
+- `/api/dnr` - Do Not Resuscitate orders
+- `/api/emergency-preparedness-level` - Emergency preparedness
+- `/api/endocrine-assessment` - Endocrine assessments
+- `/api/hematological-assessment` - Hematological assessments
+- `/api/integumentary-assessment` - Integumentary assessments
+- `/api/liaison-primary` - Primary liaisons
+- `/api/liaison-secondary` - Secondary liaisons
+- `/api/living-arrangements` - Living arrangements
+- `/api/nursing-clinical-notes` - Clinical documentation
+- `/api/nutrition-assessment` - Nutrition assessments
+- `/api/pain` - Pain management (12+ pain-related tables)
+- `/api/patient-identifiers` - Patient identifiers
+- `/api/patient-pharmacy` - Pharmacy information
+- `/api/payer-information` - Insurance/payer data
+- `/api/primary-diagnosis` - Primary diagnoses
+- `/api/prognosis` - Prognosis tracking
+- `/api/race-ethnicity` - Demographics
+- `/api/signature` - Electronic signatures (21 CFR Part 11)
+- `/api/spiritual-preference` - Spiritual preferences
+- `/api/vital-signs` - Vital signs monitoring
+- `/api/visit-information` - Visit tracking
+
+#### Clinical Routes (10+ endpoints)
+- `/api/encounter` - Patient encounters (admissions, visits, discharges)
+- `/api/hope-assessment` - HOPE comprehensive assessments
+- `/api/care-plan` - Care planning and goals
+- `/api/idg-meeting` - Interdisciplinary Group meetings (14-day requirement)
+- `/api/certification` - Physician certifications (Face-to-Face, recerts)
+- `/api/medication` - Medication management (orders, administration, reconciliation)
+- `/api/bereavement` - Bereavement services
+- `/api/qapi` - Quality Assurance/Performance Improvement
+
+#### Billing & Revenue Cycle Routes (15+ endpoints)
+
+**Phase 2 - Core Billing:**
+- `/api/billing` - Billing operations
+- `/api/cap-tracking` - Cap tracking (Phase 2A)
+- `/api/cbsa` - Core-Based Statistical Area lookups (Phase 2A)
+- `/api/claim-validation` - Claim scrubbing and validation (Phase 2B)
+- `/api/clearinghouse` - EDI transmission (Phase 2C)
+- `/api/analytics` - Analytics and reporting (Phase 2D)
+
+**Phase 3 - Advanced RCM:**
+- `/api/eligibility` - Insurance eligibility verification 270/271 (Phase 3A)
+- `/api/era` - Electronic Remittance Advice processing 835 (Phase 3B)
+- `/api/denials` - Denial management and appeals (Phase 3C)
+- `/api/revenue` - Revenue recognition and forecasting (Phase 3D)
+
+#### Administrative Routes
+- `/api/staff` - Staff management
+- `/api/scheduling` - Visit scheduling
+- `/api/reports` - Report generation
+- `/api/user` - User management
+- `/api/permission` - Permission management
+- `/api/audit` - Audit log access (HIPAA compliance)
+
+#### Authentication Routes
+- `/api/auth/sign-in` - Email/password login
+- `/api/auth/sign-up` - User registration
+- `/api/auth/sign-out` - Logout
+- `/api/auth/session` - Get current session
+- `/api/auth/google` - Google OAuth
+- `/api/auth/github` - GitHub OAuth
+
+#### Demo Routes (Development)
+- `/api/rbac` - RBAC demo endpoints
+- `/api/abac-demo` - ABAC demo endpoints
+- `/api/casl-demo` - CASL demo endpoints
+
+#### Health Check
+- `/api/health` - Database connection and server status
+
+### Controller Layer
+
+**Location:** `services/api/src/controllers/`
+
+**Total Controllers:** 61 (31 core + 30 patient-specific)
+
+**Core Controllers:**
+- `Patient.controller.js` - Patient CRUD operations
+- `Encounter.controller.js` (54KB) - Comprehensive encounter management
+- `HOPEAssessment.controller.js` (41KB) - HOPE assessment forms
+- `IDGMeeting.controller.js` (33KB) - IDG meeting documentation
+- `Medication.controller.js` - Medication workflows
+- `Billing.controller.js` (28KB) - Billing and claims
+- `Certification.controller.js` (24KB) - Certification workflows
+- `Bereavement.controller.js` - Bereavement services
+- `Scheduling.controller.js` (30KB) - Visit scheduling
+- `Staff.controller.js` - Staff management
+- `Reports.controller.js` (32KB) - Report generation
+- `Analytics.controller.js` - Analytics dashboards
+- And 19 more...
+
+**Patient-Specific Controllers (services/api/src/controllers/patient/):**
+- Address, Admission, BenefitPeriod, CardiacAssessment, Discharge, DNR
+- EndocrineAssessment, HematologicalAssessment, IntegumentaryAssessment
+- NursingClinicalNote (25KB), Nutrition, Pain (multiple), Prognosis
+- Signature, VitalSigns, VisitInformation, and more...
+
+**Controller Responsibilities:**
+1. Request validation (input sanitization)
+2. Authorization checks (RBAC/ABAC/CASL)
+3. Business logic delegation to services
+4. Response formatting (consistent API response structure)
+5. Error handling and logging
+6. Audit logging for HIPAA compliance
+
+### Service Layer
+
+**Location:** `services/api/src/services/`
+
+**Total Services:** 30 files
+
+**Key Services:**
+
+**Analytics & Reporting:**
+- `Analytics.service.js` (25KB) - Analytics engine with dashboard metrics
+- `ExcelService.js` - Excel report generation
+- `PdfService.js` - PDF report generation
+
+**Billing & Revenue:**
+- `ClaimScrubber.service.js` (24KB) - Claim validation and scrubbing
+- `EDIGenerator.service.js` (23KB) - EDI 837 file generation
+- `EDI270Generator.service.js` (14KB) - Eligibility request generation
+- `EDI271Parser.service.js` (15KB) - Eligibility response parsing
+- `EDI835Parser.service.js` (18KB) - ERA (remittance advice) parsing
+- `EligibilityVerifier.service.js` (18KB) - Insurance eligibility checks
+- `PaymentPosting.service.js` (20KB) - Automated payment posting
+- `DenialManagement.service.js` (15KB) - Denial tracking and appeals
+- `DenialAnalytics.service.js` (16KB) - Denial pattern analysis
+- `DenialCodes.service.js` (28KB) - Denial code management
+- `RevenueAccrual.service.js` (18KB) - Revenue accrual calculations
+- `RevenueForecasting.service.js` (11KB) - Revenue forecasting models
+- `CBSALookupService.js` (15KB) - CBSA code lookups for wage index
+
+**Security & Compliance:**
+- `AuditService.js` (14KB) - Audit logging (HIPAA requirement)
+- `HashService.js` - Password hashing (Argon2)
+- `PermissionService.js` - Permission management
+- `SessionService.js` - Session management
+
+**Infrastructure:**
+- `CacheService.js` - Node-cache wrapper for in-memory caching
+- `LoggerService.js` - Pino logger with PHI/PII redaction
+- `MailService.js` - Email notifications (Nodemailer)
+- `FilesystemService.js` - File operations
+- `QueueService.js` - Job queue management
+
+**Clinical:**
+- `ICD10.service.js` - ICD-10 code lookups and validation
+
+**Service Responsibilities:**
+1. Core business logic
+2. Database transactions
+3. External API integration
+4. Data transformation
+5. Complex calculations
+6. Caching strategies
+
+### Middleware Layer
+
+**Location:** `services/api/src/middleware/`
+
+**Total Middleware:** 15 files
+
+**Authentication & Authorization:**
+- `betterAuth.middleware.js` - Better Auth integration
+- `rbac.middleware.js` - Role-Based Access Control
+- `abac.middleware.js` - Attribute-Based Access Control
+- `casl.middleware.js` - CASL ability checks
+- `permission.middleware.js` - Permission verification
+
+**Security:**
+- `csrf.middleware.js` - CSRF token validation
+- `cors.middleware.js` - CORS handling
+- `origin.middleware.js` - Origin verification
+- `cookie-fix.middleware.js` - Cookie handling fixes
+- `session-timeout.middleware.js` - Session expiration
+
+**Compliance:**
+- `audit.middleware.js` - Automatic audit logging for all requests
+
+**Request Processing:**
+- `validation.middleware.js` - Request validation (Joi/Yup schemas)
+- `error.middleware.js` - Global error handler
+
+**Middleware Chain (Typical Request):**
+```
+Request
+  ↓
+1. CORS → Check origin
+2. CSRF → Validate token
+3. Auth → Verify session
+4. RBAC → Check role
+5. ABAC/CASL → Check permissions
+6. Validation → Validate input
+7. Audit → Log request
+8. Controller → Handle request
+9. Audit → Log response
+10. Error Handler → Catch errors
+  ↓
+Response
+```
+
+---
+
+## Frontend Architecture
+
+### Next.js App Router Structure
+
+**Location:** `apps/web/src/app/`
+
+**Framework:** Next.js 14+ with App Router (React Server Components)
+
+### Route Groups
+
+**1. (auth) - Authentication Pages (No Layout)**
+- `/login` - User login
+- `/register` - User registration
+- `/forgot-password` - Password reset request
+- `/check-mail` - Email confirmation
+
+**2. (dashboard) - Main Application (Dashboard Layout)**
+
+**Root Dashboard:**
+- `/sample-page` - Default landing page
+
+**Patient Management:**
+- `/patients` - Patient list (search, filter, pagination)
+- `/patients/add-new-patient` - Add new patient wizard
+- `/patients/edit-patient/[id]` - Edit patient demographics
+- `/patients/[tab]/[id]` - Patient detail tabs
+  - Tabs: Overview, Encounters, Medications, Care Plan, Documents, etc.
+- `/patients/nursing-clinical-note/[id]` - Clinical note editor
+
+**Administration:**
+- `/users` - User management
+- `/roles` - Role management
+- `/permissions` - Permission management
+
+**Communication:**
+- `/teamcom` - Team communication (Socket.IO real-time chat)
+
+**3. (simple) - Simple Layout**
+- `/contact-us` - Contact page
+
+**4. (blank) - Blank Layout**
+- Various utility pages
+
+### Component Organization
+
+**Location:** `apps/web/src/components/`
+
+**Structure:**
+```
+components/
+├── @extended/              # Extended MUI components
+│   ├── AnimateButton.tsx
+│   ├── Breadcrumbs.tsx
+│   ├── Chip.tsx
+│   └── ...
+├── cards/                  # Card components
+│   ├── AuthFooter.tsx
+│   ├── statistics/
+│   └── ...
+├── logo/                   # Logo components
+│   ├── LogoIcon.tsx
+│   └── LogoMain.tsx
+├── third-party/            # Third-party integrations
+│   ├── ReactTable.tsx
+│   ├── SimpleBar.tsx
+│   └── ...
+├── MainCard.tsx            # Primary card component
+├── PrimaryDiagnosisSearch.tsx  # ICD-10 diagnosis search
+├── PatientHistoryAllergy.tsx   # Allergy history display
+├── PatientHistoryMedications.tsx  # Medication history
+├── CarePeriodsEditor.tsx   # Care period management
+└── CircularLoader.tsx      # Loading spinner
+```
+
+**Component Principles:**
+- Reusable, self-contained components
+- Material-UI base with custom extensions
+- TypeScript for type safety
+- Consistent prop interfaces
+- Accessibility (ARIA labels, keyboard navigation)
+
+### Section Organization
+
+**Location:** `apps/web/src/sections/`
+
+**Feature-specific sections:**
+```
+sections/
+├── auth/                   # Auth UI sections
+│   ├── AuthWrapper.tsx
+│   ├── auth-forms/
+│   │   ├── AuthLogin.tsx
+│   │   ├── AuthRegister.tsx
+│   │   └── ...
+│   └── ...
+├── apps/                   # Application sections
+│   ├── patient/
+│   ├── profiles/
+│   └── ...
+├── dashboard/              # Dashboard sections
+│   ├── default/
+│   └── analytics/
+├── components-overview/    # Component demo sections
+└── tables/                 # Table sections
+```
+
+### API Client Layer
+
+**Location:** `apps/web/src/api/`
+
+**Main API Client:** `patient.ts` (33KB)
+
+**Features:**
+- Axios-based HTTP client
+- Centralized error handling
+- Request/response interceptors
+- Automatic token injection
+- Retry logic
+- Type-safe API calls
+
+**Example API Functions:**
+```typescript
+// GET /api/patients
+export const getPatients = async (params?: PaginatedRequest) => {
+  const response = await axios.get<ApiResponse<Patient[]>>('/api/patients', { params });
+  return response.data;
+};
+
+// POST /api/patients
+export const createPatient = async (patient: Partial<Patient>) => {
+  const response = await axios.post<ApiResponse<Patient>>('/api/patients', patient);
+  return response.data;
+};
+
+// PATCH /api/patients/:id
+export const updatePatient = async (id: string, updates: Partial<Patient>) => {
+  const response = await axios.patch<ApiResponse<Patient>>(`/api/patients/${id}`, updates);
+  return response.data;
+};
+```
+
+**Other API Clients:**
+- `cart.ts` - Shopping cart API (demo)
+- `invoice.ts` - Invoice API (demo)
+- `generate-pdf.ts` - PDF generation endpoint
+- `_middleware.ts` - API middleware configuration
+
+### State Management
+
+**Primary Tool:** Zustand (lightweight, React hooks-based)
+
+**Patient Store:** `apps/web/src/store/patientStore.ts`
+
+**Store Features:**
+```typescript
+interface PatientStore {
+  // State
+  patients: Patient[];
+  selectedPatient: Patient | null;
+  loading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchPatients: () => Promise<void>;
+  selectPatient: (id: string) => void;
+  updatePatient: (id: string, updates: Partial<Patient>) => Promise<void>;
+  clearError: () => void;
+}
+```
+
+**Benefits of Zustand:**
+- No boilerplate (unlike Redux)
+- TypeScript-first
+- React hooks integration
+- DevTools support
+- Small bundle size (~1KB)
+
+### Navigation & Menus
+
+**Location:** `apps/web/src/menu-items/`
+
+**Menu Configuration:**
+- `index.tsx` - Main menu structure
+- `hospice.tsx` - Hospice-specific menu items
+- `users.tsx` - User menu items
+- `user-management.tsx` - User management menu
+- `applications.tsx` - Application menu
+- `sample-page.tsx` - Sample page menu
+
+**Menu Structure:**
+```typescript
+{
+  id: 'group-hospice',
+  title: 'Hospice',
+  type: 'group',
+  children: [
+    {
+      id: 'patients',
+      title: 'Patients',
+      type: 'item',
+      url: '/patients',
+      icon: icons.UserOutlined,
+      breadcrumbs: true
+    },
+    // ... more items
+  ]
+}
+```
+
+### Theming
+
+**Location:** `apps/web/src/themes/`
+
+**Theme System:**
+- Material-UI theme customization
+- Light/dark mode support (future)
+- Custom color palette
+- Typography scale
+- Component overrides
+- Responsive breakpoints
+
+**Key Configuration:**
+- Primary color: Custom blue
+- Font family: Inter
+- Border radius: 8px
+- Spacing unit: 8px
+
+---
+
+## Database Design
+
+### Database Overview
+
+**Database Management System:** PostgreSQL 16
+**ORM:** Drizzle ORM (type-safe, lightweight)
+**Total Tables:** 95+ tables
+**Migration Tool:** Drizzle Kit
+
+### Schema Organization
+
+**Location:** `services/api/src/db/schemas/`
+
+**Schema Files:** 95 files (one per table)
+
+### Schema Categories
+
+#### 1. Authentication & User Management (8 tables)
+- `users` - User accounts
+- `roles` - User roles (admin, doctor, nurse, patient, staff)
+- `permissions` - Granular permissions
+- `user_has_roles` - User-role associations (many-to-many)
+- `role_has_permissions` - Role-permission associations (many-to-many)
+- `sessions` - Active sessions (Better Auth)
+- `accounts` - OAuth accounts (Google, GitHub)
+- `verifications` - Email verification tokens
+
+#### 2. Patient Core (10+ tables)
+- `patients` - Patient demographics
+- `patient_identifiers` - MRN, SSN, etc.
+- `patient_pharmacy` - Pharmacy information
+- `addresses` - Patient addresses
+- `race_ethnicity` - Demographic information
+- `spiritual_preferences` - Spiritual/religious preferences
+- `living_arrangements` - Housing status
+- `liaisons` (primary/secondary) - Emergency contacts
+- `dme_providers` - Durable Medical Equipment providers
+- `emergency_preparedness_level` - Emergency preparedness status
+
+#### 3. Clinical Documentation (15+ tables)
+- `encounters` - Patient encounters (admissions, visits, discharges)
+- `medications` - Medication orders and administration
+- `vital_signs` - Vital sign measurements
+- `nursing_clinical_notes` - Nursing documentation
+- `hope_assessments` - HOPE comprehensive assessments
+- `idg_meetings` - Interdisciplinary Group meetings
+- `care_planning` - Care plans and goals
+- `certifications` - Physician certifications (F2F, recerts)
+- `benefit_periods` - Medicare benefit periods
+- `admission_information` - Admission details
+- `discharge` / `discharge_sections` - Discharge planning
+- `visit_information` - Visit tracking
+- `prognosis` - Prognosis documentation
+
+#### 4. Clinical Assessments (12+ tables)
+- `cardiac_assessment` - Cardiac system assessment
+- `endocrine_assessment` - Endocrine system assessment
+- `hematological_assessment` - Hematological system assessment
+- `integumentary_assessment` - Skin/wound assessment
+- `nutrition_assessment` - Nutrition and hydration assessment
+- Plus 7+ other body system assessments
+
+#### 5. Pain Management (12+ tables)
+- `pain_assessment` - General pain assessment
+- `pain_screening` - Pain screening tool
+- `pain_vital_signs` - Pain as 5th vital sign
+- `painad_data` - PAINAD scale (dementia patients)
+- `flacc_data` - FLACC scale (pediatric/non-verbal)
+- `comprehensive_pain_assessment` - Detailed pain assessment
+- Plus 6+ other pain-related tables
+
+**Pain Assessment Tools:**
+- Numeric Rating Scale (0-10)
+- Wong-Baker FACES scale
+- PAINAD (Pain Assessment in Advanced Dementia)
+- FLACC (Face, Legs, Activity, Cry, Consolability)
+- Comprehensive pain assessment (location, quality, triggers, interventions)
+
+#### 6. Billing & Revenue Cycle (15+ tables)
+- `billing` - Billing records
+- `benefit_periods` - Medicare benefit periods
+- `certifications` - Physician certifications for billing
+- `clearinghouse` - Clearinghouse submissions
+- `eligibility` - Eligibility verification results
+- `era` - Electronic Remittance Advice (835)
+- `denial_management` - Denial tracking and appeals
+- `revenue_recognition` - Revenue accrual and recognition
+- `cap_tracking` - Medicare cap tracking
+- `cbsa` - Core-Based Statistical Area codes
+- Plus 5+ more billing-related tables
+
+#### 7. Staff & Operations (10+ tables)
+- `staff_management` - Staff profiles
+- `scheduling` - Visit scheduling
+- `bereavement` - Bereavement services
+- `qapi` - Quality Assurance/Performance Improvement
+- Plus 6+ more operational tables
+
+#### 8. Compliance & Audit (5+ tables)
+- `audit_logs` - Comprehensive audit trail (HIPAA requirement)
+- `signatures` - Electronic signatures (21 CFR Part 11)
+- `dnr` - Do Not Resuscitate orders
+- Plus 2+ more compliance tables
+
+### Key Database Features
+
+**1. Type Safety:**
+- Drizzle ORM generates TypeScript types from schemas
+- Compile-time type checking for all queries
+- IntelliSense support for database operations
+
+**2. Relationships:**
+- Foreign key constraints for referential integrity
+- Cascade deletes where appropriate
+- Join tables for many-to-many relationships
+
+**3. Indexing:**
+- Primary keys on all tables
+- Foreign key indexes
+- Full-text search indexes (future)
+- Composite indexes for common queries
+
+**4. Audit Columns:**
+Most tables include:
+- `created_at` - Record creation timestamp
+- `updated_at` - Last modification timestamp
+- `created_by` - User who created the record
+- `updated_by` - User who last modified the record
+
+**5. Soft Deletes:**
+- `deleted_at` column for soft deletes (preserve audit trail)
+- Queries automatically filter soft-deleted records
+
+**6. Data Integrity:**
+- NOT NULL constraints on required fields
+- CHECK constraints for valid values
+- UNIQUE constraints on natural keys (e.g., MRN)
+
+### Migration Strategy
+
+**Migrations Location:** `services/api/database/migrations/`
+
+**Migration Workflow:**
+```bash
+# 1. Modify schema files in src/db/schemas/
+# 2. Generate migration
+npm run db:generate
+
+# 3. Review generated SQL
+# 4. Apply migration
+npm run db:migrate
+
+# 5. Commit migration to version control
+git add services/api/database/migrations/
+git commit -m "feat: add new patient_notes table"
+```
+
+**Migration Naming:**
+- Format: `YYYYMMDDHHMMSS_description.sql`
+- Example: `20250101120000_create_patients_table.sql`
+
+**Migration Best Practices:**
+- Always review generated SQL
+- Test migrations on development database first
+- Include rollback scripts for production deployments
+- Never modify existing migrations (create new ones)
+
+---
+
+## Shared Packages
+
+### @chartwarden/types
+
+**Location:** `packages/types/`
+
+**Purpose:** Shared TypeScript type definitions for domain models and API contracts
+
+**Files:**
+- `src/models.ts` - Core domain models
+- `src/api.ts` - API request/response types
+- `src/index.ts` - Barrel exports
+
+**Domain Models (models.ts):**
+
+```typescript
+// User & Authentication
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum UserRole {
+  ADMIN = 'admin',
+  DOCTOR = 'doctor',
+  NURSE = 'nurse',
+  PATIENT = 'patient',
+  STAFF = 'staff',
+  // Plus 7 more roles
+}
+
+// Patient
+export interface Patient {
+  id: string;
+  mrn: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date;
+  gender: Gender;
+  ssn?: string;
+  levelOfCare: LevelOfCare;
+  status: PatientStatus;
+  admissionDate?: Date;
+  dischargeDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
+  UNKNOWN = 'unknown'
+}
+
+export enum LevelOfCare {
+  ROUTINE_HOME_CARE = 'routine_home_care',
+  CONTINUOUS_HOME_CARE = 'continuous_home_care',
+  GENERAL_INPATIENT = 'general_inpatient',
+  RESPITE_CARE = 'respite_care'
+}
+
+// Encounter
+export interface Encounter {
+  id: string;
+  patientId: string;
+  type: EncounterType;
+  visitType: VisitType;
+  status: EncounterStatus;
+  startDate: Date;
+  endDate?: Date;
+  notes?: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Medication
+export interface Medication {
+  id: string;
+  patientId: string;
+  name: string;
+  dosage: string;
+  route: MedicationRoute;
+  frequency: string;
+  status: MedicationStatus;
+  prescribedBy: string;
+  prescribedDate: Date;
+  discontinuedDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Claim (Billing)
+export interface Claim {
+  id: string;
+  patientId: string;
+  claimNumber: string;
+  dateOfService: Date;
+  billedAmount: number;
+  paidAmount?: number;
+  status: ClaimStatus;
+  submittedDate?: Date;
+  paymentDate?: Date;
+  denialReason?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+**API Types (api.ts):**
+
+```typescript
+// Generic API Response
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: ApiError;
+}
+
+export interface ApiError {
+  code: string;
+  message: string;
+  details?: any;
+}
+
+// Pagination
+export interface PaginatedRequest {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  search?: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// Authentication
+export interface SignInRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignUpRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  expiresAt: Date;
+}
+```
+
+**Benefits:**
+- Single source of truth for types
+- Prevents type drift between frontend and backend
+- Compile-time type checking across the monorepo
+- IntelliSense support in both frontend and backend
+
+### @chartwarden/utils
+
+**Location:** `packages/utils/`
+
+**Purpose:** Shared utility functions for common operations
+
+**Functions (src/index.ts):**
+
+```typescript
+// Date Formatting
+export const formatDate = (date: Date | string): string => {
+  // Format: MM/DD/YYYY
+}
+
+export const formatDateTime = (date: Date | string): string => {
+  // Format: MM/DD/YYYY HH:MM AM/PM
+}
+
+export const calculateAge = (dateOfBirth: Date | string): number => {
+  // Calculate age from DOB
+}
+
+// Phone Number Formatting
+export const formatPhone = (phone: string): string => {
+  // Format: (555) 555-5555
+}
+
+// SSN Formatting/Masking
+export const formatSSN = (ssn: string, mask: boolean = true): string => {
+  // Format: ***-**-1234 (masked) or 123-45-6789 (unmasked)
+}
+
+// Currency Formatting
+export const formatCurrency = (amount: number): string => {
+  // Format: $1,234.56
+}
+
+// Patient Name Formatting
+export const formatPatientName = (
+  firstName: string,
+  lastName: string,
+  middleName?: string
+): string => {
+  // Format: Last, First M.
+}
+
+// Validation
+export const isValidEmail = (email: string): boolean => {
+  // Email regex validation
+}
+
+export const isValidMRN = (mrn: string): boolean => {
+  // MRN format validation
+}
+
+// Text Utilities
+export const truncate = (text: string, maxLength: number): string => {
+  // Truncate with ellipsis
+}
+
+export const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void => {
+  // Debounce function for search inputs
+}
+```
+
+**Benefits:**
+- DRY principle (Don't Repeat Yourself)
+- Consistent formatting across frontend and backend
+- Centralized validation logic
+- Unit tested utilities
+
+---
+
+## Security & Authentication
+
+### Authentication (Better Auth)
+
+**Configuration:** `services/api/src/config/betterAuth.js`
+
+**Authentication Methods:**
+1. **Email/Password**
+   - Argon2 password hashing (HIPAA-compliant, stronger than bcrypt)
+   - Minimum password length: 12 characters
+   - Password complexity requirements:
+     - At least 3 of 4: uppercase, lowercase, numbers, special characters
+   - Breached password check (haveibeenpwned API integration)
+   - Email verification required
+
+2. **OAuth Providers**
+   - Google OAuth 2.0
+   - GitHub OAuth
+   - Extensible for other providers (Microsoft, Apple, etc.)
+
+**Session Management:**
+- Cookie-based sessions (no JWT in localStorage)
+- Session storage: Redis (fast, scalable)
+- Session cookie settings:
+  - `secure: true` (HTTPS only in production)
+  - `httpOnly: true` (prevents XSS attacks)
+  - `sameSite: 'none'` (cross-origin support for dev)
+- Session duration:
+  - Maximum: 8 hours (HIPAA requirement)
+  - Idle timeout: 15 minutes (configurable)
+  - Automatic session extension on activity
+
+**Login Flow:**
+```
+1. User submits email/password
+   ↓
+2. Backend validates credentials
+   ↓
+3. Argon2 hash verification
+   ↓
+4. Session created in Redis
+   ↓
+5. Secure cookie set in response
+   ↓
+6. User redirected to dashboard
+```
+
+### Authorization (RBAC + ABAC + CASL)
+
+Chartwarden implements a **three-layer authorization system** for maximum flexibility and security.
+
+#### Layer 1: Role-Based Access Control (RBAC)
+
+**Configuration:** `services/api/src/config/rbac.js`
+
+**Roles:**
+1. **admin** - Full system access
+2. **doctor** - Clinical access, prescribing privileges
+3. **nurse** - Clinical access, care coordination
+4. **patient** - Limited access to own records
+5. **staff** - Administrative access
+
+**Permissions (14 total):**
+- `patients.view` - View patient list
+- `patients.create` - Add new patients
+- `patients.update` - Edit patient records
+- `patients.delete` - Delete patient records
+- `clinical_notes.view` - View clinical notes
+- `clinical_notes.create` - Create clinical notes
+- `clinical_notes.update` - Edit clinical notes
+- `clinical_notes.delete` - Delete clinical notes
+- `vital_signs.view` - View vital signs
+- `vital_signs.create` - Record vital signs
+- `medications.view` - View medications
+- `medications.create` - Prescribe/order medications
+- `reports.view` - View reports
+- `reports.generate` - Generate reports
+- `admin.manage_users` - User management
+- `admin.manage_roles` - Role management
+- `admin.manage_permissions` - Permission management
+- `admin.view_audit_logs` - Access audit logs
+
+**Role-Permission Matrix:**
+| Permission | Admin | Doctor | Nurse | Patient | Staff |
+|-----------|-------|--------|-------|---------|-------|
+| patients.view | ✓ | ✓ | ✓ | Own only | ✓ |
+| patients.create | ✓ | ✓ | ✓ | ✗ | ✓ |
+| patients.update | ✓ | ✓ | ✓ | ✗ | ✓ |
+| patients.delete | ✓ | ✗ | ✗ | ✗ | ✗ |
+| clinical_notes.* | ✓ | ✓ | ✓ | ✗ | ✗ |
+| medications.* | ✓ | ✓ | ✗ | ✗ | ✗ |
+| admin.* | ✓ | ✗ | ✗ | ✗ | ✗ |
+
+**Middleware:** `services/api/src/middleware/rbac.middleware.js`
+
+**Usage:**
+```javascript
+// Protect route with RBAC
+app.get('/api/patients', {
+  preHandler: [requireAuth, requireRole('nurse')]
+}, async (request, reply) => {
+  // Only nurses, doctors, and admins can access
+});
+```
+
+#### Layer 2: Attribute-Based Access Control (ABAC)
+
+**Configuration:** `services/api/src/config/abac.js`
+
+**Context-Aware Authorization:**
+- User attributes: role, department, facilityId
+- Resource attributes: patientId, createdBy, sensitivity level
+- Environmental attributes: time of day, IP address, device
+
+**Example ABAC Policies:**
+```javascript
+// Nurses can only view patients in their assigned facility
+{
+  role: 'nurse',
+  action: 'view',
+  resource: 'patient',
+  condition: (user, patient) => user.facilityId === patient.facilityId
+}
+
+// Staff can only edit records they created
+{
+  role: 'staff',
+  action: 'update',
+  resource: 'clinical_note',
+  condition: (user, note) => user.id === note.createdBy
+}
+
+// PHI access only during business hours (optional policy)
+{
+  action: 'view',
+  resource: 'patient',
+  condition: () => {
+    const hour = new Date().getHours();
+    return hour >= 6 && hour < 22; // 6 AM - 10 PM
+  }
+}
+```
+
+**Middleware:** `services/api/src/middleware/abac.middleware.js`
+
+#### Layer 3: CASL (Isomorphic Authorization)
+
+**Configuration:** `services/api/src/config/casl.js`
+
+**What is CASL?**
+- Isomorphic authorization library
+- Works on both backend and frontend
+- Fine-grained, subject-based permissions
+- Dynamic ability builder
+
+**CASL Abilities:**
+```javascript
+import { defineAbility } from '@casl/ability';
+
+const defineAbilitiesFor = (user) => {
+  return defineAbility((can, cannot) => {
+    if (user.role === 'admin') {
+      can('manage', 'all'); // Full access
+    }
+
+    if (user.role === 'doctor') {
+      can('read', 'Patient');
+      can('create', 'Patient');
+      can('update', 'Patient');
+      can('create', 'Medication');
+      can('update', 'Medication', { prescribedBy: user.id }); // Only own
+    }
+
+    if (user.role === 'nurse') {
+      can('read', 'Patient');
+      can('create', 'VitalSigns');
+      can('create', 'ClinicalNote');
+      can('update', 'ClinicalNote', { createdBy: user.id }); // Only own
+    }
+
+    if (user.role === 'patient') {
+      can('read', 'Patient', { id: user.patientId }); // Own record only
+      cannot('update', 'Patient');
+    }
+
+    // Global restrictions
+    cannot('delete', 'AuditLog'); // Nobody can delete audit logs
+    cannot('update', 'Patient', { status: 'deceased' }); // Can't edit deceased patients
+  });
+};
+```
+
+**Middleware:** `services/api/src/middleware/casl.middleware.js`
+
+**Frontend Usage (Future):**
+```jsx
+import { Can } from '@casl/react';
+
+<Can I="update" a="Patient" passThrough>
+  {(allowed) => (
+    <Button disabled={!allowed}>Edit Patient</Button>
+  )}
+</Can>
+```
+
+### Audit Logging (HIPAA Compliance)
+
+**Service:** `services/api/src/services/AuditService.js`
+**Middleware:** `services/api/src/middleware/audit.middleware.js`
+**Database Table:** `audit_logs`
+
+**What is Logged:**
+- User ID (who accessed/modified data)
+- Action (view, create, update, delete)
+- Resource type (patient, medication, clinical_note, etc.)
+- Resource ID (specific record accessed)
+- Timestamp (when the action occurred)
+- IP address (where the request originated)
+- User agent (browser/device information)
+- Request parameters (sanitized, PHI removed)
+- Response status (success/failure)
+- Changes made (before/after values for updates)
+
+**Audit Log Example:**
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "userId": "user_123",
+  "action": "update",
+  "resourceType": "patient",
+  "resourceId": "patient_456",
+  "timestamp": "2025-12-30T14:30:00Z",
+  "ipAddress": "192.168.1.100",
+  "userAgent": "Mozilla/5.0 ...",
+  "changes": {
+    "before": { "status": "active" },
+    "after": { "status": "discharged" }
+  },
+  "status": "success"
+}
+```
+
+**Retention:**
+- Audit logs retained for 6 years (HIPAA requirement)
+- Immutable (cannot be modified or deleted)
+- Regular backup to separate storage
+
+### Data Protection
+
+**1. Password Security:**
+- Argon2 hashing (memory-hard algorithm, resistant to GPU attacks)
+- Configurable work factor
+- Salted hashes (unique salt per password)
+- No plain-text passwords stored
+
+**2. PHI/PII Redaction:**
+- Pino logger configured to redact sensitive fields
+- SSN, credit card numbers, passwords automatically masked in logs
+- Custom redaction rules for domain-specific data
+
+**Redacted Fields:**
+```javascript
+const redactPaths = [
+  'password',
+  'ssn',
+  'creditCard',
+  '*.password',
+  'req.headers.authorization',
+  'req.headers.cookie',
+  'body.password',
+  'body.ssn'
+];
+```
+
+**3. Data Encryption:**
+- In-transit: TLS 1.3 (HTTPS)
+- At-rest: PostgreSQL encryption (configurable)
+- Session data: Encrypted in Redis
+- Environment variables: Never committed to version control
+
+**4. Input Validation:**
+- All inputs validated before processing
+- SQL injection prevention (parameterized queries via Drizzle ORM)
+- XSS prevention (input sanitization, Content Security Policy)
+- CSRF protection (token-based)
+
+**5. Output Encoding:**
+- HTML escaping for user-generated content
+- JSON encoding for API responses
+- SQL parameterization for database queries
+
+---
+
+## Compliance & Regulatory
+
+### HIPAA Compliance
+
+Chartwarden is designed to be **HIPAA-compliant** from the ground up.
+
+**Administrative Safeguards:**
+1. **Access Control:**
+   - Unique user identification (email-based login)
+   - Emergency access procedure (admin override with audit trail)
+   - Automatic session termination (8-hour max, 15-minute idle)
+   - Encryption and decryption (TLS, Argon2)
+
+2. **Workforce Training:**
+   - Documentation on HIPAA requirements (in `/docs`)
+   - Security awareness training materials (future)
+
+3. **Evaluation:**
+   - Periodic security audits (manual review of audit logs)
+   - Regular security assessments (future automated scans)
+
+**Physical Safeguards:**
+1. **Facility Access Controls:**
+   - Deployment on secure cloud infrastructure (AWS, Azure, GCP)
+   - Physical security delegated to cloud provider
+
+2. **Workstation Security:**
+   - User authentication required
+   - Session timeout enforcement
+   - No PHI stored on client (session-based, not local storage)
+
+3. **Device and Media Controls:**
+   - No PHI on portable devices
+   - Secure data destruction procedures (soft deletes with audit trail)
+
+**Technical Safeguards:**
+1. **Access Control:**
+   - Unique user identification ✓
+   - Emergency access procedure ✓
+   - Automatic logoff ✓
+   - Encryption and decryption ✓
+
+2. **Audit Controls:**
+   - Comprehensive audit logging ✓
+   - Immutable audit trail ✓
+   - 6-year retention ✓
+   - Regular audit review (manual)
+
+3. **Integrity Controls:**
+   - Authentication of PHI (digital signatures via signatures table)
+   - Mechanism to detect unauthorized access (audit logs, alerts)
+
+4. **Transmission Security:**
+   - Integrity controls (checksums, message authentication)
+   - Encryption (TLS 1.3 for all communications)
+
+**HIPAA Breach Notification:**
+- Audit log monitoring for unauthorized access
+- Alerting system for suspicious activity (future)
+- Incident response plan (documented in `/docs`)
+
+### CMS Compliance (Medicare Hospice Regulations)
+
+**1. HOPE Assessment (Hospice Outcomes & Patient Evaluation):**
+- Comprehensive assessment forms
+- Version: HOPE 2.0 (2024)
+- Assessment types:
+  - Admission assessment (within 2 days of admission)
+  - Comprehensive assessment (every 60 days)
+  - Discharge assessment (upon discharge)
+- Submission to QIES ASAP system (future integration)
+
+**Implementation:**
+- Controller: `services/api/src/controllers/HOPEAssessment.controller.js` (41KB)
+- Routes: `/api/hope-assessment`
+- Database: `hope_assessments` table
+
+**2. Face-to-Face (F2F) Encounter:**
+- Required before third benefit period recertification
+- Physician or nurse practitioner visit
+- Documentation of terminal illness and 6-month prognosis
+
+**Implementation:**
+- Controller: `services/api/src/controllers/Certification.controller.js` (24KB)
+- Routes: `/api/certification`
+- Database: `certifications` table with `faceToFaceDate` field
+
+**3. 14-Day IDG Meeting:**
+- Interdisciplinary Group meeting required every 14 days
+- Care plan review and updates
+- Team members: physician, nurse, social worker, chaplain, etc.
+
+**Implementation:**
+- Controller: `services/api/src/controllers/IDGMeeting.controller.js` (33KB)
+- Routes: `/api/idg-meeting`
+- Database: `idg_meetings` table
+- Automatic scheduling (future)
+
+**4. Notice of Election (NOE):**
+- Form filed with Medicare when patient elects hospice
+- Required fields: election date, benefit period, effective date
+
+**Implementation:**
+- Tracked via `certifications` table
+- EDI 837 generation includes NOE data
+
+**5. Levels of Care:**
+- Routine Home Care (RHC)
+- Continuous Home Care (CHC)
+- General Inpatient Care (GIP)
+- Respite Care
+
+**Implementation:**
+- Enum: `LevelOfCare` in `@chartwarden/types`
+- Patient record includes `levelOfCare` field
+- Daily level of care tracking for billing
+
+**6. Medicare Benefit Periods:**
+- Initial 90-day period
+- Subsequent 90-day period
+- Unlimited 60-day periods thereafter
+- Tracking and recertification workflows
+
+**Implementation:**
+- Controller: `services/api/src/controllers/patient/BenefitPeriod.controller.js`
+- Routes: `/api/benefit-periods`
+- Database: `benefit_periods` table
+
+### 21 CFR Part 11 Compliance (Electronic Signatures)
+
+**FDA Requirements for Electronic Records and Signatures:**
+
+**1. Electronic Signatures:**
+- Unique user identification ✓
+- User authentication ✓
+- Signature manifestation (name, date, meaning of signature) ✓
+- Two-factor authentication (future)
+
+**Implementation:**
+- Database: `signatures` table
+- Fields: userId, signedAt, documentType, documentId, signatureMeaning, ipAddress
+- Digital signature with user credentials
+- Immutable audit trail
+
+**2. Audit Trail:**
+- Record creation, modification, deletion timestamps ✓
+- User attribution (who made the change) ✓
+- Reason for change (optional field in audit_logs)
+- Immutable audit records ✓
+
+**3. System Validation:**
+- Comprehensive test suite (Jest) ✓
+- Validation documentation (test reports)
+- User acceptance testing procedures
+
+**4. Access Controls:**
+- Authority checks ✓
+- Device checks (IP address, user agent) ✓
+- Password controls (complexity, expiration) ✓
+
+**5. Record Retention:**
+- Audit logs: 6 years (HIPAA requirement)
+- Electronic records: 6 years
+- Backup and recovery procedures
+
+---
+
+## API Design
+
+### RESTful Principles
+
+Chartwarden follows **RESTful API design principles** for predictable, scalable endpoints.
+
+**HTTP Methods:**
+- `GET` - Retrieve resources (idempotent, cacheable)
+- `POST` - Create new resources (non-idempotent)
+- `PATCH` - Partially update resources (idempotent)
+- `PUT` - Replace entire resources (idempotent)
+- `DELETE` - Delete resources (idempotent)
+
+**URL Structure:**
+```
+/api/{resource}               # Collection
+/api/{resource}/{id}          # Single resource
+/api/{resource}/{id}/{sub}    # Sub-resource
+```
+
+**Examples:**
+```
+GET    /api/patients               # List patients
+GET    /api/patients/123           # Get patient 123
+POST   /api/patients               # Create patient
+PATCH  /api/patients/123           # Update patient 123
+DELETE /api/patients/123           # Delete patient 123
+GET    /api/patients/123/encounters  # Patient 123's encounters
+```
+
+### Response Format
+
+**All API responses follow a consistent format:**
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "123",
+    "name": "John Doe",
+    ...
+  }
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "PATIENT_NOT_FOUND",
+    "message": "Patient with ID 123 not found"
+  }
+}
+```
+
+**Paginated Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      { "id": "1", ... },
+      { "id": "2", ... }
+    ],
+    "total": 100,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 5
+  }
+}
+```
+
+### HTTP Status Codes
+
+**Success Codes:**
+- `200 OK` - Successful GET, PATCH, DELETE
+- `201 Created` - Successful POST
+- `204 No Content` - Successful DELETE with no response body
+
+**Client Error Codes:**
+- `400 Bad Request` - Invalid request body, validation error
+- `401 Unauthorized` - Missing or invalid authentication
+- `403 Forbidden` - Authenticated but not authorized
+- `404 Not Found` - Resource does not exist
+- `409 Conflict` - Resource conflict (e.g., duplicate email)
+- `422 Unprocessable Entity` - Validation error with details
+
+**Server Error Codes:**
+- `500 Internal Server Error` - Unhandled server error
+- `503 Service Unavailable` - Database connection error, service down
+
+### Error Handling
+
+**Error Response Structure:**
+```typescript
+{
+  success: false,
+  error: {
+    code: string,           // Machine-readable error code
+    message: string,        // Human-readable error message
+    details?: any           // Optional error details (validation errors, stack trace in dev)
+  }
+}
+```
+
+**Common Error Codes:**
+- `VALIDATION_ERROR` - Input validation failed
+- `AUTHENTICATION_REQUIRED` - User not authenticated
+- `PERMISSION_DENIED` - User not authorized
+- `RESOURCE_NOT_FOUND` - Requested resource does not exist
+- `DUPLICATE_RESOURCE` - Resource already exists (e.g., email)
+- `DATABASE_ERROR` - Database operation failed
+- `INTERNAL_ERROR` - Unhandled server error
+
+**Example Error Handler:**
+```javascript
+app.setErrorHandler((error, request, reply) => {
+  // Log error with Pino
+  request.log.error(error);
+
+  // Audit log for security-related errors
+  if (error.statusCode === 401 || error.statusCode === 403) {
+    auditService.log({
+      userId: request.user?.id,
+      action: 'unauthorized_access',
+      resourceType: request.routerPath,
+      status: 'failure',
+      error: error.message
+    });
+  }
+
+  // Format error response
+  reply.status(error.statusCode || 500).send({
+    success: false,
+    error: {
+      code: error.code || 'INTERNAL_ERROR',
+      message: error.message || 'An unexpected error occurred',
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    }
+  });
+});
+```
+
+### API Versioning
+
+**Current:** All endpoints are v1 (implicit)
+
+**Future:** API versioning strategy
+- URL versioning: `/api/v2/patients`
+- Header versioning: `Accept: application/vnd.chartwarden.v2+json`
+- Backward compatibility for at least 1 major version
+
+### Rate Limiting
+
+**Configuration:** `services/api/src/config/rateLimit.config.js`
+
+**Limits:**
+- Default: 100 requests per minute per IP address
+- Authenticated users: 300 requests per minute
+- Admin users: 1000 requests per minute
+
+**Response Headers:**
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1640000000
+```
+
+**Rate Limit Exceeded Response:**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Too many requests. Please try again in 60 seconds."
+  }
+}
+```
+
+---
+
+## Development Workflow
+
+### Local Development Setup
+
+**1. Prerequisites:**
+- Node.js >= 20.0.0
+- npm >= 10.0.0
+- Docker Desktop (for PostgreSQL, Redis, pgAdmin)
+- Git
+
+**2. Clone Repository:**
+```bash
+git clone https://github.com/fabwebdev/Chartwarden.git
+cd Chartwarden
+```
+
+**3. Install Dependencies:**
+```bash
+npm install
+```
+
+**4. Start Database Services:**
+```bash
+docker-compose up -d
+```
+
+**Services Started:**
+- PostgreSQL 16 on port 5433
+- Redis 7 on port 6379
+- pgAdmin 4 on port 5050
+
+**5. Configure Environment:**
+```bash
+cp .env.example .env
+```
+
+**Edit `.env`** with your settings (defaults work for local dev).
+
+**6. Run Database Migrations:**
+```bash
+npm run db:migrate
+```
+
+**7. Start Development Servers:**
+```bash
+npm run dev
+```
+
+**Services Started:**
+- Frontend: http://localhost:3000 (Next.js)
+- Backend: http://localhost:3001 (Fastify)
+
+**8. Access Application:**
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:3001/api
+- **API Health Check:** http://localhost:3001/api/health
+- **pgAdmin:** http://localhost:5050 (admin@chartwarden.local / admin)
+
+### Development Commands
+
+**Root Commands (Turborepo):**
+```bash
+# Development
+npm run dev                # Start all apps in development mode
+npm run dev:web            # Start only frontend
+npm run dev:api            # Start only backend
+
+# Build
+npm run build              # Build all apps for production
+npm run build:web          # Build only frontend
+npm run build:api          # Build only backend
+
+# Testing
+npm run test               # Run all tests
+npm run test:api           # Run backend tests only
+
+# Code Quality
+npm run lint               # Lint all code
+npm run typecheck          # TypeScript type checking
+
+# Database
+npm run db:migrate         # Run database migrations
+npm run db:generate        # Generate new migration from schema changes
+npm run db:studio          # Open Drizzle Studio (database GUI)
+
+# Docker
+npm run docker:up          # Start Docker services
+npm run docker:down        # Stop Docker services
+npm run docker:logs        # View Docker logs
+
+# Git Subtree (Sync with upstream repos)
+npm run sync:frontend      # Pull from ehr_frontend
+npm run sync:backend       # Pull from ehr_backend
+npm run push:frontend      # Push to ehr_frontend
+npm run push:backend       # Push to ehr_backend
+
+# Cleanup
+npm run clean              # Remove all node_modules and .turbo cache
+```
+
+**Backend-Specific Commands:**
+```bash
+cd services/api
+
+npm run dev                # Start Fastify server with hot reload
+npm run build              # Build for production
+npm run start              # Start production server
+npm run test               # Run Jest tests
+npm run test:watch         # Run tests in watch mode
+npm run test:coverage      # Generate coverage report
+npm run migrate:run        # Run migrations
+npm run migrate:generate   # Generate migration
+npm run db:studio          # Open Drizzle Studio
+```
+
+**Frontend-Specific Commands:**
+```bash
+cd apps/web
+
+npm run dev                # Start Next.js dev server
+npm run build              # Build for production
+npm run start              # Start production server
+npm run lint               # ESLint
+```
+
+### Git Workflow
+
+**Branching Strategy:**
+- `main` - Production-ready code
+- `develop` - Integration branch (future)
+- `feature/*` - Feature branches
+- `bugfix/*` - Bug fix branches
+- `hotfix/*` - Production hotfixes
+
+**Commit Convention:**
+```
+type(scope): subject
+
+body (optional)
+
+footer (optional)
+```
+
+**Types:**
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation only
+- `style` - Code style (formatting, missing semicolons, etc.)
+- `refactor` - Code refactoring
+- `perf` - Performance improvement
+- `test` - Adding or updating tests
+- `chore` - Maintenance tasks (dependencies, build config)
+
+**Examples:**
+```
+feat(patient): add patient search functionality
+fix(auth): resolve session timeout issue
+docs(readme): update installation instructions
+refactor(api): simplify error handling
+```
+
+**Pull Request Process:**
+1. Create feature branch from `main`
+2. Implement feature with tests
+3. Ensure all tests pass: `npm run test`
+4. Ensure code is linted: `npm run lint`
+5. Update documentation if needed
+6. Create pull request
+7. Code review
+8. Merge to `main`
+
+### Testing Workflow
+
+**Backend Tests:**
+```bash
+cd services/api
+npm run test                # Run all tests
+npm run test:watch          # Watch mode
+npm run test:coverage       # Coverage report
+npm run test -- Billing     # Run specific test file
+```
+
+**Test Files:** `services/api/tests/*.test.js`
+
+**Test Categories:**
+- Unit tests (services, utilities)
+- Integration tests (controllers, routes)
+- Database tests (schemas, migrations)
+
+**Example Test:**
+```javascript
+describe('Patient Controller', () => {
+  it('should create a new patient', async () => {
+    const patient = {
+      firstName: 'John',
+      lastName: 'Doe',
+      dateOfBirth: '1950-01-01',
+      mrn: 'MRN123456'
+    };
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/patients',
+      payload: patient,
+      headers: {
+        authorization: `Bearer ${authToken}`
+      }
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json().success).toBe(true);
+    expect(response.json().data.mrn).toBe('MRN123456');
+  });
+});
+```
+
+**Frontend Tests (Future):**
+- Jest + React Testing Library
+- Component tests
+- Integration tests
+- E2E tests with Playwright
+
+---
+
+## Infrastructure
+
+### Docker Compose Services
+
+**File:** `docker-compose.yml`
+
+#### 1. PostgreSQL 16
+```yaml
+postgres:
+  image: postgres:16-alpine
+  container_name: chartwarden_postgres
+  ports:
+    - "5433:5432"
+  environment:
+    POSTGRES_DB: chartwarden
+    POSTGRES_USER: chartwarden
+    POSTGRES_PASSWORD: chartwarden_dev_password
+  volumes:
+    - postgres_data:/var/lib/postgresql/data
+    - ./infra/docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U chartwarden"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+```
+
+#### 2. Redis 7
+```yaml
+redis:
+  image: redis:7-alpine
+  container_name: chartwarden_redis
+  ports:
+    - "6379:6379"
+  volumes:
+    - redis_data:/data
+  command: redis-server --appendonly yes
+  healthcheck:
+    test: ["CMD", "redis-cli", "ping"]
+    interval: 10s
+    timeout: 3s
+    retries: 5
+```
+
+#### 3. pgAdmin 4
+```yaml
+pgadmin:
+  image: dpage/pgadmin4:latest
+  container_name: chartwarden_pgadmin
+  ports:
+    - "5050:80"
+  environment:
+    PGADMIN_DEFAULT_EMAIL: admin@chartwarden.local
+    PGADMIN_DEFAULT_PASSWORD: admin
+  volumes:
+    - pgadmin_data:/var/lib/pgadmin
+  depends_on:
+    - postgres
+```
+
+**Network:**
+```yaml
+networks:
+  chartwarden-network:
+    driver: bridge
+```
+
+**Volumes:**
+```yaml
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+```
+
+### Environment Variables
+
+**Location:** `.env` (copy from `.env.example`)
+
+**Categories:**
+
+**Application:**
+```bash
+NODE_ENV=development
+APP_NAME=Chartwarden
+LOG_LEVEL=debug
+```
+
+**Backend:**
+```bash
+API_PORT=3001
+API_HOST=0.0.0.0
+```
+
+**Database:**
+```bash
+DATABASE_URL=postgresql://chartwarden:chartwarden_dev_password@localhost:5433/chartwarden
+```
+
+**Authentication:**
+```bash
+BETTER_AUTH_SECRET=dev-secret-change-in-production-min-32-chars!!
+BETTER_AUTH_URL=http://localhost:3001
+JWT_SECRET=dev-jwt-secret-change-in-production-min-32-chars!!
+JWT_EXPIRES_IN=24h
+ADMIN_CREATION_SECRET=dev-admin-secret-change-this
+```
+
+**Redis:**
+```bash
+REDIS_URL=redis://localhost:6379
+```
+
+**Frontend:**
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=Chartwarden
+```
+
+**Security Best Practices:**
+- Never commit `.env` to version control
+- Use strong secrets in production (min 32 characters)
+- Rotate secrets regularly
+- Use environment-specific `.env` files (.env.development, .env.production)
+
+### Database Initialization
+
+**Init Script:** `infra/docker/init-db.sql`
+
+**Runs on first container startup:**
+- Creates database
+- Sets up extensions (uuid-ossp, pgcrypto)
+- Creates initial schema (future)
+- Seeds admin user (future)
+
+---
+
+## Testing Strategy
+
+### Backend Testing
+
+**Framework:** Jest
+**Location:** `services/api/tests/`
+**Test Files:** 20+ test files
+
+**Test Categories:**
+
+**1. Unit Tests:**
+- Services (business logic)
+- Utilities (helper functions)
+- Middleware (authorization, validation)
+
+**2. Integration Tests:**
+- Controllers (request/response handling)
+- Routes (HTTP endpoints)
+- Database operations (CRUD, transactions)
+
+**3. E2E Tests:**
+- Complete user workflows
+- Multi-step processes (admission → encounter → discharge)
+
+**Test Files:**
+```
+tests/
+├── Bereavement.test.js
+├── Billing.test.js
+├── CarePlan.test.js
+├── Certification.test.js
+├── Encounter.test.js
+├── HOPEAssessment.test.js
+├── IDGMeeting.test.js
+├── Medication.test.js
+├── QAPI.test.js
+├── Reports.test.js
+├── Scheduling.test.js
+├── StaffManagement.test.js
+├── phase3/
+│   ├── EligibilityVerification.test.js
+│   ├── ERAProcessing.test.js
+│   ├── DenialManagement.test.js
+│   └── RevenueRecognition.test.js
+└── utils/
+    ├── validators.test.js
+    └── transformers.test.js
+```
+
+**Running Tests:**
+```bash
+npm run test                # All tests
+npm run test:watch          # Watch mode
+npm run test:coverage       # Coverage report
+npm run test -- Billing     # Specific test file
+```
+
+**Coverage Goals:**
+- Unit tests: 80%+ coverage
+- Integration tests: 70%+ coverage
+- Critical paths: 100% coverage (authentication, billing, audit logging)
+
+### Frontend Testing (Future)
+
+**Framework:** Jest + React Testing Library + Playwright
+
+**Test Categories:**
+- Component tests (buttons, forms, cards)
+- Page tests (patient list, patient detail)
+- E2E tests (login → create patient → add medication → logout)
+
+**Tools:**
+- Jest - Unit and integration tests
+- React Testing Library - Component tests
+- Playwright - E2E browser tests
+- MSW (Mock Service Worker) - API mocking
+
+---
+
+## Key Features
+
+### 1. Patient Management
+- Comprehensive patient demographics
+- MRN (Medical Record Number) tracking
+- Multiple identifiers (SSN, insurance ID, facility ID)
+- Address management
+- Emergency contacts (primary/secondary liaisons)
+- Demographics (race, ethnicity, spiritual preferences)
+- Living arrangements
+- DME provider tracking
+- Patient search (name, MRN, DOB)
+- Patient filtering (status, level of care, facility)
+- Patient sorting (name, admission date, DOB)
+
+### 2. Clinical Documentation
+- Patient encounters (admissions, visits, discharges)
+- Nursing clinical notes (narrative documentation)
+- Vital signs tracking (BP, HR, RR, Temp, SpO2, Pain)
+- Comprehensive assessments (HOPE, body systems)
+- Pain management (multiple assessment tools)
+- Care planning and goals
+- IDG meeting documentation (14-day requirement)
+- Physician certifications (Face-to-Face, recertifications)
+- Electronic signatures (21 CFR Part 11 compliant)
+
+### 3. Medication Management
+- Medication orders (prescriptions)
+- Medication administration records (MAR)
+- Medication reconciliation
+- Drug interactions (future)
+- Formulary management (future)
+- Controlled substance tracking (future)
+
+### 4. Billing & Revenue Cycle
+- Claim generation (EDI 837)
+- Claim scrubbing and validation
+- Clearinghouse integration (EDI transmission)
+- Eligibility verification (EDI 270/271)
+- ERA processing (EDI 835)
+- Payment posting (automatic and manual)
+- Denial management and appeals
+- Revenue accrual and recognition
+- Revenue forecasting
+- Cap tracking (Medicare hospice cap)
+- CBSA lookups (wage index adjustment)
+- Analytics and reporting
+
+### 5. Staff & Operations
+- Staff management (profiles, credentials)
+- Visit scheduling (calendar, assignments)
+- Bereavement services (grief counseling tracking)
+- QAPI (Quality Assurance/Performance Improvement)
+- Report generation (clinical, financial, operational)
+
+### 6. Security & Compliance
+- Role-based access control (RBAC)
+- Attribute-based access control (ABAC)
+- CASL authorization (fine-grained permissions)
+- Comprehensive audit logging (HIPAA)
+- Electronic signatures (21 CFR Part 11)
+- Session timeout enforcement
+- Password complexity requirements
+- Automatic session termination
+
+### 7. Real-Time Features (Socket.IO)
+- Team communication (chat)
+- Notifications (alerts, reminders)
+- Collaborative editing (future)
+- Live dashboard updates (future)
+
+---
+
+## Revenue Cycle Management
+
+Chartwarden includes a **comprehensive revenue cycle management (RCM) system** for hospice billing.
+
+### Phase 2: Core Billing
+
+#### Phase 2A: Cap Tracking & CBSA Lookups
+- **Cap Tracking:** Monitor Medicare hospice cap compliance
+- **CBSA Lookups:** Core-Based Statistical Area codes for wage index adjustments
+- **Service:** `CBSALookupService.js`
+- **Routes:** `/api/cap-tracking`, `/api/cbsa`
+
+#### Phase 2B: Claim Validation
+- **Claim Scrubbing:** Validate claims before submission
+- **Rules Engine:** Check for missing data, invalid codes, coverage issues
+- **Service:** `ClaimScrubber.service.js` (24KB)
+- **Routes:** `/api/claim-validation`
+
+#### Phase 2C: Clearinghouse Integration
+- **EDI 837:** Generate hospice claim files
+- **Transmission:** Submit to clearinghouse (Availity, Change Healthcare, etc.)
+- **Service:** `EDIGenerator.service.js` (23KB)
+- **Routes:** `/api/clearinghouse`
+
+#### Phase 2D: Analytics & Reporting
+- **Dashboards:** Revenue, claims, denials, productivity
+- **Reports:** AR aging, claim status, payer performance
+- **Service:** `Analytics.service.js` (25KB)
+- **Routes:** `/api/analytics`, `/api/reports`
+
+### Phase 3: Advanced RCM
+
+#### Phase 3A: Eligibility Verification
+- **EDI 270:** Eligibility inquiry transactions
+- **EDI 271:** Eligibility response parsing
+- **Real-Time Checks:** Verify coverage before admission
+- **Service:** `EligibilityVerifier.service.js` (18KB)
+- **Routes:** `/api/eligibility`
+
+**Workflow:**
+```
+1. Staff enters patient insurance info
+   ↓
+2. System generates EDI 270 request
+   ↓
+3. Submit to payer (Medicare, Medicaid, commercial)
+   ↓
+4. Receive EDI 271 response
+   ↓
+5. Parse and display eligibility status
+   ↓
+6. Alert if coverage issues detected
+```
+
+#### Phase 3B: ERA Processing & Auto-Posting
+- **EDI 835:** Electronic Remittance Advice (payment files)
+- **Auto-Posting:** Automatically post payments to patient accounts
+- **Reconciliation:** Match payments to claims
+- **Service:** `PaymentPosting.service.js` (20KB)
+- **Routes:** `/api/era`
+
+**Workflow:**
+```
+1. Receive EDI 835 from payer
+   ↓
+2. Parse ERA (payment details, adjustments, denials)
+   ↓
+3. Match payments to claims
+   ↓
+4. Post payments to patient accounts
+   ↓
+5. Generate payment posting report
+   ↓
+6. Alert for discrepancies
+```
+
+#### Phase 3C: Denial Management & Appeals
+- **Denial Tracking:** Monitor denied claims
+- **Denial Analytics:** Identify denial patterns
+- **Appeal Workflow:** Generate appeal letters, track submissions
+- **Service:** `DenialManagement.service.js` (15KB)
+- **Routes:** `/api/denials`
+
+**Features:**
+- Denial code library (CARC, RARC)
+- Root cause analysis
+- Appeal templates
+- Denial trend reporting
+- Corrected claim resubmission
+
+#### Phase 3D: Revenue Recognition & Forecasting
+- **Accrual:** Track revenue earned but not yet billed
+- **Recognition:** Revenue recognition rules (ASC 606)
+- **Forecasting:** Predict future revenue based on census, level of care
+- **Service:** `RevenueForecasting.service.js` (11KB)
+- **Routes:** `/api/revenue`
+
+**Features:**
+- Daily revenue accrual
+- Revenue by level of care
+- Revenue forecasting models
+- Budget vs. actual reporting
+
+---
+
+## Deployment & DevOps
+
+### Production Deployment (Future)
+
+**Hosting Options:**
+1. **AWS:**
+   - ECS (Elastic Container Service) for Docker containers
+   - RDS (Relational Database Service) for PostgreSQL
+   - ElastiCache for Redis
+   - S3 for file storage
+   - CloudFront for CDN
+   - Route 53 for DNS
+
+2. **Azure:**
+   - App Service for web apps
+   - Azure Database for PostgreSQL
+   - Azure Cache for Redis
+   - Azure Blob Storage for files
+   - Azure CDN
+
+3. **Google Cloud Platform:**
+   - Cloud Run for containers
+   - Cloud SQL for PostgreSQL
+   - Memorystore for Redis
+   - Cloud Storage for files
+   - Cloud CDN
+
+### CI/CD Pipeline (Future)
+
+**GitHub Actions Workflow:**
+```yaml
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm run test
+      - run: npm run lint
+      - run: npm run typecheck
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install
+      - run: npm run build
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: chartwarden:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to production
+        run: |
+          # Deploy commands (ECS, Cloud Run, etc.)
+```
+
+### Monitoring & Logging (Future)
+
+**Application Monitoring:**
+- **Sentry:** Error tracking and performance monitoring
+- **New Relic:** Application performance monitoring (APM)
+- **Datadog:** Infrastructure and application monitoring
+
+**Logging:**
+- **CloudWatch Logs (AWS):** Centralized log aggregation
+- **Azure Monitor (Azure):** Log analytics
+- **Cloud Logging (GCP):** Log management
+
+**Metrics:**
+- Request rate, response time, error rate
+- Database query performance
+- Cache hit rate
+- Session duration
+- Active users
+
+**Alerting:**
+- High error rate
+- Slow response times
+- Database connection failures
+- High memory/CPU usage
+- Security events (failed logins, unauthorized access)
+
+### Backup & Recovery
+
+**Database Backups:**
+- Daily automated backups
+- 30-day retention
+- Point-in-time recovery
+- Encrypted backups
+
+**Disaster Recovery:**
+- RTO (Recovery Time Objective): < 4 hours
+- RPO (Recovery Point Objective): < 1 hour
+- Multi-region replication (production)
+- Regular disaster recovery drills
+
+---
+
+## Conclusion
+
+Chartwarden is a **modern, HIPAA-compliant hospice EHR system** built with cutting-edge technologies and best practices. This comprehensive overview covers:
+
+- **Architecture:** Monorepo structure with Fastify backend, Next.js frontend, PostgreSQL database
+- **Security:** Multi-layer authorization (RBAC, ABAC, CASL), comprehensive audit logging, session management
+- **Compliance:** HIPAA, CMS (HOPE, F2F, IDG), 21 CFR Part 11 (electronic signatures)
+- **Features:** Patient management, clinical documentation, medication management, billing, revenue cycle
+- **Development:** Turborepo build system, Docker Compose local environment, comprehensive testing
+- **Infrastructure:** Docker containers, PostgreSQL, Redis, pgAdmin
+
+**Next Steps:**
+1. Complete Phase 3 RCM features (eligibility, ERA, denials, revenue)
+2. Implement frontend for all backend endpoints
+3. Add comprehensive frontend tests
+4. Set up CI/CD pipeline
+5. Deploy to staging environment
+6. Security audit and penetration testing
+7. HIPAA compliance audit
+8. Production deployment
+
+**Documentation:**
+- `/CLAUDE.md` - AI assistant instructions
+- `/README.md` - Quick start guide
+- `/project-overview.md` - This comprehensive overview
+- `/services/api/docs/` - API documentation (future)
+
+**Links:**
+- **Repository:** https://github.com/fabwebdev/Chartwarden
+- **Issues:** https://github.com/fabwebdev/Chartwarden/issues
+- **Wiki:** https://github.com/fabwebdev/Chartwarden/wiki (future)
+
+---
+
+**Last Updated:** 2025-12-30
+**Version:** 1.0.0
+**Maintained By:** Chartwarden Development Team

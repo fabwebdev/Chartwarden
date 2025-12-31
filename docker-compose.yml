@@ -1,60 +1,223 @@
-version: '3.8'
+# =============================================================================
+# Docker Compose Configuration for Chartwarden
+# HIPAA-Compliant Hospice EHR System
+# =============================================================================
+# Usage:
+#   Development (infra only): docker-compose up -d postgres redis
+#   Full stack:               docker-compose --profile full up -d
+#   With tools:               docker-compose --profile full --profile tools up -d
+# =============================================================================
 
 services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
     container_name: chartwarden-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: chartwarden
-      POSTGRES_PASSWORD: chartwarden_dev_password
-      POSTGRES_DB: chartwarden
+      POSTGRES_USER: ${DB_USER:-chartwarden}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-chartwarden_dev_password}
+      POSTGRES_DB: ${DB_NAME:-chartwarden}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - chartwarden-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chartwarden -d chartwarden"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-chartwarden} -d ${DB_NAME:-chartwarden}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=1GB"
 
+  # ---------------------------------------------------------------------------
+  # Redis Cache
+  # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     container_name: chartwarden-redis
     restart: unless-stopped
+    command: redis-server --appendonly yes
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    networks:
+      - chartwarden-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # ---------------------------------------------------------------------------
+  # Chartwarden API (Fastify Backend)
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+      target: production
+    container_name: chartwarden-api
+    restart: unless-stopped
+    profiles:
+      - full
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Application
+      NODE_ENV: production
+      PORT: 3001
+      HOST: 0.0.0.0
+      APP_NAME: ${APP_NAME:-Chartwarden API}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-chartwarden}:${DB_PASSWORD:-chartwarden_dev_password}@postgres:5432/${DB_NAME:-chartwarden}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-chartwarden}
+      DB_USER: ${DB_USER:-chartwarden}
+      DB_PASSWORD: ${DB_PASSWORD:-chartwarden_dev_password}
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # Authentication
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-dev-secret-change-in-production-min-32-chars!!}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3001}
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production-min-32-chars!!}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      ADMIN_CREATION_SECRET: ${ADMIN_CREATION_SECRET:-dev-admin-secret}
+
+      # CORS
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001}
+    ports:
+      - "${API_PORT:-3001}:3001"
+    volumes:
+      - api_logs:/app/logs
+      - api_storage:/app/storage
+      - api_uploads:/app/uploads
+    networks:
+      - chartwarden-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # Chartwarden Web (Next.js Frontend)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://api:3001}
+    container_name: chartwarden-web
+    restart: unless-stopped
+    profiles:
+      - full
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://api:3001}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    networks:
+      - chartwarden-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin - Database Management Tool
+  # ---------------------------------------------------------------------------
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: chartwarden-pgadmin
     restart: unless-stopped
+    profiles:
+      - tools
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@chartwarden.local
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@chartwarden.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - chartwarden-network
     depends_on:
       - postgres
 
+  # ---------------------------------------------------------------------------
+  # Redis Commander - Redis Management Tool
+  # ---------------------------------------------------------------------------
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: chartwarden-redis-commander
+    restart: unless-stopped
+    profiles:
+      - tools
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    networks:
+      - chartwarden-network
+    depends_on:
+      - redis
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  chartwarden-network:
+    driver: bridge
+    name: chartwarden-network
+
+# =============================================================================
+# Volumes (Persistent Data)
+# =============================================================================
 volumes:
   postgres_data:
+    name: chartwarden-postgres-data
   redis_data:
+    name: chartwarden-redis-data
   pgadmin_data:
-
-networks:
-  default:
-    name: chartwarden-network
+    name: chartwarden-pgadmin-data
+  api_logs:
+    name: chartwarden-api-logs
+  api_storage:
+    name: chartwarden-api-storage
+  api_uploads:
+    name: chartwarden-api-uploads

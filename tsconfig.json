@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022"],
@@ -12,15 +13,24 @@
     "declaration": true,
     "declarationMap": true,
     "composite": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@chartwarden/types": ["./packages/types/src"],
+      "@chartwarden/types/*": ["./packages/types/src/*"],
       "@chartwarden/utils": ["./packages/utils/src"],
-      "@chartwarden/config": ["./packages/config"]
+      "@chartwarden/utils/*": ["./packages/utils/src/*"],
+      "@chartwarden/config": ["./packages/config"],
+      "@chartwarden/config/*": ["./packages/config/*"]
     }
   },
   "references": [
     { "path": "./packages/types" },
-    { "path": "./packages/utils" }
+    { "path": "./packages/utils" },
+    { "path": "./packages/config" }
   ],
-  "exclude": ["node_modules", "**/dist", "**/.next"]
+  "exclude": ["node_modules", "**/dist", "**/.next", "**/build", "**/coverage"]
 }

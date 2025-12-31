@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
 import { eq, and } from "drizzle-orm";
 
 import auth from "../config/betterAuth.js";
@@ -45,8 +44,6 @@ export default async function createAdminUser(
     sanitize(name) ||
     [sanitize(firstName), sanitize(lastName)].filter(Boolean).join(" ") ||
     "Admin User";
-
-  const hashedPassword = await bcrypt.hash(normalizedPassword, 10);
 
   const existingUsers = await db
     .select()
@@ -98,7 +95,7 @@ export default async function createAdminUser(
       name: displayName,
       firstName: sanitize(firstName),
       lastName: sanitize(lastName),
-      password: hashedPassword,
+      // Don't overwrite password - Better Auth already hashed it correctly during signUpEmail
       role: "admin",
       emailVerified: true,
       updatedAt: new Date(),

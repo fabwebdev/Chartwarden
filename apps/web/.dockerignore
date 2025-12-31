@@ -1,0 +1,81 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# Build output
+.next
+out
+build
+dist
+
+# Environment files (use build args or runtime env)
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Testing
+tests
+coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+playwright.config.ts
+playwright-report
+
+# Documentation
+docs
+*.md
+!README.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Next.js
+.next
+.vercel
+
+# Storybook
+.storybook
+storybook-static
+
+# Cache
+.cache
+.npm
+
+# Claude AI
+.claude

@@ -1,0 +1,24 @@
+{
+  "category": "Security",
+  "description": "Verify and Configure Pino Logger Installation\n\nCheck if Pino logger is already installed in the project, and if not, install and configure it with production-ready features including environment-specific settings, sensitive data redaction, and log aggregation capabilities.\n\nRequirements:\n- Check package.json for existing Pino installation and version\n- Install Pino and necessary plugins if not present (pino, pino-pretty for development)\n- Create logger configuration module with environment-specific settings (development, staging, production)\n- Implement PHI/PII redaction rules to prevent sensitive data leakage (e.g., passwords, SSNs, credit cards, health information)\n- Configure appropriate log levels per environment (debug for dev, info/warn for production)\n- Set up log formatting (JSON in production, pretty-print in development)\n- Configure log aggregation transport (e.g., pino-syslog, pino-cloudwatch, or file-based rotation)\n- Add TypeScript types if applicable\n- Create basic usage examples for common logging scenarios\n- Document which fields are automatically redacted\n\nEdge Cases to Consider:\n- Handling nested objects that may contain sensitive data\n- Circular references in logged objects\n- Performance impact of redaction in high-throughput scenarios\n- Log rotation and storage limits for file-based logging",
+  "title": "Install or verify Pino logger with environment configs",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "logging-configuration"
+  ],
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1767165022207-amsq837ca",
+  "startedAt": "2025-12-31T07:32:29.330Z",
+  "updatedAt": "2025-12-31T07:33:42.922Z",
+  "justFinishedAt": "2025-12-31T07:33:42.922Z"
+}

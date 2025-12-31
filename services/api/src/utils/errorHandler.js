@@ -4,23 +4,62 @@
  *
  * Eliminates duplicate try-catch blocks across 578 locations
  * Provides consistent error responses and logging
+ *
+ * HIPAA Compliance:
+ * - All error messages are sanitized to prevent PHI/PII leakage
+ * - Error codes provide machine-readable error types
+ * - Tracking IDs enable error correlation without exposing internals
  */
 
 import crypto from 'crypto';
 import { sanitize } from './logger.js';
+import {
+  ErrorCodes,
+  ErrorMessages,
+  ErrorStatusCodes,
+  getErrorMessage,
+  getStatusCode
+} from '../constants/errorCodes.js';
 
 /**
  * Base Application Error
  * All custom errors extend this class
  */
 export class AppError extends Error {
-  constructor(message, statusCode = 500, details = {}) {
+  /**
+   * @param {string} message - Human-readable error message
+   * @param {number} statusCode - HTTP status code
+   * @param {Object} options - Additional options
+   * @param {string} options.code - Error code from ErrorCodes
+   * @param {Object} options.details - Additional error details
+   * @param {string} options.field - Field name for validation errors
+   */
+  constructor(message, statusCode = 500, options = {}) {
+    // Support legacy (message, statusCode, details) signature
+    const opts = typeof options === 'object' && !Array.isArray(options)
+      ? options
+      : { details: options };
+
     super(message);
     this.statusCode = statusCode;
-    this.details = details;
+    this.code = opts.code || ErrorCodes.SYSTEM_ERROR;
+    this.details = opts.details || {};
+    this.field = opts.field;
     this.name = this.constructor.name;
     this.isOperational = true; // Distinguishes from programming errors
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  /**
+   * Create AppError from error code
+   * @param {string} code - Error code from ErrorCodes
+   * @param {Object} options - Additional options
+   * @returns {AppError}
+   */
+  static fromCode(code, options = {}) {
+    const message = options.message || getErrorMessage(code);
+    const statusCode = getStatusCode(code);
+    return new AppError(message, statusCode, { code, ...options });
   }
 }
 
@@ -29,8 +68,61 @@ export class AppError extends Error {
  * For invalid input data
  */
 export class ValidationError extends AppError {
-  constructor(message, details = {}) {
-    super(message, 422, details);
+  /**
+   * @param {string} message - Error message
+   * @param {Object} options - Options including details, field, errors array
+   */
+  constructor(message, options = {}) {
+    const opts = typeof options === 'object' && !Array.isArray(options)
+      ? options
+      : { details: options };
+
+    super(message, 422, {
+      code: opts.code || ErrorCodes.VALIDATION_FAILED,
+      details: opts.details,
+      field: opts.field
+    });
+
+    // Support array of validation errors
+    this.errors = opts.errors || [];
+  }
+
+  /**
+   * Add a field validation error
+   * @param {string} field - Field name
+   * @param {string} message - Error message
+   * @param {string} code - Optional error code
+   */
+  addFieldError(field, message, code = ErrorCodes.VALIDATION_FAILED) {
+    this.errors.push({ field, message, code });
+    return this;
+  }
+
+  /**
+   * Create ValidationError for a required field
+   * @param {string} field - Field name
+   * @returns {ValidationError}
+   */
+  static requiredField(field) {
+    return new ValidationError(`${field} is required`, {
+      field,
+      code: ErrorCodes.VALIDATION_REQUIRED_FIELD,
+      errors: [{ field, message: 'This field is required', code: ErrorCodes.VALIDATION_REQUIRED_FIELD }]
+    });
+  }
+
+  /**
+   * Create ValidationError for invalid format
+   * @param {string} field - Field name
+   * @param {string} expectedFormat - Description of expected format
+   * @returns {ValidationError}
+   */
+  static invalidFormat(field, expectedFormat) {
+    return new ValidationError(`Invalid ${field} format`, {
+      field,
+      code: ErrorCodes.VALIDATION_INVALID_FORMAT,
+      errors: [{ field, message: `Expected format: ${expectedFormat}`, code: ErrorCodes.VALIDATION_INVALID_FORMAT }]
+    });
   }
 }
 
@@ -39,8 +131,42 @@ export class ValidationError extends AppError {
  * For resources that don't exist
  */
 export class NotFoundError extends AppError {
-  constructor(resource = 'Resource') {
-    super(`${resource} not found`, 404);
+  /**
+   * @param {string} resource - Resource type (e.g., 'Patient', 'Medication')
+   * @param {string} code - Optional specific error code
+   */
+  constructor(resource = 'Resource', code) {
+    const errorCode = code || ErrorCodes.RESOURCE_NOT_FOUND;
+    super(
+      getErrorMessage(errorCode) || `${resource} not found`,
+      404,
+      { code: errorCode }
+    );
+    this.resource = resource;
+  }
+
+  static patient() {
+    return new NotFoundError('Patient', ErrorCodes.RESOURCE_PATIENT_NOT_FOUND);
+  }
+
+  static user() {
+    return new NotFoundError('User', ErrorCodes.RESOURCE_USER_NOT_FOUND);
+  }
+
+  static medication() {
+    return new NotFoundError('Medication', ErrorCodes.RESOURCE_MEDICATION_NOT_FOUND);
+  }
+
+  static encounter() {
+    return new NotFoundError('Encounter', ErrorCodes.RESOURCE_ENCOUNTER_NOT_FOUND);
+  }
+
+  static order() {
+    return new NotFoundError('Order', ErrorCodes.RESOURCE_ORDER_NOT_FOUND);
+  }
+
+  static document() {
+    return new NotFoundError('Document', ErrorCodes.RESOURCE_DOCUMENT_NOT_FOUND);
   }
 }
 
@@ -49,8 +175,36 @@ export class NotFoundError extends AppError {
  * For authentication failures
  */
 export class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized - Authentication required') {
-    super(message, 401);
+  /**
+   * @param {string} message - Optional custom message
+   * @param {string} code - Error code from ErrorCodes
+   */
+  constructor(message, code = ErrorCodes.AUTH_REQUIRED) {
+    super(
+      message || getErrorMessage(code),
+      401,
+      { code }
+    );
+  }
+
+  static sessionExpired() {
+    return new UnauthorizedError(null, ErrorCodes.AUTH_SESSION_EXPIRED);
+  }
+
+  static invalidCredentials() {
+    return new UnauthorizedError(null, ErrorCodes.AUTH_INVALID_CREDENTIALS);
+  }
+
+  static tokenExpired() {
+    return new UnauthorizedError(null, ErrorCodes.AUTH_TOKEN_EXPIRED);
+  }
+
+  static accountLocked() {
+    return new UnauthorizedError(null, ErrorCodes.AUTH_ACCOUNT_LOCKED);
+  }
+
+  static mfaRequired() {
+    return new UnauthorizedError(null, ErrorCodes.AUTH_MFA_REQUIRED);
   }
 }
 
@@ -59,8 +213,32 @@ export class UnauthorizedError extends AppError {
  * For authorization failures
  */
 export class ForbiddenError extends AppError {
-  constructor(message = 'Access denied - Insufficient permissions') {
-    super(message, 403);
+  /**
+   * @param {string} message - Optional custom message
+   * @param {string} code - Error code from ErrorCodes
+   */
+  constructor(message, code = ErrorCodes.AUTHZ_FORBIDDEN) {
+    super(
+      message || getErrorMessage(code),
+      403,
+      { code }
+    );
+  }
+
+  static insufficientPermissions() {
+    return new ForbiddenError(null, ErrorCodes.AUTHZ_INSUFFICIENT_PERMISSIONS);
+  }
+
+  static patientAccessDenied() {
+    return new ForbiddenError(null, ErrorCodes.AUTHZ_PATIENT_ACCESS_DENIED);
+  }
+
+  static facilityAccessDenied() {
+    return new ForbiddenError(null, ErrorCodes.AUTHZ_FACILITY_ACCESS_DENIED);
+  }
+
+  static phiAccessDenied() {
+    return new ForbiddenError(null, ErrorCodes.HIPAA_PHI_ACCESS_DENIED);
   }
 }
 
@@ -69,8 +247,34 @@ export class ForbiddenError extends AppError {
  * For malformed requests
  */
 export class BadRequestError extends AppError {
-  constructor(message = 'Bad request') {
-    super(message, 400);
+  /**
+   * @param {string} message - Error message
+   * @param {string} code - Error code from ErrorCodes
+   */
+  constructor(message, code = ErrorCodes.BAD_REQUEST) {
+    super(
+      message || getErrorMessage(code),
+      400,
+      { code }
+    );
+  }
+
+  static malformedJson() {
+    return new BadRequestError(null, ErrorCodes.BAD_REQUEST_MALFORMED_JSON);
+  }
+
+  static missingParameter(param) {
+    return new BadRequestError(
+      `Missing required parameter: ${param}`,
+      ErrorCodes.BAD_REQUEST_MISSING_PARAMETER
+    );
+  }
+
+  static invalidParameter(param) {
+    return new BadRequestError(
+      `Invalid parameter: ${param}`,
+      ErrorCodes.BAD_REQUEST_INVALID_PARAMETER
+    );
   }
 }
 
@@ -79,23 +283,125 @@ export class BadRequestError extends AppError {
  * For resource conflicts (e.g., duplicate entries)
  */
 export class ConflictError extends AppError {
-  constructor(message = 'Resource conflict') {
-    super(message, 409);
+  /**
+   * @param {string} message - Error message
+   * @param {string} code - Error code from ErrorCodes
+   */
+  constructor(message, code = ErrorCodes.RESOURCE_CONFLICT) {
+    super(
+      message || getErrorMessage(code),
+      409,
+      { code }
+    );
+  }
+
+  static alreadyExists(resource) {
+    return new ConflictError(
+      `${resource} already exists`,
+      ErrorCodes.RESOURCE_ALREADY_EXISTS
+    );
+  }
+
+  static duplicateEntry() {
+    return new ConflictError(null, ErrorCodes.DATABASE_UNIQUE_VIOLATION);
   }
 }
 
 /**
  * Database Error (500)
  * For database operation failures
+ * HIPAA: Never expose database details to clients
  */
 export class DatabaseError extends AppError {
-  constructor(message = 'Database operation failed', details = {}) {
-    super(message, 500, details);
+  /**
+   * @param {string} message - Internal error message (not sent to client)
+   * @param {Object} options - Options including internal details
+   */
+  constructor(message = 'Database operation failed', options = {}) {
+    const opts = typeof options === 'object' && !Array.isArray(options)
+      ? options
+      : { details: options };
+
+    super(
+      getErrorMessage(ErrorCodes.DATABASE_ERROR), // Always use safe message
+      500,
+      { code: opts.code || ErrorCodes.DATABASE_ERROR, details: opts.details }
+    );
+    // Store internal message for logging (never sent to client)
+    this.internalMessage = message;
+  }
+
+  static connectionFailed() {
+    return new DatabaseError('Database connection failed', {
+      code: ErrorCodes.DATABASE_CONNECTION_FAILED
+    });
+  }
+
+  static queryFailed(internalMessage) {
+    const err = new DatabaseError(internalMessage || 'Query failed', {
+      code: ErrorCodes.DATABASE_QUERY_FAILED
+    });
+    return err;
+  }
+
+  static transactionFailed(internalMessage) {
+    return new DatabaseError(internalMessage || 'Transaction failed', {
+      code: ErrorCodes.DATABASE_TRANSACTION_FAILED
+    });
+  }
+}
+
+/**
+ * Rate Limit Error (429)
+ * For rate limiting
+ */
+export class RateLimitError extends AppError {
+  /**
+   * @param {string} message - Error message
+   * @param {Object} options - Options including retryAfter
+   */
+  constructor(message, options = {}) {
+    super(
+      message || getErrorMessage(ErrorCodes.RATE_LIMIT_EXCEEDED),
+      429,
+      { code: options.code || ErrorCodes.RATE_LIMIT_EXCEEDED }
+    );
+    this.retryAfter = options.retryAfter;
+  }
+
+  static loginAttempts(retryAfter) {
+    return new RateLimitError(null, {
+      code: ErrorCodes.RATE_LIMIT_LOGIN_ATTEMPTS,
+      retryAfter
+    });
+  }
+}
+
+/**
+ * Service Unavailable Error (503)
+ * For service outages
+ */
+export class ServiceUnavailableError extends AppError {
+  constructor(message, code = ErrorCodes.SYSTEM_SERVICE_UNAVAILABLE) {
+    super(
+      message || getErrorMessage(code),
+      503,
+      { code }
+    );
+  }
+
+  static maintenance() {
+    return new ServiceUnavailableError(null, ErrorCodes.SYSTEM_MAINTENANCE);
   }
 }
 
 /**
  * Handle controller errors with consistent format and logging
+ * HIPAA-compliant error handling that:
+ * - Never exposes PHI/PII in error responses
+ * - Includes error codes for machine-readable error types
+ * - Generates tracking IDs for error correlation
+ * - Logs full context server-side only
  *
  * @param {Error} error - The error object
  * @param {Object} request - Fastify request object
@@ -113,14 +419,16 @@ export const handleControllerError = (error, request, reply, context = 'Unknown'
   // Determine if this is an operational error (expected) or programming error (bug)
   const isOperational = error.isOperational || error instanceof AppError;
 
-  // Determine status code
+  // Determine status code and error code
   const statusCode = error.statusCode || 500;
+  const errorCode = error.code || (isOperational ? null : ErrorCodes.SYSTEM_INTERNAL_ERROR);
 
-  // Log error with full context (PHI-safe)
+  // Log error with full context (PHI-safe via sanitize)
   const logLevel = statusCode >= 500 ? 'error' : 'warn';
   request.log[logLevel]({
     err: error,
     trackingId,
+    errorCode,
     context,
     isOperational,
     userId: request.user?.id,
@@ -128,31 +436,54 @@ export const handleControllerError = (error, request, reply, context = 'Unknown'
     method: request.method,
     statusCode,
     // Sanitize any potential PHI in error details
-    details: error.details ? sanitize(error.details) : undefined
+    details: error.details ? sanitize(error.details) : undefined,
+    // Include internal message for database errors (not sent to client)
+    internalMessage: error.internalMessage ? sanitize({ msg: error.internalMessage }).msg : undefined
   }, `${isOperational ? 'Operational' : 'Programming'} error in ${context}: ${error.message}`);
 
-  // Build response object
+  // Build HIPAA-compliant response object
   const response = {
+    success: false,
     status: statusCode,
     error: getErrorName(statusCode),
+    // In production, hide internal errors; use generic message for 500s
     message: isProduction && statusCode === 500 && !isOperational
-      ? 'An unexpected error occurred'  // Hide internal errors in production
-      : error.message || 'An error occurred',
+      ? getErrorMessage(ErrorCodes.SYSTEM_INTERNAL_ERROR)
+      : error.message || getErrorMessage(ErrorCodes.SYSTEM_ERROR),
     trackingId
   };
 
-  // Add validation errors details
-  if (error instanceof ValidationError && error.details) {
-    response.errors = error.details;
+  // Add error code for machine-readable error type
+  if (errorCode) {
+    response.code = errorCode;
   }
 
-  // Add stack trace in development only
-  if (isDevelopment && error.stack) {
-    response.stack = error.stack.split('\n');
+  // Add validation errors for ValidationError instances
+  if (error instanceof ValidationError) {
+    if (error.errors && error.errors.length > 0) {
+      // Sanitize validation errors - remove values, keep field names and messages
+      response.errors = error.errors.map(e => ({
+        field: e.field,
+        message: e.message,
+        code: e.code
+      }));
+    } else if (error.details && Object.keys(error.details).length > 0) {
+      // Legacy support for details object
+      response.errors = error.details;
+    }
   }
 
-  // Add helpful hints in development
+  // Add Rate Limit specific headers
+  if (error instanceof RateLimitError && error.retryAfter) {
+    reply.header('Retry-After', error.retryAfter);
+    response.retryAfter = error.retryAfter;
+  }
+
+  // Add stack trace and development info ONLY in development
   if (isDevelopment) {
+    if (error.stack) {
+      response.stack = error.stack.split('\n');
+    }
     response.context = context;
     response.errorType = error.constructor.name;
   }
@@ -170,9 +501,15 @@ function getErrorName(statusCode) {
     403: 'Forbidden',
     404: 'Not Found',
     409: 'Conflict',
+    410: 'Gone',
+    415: 'Unsupported Media Type',
     422: 'Validation Error',
+    423: 'Locked',
+    429: 'Too Many Requests',
     500: 'Internal Server Error',
-    503: 'Service Unavailable'
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout'
   };
   return errorNames[statusCode] || 'Error';
 }
@@ -307,8 +644,13 @@ export const Errors = {
   ForbiddenError,
   BadRequestError,
   ConflictError,
-  DatabaseError
+  DatabaseError,
+  RateLimitError,
+  ServiceUnavailableError
 };
+
+// Re-export error codes for convenience
+export { ErrorCodes, ErrorMessages, getErrorMessage, getStatusCode } from '../constants/errorCodes.js';
 
 // Export default for convenience
 export default {
@@ -319,5 +661,6 @@ export default {
   assert,
   dbTry,
   wrapDatabaseError,
+  ErrorCodes,
   ...Errors
 };

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 
@@ -6,8 +6,23 @@ import './globals.css';
 import ProviderWrapper from './ProviderWrapper';
 
 export const metadata: Metadata = {
-  title: 'Able Pro Material UI React Dashboard Template',
-  description: 'Able Pro Material UI React Dashboard Template'
+  title: {
+    default: 'Chartwarden - Hospice EHR',
+    template: '%s | Chartwarden'
+  },
+  description: 'HIPAA-compliant Electronic Health Record system for hospice care providers',
+  keywords: ['hospice', 'EHR', 'healthcare', 'medical records', 'patient care', 'HIPAA'],
+  authors: [{ name: 'Chartwarden' }],
+  robots: {
+    index: false,
+    follow: false
+  }
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1
 };
 
 export default function RootLayout({ children }: { children: React.ReactElement }) {

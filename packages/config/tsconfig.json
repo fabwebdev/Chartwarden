@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["*.js", "eslint/**/*.js", "typescript/**/*.json"],
+  "exclude": ["node_modules", "dist"]
+}

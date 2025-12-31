@@ -12,27 +12,46 @@ export const index = async (request, reply) => {
     try {
         const patientsList = await db.select({
             id: patients.id,
+            // Name fields
             first_name: patients.first_name,
             last_name: patients.last_name,
             middle_name: patients.middle_name,
             mi: patients.mi,
             preferred_name: patients.preferred_name,
             suffix: patients.suffix,
+            // Basic demographics
             date_of_birth: patients.date_of_birth,
             gender: patients.gender,
+            marital_status: patients.marital_status,
+            preferred_language: patients.preferred_language,
+            // Identifiers (excluding SSN for list view for security)
+            medicare_beneficiary_id: patients.medicare_beneficiary_id,
+            medicaid_id: patients.medicaid_id,
+            medical_record_number: patients.medical_record_number,
+            // Contact information
+            email: patients.email,
+            primary_phone: patients.primary_phone,
+            // Emergency contact
+            emergency_contact_name: patients.emergency_contact_name,
+            emergency_contact_phone: patients.emergency_contact_phone,
+            emergency_contact_relationship: patients.emergency_contact_relationship,
+            // HIPAA and consent flags
             oxygen_dependent: patients.oxygen_dependent,
             patient_consents: patients.patient_consents,
             hipaa_received: patients.hipaa_received,
             veterans_status: patients.veterans_status,
+            // DME
+            dme_provider: patients.dme_provider,
+            // Foreign keys
             patient_pharmacy_id: patients.patient_pharmacy_id,
             primary_diagnosis_id: patients.primary_diagnosis_id,
             race_ethnicity_id: patients.race_ethnicity_id,
-            dme_provider: patients.dme_provider,
             liaison_primary_id: patients.liaison_primary_id,
             liaison_secondary_id: patients.liaison_secondary_id,
             dnr_id: patients.dnr_id,
             emergency_preparedness_level_id: patients.emergency_preparedness_level_id,
             patient_identifier_id: patients.patient_identifier_id,
+            // Timestamps
             createdAt: patients.createdAt,
             updatedAt: patients.updatedAt,
         }).from(patients);
@@ -148,28 +167,47 @@ export const show = async (request, reply) => {
         const { id } = request.params;
         const patientResult = await db.select({
             id: patients.id,
+            // Name fields
             first_name: patients.first_name,
             last_name: patients.last_name,
             middle_name: patients.middle_name,
             mi: patients.mi,
             preferred_name: patients.preferred_name,
             suffix: patients.suffix,
+            // Basic demographics
             date_of_birth: patients.date_of_birth,
             gender: patients.gender,
+            marital_status: patients.marital_status,
+            preferred_language: patients.preferred_language,
+            // Identifiers (includes SSN for detail view)
             ssn: patients.ssn,
+            medicare_beneficiary_id: patients.medicare_beneficiary_id,
+            medicaid_id: patients.medicaid_id,
+            medical_record_number: patients.medical_record_number,
+            // Contact information
+            email: patients.email,
+            primary_phone: patients.primary_phone,
+            // Emergency contact
+            emergency_contact_name: patients.emergency_contact_name,
+            emergency_contact_phone: patients.emergency_contact_phone,
+            emergency_contact_relationship: patients.emergency_contact_relationship,
+            // HIPAA and consent flags
             oxygen_dependent: patients.oxygen_dependent,
             patient_consents: patients.patient_consents,
             hipaa_received: patients.hipaa_received,
             veterans_status: patients.veterans_status,
+            // DME
+            dme_provider: patients.dme_provider,
+            // Foreign keys
             patient_pharmacy_id: patients.patient_pharmacy_id,
             primary_diagnosis_id: patients.primary_diagnosis_id,
             race_ethnicity_id: patients.race_ethnicity_id,
-            dme_provider: patients.dme_provider,
             liaison_primary_id: patients.liaison_primary_id,
             liaison_secondary_id: patients.liaison_secondary_id,
             dnr_id: patients.dnr_id,
             emergency_preparedness_level_id: patients.emergency_preparedness_level_id,
             patient_identifier_id: patients.patient_identifier_id,
+            // Timestamps
             createdAt: patients.createdAt,
             updatedAt: patients.updatedAt,
         }).from(patients)
@@ -273,28 +311,47 @@ export const update = async (request, reply) => {
         // Fetch the updated patient to ensure all fields are returned
         const updatedPatient = await db.select({
             id: patients.id,
+            // Name fields
             first_name: patients.first_name,
             last_name: patients.last_name,
             middle_name: patients.middle_name,
             mi: patients.mi,
             preferred_name: patients.preferred_name,
             suffix: patients.suffix,
+            // Basic demographics
             date_of_birth: patients.date_of_birth,
             gender: patients.gender,
+            marital_status: patients.marital_status,
+            preferred_language: patients.preferred_language,
+            // Identifiers
             ssn: patients.ssn,
+            medicare_beneficiary_id: patients.medicare_beneficiary_id,
+            medicaid_id: patients.medicaid_id,
+            medical_record_number: patients.medical_record_number,
+            // Contact information
+            email: patients.email,
+            primary_phone: patients.primary_phone,
+            // Emergency contact
+            emergency_contact_name: patients.emergency_contact_name,
+            emergency_contact_phone: patients.emergency_contact_phone,
+            emergency_contact_relationship: patients.emergency_contact_relationship,
+            // HIPAA and consent flags
             oxygen_dependent: patients.oxygen_dependent,
             patient_consents: patients.patient_consents,
             hipaa_received: patients.hipaa_received,
             veterans_status: patients.veterans_status,
+            // DME
+            dme_provider: patients.dme_provider,
+            // Foreign keys
             patient_pharmacy_id: patients.patient_pharmacy_id,
             primary_diagnosis_id: patients.primary_diagnosis_id,
             race_ethnicity_id: patients.race_ethnicity_id,
-            dme_provider: patients.dme_provider,
             liaison_primary_id: patients.liaison_primary_id,
             liaison_secondary_id: patients.liaison_secondary_id,
             dnr_id: patients.dnr_id,
             emergency_preparedness_level_id: patients.emergency_preparedness_level_id,
             patient_identifier_id: patients.patient_identifier_id,
+            // Timestamps
             createdAt: patients.createdAt,
             updatedAt: patients.updatedAt,
         }).from(patients)

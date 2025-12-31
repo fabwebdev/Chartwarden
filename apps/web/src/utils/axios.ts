@@ -1,50 +1,37 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { getSession } from 'next-auth/react';
-
-const axiosServices = axios.create({ baseURL: process.env.NEXT_APP_API_URL });
-
-// ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
-
 /**
- * Request interceptor to add Authorization token to request
+ * Axios Services - Legacy Export
+ *
+ * This file is maintained for backwards compatibility with older imports.
+ * New code should use the centralized HTTP client from 'lib/http'.
+ *
+ * @deprecated Use `import { http, fetcher } from 'lib/http'` instead.
  */
-axiosServices.interceptors.request.use(
-  async (config) => {
-    const session = await getSession();
-    if (session?.token.accessToken) {
-      config.headers['Authorization'] = `Bearer ${session?.token.accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
-axiosServices.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response.status === 401 && !window.location.href.includes('/login')) {
-      window.location.pathname = '/login';
-    }
-    return Promise.reject((error.response && error.response.data) || 'Wrong Services');
-  }
-);
+import httpClient, { fetcher as httpFetcher, fetcherWithConfig } from '../lib/http/client';
+import { AxiosRequestConfig } from 'axios';
+
+// Re-export the http client as axiosServices for compatibility
+const axiosServices = httpClient;
 
 export default axiosServices;
 
+/**
+ * SWR-compatible fetcher for GET requests
+ * @deprecated Use `import { fetcher } from 'lib/http'` instead
+ */
 export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosServices.get(url, { ...config });
-
-  return res.data;
+  if (Array.isArray(args)) {
+    return fetcherWithConfig(args);
+  }
+  return httpFetcher(args);
 };
 
+/**
+ * SWR-compatible fetcher for POST requests
+ * @deprecated Use `import { fetcherPost } from 'lib/http'` instead
+ */
 export const fetcherPost = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-
   const res = await axiosServices.post(url, { ...config });
-
   return res.data;
 };

@@ -19,7 +19,8 @@ import { logger } from '../utils/logger.js';
 import {
     sendEmailJob,
     sendPasswordResetEmailJob,
-    sendWelcomeEmailJob
+    sendWelcomeEmailJob,
+    sendNotificationEmailJob
 } from './SendEmailJob.js';
 
 /**
@@ -31,11 +32,11 @@ export function registerAllJobs() {
     Queue.registerJob('send-email', sendEmailJob);
     Queue.registerJob('send-password-reset-email', sendPasswordResetEmailJob);
     Queue.registerJob('send-welcome-email', sendWelcomeEmailJob);
+    Queue.registerJob('send-notification-email', sendNotificationEmailJob);
 
     // Add more jobs here as needed:
     // Queue.registerJob('generate-pdf', generatePdfJob);
     // Queue.registerJob('process-report', processReportJob);
-    // Queue.registerJob('send-notification', sendNotificationJob);
 
     logger.info(`✅ Registered ${Queue.getRegisteredJobNames().length} queue jobs`);
     logger.info('Available jobs:', Queue.getRegisteredJobNames().join(', '));

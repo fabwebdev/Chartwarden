@@ -4,6 +4,7 @@ import {
   varchar,
   boolean,
   timestamp,
+  index,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
@@ -17,12 +18,21 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   image: varchar("image", { length: 255 }),
   emailVerified: boolean("emailVerified").default(false).notNull(),
-  // email_verified_at: timestamp('email_verified_at'),
   password: varchar("password", { length: 255 }),
   remember_token: varchar("remember_token", { length: 255 }),
   role: varchar("role", { length: 255 }).default("patient"),
   contact: varchar("contact", { length: 255 }),
-  // Removed department and location columns as they don't exist in the actual database
+  // HIPAA compliance fields
+  is_active: boolean("is_active").default(true).notNull(),
+  last_login_at: timestamp("last_login_at"),
+  password_changed_at: timestamp("password_changed_at"),
+  failed_login_attempts: varchar("failed_login_attempts", { length: 10 }).default("0"),
+  locked_until: timestamp("locked_until"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
-});
+  deleted_at: timestamp("deleted_at"),
+}, (table) => ({
+  email_idx: index("users_email_idx").on(table.email),
+  is_active_idx: index("users_is_active_idx").on(table.is_active),
+  role_idx: index("users_role_idx").on(table.role),
+}));

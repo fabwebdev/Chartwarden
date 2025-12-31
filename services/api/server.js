@@ -6,24 +6,29 @@ import { Server } from "socket.io";
 import connectDB from "./src/database/connection.js";
 import { closeDB } from "./src/database/connection.js";
 import apiRoutes from "./src/routes/api.routes.js";
-import errorHandler from "./src/middleware/error.middleware.js";
+import errorHandler, { notFoundHandler } from "./src/middleware/error.middleware.js";
 import corsMiddleware from "./src/middleware/cors.middleware.js";
 import RouteServiceProvider from "./src/providers/RouteServiceProvider.js";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./src/config/betterAuth.js";
 import authRoutes from "./src/routes/auth.routes.js";
+import emailRoutes from "./src/routes/email.routes.js";
 import seedDatabase from "./src/database/seed.js";
 import fixUserHasRolesTable from "./scripts/fix_user_has_roles.js";
 import fixPatientsColumns from "./scripts/fix_patients_columns.js";
 import originMiddleware from "./src/middleware/origin.middleware.js";
 import cookieFixMiddleware from "./src/middleware/cookie-fix.middleware.js";
 import { sessionTimeoutMiddleware } from "./src/middleware/session-timeout.middleware.js";
+import { csrfAutoProtect } from "./src/middleware/csrf.middleware.js";
 import { loggerConfig } from "./src/config/logging.config.js";
+import { logger, info, warn, error, debug } from "./src/utils/logger.js";
 import { db } from "./src/config/db.drizzle.js";
 import { users, roles, user_has_roles } from "./src/db/schemas/index.js";
 import { eq } from "drizzle-orm";
 import { ROLES, ROLE_PERMISSIONS } from "./src/config/rbac.js";
 import JobScheduler from "./src/jobs/scheduler.js";
+import helmetConfig, { additionalSecurityHeaders } from "./src/config/helmet.config.js";
+import { buildGlobalRateLimitConfig, getRedisStore, RATE_LIMITS } from "./src/config/rateLimit.config.js";
 
 // Load environment variables
 dotenv.config();
@@ -103,8 +108,8 @@ async function buildUserProfile(userPayload, originalEmail) {
 
     enrichedUser.role = roleName;
     enrichedUser.permissions = ROLE_PERMISSIONS[roleName] || [];
-  } catch (error) {
-    console.error("Error building user profile:", error);
+  } catch (err) {
+    error("Error building user profile", err);
     enrichedUser.firstName ??= null;
     enrichedUser.lastName ??= null;
     enrichedUser.role ??= ROLES.PATIENT;
@@ -153,36 +158,35 @@ app.register(import("@fastify/cors"), {
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
 });
-app.register(import("@fastify/helmet"), {
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginEmbedderPolicy: false,
-  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
-});
+// Helmet Security Headers (SECURITY: helmet-security-headers)
+// Comprehensive HTTP security headers for HIPAA compliance
+// Configuration includes: CSP, HSTS, X-Frame-Options, and other protections
+app.register(import("@fastify/helmet"), helmetConfig);
 
 // Rate Limiting (SECURITY: TICKET #003 - Prevent brute-force attacks)
-app.register(import("@fastify/rate-limit"), {
-  max: 100, // 100 requests
-  timeWindow: '1 minute', // per minute per IP
-  cache: 10000,
-  allowList: function(request) {
-    // Allow unlimited requests from localhost in development
-    if (process.env.NODE_ENV !== 'production') {
-      const ip = request.ip;
-      return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost';
-    }
-    return false;
-  },
-  keyGenerator: function(request) {
-    return request.ip;
-  },
-  errorResponseBuilder: function(request, context) {
-    return {
-      status: 429,
-      error: 'Too Many Requests',
-      message: 'Rate limit exceeded. Please try again later.',
-      retryAfter: context.after
-    };
+// Tiered rate limiting: 100 req/min unauthenticated, 500 req/min authenticated
+// Uses Redis for distributed rate limiting when available
+app.register(async function rateLimitPlugin(fastify) {
+  const rateLimit = (await import("@fastify/rate-limit")).default;
+
+  // Try to get Redis for distributed rate limiting
+  let redisClient = null;
+  try {
+    redisClient = await getRedisStore();
+  } catch (err) {
+    warn("Redis not available for rate limiting, using in-memory store", { error: err.message });
   }
+
+  // Build and register the rate limit config
+  const rateLimitConfig = buildGlobalRateLimitConfig(redisClient);
+  await fastify.register(rateLimit, rateLimitConfig);
+
+  info("Rate limiting initialized", {
+    unauthenticatedLimit: RATE_LIMITS.UNAUTHENTICATED.max,
+    authenticatedLimit: RATE_LIMITS.AUTHENTICATED.max,
+    timeWindow: RATE_LIMITS.UNAUTHENTICATED.timeWindow,
+    redisEnabled: !!redisClient,
+  });
 });
 
 app.register(import("@fastify/static"), {
@@ -209,11 +213,11 @@ app.addHook("onReady", async () => {
 
   // WebSocket connection handler
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    debug("WebSocket user connected", { socketId: socket.id });
 
     // Handle disconnection
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+      debug("WebSocket user disconnected", { socketId: socket.id });
     });
   });
 });
@@ -223,11 +227,18 @@ app.register(async (fastify) => {
   await RouteServiceProvider.boot(fastify);
 });
 
-// Add hook to override Render's security headers
+// Add hook to set additional security headers (SECURITY: helmet-security-headers)
+// Includes HIPAA-compliant cache control and permissions policy
 app.addHook("onSend", async (request, reply) => {
+  // Cross-origin headers for API compatibility
   reply.header("Cross-Origin-Resource-Policy", "cross-origin");
   reply.header("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   reply.header("Cross-Origin-Embedder-Policy", "unsafe-none");
+
+  // Additional security headers from helmet.config.js
+  Object.entries(additionalSecurityHeaders).forEach(([header, value]) => {
+    reply.header(header, value);
+  });
 });
 
 // Register cookie fix middleware as a hook
@@ -245,9 +256,9 @@ app.addHook("onResponse", async (request, reply) => {
     try {
       const { auditLogHandler } = await import("./src/middleware/audit.middleware.js");
       await auditLogHandler(request, reply);
-    } catch (error) {
+    } catch (err) {
       // Don't fail the request if audit logging fails
-      console.error("Audit logging hook error:", error);
+      error("Audit logging hook error", err);
     }
   }
 });
@@ -262,9 +273,7 @@ app.addHook("onRequest", async (request, reply) => {
     if (request.raw?.headers) {
       request.raw.headers.origin = url.origin;
     }
-    console.log(
-      `⚠️  Added default Origin header for testing: ${request.headers.origin}`
-    );
+    warn("Added default Origin header for testing", { origin: request.headers.origin });
   }
 });
 
@@ -275,8 +284,15 @@ app.addHook("onRequest", corsMiddleware);
 // Enforces 15-minute idle timeout and 8-hour absolute timeout
 app.addHook("onRequest", sessionTimeoutMiddleware);
 
+// Register CSRF protection for all state-changing operations (SECURITY: TICKET #004)
+// Validates CSRF token for POST, PUT, DELETE, PATCH requests
+// Token must be included in x-csrf-token header
+// Frontend should fetch token from GET /api/auth/csrf-token
+app.addHook("preHandler", csrfAutoProtect);
+
 // Register routes (will be registered after plugins are loaded)
 app.register(authRoutes, { prefix: "/api/auth" });
+app.register(emailRoutes, { prefix: "/api/email" });
 
 // Better Auth handler - handles Better Auth's built-in endpoints
 // This must be registered AFTER custom auth routes to avoid conflicts
@@ -331,7 +347,7 @@ app.all("/api/auth/*", async (request, reply) => {
 
     // Handle /api/auth/sign-in/email to add extra profile data while still using Better Auth
     if (url === "/api/auth/sign-in/email" && request.method === "POST") {
-      console.log(`🔐 Handling /api/auth/sign-in/email with custom response`);
+      debug("Handling /api/auth/sign-in/email with custom response");
 
       try {
         const protocol =
@@ -406,10 +422,7 @@ app.all("/api/auth/*", async (request, reply) => {
           try {
             responseBody = JSON.parse(responseText);
           } catch (parseError) {
-            console.error(
-              "Failed to parse Better Auth response JSON:",
-              parseError
-            );
+            error("Failed to parse Better Auth response JSON", parseError);
             responseBody = responseText;
           }
         }
@@ -435,7 +448,7 @@ app.all("/api/auth/*", async (request, reply) => {
 
         return reply.code(statusCode).send(responseBody ?? {});
       } catch (authError) {
-        console.error("❌ Custom sign-in/email handler error:", authError);
+        error("Custom sign-in/email handler error", authError);
         return reply.code(500).send({
           status: 500,
           message: "Server error during sign in",
@@ -449,7 +462,7 @@ app.all("/api/auth/*", async (request, reply) => {
       url === "/api/auth/sign-in/email" &&
       request.method === "POST"
     ) {
-      console.log(`🔐 Handling /api/auth/sign-in/email directly`);
+      debug("Handling /api/auth/sign-in/email directly");
       try {
         const { fromNodeHeaders } = await import("better-auth/node");
         const { db } = await import("./src/config/db.drizzle.js");
@@ -498,30 +511,12 @@ app.all("/api/auth/*", async (request, reply) => {
         // Preserve original email case from request body (before database fetch)
         const originalEmail = request.body?.email || response.user.email;
 
-        // Log sign-in success with user details
-        console.log("✅ Sign-in successful for /api/auth/sign-in/email:");
-        console.log("   User ID:", response.user.id);
-        console.log("   Email:", originalEmail);
-        console.log("   Session created:", !!response.session);
-        console.log("   Session ID:", response.session?.id || "N/A");
-
-        // Check if session cookie was set
-        const setCookieHeaders = reply.getHeaders()["set-cookie"] || [];
-        console.log(
-          "   Set-Cookie headers:",
-          setCookieHeaders.length > 0 ? "Present" : "Missing"
-        );
-
-        // Log the actual cookie value if present
-        if (setCookieHeaders.length > 0) {
-          const cookieValue = Array.isArray(setCookieHeaders)
-            ? setCookieHeaders[0]
-            : setCookieHeaders;
-          console.log(
-            "   Cookie preview:",
-            cookieValue.substring(0, 50) + "..."
-          );
-        }
+        // Log sign-in success with user details (PHI is sanitized by logger)
+        info("Sign-in successful for /api/auth/sign-in/email", {
+          sessionCreated: !!response.session,
+          sessionId: response.session?.id || "N/A",
+          hasCookies: (reply.getHeaders()["set-cookie"] || []).length > 0
+        });
 
         // Get user's full details from database (including firstName, lastName, and role)
         let userRole = ROLES.PATIENT;
@@ -547,9 +542,7 @@ app.all("/api/auth/*", async (request, reply) => {
                 .update(users)
                 .set({ email: originalEmail })
                 .where(eq(users.id, response.user.id));
-              console.log(
-                `📧 Updated email case in database: ${dbUser[0].email} → ${originalEmail}`
-              );
+              debug("Updated email case in database");
             }
 
             fullUser = {
@@ -578,11 +571,8 @@ app.all("/api/auth/*", async (request, reply) => {
               userRole = roleRecords[0].name;
             }
           }
-        } catch (error) {
-          console.error(
-            "Error loading user details during sign-in/email:",
-            error
-          );
+        } catch (err) {
+          error("Error loading user details during sign-in/email", err);
           // Continue with response.user if database fetch fails
         }
 
@@ -608,38 +598,38 @@ app.all("/api/auth/*", async (request, reply) => {
             },
           },
         });
-      } catch (error) {
-        console.error(`❌ Better Auth sign-in/email error:`, error);
-        if (error.statusCode === 401 || error.status === "UNAUTHORIZED") {
+      } catch (err) {
+        error("Better Auth sign-in/email error", err);
+        if (err.statusCode === 401 || err.status === "UNAUTHORIZED") {
           return reply.code(401).send({
             status: 401,
-            message: error.body?.message || "Invalid email or password",
-            code: error.body?.code || "INVALID_EMAIL_OR_PASSWORD",
+            message: err.body?.message || "Invalid email or password",
+            code: err.body?.code || "INVALID_EMAIL_OR_PASSWORD",
           });
         }
         return reply.code(500).send({
           status: 500,
           message: "Server error during sign in",
           error:
-            process.env.NODE_ENV === "development" ? error.message : undefined,
+            process.env.NODE_ENV === "development" ? err.message : undefined,
         });
       }
     }
 
-    console.log(`🔐 Better Auth handler called for: ${request.method} ${url}`);
+    debug("Better Auth handler called", { method: request.method, url });
 
     // For other Better Auth endpoints, use the handler
     reply.hijack();
     const handler = toNodeHandler(auth.handler);
     handler(request.raw, reply.raw);
-  } catch (error) {
-    console.error(`❌ Better Auth handler error for ${request.url}:`, error);
+  } catch (err) {
+    error("Better Auth handler error", { url: request.url, err });
     if (!reply.sent) {
       reply.code(500).send({
         status: 500,
         message: "Server error in auth handler",
         error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+          process.env.NODE_ENV === "development" ? err.message : undefined,
       });
     }
   }
@@ -648,21 +638,8 @@ app.all("/api/auth/*", async (request, reply) => {
 // Other routes
 app.register(apiRoutes, { prefix: "/api" });
 
-// 404 handler for API routes
-app.setNotFoundHandler(async (request, reply) => {
-  if (request.url.startsWith("/api/")) {
-    reply.code(404);
-    return {
-      status: "error",
-      message: "Route not found",
-    };
-  }
-  reply.code(404);
-  return {
-    status: "error",
-    message: "Route not found",
-  };
-});
+// 404 handler for API routes - HIPAA-compliant with tracking ID
+app.setNotFoundHandler(notFoundHandler);
 
 // Health check endpoint for Render
 app.get("/health", async (request, reply) => {
@@ -678,7 +655,7 @@ app.setErrorHandler(errorHandler);
 
 // Graceful shutdown handler
 const gracefulShutdown = async (signal) => {
-  console.log(`\n${signal} received, shutting down gracefully...`);
+  info("Graceful shutdown initiated", { signal });
 
   // Close Fastify app
   await app.close();
@@ -691,6 +668,14 @@ const gracefulShutdown = async (signal) => {
     io.close();
   }
 
+  // Close Redis connection
+  try {
+    const redisService = (await import("./src/services/RedisService.js")).default;
+    await redisService.disconnect();
+  } catch (redisError) {
+    // Redis may not be initialized
+  }
+
   // Close database connection
   await closeDB();
 
@@ -699,7 +684,7 @@ const gracefulShutdown = async (signal) => {
 
   // Force shutdown after 10 seconds
   setTimeout(() => {
-    console.error("⏰ Forced shutdown after timeout");
+    error("Forced shutdown after timeout");
     process.exit(1);
   }, 10000);
 };
@@ -714,18 +699,18 @@ const startServer = async () => {
     // Fix user_has_roles table if needed
     try {
       await fixUserHasRolesTable();
-      console.log("✅ user_has_roles table checked/fixed");
+      info("user_has_roles table checked/fixed");
     } catch (fixError) {
-      console.error("❌ Error fixing user_has_roles table:", fixError);
+      error("Error fixing user_has_roles table", fixError);
       // Don't exit here, continue with startup
     }
 
     // Ensure patients table has required columns
     try {
       await fixPatientsColumns();
-      console.log("✅ patients table checked/fixed");
+      info("patients table checked/fixed");
     } catch (patientsFixError) {
-      console.error("❌ Error fixing patients table:", patientsFixError);
+      error("Error fixing patients table", patientsFixError);
     }
 
     // Connect to database
@@ -734,34 +719,30 @@ const startServer = async () => {
     // Seed database with required roles and permissions
     try {
       await seedDatabase();
-      console.log(
-        "✅ Database seeded successfully with required roles and permissions"
-      );
+      info("Database seeded successfully with required roles and permissions");
     } catch (seedError) {
-      console.error("❌ Error seeding database:", seedError);
+      error("Error seeding database", seedError);
     }
 
     // Start Fastify server (Socket.IO will be initialized in onReady hook)
     await app.listen({ port: PORT, host: "0.0.0.0" });
-    console.log(`\n🚀 Server is running on port ${PORT}`);
-    console.log(
-      `🔐 Better Auth is available at http://localhost:${PORT}/api/auth/*`
-    );
-    console.log(`📡 Environment: ${process.env.NODE_ENV || "development"}`);
-    console.log(`\n✨ Server ready to accept connections!\n`);
+    info("Server started", {
+      port: PORT,
+      authEndpoint: `http://localhost:${PORT}/api/auth/*`,
+      environment: process.env.NODE_ENV || "development"
+    });
 
     // Initialize job scheduler if enabled
     if (process.env.ENABLE_SCHEDULER === 'true') {
       JobScheduler.init();
-      console.log('⏰ Job scheduler initialized and running');
+      info("Job scheduler initialized and running");
     } else {
-      console.log('⏰ Job scheduler disabled (set ENABLE_SCHEDULER=true to enable)');
+      info("Job scheduler disabled (set ENABLE_SCHEDULER=true to enable)");
     }
 
-    // Log that the server is ready for Render
-    console.log("✅ Application startup completed successfully");
-  } catch (error) {
-    console.error("Failed to start server:", error);
+    info("Application startup completed successfully");
+  } catch (err) {
+    error("Failed to start server", err);
     process.exit(1);
   }
 };

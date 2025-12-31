@@ -5,7 +5,7 @@ import { db } from "../config/db.drizzle.js";
 import { users, user_has_roles, roles } from "../db/schemas/index.js";
 import { eq } from "drizzle-orm";
 
-import { logger } from '../utils/logger.js';
+import { debug, info, warn, error } from '../utils/logger.js';
 /**
  * Middleware to protect routes with Better Auth session validation
  * Replaces the old JWT authentication middleware
@@ -14,12 +14,9 @@ export const authenticate = async (request, reply) => {
   try {
     // Debug: Log cookies received
     const sessionToken = request.cookies?.["better-auth.session_token"];
-    console.log("🔍 Authentication attempt:", {
+    debug("Authentication attempt", {
       hasCookie: !!sessionToken,
-      tokenPreview: sessionToken
-        ? sessionToken.substring(0, 20) + "..."
-        : "none",
-      allCookies: Object.keys(request.cookies || {}),
+      cookieCount: Object.keys(request.cookies || {}).length,
     });
 
     // Get session from Better Auth
@@ -29,27 +26,24 @@ export const authenticate = async (request, reply) => {
         headers: fromNodeHeaders(request.headers),
         cookies: request.cookies,
       });
-    } catch (error) {
-      console.error("❌ Better Auth getSession error:", {
-        message: error.message,
-        stack: error.stack,
-        code: error.code,
-        detail: error.detail,
-        hint: error.hint,
+    } catch (err) {
+      error("Better Auth getSession error", {
+        message: err.message,
+        code: err.code,
+        detail: err.detail,
+        hint: err.hint,
       });
 
       // If it's a table not found error, provide helpful message
-      if (error.message?.includes("does not exist") || error.code === "42P01") {
-        console.error(
-          "⚠️  Database table error detected. Check if sessions table exists in public schema."
-        );
+      if (err.message?.includes("does not exist") || err.code === "42P01") {
+        warn("Database table error detected. Check if sessions table exists in public schema.");
       }
 
       return reply.code(500).send({
         status: 500,
         message: "Server error during session validation.",
         error:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
+          process.env.NODE_ENV === "development" ? err.message : undefined,
       });
     }
 
@@ -67,15 +61,11 @@ export const authenticate = async (request, reply) => {
             .where(eq(sessions.token, sessionToken))
             .limit(1);
 
-          console.log("❌ Better Auth can't read session, but DB has:", {
+          warn("Better Auth cannot read session, but DB has record", {
             foundInDB: dbSession.length > 0,
-            sessionId: dbSession[0]?.id,
-            userId: dbSession[0]?.userId,
-            expiresAt: dbSession[0]?.expiresAt,
-            tokenMatch: dbSession[0]?.token === sessionToken,
           });
         } catch (dbError) {
-          logger.error("❌ Error checking database session:", dbError.message)
+          error("Error checking database session", dbError);
         }
       }
 
@@ -85,17 +75,7 @@ export const authenticate = async (request, reply) => {
       });
     }
 
-    logger.info("✅ Session found for user:", session.user?.id)
-    logger.info("📧 Session user email:", session.user?.email)
-    console.log(
-      "🔍 Session token from cookie:",
-      sessionToken ? sessionToken.substring(0, 30) + "..." : "none"
-    );
-
-    // Check if this is the correct session by comparing user IDs
-    if (session.user?.id) {
-      logger.info("✅ Authenticated user ID:", session.user.id)
-    }
+    debug("Session found for authenticated user");
 
     // Fetch full user record from database to get firstName and lastName
     let fullUser = session.user;
@@ -107,7 +87,6 @@ export const authenticate = async (request, reply) => {
         .limit(1);
 
       if (dbUser.length > 0) {
-        logger.info("📧 Database user email:", dbUser[0].email)
         // Merge Better Auth user data with database user data (including firstName and lastName)
         // Use database email as-is (it should have original case if stored correctly)
         // Better Auth stores lowercase, but we'll use what's in database
@@ -119,10 +98,7 @@ export const authenticate = async (request, reply) => {
         };
       }
     } catch (userFetchError) {
-      console.error(
-        "Error fetching user details from database:",
-        userFetchError
-      );
+      error("Error fetching user details from database", userFetchError);
       // Continue with session.user if database fetch fails
     }
 
@@ -156,23 +132,20 @@ export const authenticate = async (request, reply) => {
         request.user.role = ROLES.PATIENT; // Default if no role assigned
       }
     } catch (roleError) {
-      logger.error("Error loading user role:", roleError)
+      error("Error loading user role", roleError);
       request.user.role = ROLES.PATIENT; // Default on error
     }
-  } catch (error) {
-    logger.error("Authentication error:", error)
-    logger.error("Authentication error stack:", error.stack)
-    console.error("Request details:", {
+  } catch (err) {
+    error("Authentication error", {
+      err,
       method: request.method,
       path: request.url,
-      headers: request.headers,
-      cookies: request.cookies,
     });
     return reply.code(500).send({
       status: 500,
       message: "Server error during authentication.",
-      error: error.message,
-      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
+      error: err.message,
+      details: process.env.NODE_ENV === "development" ? err.stack : undefined,
     });
   }
 };
@@ -220,12 +193,12 @@ export const optionalAuth = async (request, reply) => {
           request.user.role = ROLES.PATIENT; // Default if no role assigned
         }
       } catch (roleError) {
-        logger.error("Error loading user role:", roleError)
+        error("Error loading user role", roleError);
         request.user.role = ROLES.PATIENT; // Default on error
       }
     }
-  } catch (error) {
-    logger.error("Optional authentication error:", error)
+  } catch (err) {
+    error("Optional authentication error", err);
     // Still continue even if there's an error, as this is optional auth
   }
 };

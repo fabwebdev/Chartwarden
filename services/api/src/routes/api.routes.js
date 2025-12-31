@@ -1,4 +1,5 @@
 import { db } from "../config/db.drizzle.js";
+import redisService from "../services/RedisService.js";
 import authRoutes from "./auth.routes.js";
 import benefitPeriodRoutes from "./patient/BenefitPeriod.routes.js";
 import cardiacAssessmentRoutes from "./patient/CardiacAssessment.routes.js";
@@ -60,25 +61,72 @@ import caslDemoRoutes from "./casl-demo.routes.js";
 import userRoutes from "./user.routes.js";
 import permissionRoutes from "./permission.routes.js";
 import { authenticate } from "../middleware/betterAuth.middleware.js";
+import errorTestRoutes from "./errorTest.routes.js";
 
 // Fastify plugin for API routes
 async function apiRoutes(fastify, options) {
   // Health check endpoint (public - no authentication required)
   fastify.get("/health", async (request, reply) => {
-    try {
-      // Test database connection
-      await db.execute("SELECT 1");
+    const health = {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      services: {
+        database: { status: "unknown" },
+        redis: { status: "unknown" },
+      },
+    };
 
-      return {
-        status: "healthy",
-        database: "connected",
-        timestamp: new Date().toISOString(),
+    // Test database connection
+    try {
+      await db.execute("SELECT 1");
+      health.services.database = { status: "connected" };
+    } catch (error) {
+      health.services.database = {
+        status: "disconnected",
+        error: error.message,
       };
+      health.status = "degraded";
+    }
+
+    // Test Redis connection
+    try {
+      const redisHealth = await redisService.healthCheck();
+      health.services.redis = {
+        status: redisHealth.status === "healthy" ? "connected" : "disconnected",
+        latencyMs: redisHealth.latencyMs,
+        version: redisHealth.version,
+        usedMemory: redisHealth.usedMemory,
+      };
+      if (redisHealth.status !== "healthy") {
+        health.status = "degraded";
+      }
+    } catch (error) {
+      health.services.redis = {
+        status: "disconnected",
+        error: error.message,
+      };
+      // Redis is optional, so don't mark as degraded if DB is healthy
+    }
+
+    // Set response code based on health status
+    if (health.status === "unhealthy") {
+      reply.code(503);
+    } else if (health.status === "degraded") {
+      reply.code(200); // Still return 200 for degraded (optional services down)
+    }
+
+    return health;
+  });
+
+  // Detailed Redis health check endpoint
+  fastify.get("/health/redis", async (request, reply) => {
+    try {
+      const healthCheck = await redisService.healthCheck();
+      return healthCheck;
     } catch (error) {
       reply.code(503);
       return {
         status: "unhealthy",
-        database: "disconnected",
         error: error.message,
         timestamp: new Date().toISOString(),
       };
@@ -165,6 +213,11 @@ async function apiRoutes(fastify, options) {
   await fastify.register(caslDemoRoutes, { prefix: "/casl-demo" });
   await fastify.register(userRoutes);
   await fastify.register(permissionRoutes);
+
+  // Error handling test routes (development/testing only)
+  if (process.env.NODE_ENV !== 'production') {
+    await fastify.register(errorTestRoutes);
+  }
 }
 
 export default apiRoutes;

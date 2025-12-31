@@ -1,0 +1,1569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project_specification>
+  <project_name>Chartwarden</project_name>
+
+  <overview>
+    Chartwarden is a HIPAA-compliant, full-stack Electronic Health Record (EHR) system specifically designed for hospice and palliative care providers. Built with modern web technologies, it combines regulatory compliance with superior developer experience. The system supports comprehensive patient management, clinical documentation, medication management, and revenue cycle operations for multi-facility hospice organizations. Key emphasis areas include CMS compliance (HOPE assessments, Face-to-Face encounters, IDG meetings), 21 CFR Part 11 electronic signatures, and complete revenue cycle management with EDI integration for claims, eligibility verification, ERA processing, and denial management.
+  </overview>
+
+  <technology_stack>
+    <technology>Node.js (&gt;=20.0.0)</technology>
+    <technology>Fastify 4.x (Backend Framework)</technology>
+    <technology>Next.js 14+ (Frontend Framework with App Router)</technology>
+    <technology>React 18+</technology>
+    <technology>TypeScript</technology>
+    <technology>PostgreSQL 16</technology>
+    <technology>Drizzle ORM (Type-safe database layer)</technology>
+    <technology>Better Auth (Authentication library)</technology>
+    <technology>Socket.IO (Real-time communication)</technology>
+    <technology>Argon2 (Password hashing)</technology>
+    <technology>Pino (High-performance logging)</technology>
+    <technology>Material-UI 5+ (Component library)</technology>
+    <technology>Tailwind CSS</technology>
+    <technology>Zustand (State management)</technology>
+    <technology>Axios (HTTP client)</technology>
+    <technology>Formik + Yup (Form management and validation)</technology>
+    <technology>jsPDF (PDF generation)</technology>
+    <technology>ExcelJS (Excel report generation)</technology>
+    <technology>Puppeteer (PDF rendering from HTML)</technology>
+    <technology>CASL (Isomorphic authorization)</technology>
+    <technology>Node-cache (In-memory caching)</technology>
+    <technology>Node-cron (Job scheduling)</technology>
+    <technology>Nodemailer (Email notifications)</technology>
+    <technology>Turborepo (Monorepo orchestration)</technology>
+    <technology>npm Workspaces (Workspace management)</technology>
+    <technology>Docker Compose (Local development)</technology>
+    <technology>Drizzle Kit (Database migration tool)</technology>
+    <technology>ESLint + Prettier (Code quality)</technology>
+    <technology>Jest (Testing framework)</technology>
+    <technology>Helmet (Security headers)</technology>
+    <technology>Fastify-plugin ecosystem (@fastify/cors, @fastify/csrf-protection, @fastify/helmet, @fastify/rate-limit, @fastify/static, @fastify/websocket, @fastify/multipart)</technology>
+  </technology_stack>
+
+  <core_capabilities>
+    <capability>Patient Management: Comprehensive demographics, MRN tracking, identifiers, addresses, emergency contacts, living arrangements, DME provider management</capability>
+    <capability>Clinical Documentation: Patient encounters, nursing notes, vital signs, comprehensive assessments (HOPE, body systems), pain management (multiple assessment tools), care planning, IDG meetings, physician certifications (Face-to-Face, recertifications), electronic signatures</capability>
+    <capability>Medication Management: Orders, administration records, reconciliation, tracking</capability>
+    <capability>Billing &amp; Revenue Cycle: Claim generation (EDI 837), claim scrubbing/validation, clearinghouse integration, eligibility verification (270/271), ERA processing (835), automatic payment posting, denial management, revenue accrual and recognition, cap tracking, CBSA lookups</capability>
+    <capability>Staff &amp; Operations: Staff profiles, visit scheduling, bereavement services, QAPI tracking</capability>
+    <capability>Security &amp; Compliance: Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), CASL authorization, comprehensive audit logging, electronic signatures (21 CFR Part 11), session timeout enforcement, password complexity</capability>
+    <capability>Real-Time Features: Team communication via Socket.IO, live notifications and alerts</capability>
+    <capability>Reporting &amp; Analytics: Clinical reports, financial reports, operational dashboards, analytics engine</capability>
+    <capability>User Management: Role and permission management with granular controls</capability>
+    <capability>Audit Logging: HIPAA-compliant immutable audit trail with PHI/PII redaction</capability>
+  </core_capabilities>
+
+  <!-- ===================================================================================== -->
+  <!-- IMPLEMENTED FEATURES - Currently built and functional                                -->
+  <!-- ===================================================================================== -->
+  <implemented_features>
+    <feature>
+      <name>Patient Management</name>
+      <description>Full CRUD operations for patient demographics, with support for multiple identifiers (MRN, SSN), addresses, emergency contacts, pharmacy information, payer information, living arrangements, DME provider tracking, race/ethnicity, spiritual preferences, emergency preparedness level</description>
+      <file_locations>
+        <location>services/api/src/controllers/Patient.controller.js</location>
+        <location>services/api/src/controllers/patient/*.controller.js</location>
+        <location>services/api/src/routes/patient/*.routes.js</location>
+        <location>services/api/src/db/schemas/patient.schema.js</location>
+        <location>services/api/src/db/schemas/address.schema.js</location>
+        <location>services/api/src/db/schemas/patientIdentifiers.schema.js</location>
+        <location>apps/web/src/app/(dashboard)/patients/page.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Clinical Documentation</name>
+      <description>Comprehensive clinical documentation including patient encounters (admissions, visits, discharges), nursing clinical notes with rich text editor, vital signs monitoring (BP, HR, RR, Temp, SpO2, Pain), HOPE assessments (2.0 standard), IDG meeting documentation (14-day requirement), care planning with goals, and electronic signatures (21 CFR Part 11)</description>
+      <file_locations>
+        <location>services/api/src/controllers/Encounter.controller.js</location>
+        <location>services/api/src/controllers/HOPEAssessment.controller.js</location>
+        <location>services/api/src/controllers/IDGMeeting.controller.js</location>
+        <location>services/api/src/controllers/CarePlan.controller.js</location>
+        <location>services/api/src/controllers/patient/NursingClinicalNote.controller.js</location>
+        <location>services/api/src/controllers/patient/VitalSigns.controller.js</location>
+        <location>services/api/src/controllers/patient/Signature.controller.js</location>
+        <location>services/api/src/routes/encounter.routes.js</location>
+        <location>services/api/src/routes/hopeAssessment.routes.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Clinical Assessments</name>
+      <description>Multiple specialized assessment modules including HOPE (Hospice Outcomes and Patient Evaluation), cardiac assessment, endocrine assessment, hematological assessment, integumentary (skin/wound) assessment, nutrition assessment, and prognosis tracking</description>
+      <file_locations>
+        <location>services/api/src/controllers/HOPEAssessment.controller.js</location>
+        <location>services/api/src/controllers/patient/CardiacAssessment.controller.js</location>
+        <location>services/api/src/controllers/patient/EndocrineAssessment.controller.js</location>
+        <location>services/api/src/controllers/patient/HematologicalAssessment.controller.js</location>
+        <location>services/api/src/controllers/patient/IntegumentaryAssessment.controller.js</location>
+        <location>services/api/src/controllers/patient/Nutrition.controller.js</location>
+        <location>services/api/src/controllers/patient/Prognosis.controller.js</location>
+        <location>services/api/src/db/schemas/*assessment.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Pain Management</name>
+      <description>Comprehensive pain assessment and management with multiple assessment tools: Numeric Rating Scale (0-10), Wong-Baker FACES scale, PAINAD scale (for dementia patients), FLACC scale (pediatric/non-verbal), and comprehensive pain assessment with location, quality, triggers, and interventions</description>
+      <file_locations>
+        <location>services/api/src/controllers/patient/Pain.controller.js</location>
+        <location>services/api/src/routes/patient/Pain.routes.js</location>
+        <location>services/api/src/db/schemas/pain*.schema.js</location>
+        <location>services/api/src/db/schemas/flaccBehavioralPain.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Medication Management</name>
+      <description>Complete medication lifecycle management including orders, prescriptions, medication administration records (MAR), dosage tracking, administration routes, frequency management, medication status tracking (active, discontinued, paused)</description>
+      <file_locations>
+        <location>services/api/src/controllers/Medication.controller.js</location>
+        <location>services/api/src/routes/medication.routes.js</location>
+        <location>services/api/src/db/schemas/medications.schema.js</location>
+        <location>services/api/src/services/ICD10.service.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Billing &amp; Claims Management</name>
+      <description>Comprehensive billing operations including claim creation, automated claim scrubbing with validation rules, EDI 837 claim file generation, HIPAA claim format compliance, billing status tracking, amount management, and integration with clearinghouse submission</description>
+      <file_locations>
+        <location>services/api/src/controllers/Billing.controller.js</location>
+        <location>services/api/src/controllers/ClaimValidation.controller.js</location>
+        <location>services/api/src/routes/billing.routes.js</location>
+        <location>services/api/src/services/ClaimScrubber.service.js</location>
+        <location>services/api/src/services/EDIGenerator.service.js</location>
+        <location>services/api/src/db/schemas/billing.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Clearinghouse Integration</name>
+      <description>EDI transmission and clearinghouse integration for claim submission, including EDI 837 file generation, transmission tracking, clearinghouse response handling, and status management for claims submitted to healthcare clearinghouses</description>
+      <file_locations>
+        <location>services/api/src/controllers/Clearinghouse.controller.js</location>
+        <location>services/api/src/routes/clearinghouse.routes.js</location>
+        <location>services/api/src/services/EDIGenerator.service.js</location>
+        <location>services/api/src/db/schemas/clearinghouse.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Medicare Compliance</name>
+      <description>CMS-compliant features including HOPE assessment management (required comprehensive assessments), Face-to-Face (F2F) encounter tracking (required before third benefit period), IDG meeting documentation (required every 14 days), benefit period tracking, and level of care management (RHC, CHC, GIP, Respite)</description>
+      <file_locations>
+        <location>services/api/src/controllers/HOPEAssessment.controller.js</location>
+        <location>services/api/src/controllers/Certification.controller.js</location>
+        <location>services/api/src/controllers/IDGMeeting.controller.js</location>
+        <location>services/api/src/controllers/patient/BenefitPeriod.controller.js</location>
+        <location>services/api/src/db/schemas/benefitPeriod.schema.js</location>
+        <location>services/api/src/db/schemas/certifications.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Eligibility Verification</name>
+      <description>Insurance eligibility verification workflow using EDI 270 requests and 271 response parsing, allowing real-time checks of patient coverage before admission, with status tracking and coverage issue alerts</description>
+      <file_locations>
+        <location>services/api/src/controllers/Eligibility.controller.js</location>
+        <location>services/api/src/routes/eligibility.routes.js</location>
+        <location>services/api/src/services/EDI270Generator.service.js</location>
+        <location>services/api/src/services/EDI271Parser.service.js</location>
+        <location>services/api/src/services/EligibilityVerifier.service.js</location>
+        <location>services/api/src/db/schemas/eligibility.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>ERA Processing &amp; Auto-Posting</name>
+      <description>Electronic Remittance Advice (ERA) processing using EDI 835 files with automatic payment posting, payment matching to claims, reconciliation tracking, and automated posting to patient accounts</description>
+      <file_locations>
+        <location>services/api/src/controllers/ERA.controller.js</location>
+        <location>services/api/src/routes/era.routes.js</location>
+        <location>services/api/src/services/EDI835Parser.service.js</location>
+        <location>services/api/src/services/PaymentPosting.service.js</location>
+        <location>services/api/src/db/schemas/era.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Denial Management</name>
+      <description>Comprehensive denial management including denial tracking, denial code library (CARC/RARC), root cause analysis, appeal workflow generation, appeal letter templates, corrected claim resubmission, denial trend analysis, and denial pattern identification</description>
+      <file_locations>
+        <location>services/api/src/controllers/DenialManagement.controller.js</location>
+        <location>services/api/src/routes/denialManagement.routes.js</location>
+        <location>services/api/src/services/DenialManagement.service.js</location>
+        <location>services/api/src/services/DenialCodes.service.js</location>
+        <location>services/api/src/services/DenialAnalytics.service.js</location>
+        <location>services/api/src/services/AppealTracking.service.js</location>
+        <location>services/api/src/db/schemas/denialManagement.schema.js</location>
+        <location>services/api/src/db/schemas/denialCodes.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Revenue Recognition &amp; Forecasting</name>
+      <description>Revenue accrual tracking, daily revenue accrual calculations, revenue recognition rules (ASC 606), revenue forecasting models based on census and level of care, cash flow projections, and budget vs. actual reporting</description>
+      <file_locations>
+        <location>services/api/src/controllers/RevenueRecognition.controller.js</location>
+        <location>services/api/src/routes/revenueRecognition.routes.js</location>
+        <location>services/api/src/services/RevenueForecasting.service.js</location>
+        <location>services/api/src/services/CashFlowProjection.service.js</location>
+        <location>services/api/src/db/schemas/revenueRecognition.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Cap Tracking</name>
+      <description>Medicare hospice cap tracking and compliance monitoring with cap calculation, remaining cap tracking, and notifications when approaching cap limits</description>
+      <file_locations>
+        <location>services/api/src/controllers/CapTracking.controller.js</location>
+        <location>services/api/src/routes/capTracking.routes.js</location>
+        <location>services/api/src/db/schemas/capTracking.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>CBSA Lookups</name>
+      <description>Core-Based Statistical Area (CBSA) code lookups for wage index adjustments in billing calculations, with geographic code management and lookup functionality</description>
+      <file_locations>
+        <location>services/api/src/controllers/CBSA.controller.js</location>
+        <location>services/api/src/routes/cbsa.routes.js</location>
+        <location>services/api/src/services/CBSALookupService.js</location>
+        <location>services/api/src/db/schemas/cbsa.schema.js</location>
+        <location>services/api/src/data/cbsa_codes_sample.json</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Authentication &amp; Authorization</name>
+      <description>Multi-layer authorization system with Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), and CASL isomorphic authorization. Supports email/password authentication and OAuth (Google, GitHub). Features session management with 8-hour max duration and 15-minute idle timeout, Argon2 password hashing, and automatic session termination</description>
+      <file_locations>
+        <location>services/api/src/controllers/Auth.controller.js</location>
+        <location>services/api/src/config/betterAuth.js</location>
+        <location>services/api/src/config/rbac.js</location>
+        <location>services/api/src/config/abac.js</location>
+        <location>services/api/src/config/casl.js</location>
+        <location>services/api/src/middleware/betterAuth.middleware.js</location>
+        <location>services/api/src/middleware/rbac.middleware.js</location>
+        <location>services/api/src/middleware/abac.middleware.js</location>
+        <location>services/api/src/middleware/casl.middleware.js</location>
+        <location>services/api/src/middleware/session-timeout.middleware.js</location>
+        <location>services/api/src/services/HashService.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Audit Logging</name>
+      <description>HIPAA-compliant comprehensive audit trail tracking user access, modifications, deletions with immutable records. Logs include user ID, action type, resource identification, timestamp, IP address, user agent, changes (before/after), and status. Configured with PHI/PII redaction in logger output. 6-year retention period</description>
+      <file_locations>
+        <location>services/api/src/middleware/audit.middleware.js</location>
+        <location>services/api/src/controllers/Audit.controller.js</location>
+        <location>services/api/src/services/AuditService.js</location>
+        <location>services/api/src/db/schemas/auditLog.schema.js</location>
+        <location>services/api/src/config/logging.config.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>User &amp; Role Management</name>
+      <description>Complete user management system with role assignment, permission configuration, user profile management, password management, and status tracking (active/inactive)</description>
+      <file_locations>
+        <location>services/api/src/controllers/User.controller.js</location>
+        <location>services/api/src/controllers/Role.controller.js</location>
+        <location>services/api/src/controllers/Permission.controller.js</location>
+        <location>services/api/src/routes/user.routes.js</location>
+        <location>services/api/src/db/schemas/users.schema.js</location>
+        <location>services/api/src/db/schemas/roles.schema.js</location>
+        <location>services/api/src/db/schemas/permissions.schema.js</location>
+        <location>services/api/src/db/schemas/userHasRoles.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Staff Management</name>
+      <description>Staff profile management including credentials, specialties, facility assignments, contact information, and staff status tracking</description>
+      <file_locations>
+        <location>services/api/src/controllers/Staff.controller.js</location>
+        <location>services/api/src/routes/staff.routes.js</location>
+        <location>services/api/src/db/schemas/staff.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Visit Scheduling</name>
+      <description>Comprehensive visit scheduling system with calendar management, staff assignment, patient scheduling, visit type tracking, and schedule conflict detection</description>
+      <file_locations>
+        <location>services/api/src/controllers/Scheduling.controller.js</location>
+        <location>services/api/src/routes/scheduling.routes.js</location>
+        <location>services/api/src/db/schemas/scheduling.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Bereavement Services</name>
+      <description>Bereavement services tracking including grief counseling, follow-up visits, family support, and bereavement documentation</description>
+      <file_locations>
+        <location>services/api/src/controllers/Bereavement.controller.js</location>
+        <location>services/api/src/routes/bereavement.routes.js</location>
+        <location>services/api/src/db/schemas/bereavement.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>QAPI (Quality Assurance &amp; Performance Improvement)</name>
+      <description>Quality assurance and performance improvement tracking with metrics, improvement initiatives, compliance monitoring, and performance reporting</description>
+      <file_locations>
+        <location>services/api/src/controllers/QAPI.controller.js</location>
+        <location>services/api/src/routes/qapi.routes.js</location>
+        <location>services/api/src/db/schemas/qapi.schema.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Reporting &amp; Analytics</name>
+      <description>Comprehensive reporting system with clinical reports, financial reports, operational dashboards, analytics engine with dashboard metrics, Excel report generation, and PDF report generation</description>
+      <file_locations>
+        <location>services/api/src/controllers/Reports.controller.js</location>
+        <location>services/api/src/controllers/Analytics.controller.js</location>
+        <location>services/api/src/routes/reports.routes.js</location>
+        <location>services/api/src/routes/analytics.routes.js</location>
+        <location>services/api/src/services/Analytics.service.js</location>
+        <location>services/api/src/services/ExcelService.js</location>
+        <location>services/api/src/services/BrowserService.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Real-Time Communication</name>
+      <description>Socket.IO-based real-time features including team communication (chat), live notifications, alerts, and collaborative features</description>
+      <file_locations>
+        <location>services/api/server.js</location>
+        <location>services/api/src/config/broadcasting.config.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Job Scheduling</name>
+      <description>Background job scheduling using node-cron for automated tasks including certification alerts, cap recalculation, and email notifications</description>
+      <file_locations>
+        <location>services/api/src/jobs/scheduler.js</location>
+        <location>services/api/src/jobs/registerJobs.js</location>
+        <location>services/api/src/jobs/certificationAlerts.job.js</location>
+        <location>services/api/src/jobs/capRecalculation.job.js</location>
+        <location>services/api/src/jobs/SendEmailJob.js</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Frontend Dashboard</name>
+      <description>Next.js 14+ frontend application with patient management interface, encounter tracking, clinical documentation, medication management, reporting, and administrative features</description>
+      <file_locations>
+        <location>apps/web/src/app/(dashboard)/*</location>
+        <location>apps/web/src/components/*</location>
+        <location>apps/web/src/sections/*</location>
+        <location>apps/web/src/api/patient.ts</location>
+        <location>apps/web/src/store/patientStore.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Electronic Signatures</name>
+      <description>21 CFR Part 11 compliant electronic signature system with user authentication, signature manifestation (name, date, meaning), unique user identification, and immutable audit trail</description>
+      <file_locations>
+        <location>services/api/src/controllers/patient/Signature.controller.js</location>
+        <location>services/api/src/routes/patient/Signature.routes.js</location>
+        <location>services/api/src/db/schemas/signatures.schema.js</location>
+      </file_locations>
+    </feature>
+  </implemented_features>
+
+  <!-- ===================================================================================== -->
+  <!-- FEATURES TO DEVELOP - Planned features requiring implementation                      -->
+  <!-- ===================================================================================== -->
+  <features_to_develop>
+
+    <!-- ==================== REFERRAL & INTAKE MANAGEMENT ==================== -->
+    <feature>
+      <name>Referral Source Management</name>
+      <feature_id>REF-001</feature_id>
+      <category>Referral &amp; Intake Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Complete referral source database with contact tracking, marketing metrics, and relationship management. Tracks all referral sources including hospitals, SNFs, physician offices, ALFs, and community organizations with historical volume data and conversion analytics.</description>
+      <regulatory_requirement>CMS CoP 418.54 requires documentation of referral sources</regulatory_requirement>
+      <key_functions>
+        <function>Referral source profiles (hospitals, SNFs, physicians, ALFs, community organizations)</function>
+        <function>Multiple contact management per source with roles and communication preferences</function>
+        <function>Referral source categories, territories, and service area mapping</function>
+        <function>Historical referral volume tracking with trending analysis</function>
+        <function>Conversion rate analytics by source, category, and time period</function>
+        <function>Marketing visit documentation and relationship management</function>
+        <function>Referral source satisfaction tracking and feedback</function>
+        <function>Preferred referral source designation and ranking</function>
+      </key_functions>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Referral Intake Workflow</name>
+      <feature_id>REF-002</feature_id>
+      <category>Referral &amp; Intake Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Structured intake process from initial referral call through admission decision. Includes phone intake forms, real-time eligibility pre-checks, duplicate detection, assignment routing, and comprehensive status tracking with response time metrics.</description>
+      <key_functions>
+        <function>Phone intake form with required fields and validation</function>
+        <function>Real-time Medicare eligibility pre-check during intake</function>
+        <function>Automatic duplicate patient detection using MBI, SSN, DOB matching</function>
+        <function>Referral assignment routing to intake nurses by territory or availability</function>
+        <function>Referral status workflow (Pending, Scheduled, Visited, Admitted, Declined, Unable to Contact, Waitlist)</function>
+        <function>Decline reason tracking and reporting with standardized codes</function>
+        <function>Referral response time tracking (call-to-contact, call-to-visit, call-to-admission)</function>
+        <function>After-hours referral handling with on-call notification</function>
+        <function>Waitlist management for patients not ready for admission</function>
+      </key_functions>
+      <workflow_states>
+        <state order="1">New Referral Received</state>
+        <state order="2">Pending Assignment</state>
+        <state order="3">Assigned to Intake Nurse</state>
+        <state order="4">Contact Attempted</state>
+        <state order="5">Visit Scheduled</state>
+        <state order="6">Visit Completed</state>
+        <state order="7">Pending Admission Decision</state>
+        <state order="8">Admitted / Declined / Waitlisted / Unable to Contact</state>
+      </workflow_states>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Eligibility Screening Tools</name>
+      <feature_id>REF-003</feature_id>
+      <category>Referral &amp; Intake Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Pre-admission eligibility screening tools to determine hospice appropriateness before admission visit. Includes LCD criteria checklists by diagnosis, prognosis calculators, insurance verification, and documentation requirements tracking.</description>
+      <regulatory_requirement>42 CFR 418.22 - Terminal prognosis certification; LCD criteria per diagnosis</regulatory_requirement>
+      <key_functions>
+        <function>LCD (Local Coverage Determination) criteria checklists by primary diagnosis</function>
+        <function>Prognosis indicators and clinical decline documentation</function>
+        <function>PPS (Palliative Performance Scale) calculator with auto-scoring</function>
+        <function>FAST (Functional Assessment Staging) for dementia patients</function>
+        <function>NYHA (New York Heart Association) classification for cardiac patients</function>
+        <function>Insurance eligibility verification integration (270/271)</function>
+        <function>Medicare beneficiary lookup and MBI verification</function>
+        <function>Prior hospice utilization check (benefit period history)</function>
+        <function>Documentation requirements checklist by payer type</function>
+      </key_functions>
+      <lcd_diagnoses_supported>
+        <diagnosis>Cancer (all types)</diagnosis>
+        <diagnosis>Dementia/Alzheimers</diagnosis>
+        <diagnosis>Heart Disease/CHF</diagnosis>
+        <diagnosis>Pulmonary Disease/COPD</diagnosis>
+        <diagnosis>Stroke/CVA</diagnosis>
+        <diagnosis>Renal Disease/ESRD</diagnosis>
+        <diagnosis>Liver Disease</diagnosis>
+        <diagnosis>HIV/AIDS</diagnosis>
+        <diagnosis>ALS/Neuromuscular</diagnosis>
+        <diagnosis>Adult Failure to Thrive</diagnosis>
+      </lcd_diagnoses_supported>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== ADMISSION & ELECTION PROCESS ==================== -->
+    <feature>
+      <name>Hospice Election Statement Management</name>
+      <feature_id>ADM-001</feature_id>
+      <category>Admission &amp; Election Process</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Complete election statement workflow with all CMS-required elements per 42 CFR 418.24. Includes electronic election processing, addendum management, revocation handling, and re-election processing with full audit trail.</description>
+      <regulatory_requirement>42 CFR 418.24 - Election of hospice care; all required elements must be documented</regulatory_requirement>
+      <key_functions>
+        <function>Electronic election statement with all required elements</function>
+        <function>Patient/representative identification and relationship documentation</function>
+        <function>Hospice identification with NPI and CCN</function>
+        <function>Attending physician acknowledgment and NPI capture</function>
+        <function>Effective date selection with benefit period calculation</function>
+        <function>Benefit period tracking (initial 90, subsequent 90, unlimited 60-day)</function>
+        <function>Waiver of Medicare Part A rights acknowledgment</function>
+        <function>Electronic signature capture (patient or legal representative)</function>
+        <function>Representative authority documentation (POA, guardian, etc.)</function>
+        <function>Addendum management for attending physician changes</function>
+        <function>Revocation processing with effective date and reason</function>
+        <function>Re-election processing after revocation or discharge</function>
+      </key_functions>
+      <required_elements>
+        <element>Patient identification (name, DOB, Medicare number)</element>
+        <element>Hospice identification (name, address, NPI, CCN)</element>
+        <element>Patient acknowledgment of hospice election</element>
+        <element>Effective date of election</element>
+        <element>Designation of attending physician (if any)</element>
+        <element>Acknowledgment of palliative vs curative care</element>
+        <element>Waiver of Medicare Part A benefits related to terminal illness</element>
+        <element>Patient/representative signature and date</element>
+      </required_elements>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Patient Rights &amp; Consent Management</name>
+      <feature_id>ADM-002</feature_id>
+      <category>Admission &amp; Election Process</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Comprehensive tracking and management of all required patient consents, rights acknowledgments, and advance directives per CMS Conditions of Participation.</description>
+      <regulatory_requirement>42 CFR 418.52 - Patients rights; 42 CFR 418.104 - Clinical records</regulatory_requirement>
+      <key_functions>
+        <function>Patient Rights notice with signature acknowledgment</function>
+        <function>HIPAA Notice of Privacy Practices with signature</function>
+        <function>Advance Directive status documentation and copy storage</function>
+        <function>POLST/MOLST integration and status tracking</function>
+        <function>DNR/DNI documentation and verification</function>
+        <function>Financial responsibility acknowledgment</function>
+        <function>Consent for treatment</function>
+        <function>Photo/video/media release consent</function>
+        <function>Consent version tracking with policy change management</function>
+        <function>Consent expiration alerts and re-consent workflows</function>
+        <function>Multi-language consent form support</function>
+      </key_functions>
+      <consent_types>
+        <consent required="true">Patient Rights Acknowledgment</consent>
+        <consent required="true">HIPAA Notice of Privacy Practices</consent>
+        <consent required="true">Consent for Treatment</consent>
+        <consent required="true">Financial Responsibility</consent>
+        <consent required="false">Photo/Media Release</consent>
+        <consent required="false">Advance Directive Copy</consent>
+      </consent_types>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Payer Coordination Module</name>
+      <feature_id>ADM-003</feature_id>
+      <category>Admission &amp; Election Process</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Manage multiple payers, coordination of benefits, and payer-specific requirements throughout the patient stay.</description>
+      <key_functions>
+        <function>Primary/secondary/tertiary payer hierarchy management</function>
+        <function>Coordination of Benefits (COB) tracking and documentation</function>
+        <function>Medicare as Secondary Payer (MSP) questionnaire</function>
+        <function>Medicaid enrollment assistance tracking</function>
+        <function>VA benefits coordination and authorization</function>
+        <function>Private insurance hospice benefit verification</function>
+        <function>Payer-specific authorization requirements</function>
+        <function>Prior authorization tracking and renewal alerts</function>
+        <function>Payer change workflow with effective dates</function>
+      </key_functions>
+      <payer_types_supported>
+        <payer>Medicare Part A (Traditional)</payer>
+        <payer>Medicare Advantage (MA)</payer>
+        <payer>Medicaid (State-specific)</payer>
+        <payer>Private Insurance</payer>
+        <payer>VA / CHAMPVA</payer>
+        <payer>TRICARE</payer>
+        <payer>Self-Pay / Charity</payer>
+      </payer_types_supported>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== HOPE ASSESSMENT ENHANCEMENT ==================== -->
+    <feature>
+      <name>Complete HOPE Assessment Types</name>
+      <feature_id>HOPE-001</feature_id>
+      <category>HOPE Assessment Enhancement</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Full implementation of all HOPE assessment types with proper timing logic, skip patterns, and assessment type auto-selection based on patient stay duration and clinical events.</description>
+      <regulatory_requirement>CMS HOPE mandatory October 1, 2025; replaces HIS; 4% payment penalty for non-compliance</regulatory_requirement>
+      <key_functions>
+        <function>HOPE Admission assessment (Days 0-5 after hospice election)</function>
+        <function>HOPE Update Visit 1 (HUV1) - Days 6-14 if patient survives</function>
+        <function>HOPE Update Visit 2 (HUV2) - Days 15-30 if patient survives</function>
+        <function>Symptom Follow-up Visit (SFV) - Within 2 calendar days of moderate/severe symptoms</function>
+        <function>HOPE Discharge assessment - At end of hospice care</function>
+        <function>Assessment type auto-selection based on timing and patient status</function>
+        <function>Skip logic for short-stay patients</function>
+        <function>Assessment window tracking with compliance alerts</function>
+        <function>Assessment locking after submission</function>
+      </key_functions>
+      <assessment_windows>
+        <window type="HOPE Admission">Days 0-5 from election date</window>
+        <window type="HUV1">Days 6-14 from election date</window>
+        <window type="HUV2">Days 15-30 from election date</window>
+        <window type="SFV">Within 2 calendar days of trigger</window>
+        <window type="HOPE Discharge">At discharge/death event</window>
+      </assessment_windows>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>SFV (Symptom Follow-up Visit) Automation</name>
+      <feature_id>HOPE-002</feature_id>
+      <category>HOPE Assessment Enhancement</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Automatic detection of moderate/severe symptoms requiring Symptom Follow-up Visits within 2 calendar days. Monitors HOPE symptom items J0510-J0580 and triggers SFV scheduling.</description>
+      <regulatory_requirement>HOPE quality measures require SFV within 2 calendar days of identifying moderate/severe symptoms; maximum 3 SFVs per stay</regulatory_requirement>
+      <key_functions>
+        <function>Real-time monitoring of HOPE symptom severity items (J0510-J0580)</function>
+        <function>Automatic SFV trigger when moderate (3) or severe (4) symptom detected</function>
+        <function>2-calendar-day scheduling requirement enforcement</function>
+        <function>Maximum 3 SFV per hospice stay tracking</function>
+        <function>SFV exemption documentation (patient refusal, death imminent)</function>
+        <function>Dashboard alerts for pending SFVs with countdown</function>
+        <function>SFV compliance rate tracking by staff and organization</function>
+      </key_functions>
+      <monitored_symptoms>
+        <symptom item="J0510">Pain - Frequency</symptom>
+        <symptom item="J0520">Pain - Severity</symptom>
+        <symptom item="J0530">Shortness of Breath - Severity</symptom>
+        <symptom item="J0540">Nausea - Frequency</symptom>
+        <symptom item="J0550">Vomiting - Frequency</symptom>
+        <symptom item="J0560">Constipation - Severity</symptom>
+        <symptom item="J0570">Diarrhea - Severity</symptom>
+        <symptom item="J0580">Anxiety - Severity</symptom>
+        <symptom item="J0590">Agitation - Severity</symptom>
+      </monitored_symptoms>
+      <severity_scale>
+        <level value="0">None</level>
+        <level value="1">Minimal</level>
+        <level value="2">Mild</level>
+        <level value="3" triggers_sfv="true">Moderate</level>
+        <level value="4" triggers_sfv="true">Severe</level>
+      </severity_scale>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>iQIES Submission Integration</name>
+      <feature_id>HOPE-003</feature_id>
+      <category>HOPE Assessment Enhancement</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Direct integration with CMS iQIES (Internet Quality Improvement and Evaluation System) for HOPE assessment submission, including validation, batch processing, status tracking, and error correction workflows.</description>
+      <regulatory_requirement>HOPE records must be submitted via iQIES within 30 days of event; 90% threshold for HQRP compliance; 4% payment penalty for non-compliance</regulatory_requirement>
+      <key_functions>
+        <function>HOPE record generation in CMS-specified format</function>
+        <function>Pre-submission validation against CMS edit specifications</function>
+        <function>Batch submission capability for multiple assessments</function>
+        <function>Real-time single-assessment submission option</function>
+        <function>Submission status tracking (pending, submitted, accepted, rejected)</function>
+        <function>Error code interpretation and correction guidance</function>
+        <function>Rejection handling and correction workflow</function>
+        <function>30-day submission deadline tracking with alerts</function>
+        <function>90% compliance threshold monitoring dashboard</function>
+        <function>iQIES authentication and credential management</function>
+      </key_functions>
+      <submission_statuses>
+        <status>Draft - Not yet finalized</status>
+        <status>Ready for Submission - Finalized, awaiting batch</status>
+        <status>Submitted - Sent to iQIES</status>
+        <status>Accepted - Confirmed by CMS</status>
+        <status>Rejected - Errors requiring correction</status>
+        <status>Corrected - Resubmission pending</status>
+      </submission_statuses>
+      <estimated_effort>5-6 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== ORDERS MANAGEMENT ==================== -->
+    <feature>
+      <name>Comprehensive Order Types</name>
+      <feature_id>ORD-001</feature_id>
+      <category>Orders Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Support for all hospice order types with appropriate workflows, templates, and discipline-specific routing.</description>
+      <regulatory_requirement>42 CFR 418.104 - All orders must be signed by physician</regulatory_requirement>
+      <key_functions>
+        <function>Medication Orders: New, change, discontinue, hold, resume</function>
+        <function>Treatment Orders: Wound care, catheter care, oxygen therapy, IV therapy</function>
+        <function>DME Orders: Equipment, supplies, delivery instructions, pickup</function>
+        <function>Therapy Orders: PT, OT, ST evaluations and treatment orders</function>
+        <function>Lab Orders: Blood draws, specimen collection</function>
+        <function>Diet Orders: Dietary modifications, texture, restrictions</function>
+        <function>Activity Orders: Activity levels, positioning, mobility</function>
+        <function>Nursing Orders: PRN protocols, assessment frequencies</function>
+        <function>Consult Orders: Social work, chaplain, dietitian consultations</function>
+        <function>Order templates by discipline and order type</function>
+        <function>Order routing to appropriate disciplines</function>
+      </key_functions>
+      <order_categories>
+        <category>Medications</category>
+        <category>Treatments</category>
+        <category>DME/Supplies</category>
+        <category>Therapies (PT/OT/ST)</category>
+        <category>Laboratory</category>
+        <category>Diet/Nutrition</category>
+        <category>Activity</category>
+        <category>Nursing</category>
+        <category>Consultations</category>
+      </order_categories>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Verbal Order Management</name>
+      <feature_id>ORD-002</feature_id>
+      <category>Orders Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Compliant verbal order workflow per 42 CFR 418.104 including read-back documentation, physician co-signature tracking, and overdue order alerts.</description>
+      <regulatory_requirement>42 CFR 418.104(e) - Verbal orders must be signed by physician within state law timeframe (typically 10-14 days)</regulatory_requirement>
+      <key_functions>
+        <function>Verbal order entry by authorized staff (RN)</function>
+        <function>Read-back documentation requirement</function>
+        <function>Ordering physician identification and NPI</function>
+        <function>Physician co-signature workflow with electronic signature</function>
+        <function>State-specific signature timeframe enforcement</function>
+        <function>Overdue verbal order alerts and escalation</function>
+        <function>Physician order authentication queue</function>
+        <function>Batch signing capability</function>
+        <function>Order clarification workflow</function>
+      </key_functions>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Order Sets &amp; Protocols</name>
+      <feature_id>ORD-003</feature_id>
+      <category>Orders Management</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Pre-built order sets for common hospice scenarios including admission orders, symptom management protocols, and level of care-specific order bundles.</description>
+      <key_functions>
+        <function>Admission order sets by primary diagnosis</function>
+        <function>Symptom management protocols (pain, dyspnea, nausea, anxiety)</function>
+        <function>Comfort kit / Emergency kit standardized orders</function>
+        <function>PRN medication protocols with indication-based dosing</function>
+        <function>End-of-life comfort measures order set</function>
+        <function>GIP admission order set</function>
+        <function>Respite care order set</function>
+        <function>CHC protocols and orders</function>
+        <function>Custom order set builder</function>
+      </key_functions>
+      <standard_order_sets>
+        <order_set>Hospice Admission - Cancer</order_set>
+        <order_set>Hospice Admission - Dementia</order_set>
+        <order_set>Hospice Admission - CHF</order_set>
+        <order_set>Hospice Admission - COPD</order_set>
+        <order_set>Pain Management Protocol</order_set>
+        <order_set>Dyspnea Management Protocol</order_set>
+        <order_set>Comfort Kit Orders</order_set>
+        <order_set>Active Dying / Imminent Death</order_set>
+        <order_set>GIP Admission Orders</order_set>
+      </standard_order_sets>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== DME MANAGEMENT ==================== -->
+    <feature>
+      <name>DME Vendor Management</name>
+      <feature_id>DME-001</feature_id>
+      <category>DME Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Manage contracted DME suppliers including profiles, service areas, product catalogs, pricing, and performance metrics.</description>
+      <key_functions>
+        <function>DME vendor profiles with NPI and contact information</function>
+        <function>Contract management with effective dates</function>
+        <function>Service area mapping by ZIP code or county</function>
+        <function>Product catalog management by vendor</function>
+        <function>Pricing schedules and contract rates</function>
+        <function>Vendor performance tracking (delivery times, issues)</function>
+        <function>Preferred vendor designation and auto-routing</function>
+        <function>After-hours and emergency contact information</function>
+      </key_functions>
+      <estimated_effort>2-3 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>DME Ordering Workflow</name>
+      <feature_id>DME-002</feature_id>
+      <category>DME Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Complete equipment ordering process from clinical assessment through delivery confirmation.</description>
+      <key_functions>
+        <function>DME assessment documentation by clinician</function>
+        <function>Equipment recommendation based on assessment</function>
+        <function>Order creation with specifications and quantity</function>
+        <function>Physician authorization workflow</function>
+        <function>Vendor routing (automatic or manual)</function>
+        <function>Order transmission to vendor (fax, portal, API)</function>
+        <function>Delivery scheduling coordination</function>
+        <function>Delivery confirmation documentation</function>
+        <function>Patient/caregiver education on equipment use</function>
+        <function>Equipment setup verification by clinician</function>
+      </key_functions>
+      <order_statuses>
+        <status>Draft</status>
+        <status>Pending Authorization</status>
+        <status>Authorized</status>
+        <status>Sent to Vendor</status>
+        <status>Delivery Scheduled</status>
+        <status>Delivered</status>
+        <status>Setup Complete</status>
+        <status>Cancelled</status>
+      </order_statuses>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>DME Inventory Tracking</name>
+      <feature_id>DME-003</feature_id>
+      <category>DME Management</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Track all equipment deployed to patients including serial numbers, delivery dates, and pickup coordination.</description>
+      <key_functions>
+        <function>Equipment inventory by patient</function>
+        <function>Equipment serial number tracking</function>
+        <function>Delivery date and expected return date</function>
+        <function>Equipment status (ordered, delivered, in-use, returned, lost)</function>
+        <function>Equipment location tracking</function>
+        <function>Maintenance schedule tracking</function>
+        <function>Pickup coordination at discharge or death</function>
+        <function>Lost equipment tracking and cost recovery</function>
+      </key_functions>
+      <equipment_categories>
+        <category>Hospital Beds and Accessories</category>
+        <category>Wheelchairs and Mobility</category>
+        <category>Oxygen Equipment</category>
+        <category>Bathroom Safety</category>
+        <category>Patient Lifts</category>
+        <category>Wound Care Supplies</category>
+        <category>Infusion Pumps</category>
+      </equipment_categories>
+      <estimated_effort>2-3 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== PHARMACY & E-PRESCRIBING ==================== -->
+    <feature>
+      <name>E-Prescribing (EPCS)</name>
+      <feature_id>RX-001</feature_id>
+      <category>Pharmacy Integration</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>NCPDP-compliant electronic prescribing including Electronic Prescribing of Controlled Substances (EPCS) with Surescripts integration.</description>
+      <regulatory_requirement>DEA EPCS requirements; State PDMP laws; NCPDP SCRIPT standard</regulatory_requirement>
+      <key_functions>
+        <function>Surescripts network integration for e-prescribing</function>
+        <function>EPCS (Electronic Prescribing of Controlled Substances) compliance</function>
+        <function>Two-factor authentication for controlled substances</function>
+        <function>Identity proofing for EPCS enrollment</function>
+        <function>Prescription routing to patient pharmacy</function>
+        <function>Refill request processing</function>
+        <function>Prescription status tracking</function>
+        <function>Prior authorization integration</function>
+        <function>Medication history import from PDMP</function>
+        <function>DEA registration validation for prescribers</function>
+      </key_functions>
+      <epcs_requirements>
+        <requirement>Identity proofing of prescriber</requirement>
+        <requirement>Two-factor authentication for each prescription</requirement>
+        <requirement>Logical access controls</requirement>
+        <requirement>Audit trail of all EPCS activity</requirement>
+      </epcs_requirements>
+      <estimated_effort>6-8 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Hospice Formulary Management</name>
+      <feature_id>RX-002</feature_id>
+      <category>Pharmacy Integration</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Manage hospice-specific medication formulary including coverage determination, tier structure, and therapeutic alternatives.</description>
+      <key_functions>
+        <function>Formulary database organized by therapeutic class</function>
+        <function>Hospice-covered vs. non-covered medication designation</function>
+        <function>Related vs. unrelated to terminal illness determination</function>
+        <function>Tier structure and patient copay requirements</function>
+        <function>Prior authorization requirements by medication</function>
+        <function>Therapeutic alternative suggestions</function>
+        <function>Cost comparison tools</function>
+        <function>Formulary exception request workflow</function>
+      </key_functions>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== MOBILE APPLICATION ==================== -->
+    <feature>
+      <name>Native Mobile Application</name>
+      <feature_id>MOB-001</feature_id>
+      <category>Mobile Application</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>iOS and Android native application for field clinicians with secure access, biometric login, and optimized mobile interface.</description>
+      <regulatory_requirement>HIPAA security requirements for mobile devices; PHI encryption at rest and in transit</regulatory_requirement>
+      <key_functions>
+        <function>Native iOS and Android applications</function>
+        <function>Secure login with biometric support (Face ID, Touch ID, fingerprint)</function>
+        <function>Todays schedule view with patient details</function>
+        <function>Turn-by-turn navigation to patient location</function>
+        <function>Patient chart access (demographics, medications, care plan)</function>
+        <function>Visit documentation creation with mobile-optimized forms</function>
+        <function>Vital signs entry with validation</function>
+        <function>Assessment completion (HOPE, pain, body systems)</function>
+        <function>Medication administration recording</function>
+        <function>Electronic signature capture on mobile device</function>
+        <function>Photo and wound image capture with annotation</function>
+        <function>Visit time tracking (clock in/out)</function>
+        <function>Mileage tracking with GPS</function>
+        <function>Push notifications for urgent alerts</function>
+        <function>Secure messaging with care team</function>
+      </key_functions>
+      <platform_requirements>
+        <platform name="iOS">iOS 14.0 or later</platform>
+        <platform name="Android">Android 10.0 (API 29) or later</platform>
+      </platform_requirements>
+      <estimated_effort>12-16 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Offline Capabilities</name>
+      <feature_id>MOB-002</feature_id>
+      <category>Mobile Application</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Full documentation functionality without internet connection with intelligent data synchronization when connectivity is restored.</description>
+      <key_functions>
+        <function>Schedule download for day/week with patient data</function>
+        <function>Patient data caching for assigned patients</function>
+        <function>Offline visit documentation entry</function>
+        <function>Data queuing for sync when connected</function>
+        <function>Conflict resolution for simultaneous edits</function>
+        <function>Sync status indicators (synced, pending, conflict)</function>
+        <function>Automatic background sync when connected</function>
+        <function>Storage management for cached data</function>
+      </key_functions>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== VOLUNTEER MANAGEMENT ==================== -->
+    <feature>
+      <name>Volunteer Management Module</name>
+      <feature_id>VOL-001</feature_id>
+      <category>Volunteer Management</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Complete volunteer lifecycle management including recruitment, training, scheduling, hours tracking, and Medicare 5% compliance monitoring.</description>
+      <regulatory_requirement>42 CFR 418.78 - Volunteer staff requirements; 42 CFR 418.78(e) - 5% cost savings requirement</regulatory_requirement>
+      <key_functions>
+        <function>Volunteer application processing and tracking</function>
+        <function>Background check initiation and tracking</function>
+        <function>Orientation program tracking</function>
+        <function>Competency assessment documentation</function>
+        <function>Volunteer availability calendar</function>
+        <function>Patient preference matching</function>
+        <function>Visit scheduling and calendar integration</function>
+        <function>Hours logging with approval workflow</function>
+        <function>5% cost savings calculation and monitoring</function>
+        <function>Compliance reporting for surveys</function>
+      </key_functions>
+      <five_percent_calculation>
+        <numerator>Total volunteer hours (direct + administrative)</numerator>
+        <denominator>Total paid staff patient care hours</denominator>
+        <threshold>5% minimum</threshold>
+      </five_percent_calculation>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== INCIDENT & GRIEVANCE ==================== -->
+    <feature>
+      <name>Incident Reporting System</name>
+      <feature_id>INC-001</feature_id>
+      <category>Incident &amp; Grievance Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Capture and track patient and staff safety incidents with standardized categorization, severity classification, investigation workflows, and corrective action tracking.</description>
+      <regulatory_requirement>42 CFR 418.110(b) - QAPI program must track adverse patient events and incidents</regulatory_requirement>
+      <key_functions>
+        <function>Incident report form (web and mobile accessible)</function>
+        <function>Incident category classification</function>
+        <function>Severity level assignment (minor, moderate, major, sentinel)</function>
+        <function>Immediate action documentation</function>
+        <function>Witness statement collection</function>
+        <function>Photo documentation attachment</function>
+        <function>Automatic supervisor notification</function>
+        <function>Investigation workflow with root cause analysis</function>
+        <function>Corrective action plan tracking</function>
+        <function>Incident trending and analytics</function>
+        <function>Regulatory reporting triggers</function>
+      </key_functions>
+      <incident_categories>
+        <category>Patient Falls</category>
+        <category>Medication Errors</category>
+        <category>Skin Integrity Issues</category>
+        <category>Equipment Malfunction</category>
+        <category>Staff Injury</category>
+        <category>Vehicle Accidents</category>
+        <category>Infection Exposure</category>
+        <category>Privacy/HIPAA Breach</category>
+        <category>Abuse/Neglect Allegation</category>
+        <category>Missing Controlled Substances</category>
+      </incident_categories>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>Grievance Management</name>
+      <feature_id>INC-002</feature_id>
+      <category>Incident &amp; Grievance Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Track and resolve patient and family grievances per CMS Conditions of Participation with required timeframes and documentation.</description>
+      <regulatory_requirement>42 CFR 418.52(a)(4) - Patient has right to file grievances; 42 CFR 418.110 - QAPI must address grievances</regulatory_requirement>
+      <key_functions>
+        <function>Grievance intake form and logging</function>
+        <function>Grievance category classification</function>
+        <function>Severity and urgency classification</function>
+        <function>Investigation workflow integration</function>
+        <function>Resolution tracking and documentation</function>
+        <function>Patient/family communication log</function>
+        <function>Response timeline compliance (72 hours for urgent)</function>
+        <function>Written response generation and tracking</function>
+        <function>Appeal process management</function>
+        <function>Grievance trending and analysis</function>
+        <function>Governing body reporting</function>
+      </key_functions>
+      <response_timeframes>
+        <timeframe type="Urgent/Immediate Jeopardy">24-72 hours</timeframe>
+        <timeframe type="Standard">7-14 days</timeframe>
+        <timeframe type="Complex Investigation">30 days with interim updates</timeframe>
+      </response_timeframes>
+      <estimated_effort>3-4 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== NOE MANAGEMENT ==================== -->
+    <feature>
+      <name>Notice of Election (NOE) Management</name>
+      <feature_id>NOE-001</feature_id>
+      <category>NOE Management</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Automated NOE creation at admission with validation, electronic submission to MAC, and comprehensive status tracking.</description>
+      <regulatory_requirement>42 CFR 418.24 - NOE must be submitted within 5 calendar days of election; late submission results in payment reduction</regulatory_requirement>
+      <key_functions>
+        <function>Automatic NOE generation at hospice election</function>
+        <function>NOE data validation against CMS requirements</function>
+        <function>5-calendar-day submission deadline tracking</function>
+        <function>Electronic submission to MAC (CGS for Oregon)</function>
+        <function>NOE status tracking (pending, submitted, accepted, rejected)</function>
+        <function>Rejection reason tracking and display</function>
+        <function>Corrected NOE submission workflow</function>
+        <function>Late NOE penalty calculation and tracking</function>
+        <function>NOE submission history</function>
+        <function>NOTR generation at discharge</function>
+      </key_functions>
+      <required_noe_elements>
+        <element>Beneficiary name and Medicare number (MBI)</element>
+        <element>Date of birth</element>
+        <element>Election effective date</element>
+        <element>Hospice NPI and CCN</element>
+        <element>Attending physician NPI (if applicable)</element>
+        <element>Primary diagnosis code</element>
+      </required_noe_elements>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== LEVEL OF CARE ==================== -->
+    <feature>
+      <name>Level of Care Management</name>
+      <feature_id>LOC-001</feature_id>
+      <category>Level of Care Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Complete level of care management including determination criteria, documentation, and transitions between RHC, CHC, GIP, and Respite care.</description>
+      <regulatory_requirement>42 CFR 418.302 - Payment for different levels of care based on clinical criteria</regulatory_requirement>
+      <key_functions>
+        <function>LOC type assignment (RHC, CHC, GIP, IRC)</function>
+        <function>LOC eligibility criteria documentation</function>
+        <function>Clinical justification narrative</function>
+        <function>Physician order for LOC</function>
+        <function>LOC effective date and time</function>
+        <function>LOC history tracking</function>
+        <function>CHC minimum 8-hour tracking</function>
+        <function>CHC hourly documentation</function>
+        <function>GIP daily documentation requirements</function>
+        <function>Respite 5-consecutive-day limit tracking</function>
+        <function>LOC compliance alerts</function>
+      </key_functions>
+      <level_of_care_types>
+        <loc code="651">Routine Home Care (RHC)</loc>
+        <loc code="652">Continuous Home Care (CHC)</loc>
+        <loc code="655">Inpatient Respite Care (IRC)</loc>
+        <loc code="656">General Inpatient Care (GIP)</loc>
+      </level_of_care_types>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== RECERTIFICATION ==================== -->
+    <feature>
+      <name>Recertification Workflow</name>
+      <feature_id>REC-001</feature_id>
+      <category>Recertification</category>
+      <priority>CRITICAL</priority>
+      <status>pending</status>
+      <description>Complete recertification management including benefit period tracking, clinical summary preparation, Face-to-Face encounters, and CTI generation.</description>
+      <regulatory_requirement>42 CFR 418.22 - Certification of terminal illness requirements; ACA Section 3132 - F2F requirement</regulatory_requirement>
+      <key_functions>
+        <function>Benefit period calendar and tracking</function>
+        <function>Current benefit period identification</function>
+        <function>Days remaining in current period</function>
+        <function>Recertification due date calculation</function>
+        <function>Recertification due alerts (14, 7, 3 days prior)</function>
+        <function>Clinical summary preparation by RN</function>
+        <function>IDG review documentation</function>
+        <function>Face-to-Face scheduling trigger (3rd+ periods)</function>
+        <function>F2F documentation template with required elements</function>
+        <function>NP F2F capability for 3rd+ periods</function>
+        <function>Physician certification statement</function>
+        <function>CTI electronic signature</function>
+      </key_functions>
+      <benefit_periods>
+        <period number="1">First 90 days</period>
+        <period number="2">Second 90 days</period>
+        <period number="3+">Subsequent unlimited 60-day periods</period>
+      </benefit_periods>
+      <f2f_requirements>
+        <requirement>Must occur no more than 30 days prior to 3rd+ benefit period</requirement>
+        <requirement>Must be performed by hospice physician or NP</requirement>
+        <requirement>Must document clinical findings supporting prognosis</requirement>
+        <requirement>NP cannot sign CTI (physician must sign)</requirement>
+      </f2f_requirements>
+      <estimated_effort>5-6 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== DISCHARGE MANAGEMENT ==================== -->
+    <feature>
+      <name>Discharge Management</name>
+      <feature_id>DIS-001</feature_id>
+      <category>Discharge Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Comprehensive discharge workflows for all discharge types including death, revocation, transfer, and live discharge scenarios.</description>
+      <key_functions>
+        <function>Death discharge workflow with pronouncement documentation</function>
+        <function>Revocation processing with election withdrawal</function>
+        <function>Transfer to another hospice workflow</function>
+        <function>Live discharge workflow (improvement, non-compliance, move)</function>
+        <function>Discharge reason standardized coding</function>
+        <function>HOPE Discharge assessment trigger</function>
+        <function>NOTR generation trigger</function>
+        <function>DME pickup coordination</function>
+        <function>Medication disposition documentation</function>
+        <function>Final care plan closure</function>
+        <function>Bereavement enrollment trigger (deaths)</function>
+      </key_functions>
+      <discharge_reasons>
+        <reason code="01">Death</reason>
+        <reason code="02">Revocation by patient</reason>
+        <reason code="03">Transfer to another hospice</reason>
+        <reason code="04">Condition no longer terminal</reason>
+        <reason code="05">Moved out of service area</reason>
+        <reason code="06">Discharged for cause</reason>
+        <reason code="07">No longer desires hospice</reason>
+      </discharge_reasons>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== BEREAVEMENT ENHANCEMENT ==================== -->
+    <feature>
+      <name>Bereavement Services Enhancement</name>
+      <feature_id>BRV-001</feature_id>
+      <category>Bereavement Enhancement</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Enhanced bereavement program management including automated enrollment, risk assessment, 13-month contact tracking, support groups, and closure workflows.</description>
+      <regulatory_requirement>42 CFR 418.64(d) - Bereavement counseling must be provided to family for at least one year</regulatory_requirement>
+      <key_functions>
+        <function>Death notification triggers automatic bereavement enrollment</function>
+        <function>Family member identification from patient record</function>
+        <function>Automatic 13-month contact calendar generation</function>
+        <function>Bereavement risk assessment tools</function>
+        <function>Risk level scoring (low, moderate, high)</function>
+        <function>Contact schedule by risk level</function>
+        <function>Contact types (phone, visit, mailing, group, memorial)</function>
+        <function>Contact attempt and outcome documentation</function>
+        <function>Anniversary date tracking</function>
+        <function>Support group scheduling and attendance</function>
+        <function>13-month closure workflow</function>
+      </key_functions>
+      <contact_schedule>
+        <risk_level name="Low">Quarterly contacts</risk_level>
+        <risk_level name="Moderate">Monthly contacts</risk_level>
+        <risk_level name="High">Bi-weekly to weekly contacts</risk_level>
+      </contact_schedule>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== REPORTING & DASHBOARDS ==================== -->
+    <feature>
+      <name>Advanced Reporting &amp; Dashboards</name>
+      <feature_id>RPT-001</feature_id>
+      <category>Reporting Enhancement</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Enhanced reporting capabilities including executive dashboards, clinical quality reports, financial analytics, and custom report builder.</description>
+      <key_functions>
+        <function>Census dashboard (ADT, LOC distribution, payer mix)</function>
+        <function>Financial dashboard (revenue, AR, DSO, collections)</function>
+        <function>Quality dashboard (HOPE measures, compliance rates)</function>
+        <function>Operational dashboard (productivity, visit statistics)</function>
+        <function>Referral dashboard (volume, conversion, response times)</function>
+        <function>HOPE compliance and submission reports</function>
+        <function>Assessment timeliness reports</function>
+        <function>Care plan compliance reports</function>
+        <function>IDG meeting compliance (14-day requirement)</function>
+        <function>Denial rate and trend analysis</function>
+        <function>Ad-hoc report builder with drag-and-drop</function>
+        <function>Scheduled report delivery</function>
+      </key_functions>
+      <estimated_effort>6-8 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== STAFF CREDENTIALS ==================== -->
+    <feature>
+      <name>Staff Credential &amp; Competency Management</name>
+      <feature_id>CRD-001</feature_id>
+      <category>Staff Management</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>Track staff licenses, certifications, competencies, and training requirements with expiration alerts and compliance reporting.</description>
+      <regulatory_requirement>42 CFR 418.114 - Personnel qualifications must be documented and verified</regulatory_requirement>
+      <key_functions>
+        <function>License tracking by type (RN, LPN, PT, OT, ST, MSW)</function>
+        <function>Certification tracking (CHPN, specialty certifications)</function>
+        <function>CPR/BLS certification tracking</function>
+        <function>Background check documentation</function>
+        <function>Health screening tracking (TB, Hepatitis B)</function>
+        <function>Primary source verification documentation</function>
+        <function>Expiration alerts (90, 60, 30 days)</function>
+        <function>Credential document storage</function>
+        <function>Competency requirements by role</function>
+        <function>Initial and annual competency assessment</function>
+        <function>Remediation plan tracking</function>
+      </key_functions>
+      <credential_types>
+        <type>Professional License (RN, LPN, PT, OT, ST, MSW, MD, NP)</type>
+        <type>Specialty Certification (CHPN, wound care)</type>
+        <type>CPR/BLS/ACLS</type>
+        <type>Drivers License</type>
+        <type>Auto Insurance</type>
+        <type>TB Testing</type>
+        <type>Background Check</type>
+      </credential_types>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== SECURE MESSAGING ==================== -->
+    <feature>
+      <name>Secure Messaging &amp; Communication</name>
+      <feature_id>MSG-001</feature_id>
+      <category>Communication</category>
+      <priority>HIGH</priority>
+      <status>pending</status>
+      <description>HIPAA-compliant internal messaging, care team communication, and external secure communication capabilities.</description>
+      <key_functions>
+        <function>Direct messages (1:1 conversations)</function>
+        <function>Group messaging (teams, departments)</function>
+        <function>Patient-context messaging (linked to chart)</function>
+        <function>Message priority levels (normal, urgent, stat)</function>
+        <function>Read receipts and delivery confirmation</function>
+        <function>Message acknowledgment requirement</function>
+        <function>@mention functionality</function>
+        <function>File and image attachments</function>
+        <function>Care team change notifications</function>
+        <function>Shift handoff communication templates</function>
+        <function>On-call provider messaging with escalation</function>
+        <function>Desktop and mobile push notifications</function>
+      </key_functions>
+      <estimated_effort>4-5 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== DOCUMENT MANAGEMENT ==================== -->
+    <feature>
+      <name>Document Management System</name>
+      <feature_id>DOC-001</feature_id>
+      <category>Document Management</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Centralized document storage, template management, workflow routing, and external document intake including fax integration.</description>
+      <key_functions>
+        <function>Document upload (PDF, images, Word, Excel)</function>
+        <function>Document categorization and tagging</function>
+        <function>Patient-linked document storage</function>
+        <function>Version control with history</function>
+        <function>Full-text search capability</function>
+        <function>Document templates with auto-population</function>
+        <function>Document routing and approval workflows</function>
+        <function>Cloud fax service integration</function>
+        <function>Inbound fax queue and patient matching</function>
+        <function>Outbound fax from patient chart</function>
+        <function>Fax status tracking and audit trail</function>
+      </key_functions>
+      <document_categories>
+        <category>Election and Consent Forms</category>
+        <category>Clinical Assessments</category>
+        <category>Physician Orders</category>
+        <category>Advance Directives</category>
+        <category>Insurance and Authorization</category>
+        <category>Correspondence</category>
+        <category>External Medical Records</category>
+      </document_categories>
+      <estimated_effort>5-6 weeks</estimated_effort>
+    </feature>
+
+    <!-- ==================== INTEROPERABILITY ==================== -->
+    <feature>
+      <name>FHIR R4 API</name>
+      <feature_id>INT-001</feature_id>
+      <category>Interoperability</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>HL7 FHIR R4 compliant API for healthcare interoperability.</description>
+      <regulatory_requirement>21st Century Cures Act; ONC interoperability requirements</regulatory_requirement>
+      <key_functions>
+        <function>Patient resource (read, search)</function>
+        <function>Encounter resource</function>
+        <function>Condition resource (diagnoses)</function>
+        <function>MedicationRequest resource</function>
+        <function>Observation resource (vitals, assessments)</function>
+        <function>CarePlan resource</function>
+        <function>DocumentReference resource</function>
+        <function>SMART on FHIR authorization</function>
+        <function>Bulk FHIR export capability</function>
+      </key_functions>
+      <estimated_effort>8-10 weeks</estimated_effort>
+    </feature>
+
+    <feature>
+      <name>HL7v2 Integration</name>
+      <feature_id>INT-002</feature_id>
+      <category>Interoperability</category>
+      <priority>MEDIUM</priority>
+      <status>pending</status>
+      <description>Traditional HL7 v2.x messaging for legacy system integration.</description>
+      <key_functions>
+        <function>ADT messages (A01, A02, A03, A04, A08)</function>
+        <function>ORU messages (lab results)</function>
+        <function>ORM messages (orders)</function>
+        <function>MDM messages (documents)</function>
+        <function>Message parsing and validation</function>
+        <function>Message routing configuration</function>
+        <function>Error handling and retry</function>
+      </key_functions>
+      <estimated_effort>6-8 weeks</estimated_effort>
+    </feature>
+
+  </features_to_develop>
+
+  <!-- ===================================================================================== -->
+  <!-- ADDITIONAL REQUIREMENTS                                                              -->
+  <!-- ===================================================================================== -->
+  <additional_requirements>
+    <requirement>Node.js &gt;= 20.0.0 required</requirement>
+    <requirement>npm &gt;= 10.0.0 recommended</requirement>
+    <requirement>Docker Desktop for local development (PostgreSQL 16, Redis 7)</requirement>
+    <requirement>PostgreSQL 16 database</requirement>
+    <requirement>Redis 7 for caching and session storage</requirement>
+    <requirement>HIPAA compliance requirements including PHI/PII handling, audit trails, secure communication</requirement>
+    <requirement>CMS compliance for hospice billing (HOPE, F2F, IDG, Medicare benefit periods)</requirement>
+    <requirement>21 CFR Part 11 compliance for electronic records and signatures</requirement>
+    <requirement>TLS 1.3 for all communications (HTTPS in production)</requirement>
+    <requirement>Environment variables required: DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, JWT_SECRET, REDIS_URL, NEXT_PUBLIC_API_URL</requirement>
+    <requirement>OAuth provider credentials optional (Google, GitHub)</requirement>
+    <requirement>Email provider configuration for notifications (Nodemailer/SMTP)</requirement>
+  </additional_requirements>
+
+  <!-- ===================================================================================== -->
+  <!-- DEVELOPMENT GUIDELINES                                                               -->
+  <!-- ===================================================================================== -->
+  <development_guidelines>
+    <guideline>Use TypeScript for type safety across frontend, backend, and shared packages</guideline>
+    <guideline>Follow RESTful API design with consistent response formats {success, data/error}</guideline>
+    <guideline>Implement RBAC/ABAC/CASL for all protected routes and features</guideline>
+    <guideline>Log all data access and modifications for audit compliance</guideline>
+    <guideline>Redact PHI/PII in all logging outputs (configured via Pino redaction paths)</guideline>
+    <guideline>Use Drizzle ORM with prepared statements to prevent SQL injection</guideline>
+    <guideline>Sanitize all user inputs before processing</guideline>
+    <guideline>Validate request payloads with Formik/Yup on frontend and custom middleware on backend</guideline>
+    <guideline>Implement proper error handling with HIPAA-appropriate error messages</guideline>
+    <guideline>Use prepared statements for all database queries</guideline>
+    <guideline>Implement database transactions for multi-step operations</guideline>
+    <guideline>Test all endpoints with authentication and authorization</guideline>
+    <guideline>Document API contracts in code and OpenAPI specs (future)</guideline>
+    <guideline>Use environment-specific configurations for dev, test, production</guideline>
+    <guideline>Implement rate limiting (100 requests/min for unauthenticated, higher for authenticated)</guideline>
+    <guideline>Use secure cookies with httpOnly, secure, sameSite flags</guideline>
+    <guideline>Implement CSRF protection on state-changing operations</guideline>
+    <guideline>Generate database migrations for all schema changes</guideline>
+    <guideline>Run migrations before deployment</guideline>
+    <guideline>Backup database regularly with point-in-time recovery</guideline>
+    <guideline>Monitor database query performance and optimize slow queries</guideline>
+    <guideline>Use connection pooling for database connections</guideline>
+    <guideline>Cache frequently accessed data in Redis</guideline>
+    <guideline>Implement compression for API responses</guideline>
+    <guideline>Test new features with Jest unit tests minimum 70% coverage</guideline>
+    <guideline>Conduct code reviews before merging to main branch</guideline>
+    <guideline>Follow commit message convention: type(scope): subject</guideline>
+    <guideline>Use feature branches from main, merge via pull request</guideline>
+    <guideline>Keep dependencies up to date with security patches</guideline>
+    <guideline>Run npm audit regularly and fix vulnerabilities</guideline>
+    <guideline>Document complex business logic with comments</guideline>
+    <guideline>Keep README.md and CLAUDE.md updated with architecture changes</guideline>
+    <guideline>Use Turbo for efficient monorepo builds and caching</guideline>
+    <guideline>Leverage shared packages (@chartwarden/types, @chartwarden/utils) for code reuse</guideline>
+  </development_guidelines>
+
+  <!-- ===================================================================================== -->
+  <!-- IMPLEMENTATION ROADMAP                                                               -->
+  <!-- ===================================================================================== -->
+  <implementation_roadmap>
+    <phase>
+      <name>Phase 1: Core EHR</name>
+      <status>completed</status>
+      <description>Patient management, clinical documentation, nursing notes, vital signs, encounters, medications, assessments (HOPE, body systems, pain), care planning, IDG meetings, certifications, staff management, scheduling, bereavement, QAPI, reporting</description>
+    </phase>
+    <phase>
+      <name>Phase 2: Billing Foundation</name>
+      <status>in_progress</status>
+      <description>Phase 2A: Cap tracking and CBSA lookups; Phase 2B: Claim validation and scrubbing; Phase 2C: EDI 837 generation and clearinghouse integration; Phase 2D: Analytics and reporting dashboards</description>
+    </phase>
+    <phase>
+      <name>Phase 3: Advanced RCM</name>
+      <status>pending</status>
+      <description>Phase 3A: Eligibility verification (EDI 270/271); Phase 3B: ERA processing and automatic payment posting (EDI 835); Phase 3C: Denial management and appeals; Phase 3D: Revenue recognition and forecasting</description>
+    </phase>
+    <phase>
+      <name>Phase 4: Frontend Completion</name>
+      <status>in_progress</status>
+      <description>Build responsive frontend interfaces for all backend endpoints using Next.js, Material-UI, React Table; implement real-time features; add print and PDF export capabilities; mobile optimization</description>
+    </phase>
+    <phase>
+      <name>Phase 5: Testing &amp; Deployment</name>
+      <status>pending</status>
+      <description>Comprehensive test suite (unit, integration, E2E), security audit, penetration testing, HIPAA compliance audit, staging environment, production deployment pipeline, monitoring and alerting</description>
+    </phase>
+    <phase>
+      <name>Phase 6: Interoperability</name>
+      <status>pending</status>
+      <description>FHIR API implementation, HL7v2 integration, EDI standard enhancements, third-party clearinghouse APIs, electronic health information exchange (HIE)</description>
+    </phase>
+
+    <!-- NEW PHASES FOR FEATURES TO DEVELOP -->
+    <phase>
+      <name>Phase 7: Regulatory Compliance</name>
+      <status>pending</status>
+      <priority>CRITICAL</priority>
+      <target_completion>October 2025</target_completion>
+      <description>HOPE Assessment Enhancement (all types, SFV automation), iQIES Submission Integration, Hospice Election Statement Management, NOE/NOTR Management, Recertification Workflow, Face-to-Face Encounter Management, Level of Care Management</description>
+      <features_included>
+        <feature_ref>HOPE-001</feature_ref>
+        <feature_ref>HOPE-002</feature_ref>
+        <feature_ref>HOPE-003</feature_ref>
+        <feature_ref>ADM-001</feature_ref>
+        <feature_ref>NOE-001</feature_ref>
+        <feature_ref>REC-001</feature_ref>
+        <feature_ref>LOC-001</feature_ref>
+      </features_included>
+      <estimated_duration>16 weeks</estimated_duration>
+    </phase>
+
+    <phase>
+      <name>Phase 8: Clinical Operations</name>
+      <status>pending</status>
+      <priority>HIGH</priority>
+      <description>Referral and Intake Management, Orders Management System, DME Management, Discharge Management, Mobile Field Application, Visit Scheduling Enhancement</description>
+      <features_included>
+        <feature_ref>REF-001</feature_ref>
+        <feature_ref>REF-002</feature_ref>
+        <feature_ref>REF-003</feature_ref>
+        <feature_ref>ORD-001</feature_ref>
+        <feature_ref>ORD-002</feature_ref>
+        <feature_ref>ORD-003</feature_ref>
+        <feature_ref>DME-001</feature_ref>
+        <feature_ref>DME-002</feature_ref>
+        <feature_ref>DME-003</feature_ref>
+        <feature_ref>DIS-001</feature_ref>
+        <feature_ref>MOB-001</feature_ref>
+        <feature_ref>MOB-002</feature_ref>
+      </features_included>
+      <estimated_duration>20 weeks</estimated_duration>
+    </phase>
+
+    <phase>
+      <name>Phase 9: Compliance &amp; Quality</name>
+      <status>pending</status>
+      <priority>HIGH</priority>
+      <description>Patient Rights and Consent Management, Payer Coordination, Incident and Grievance Management, Staff Credentials, QAPI Enhancement</description>
+      <features_included>
+        <feature_ref>ADM-002</feature_ref>
+        <feature_ref>ADM-003</feature_ref>
+        <feature_ref>INC-001</feature_ref>
+        <feature_ref>INC-002</feature_ref>
+        <feature_ref>CRD-001</feature_ref>
+      </features_included>
+      <estimated_duration>12 weeks</estimated_duration>
+    </phase>
+
+    <phase>
+      <name>Phase 10: Extended Features</name>
+      <status>pending</status>
+      <priority>MEDIUM</priority>
+      <description>E-Prescribing, Volunteer Management, Bereavement Enhancement, Document Management, Secure Messaging, Advanced Reporting</description>
+      <features_included>
+        <feature_ref>RX-001</feature_ref>
+        <feature_ref>RX-002</feature_ref>
+        <feature_ref>VOL-001</feature_ref>
+        <feature_ref>BRV-001</feature_ref>
+        <feature_ref>DOC-001</feature_ref>
+        <feature_ref>MSG-001</feature_ref>
+        <feature_ref>RPT-001</feature_ref>
+      </features_included>
+      <estimated_duration>16 weeks</estimated_duration>
+    </phase>
+
+    <phase>
+      <name>Phase 11: Healthcare Interoperability</name>
+      <status>pending</status>
+      <priority>MEDIUM</priority>
+      <description>FHIR R4 API, HL7v2 Integration, Third-party System Integrations</description>
+      <features_included>
+        <feature_ref>INT-001</feature_ref>
+        <feature_ref>INT-002</feature_ref>
+      </features_included>
+      <estimated_duration>12 weeks</estimated_duration>
+    </phase>
+  </implementation_roadmap>
+
+  <!-- ===================================================================================== -->
+  <!-- IMPLEMENTATION SUMMARY                                                               -->
+  <!-- ===================================================================================== -->
+  <implementation_summary>
+    <priority_breakdown>
+      <priority_level name="CRITICAL" feature_count="6" estimated_weeks="24-30">
+        <feature>HOPE Assessment Enhancement (October 2025 deadline)</feature>
+        <feature>iQIES Submission Integration</feature>
+        <feature>Hospice Election Statement Management</feature>
+        <feature>NOE/NOTR Management</feature>
+        <feature>Recertification Workflow</feature>
+        <feature>Level of Care Management</feature>
+      </priority_level>
+      <priority_level name="HIGH" feature_count="18" estimated_weeks="60-75">
+        <feature>Referral and Intake Management (3 features)</feature>
+        <feature>Patient Rights and Consent Management</feature>
+        <feature>Payer Coordination</feature>
+        <feature>Orders Management (3 features)</feature>
+        <feature>DME Management (3 features)</feature>
+        <feature>E-Prescribing</feature>
+        <feature>Mobile Field Application (2 features)</feature>
+        <feature>Incident and Grievance Management (2 features)</feature>
+        <feature>Discharge Management</feature>
+        <feature>Bereavement Enhancement</feature>
+        <feature>Advanced Reporting</feature>
+        <feature>Staff Credentials</feature>
+        <feature>Secure Messaging</feature>
+      </priority_level>
+      <priority_level name="MEDIUM" feature_count="6" estimated_weeks="25-35">
+        <feature>Order Sets and Protocols</feature>
+        <feature>DME Inventory Tracking</feature>
+        <feature>Formulary Management</feature>
+        <feature>Volunteer Management</feature>
+        <feature>Document Management</feature>
+        <feature>Interoperability (FHIR, HL7v2)</feature>
+      </priority_level>
+    </priority_breakdown>
+
+    <total_feature_counts>
+      <implemented_features>26</implemented_features>
+      <features_to_develop>30</features_to_develop>
+      <total_features>56</total_features>
+    </total_feature_counts>
+
+    <total_estimated_effort>
+      <minimum_weeks>109</minimum_weeks>
+      <maximum_weeks>140</maximum_weeks>
+      <notes>Estimates assume 2-3 full-stack developers working in parallel with dedicated QA support. Critical regulatory features (Phase 7) should begin immediately to meet October 2025 HOPE deadline.</notes>
+    </total_estimated_effort>
+  </implementation_summary>
+
+</project_specification>

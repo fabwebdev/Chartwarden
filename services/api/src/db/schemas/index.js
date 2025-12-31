@@ -24,6 +24,7 @@ export * from './discharge.schema.js';
 export * from './dischargeSection.schema.js';
 export * from './dmeProvider.schema.js';
 export * from './dnr.schema.js';
+export * from './electronicSignature.schema.js';
 export * from './emergencyPreparednessLevel.schema.js';
 export * from './encounters.schema.js';
 export * from './endocrine.schema.js';
