@@ -293,3 +293,84 @@ export const staff_training = pgTable('staff_training', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+/**
+ * Credential History Table
+ * Immutable audit trail for credential changes (versioning)
+ * Tracks: initial issue, renewals, updates, revocations
+ */
+export const credential_history = pgTable('credential_history', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  credential_id: bigint('credential_id', { mode: 'number' }).references(() => staff_credentials.id).notNull(),
+  staff_id: bigint('staff_id', { mode: 'number' }).references(() => staff_profiles.id).notNull(),
+
+  // Change tracking
+  change_type: varchar('change_type', { length: 50 }).notNull(), // CREATED, UPDATED, RENEWED, REVOKED, EXPIRED, VERIFIED
+
+  // Previous and new values (JSON)
+  previous_values: jsonb('previous_values'), // State before change
+  new_values: jsonb('new_values'), // State after change
+
+  // Summary of what changed
+  change_summary: text('change_summary'),
+
+  // Who made the change
+  changed_by_id: text('changed_by_id').references(() => users.id),
+
+  // Immutable timestamp
+  changed_at: timestamp('changed_at').defaultNow().notNull()
+});
+
+/**
+ * Credential Documents Table
+ * Storage for scanned licenses, certificates, and other credential documentation
+ */
+export const credential_documents = pgTable('credential_documents', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  credential_id: bigint('credential_id', { mode: 'number' }).references(() => staff_credentials.id).notNull(),
+
+  // File information
+  file_name: varchar('file_name', { length: 255 }).notNull(),
+  file_path: text('file_path').notNull(), // Storage path or URL
+  file_type: varchar('file_type', { length: 50 }), // PDF, JPEG, PNG, etc.
+  file_size: integer('file_size'), // Size in bytes
+  mime_type: varchar('mime_type', { length: 100 }),
+
+  // Document metadata
+  document_type: varchar('document_type', { length: 100 }), // LICENSE_SCAN, CERTIFICATE, VERIFICATION_LETTER
+  description: text('description'),
+
+  // Audit fields
+  uploaded_by_id: text('uploaded_by_id').references(() => users.id),
+  uploaded_at: timestamp('uploaded_at').defaultNow().notNull(),
+  deleted_at: timestamp('deleted_at')
+});
+
+/**
+ * Required Credentials Configuration Table
+ * Defines which credentials are required for specific positions/departments
+ */
+export const required_credentials = pgTable('required_credentials', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Scope: can be department-wide, position-specific, or both
+  department: varchar('department', { length: 100 }),
+  job_title: varchar('job_title', { length: 255 }),
+
+  // Required credential type
+  credential_type: varchar('credential_type', { length: 100 }).notNull(),
+  credential_name: varchar('credential_name', { length: 255 }),
+
+  // Configuration
+  is_mandatory: boolean('is_mandatory').default(true),
+  grace_period_days: integer('grace_period_days').default(0), // Days after hire to obtain
+
+  notes: text('notes'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});

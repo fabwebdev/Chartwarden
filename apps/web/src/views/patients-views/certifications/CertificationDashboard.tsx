@@ -6,7 +6,6 @@ import {
   Grid,
   Stack,
   Typography,
-  Chip,
   LinearProgress,
   Skeleton
 } from '@mui/material';
@@ -23,7 +22,7 @@ import {
   getDaysUntilDeadline,
   Certification,
   F2FEncounter
-} from '../../../api/certification';
+} from 'api/certification';
 
 interface CertificationDashboardProps {
   patientId: string;
@@ -90,7 +89,6 @@ const CertificationDashboard: React.FC<CertificationDashboardProps> = ({ patient
     f2fCompliance: 0,
     unsignedCertifications: 0
   });
-  const [recentCertifications, setRecentCertifications] = useState<Certification[]>([]);
 
   const calculateStats = useCallback(
     (certifications: Certification[], f2fEncounters: F2FEncounter[]) => {
@@ -141,11 +139,6 @@ const CertificationDashboard: React.FC<CertificationDashboardProps> = ({ patient
         f2fCompliance,
         unsignedCertifications: unsigned.length
       });
-
-      // Recent certifications (last 5)
-      setRecentCertifications(
-        certifications.slice(0, 5).sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
-      );
     },
     []
   );

@@ -3,14 +3,14 @@
   "category": "Database",
   "title": "Nutrition Assessment Schema",
   "description": "Database Schema for Nutrition Assessment System\n\nDesign and implement a comprehensive database schema to store patient nutrition assessment data, including dietary restrictions, food preferences, nutritional intake tracking, and overall nutritional status indicators.\n\nRequirements:\n- Create tables/models for dietary restrictions (allergies, intolerances, medical restrictions)\n- Define food preferences structure (likes, dislikes, cultural/religious preferences)\n- Design nutritional intake tracking schema (meals, portions, macronutrients, micronutrients, timestamps)\n- Establish nutritional status fields (BMI, weight history, deficiencies, health markers)\n- Include proper data types, constraints, and validation rules\n- Define relationships between entities (e.g., patient-to-restrictions, intake-to-meals)\n- Add fields for tracking assessment dates and update history\n- Consider extensibility for future metrics or assessment categories\n- Document the schema with clear field descriptions and usage guidelines\n\nEdge cases to consider:\n- Multiple concurrent dietary restrictions\n- Temporary vs. permanent restrictions\n- Evolving preferences over time\n- Bulk intake logging vs. individual meal entries\n- Historical data retention and versioning",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [
     "encounter-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.245Z",
-  "updatedAt": "2025-12-31T20:47:24.241Z",
+  "updatedAt": "2026-01-01T19:18:28.529Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -19,5 +19,5 @@
   "branchName": "main",
   "planningMode": "skip",
   "requirePlanApproval": false,
-  "startedAt": "2025-12-31T20:40:49.173Z"
+  "startedAt": "2026-01-01T19:17:28.728Z"
 }

@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // ASSETS
-import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle } from 'iconsax-react';
+import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle, ReceiptItem } from 'iconsax-react';
 
 // TYPE
 import { NavItemType } from 'types/menu';
@@ -13,7 +13,8 @@ const icons = {
   denials: RefreshCircle,
   analytics: Chart2,
   claims: DocumentText,
-  payments: Receipt21
+  payments: Receipt21,
+  era: ReceiptItem
 };
 
 // ==============================|| MENU ITEMS - BILLING ||============================== //
@@ -88,6 +89,14 @@ const billing: NavItemType = {
       type: 'item',
       url: '/denial-management',
       icon: icons.denials,
+      breadcrumbs: false
+    }] : [],
+    hasBillingAccess() ? [{
+      id: 'era-processing',
+      title: <FormattedMessage id="era-processing" defaultMessage="ERA Processing" />,
+      type: 'item',
+      url: '/era',
+      icon: icons.era,
       breadcrumbs: false
     }] : [],
     hasPermission('VIEW_REPORTS') || isAdmin ? [{

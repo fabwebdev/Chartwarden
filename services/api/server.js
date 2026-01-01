@@ -30,6 +30,8 @@ import JobScheduler from "./src/jobs/scheduler.js";
 import helmetConfig, { additionalSecurityHeaders } from "./src/config/helmet.config.js";
 import { buildGlobalRateLimitConfig, getRedisStore, RATE_LIMITS } from "./src/config/rateLimit.config.js";
 import socketIOService from "./src/services/SocketIO.service.js";
+import apmService from "./src/services/APM.service.js";
+import { apmPreHandler, apmResponseHandler } from "./src/middleware/apm.middleware.js";
 
 // Load environment variables
 dotenv.config();
@@ -247,6 +249,11 @@ app.addHook("onSend", async (request, reply) => {
 
 // Register cookie fix middleware as a hook
 app.addHook("onRequest", cookieFixMiddleware);
+
+// Register APM (Application Performance Monitoring) middleware
+// Captures request timing for performance tracking (minimal overhead < 5%)
+app.addHook("onRequest", apmPreHandler);
+app.addHook("onResponse", apmResponseHandler);
 
 // Register comprehensive audit logging middleware
 // Captures request start time for duration tracking
@@ -682,6 +689,9 @@ const gracefulShutdown = async (signal) => {
 
   // Stop job scheduler
   JobScheduler.stop();
+
+  // Stop APM service (clears intervals)
+  apmService.stop();
 
   // Close Socket.IO via service (handles graceful shutdown with client notification)
   await socketIOService.shutdown();

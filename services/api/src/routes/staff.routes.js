@@ -10,18 +10,24 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * Compliance: State licensing requirements, HIPAA workforce security
  *
  * Endpoints:
- * - Staff profile management (4 endpoints)
- * - Credential tracking (3 endpoints)
+ * - Staff profile management (5 endpoints)
+ * - Credential tracking (10 endpoints)
  * - Caseload management (2 endpoints)
  * - Schedule management (2 endpoints)
  * - Productivity tracking (2 endpoints)
  * - Training management (2 endpoints)
- * Total: 15 endpoints
+ * - Audit (1 endpoint)
+ * Total: 24 endpoints
  */
 export default async function staffRoutes(fastify, options) {
   // ============================================================================
   // STAFF PROFILE ROUTES
   // ============================================================================
+
+  // Get staff missing required credentials (must be before /staff/:id to avoid conflict)
+  fastify.get('/staff/missing-credentials', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_USERS)]
+  }, controller.getStaffMissingCredentials);
 
   // Get all staff
   fastify.get('/staff', {
@@ -43,9 +49,24 @@ export default async function staffRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_USER)]
   }, controller.updateStaff);
 
+  // Delete (soft delete) staff profile
+  fastify.delete('/staff/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_USER)]
+  }, controller.deleteStaff);
+
   // ============================================================================
   // CREDENTIAL ROUTES
   // ============================================================================
+
+  // Get expiring credentials (all staff) - must be before /credentials/:id routes
+  fastify.get('/credentials/expiring', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_USERS)]
+  }, controller.getExpiringCredentials);
+
+  // Get expired credentials (all staff) - must be before /credentials/:id routes
+  fastify.get('/credentials/expired', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_USERS)]
+  }, controller.getExpiredCredentials);
 
   // Get staff credentials
   fastify.get('/staff/:id/credentials', {
@@ -57,10 +78,34 @@ export default async function staffRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_USER)]
   }, controller.addCredential);
 
-  // Get expiring credentials (all staff)
-  fastify.get('/staff/credentials/expiring', {
+  // Update credential
+  fastify.put('/credentials/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_USER)]
+  }, controller.updateCredential);
+
+  // Delete/revoke credential
+  fastify.delete('/credentials/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_USER)]
+  }, controller.deleteCredential);
+
+  // Get credential history
+  fastify.get('/credentials/:id/history', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_USERS)]
-  }, controller.getExpiringCredentials);
+  }, controller.getCredentialHistory);
+
+  // Upload credential document
+  fastify.post('/credentials/:id/documents', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_USER)]
+  }, controller.uploadCredentialDocument);
+
+  // ============================================================================
+  // AUDIT LOG ROUTES
+  // ============================================================================
+
+  // Get staff audit log
+  fastify.get('/staff/:id/audit-log', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_USERS)]
+  }, controller.getStaffAuditLog);
 
   // ============================================================================
   // CASELOAD ROUTES

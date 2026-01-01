@@ -968,3 +968,309 @@ export const getVitalSignsById = async (id: string | number) => {
   return response.data;
 };
 
+/**
+ * Get vital signs for a specific patient with pagination
+ * @param patientId - Patient ID
+ * @param options - Query options (limit, offset, from_date, to_date, abnormal_only)
+ */
+export const getPatientVitalSigns = async (
+  patientId: string | number,
+  options?: {
+    limit?: number;
+    offset?: number;
+    from_date?: string;
+    to_date?: string;
+    abnormal_only?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }
+) => {
+  const params: any = {};
+  if (options?.limit) params.limit = options.limit;
+  if (options?.offset) params.offset = options.offset;
+  if (options?.from_date) params.from_date = options.from_date;
+  if (options?.to_date) params.to_date = options.to_date;
+  if (options?.abnormal_only !== undefined) params.abnormal_only = options.abnormal_only ? 'true' : 'false';
+  if (options?.sortBy) params.sortBy = options.sortBy;
+  if (options?.sortOrder) params.sortOrder = options.sortOrder;
+
+  const response = await http.get(`/patients/${patientId}/vital-signs`, { params });
+  return response.data;
+};
+
+/**
+ * Get latest vital signs for a patient
+ */
+export const getPatientLatestVitalSigns = async (patientId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/vital-signs/latest`);
+  return response.data;
+};
+
+/**
+ * Get vital signs trend data for charting
+ * @param patientId - Patient ID
+ * @param options - Query options (from_date, to_date, vital_type)
+ */
+export const getPatientVitalSignsTrend = async (
+  patientId: string | number,
+  options?: {
+    from_date?: string;
+    to_date?: string;
+    vital_type?: string;
+  }
+) => {
+  const params: any = {};
+  if (options?.from_date) params.from_date = options.from_date;
+  if (options?.to_date) params.to_date = options.to_date;
+  if (options?.vital_type) params.vital_type = options.vital_type;
+
+  const response = await http.get(`/patients/${patientId}/vital-signs/trend`, { params });
+  return response.data;
+};
+
+/**
+ * Get vital signs statistics for a patient
+ * @param patientId - Patient ID
+ * @param options - Query options (from_date, to_date)
+ */
+export const getPatientVitalSignsStats = async (
+  patientId: string | number,
+  options?: {
+    from_date?: string;
+    to_date?: string;
+  }
+) => {
+  const params: any = {};
+  if (options?.from_date) params.from_date = options.from_date;
+  if (options?.to_date) params.to_date = options.to_date;
+
+  const response = await http.get(`/patients/${patientId}/vital-signs/stats`, { params });
+  return response.data;
+};
+
+/**
+ * Create vital signs for a patient
+ */
+export const createPatientVitalSigns = async (patientId: string | number, vitalSignsData: any) => {
+  const response = await http.post(`/patients/${patientId}/vital-signs`, vitalSignsData);
+  return response.data;
+};
+
+/**
+ * Update vital signs (partial update)
+ */
+export const updateVitalSigns = async (id: string | number, vitalSignsData: any) => {
+  const response = await http.patch(`/vital-signs/${id}`, vitalSignsData);
+  return response.data;
+};
+
+/**
+ * Delete vital signs (soft delete)
+ */
+export const deleteVitalSigns = async (id: string | number) => {
+  const response = await http.delete(`/vital-signs/${id}`);
+  return response.data;
+};
+
+/**
+ * Get vital signs reference information (validation metadata)
+ */
+export const getVitalSignsReference = async () => {
+  const response = await http.get('/vital-signs/reference');
+  return response.data;
+};
+
+// ==============================|| PATIENT CONTACTS ||============================== //
+
+/**
+ * Get all contacts for a patient
+ * @param patientId - Patient ID
+ * @param type - Optional filter by contact type
+ */
+export const getPatientContacts = async (patientId: string | number, type?: string) => {
+  const params = type ? { type } : {};
+  const response = await http.get(`/patients/${patientId}/contacts`, { params });
+  return response.data;
+};
+
+/**
+ * Get emergency contacts for a patient
+ */
+export const getPatientEmergencyContacts = async (patientId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/emergency-contacts`);
+  return response.data;
+};
+
+/**
+ * Get a specific contact
+ */
+export const getPatientContact = async (patientId: string | number, contactId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/contacts/${contactId}`);
+  return response.data;
+};
+
+/**
+ * Create a new patient contact
+ */
+export const createPatientContact = async (patientId: string | number, contactData: any) => {
+  const response = await http.post(`/patients/${patientId}/contacts`, contactData);
+  return response.data;
+};
+
+/**
+ * Update a patient contact
+ */
+export const updatePatientContact = async (patientId: string | number, contactId: string | number, contactData: any) => {
+  const response = await http.put(`/patients/${patientId}/contacts/${contactId}`, contactData);
+  return response.data;
+};
+
+/**
+ * Delete a patient contact (soft delete)
+ */
+export const deletePatientContact = async (patientId: string | number, contactId: string | number) => {
+  const response = await http.delete(`/patients/${patientId}/contacts/${contactId}`);
+  return response.data;
+};
+
+/**
+ * Set a contact as primary
+ */
+export const setPatientContactPrimary = async (patientId: string | number, contactId: string | number) => {
+  const response = await http.post(`/patients/${patientId}/contacts/${contactId}/set-primary`);
+  return response.data;
+};
+
+// ==============================|| PATIENT ADDRESSES ||============================== //
+
+/**
+ * Get all addresses for a patient
+ * @param patientId - Patient ID
+ * @param type - Optional filter by address type (PRIMARY, BILLING, MAILING, FACILITY, TEMPORARY)
+ */
+export const getPatientAddresses = async (patientId: string | number, type?: string) => {
+  const params = type ? { type } : {};
+  const response = await http.get(`/patients/${patientId}/addresses`, { params });
+  return response.data;
+};
+
+/**
+ * Get a specific address
+ */
+export const getPatientAddress = async (patientId: string | number, addressId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/addresses/${addressId}`);
+  return response.data;
+};
+
+/**
+ * Create a new patient address
+ */
+export const createPatientAddress = async (patientId: string | number, addressData: any) => {
+  const response = await http.post(`/patients/${patientId}/addresses`, addressData);
+  return response.data;
+};
+
+/**
+ * Update a patient address
+ */
+export const updatePatientAddress = async (patientId: string | number, addressId: string | number, addressData: any) => {
+  const response = await http.put(`/patients/${patientId}/addresses/${addressId}`, addressData);
+  return response.data;
+};
+
+/**
+ * Delete a patient address (soft delete)
+ */
+export const deletePatientAddress = async (patientId: string | number, addressId: string | number) => {
+  const response = await http.delete(`/patients/${patientId}/addresses/${addressId}`);
+  return response.data;
+};
+
+/**
+ * Set an address as primary for its type
+ */
+export const setPatientAddressPrimary = async (patientId: string | number, addressId: string | number) => {
+  const response = await http.post(`/patients/${patientId}/addresses/${addressId}/set-primary`);
+  return response.data;
+};
+
+// ==============================|| PATIENT PAYERS ||============================== //
+
+/**
+ * Get all payers for a patient
+ * @param patientId - Patient ID
+ * @param options - Optional filters (type, active_only, primary_only)
+ */
+export const getPatientPayers = async (patientId: string | number, options?: { type?: string; active_only?: boolean; primary_only?: boolean }) => {
+  const params: any = {};
+  if (options?.type) params.type = options.type;
+  if (options?.active_only !== undefined) params.active_only = options.active_only ? 'true' : 'false';
+  if (options?.primary_only !== undefined) params.primary_only = options.primary_only ? 'true' : 'false';
+  const response = await http.get(`/patients/${patientId}/payers`, { params });
+  return response.data;
+};
+
+/**
+ * Get the primary payer for a patient
+ */
+export const getPatientPrimaryPayer = async (patientId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/payers/primary`);
+  return response.data;
+};
+
+/**
+ * Get a specific payer
+ */
+export const getPatientPayer = async (patientId: string | number, payerId: string | number) => {
+  const response = await http.get(`/patients/${patientId}/payers/${payerId}`);
+  return response.data;
+};
+
+/**
+ * Create a new patient payer
+ */
+export const createPatientPayer = async (patientId: string | number, payerData: any) => {
+  const response = await http.post(`/patients/${patientId}/payers`, payerData);
+  return response.data;
+};
+
+/**
+ * Update a patient payer
+ */
+export const updatePatientPayer = async (patientId: string | number, payerId: string | number, payerData: any) => {
+  const response = await http.put(`/patients/${patientId}/payers/${payerId}`, payerData);
+  return response.data;
+};
+
+/**
+ * Delete a patient payer (soft delete)
+ */
+export const deletePatientPayer = async (patientId: string | number, payerId: string | number) => {
+  const response = await http.delete(`/patients/${patientId}/payers/${payerId}`);
+  return response.data;
+};
+
+/**
+ * Set a payer as primary
+ */
+export const setPatientPayerPrimary = async (patientId: string | number, payerId: string | number) => {
+  const response = await http.post(`/patients/${patientId}/payers/${payerId}/set-primary`);
+  return response.data;
+};
+
+/**
+ * Verify payer eligibility
+ */
+export const verifyPatientPayer = async (patientId: string | number, payerId: string | number, verificationData: any) => {
+  const response = await http.post(`/patients/${patientId}/payers/${payerId}/verify`, verificationData);
+  return response.data;
+};
+
+/**
+ * Reorder payers for coordination of benefits
+ */
+export const reorderPatientPayers = async (patientId: string | number, payerOrders: Array<{ id: number; order: number }>) => {
+  const response = await http.post(`/patients/${patientId}/payers/reorder`, { payer_orders: payerOrders });
+  return response.data;
+};
+

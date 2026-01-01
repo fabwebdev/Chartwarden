@@ -17,7 +17,9 @@ import flaccScaleRoutes from "./flaccScale.routes.js";
 import painadScaleRoutes from "./painadScale.routes.js";
 import numericRatingScaleRoutes from "./numericRatingScale.routes.js";
 import patientRoutes from "./patient/Patient.routes.js";
+import patientCrudRoutes from "./patient.routes.js"; // Comprehensive patient CRUD with validation
 import prognosisRoutes from "./patient/Prognosis.routes.js";
+import prognosisTrackingRoutes from "./prognosisTracking.routes.js";
 import selectRoutes from "./patient/Select.routes.js";
 import vitalSignsRoutes from "./patient/VitalSigns.routes.js";
 import visitInformationRoutes from "./patient/VisitInformation.routes.js";
@@ -40,6 +42,7 @@ import eligibilityRoutes from "./eligibility.routes.js";
 import eraRoutes from "./era.routes.js";
 import denialManagementRoutes from "./denialManagement.routes.js";
 import denialCodesRoutes from "./denialCodes.routes.js";
+import icd10Routes from "./icd10.routes.js";
 import denialAnalysisRoutes from "./denialAnalysis.routes.js";
 import revenueRecognitionRoutes from "./revenueRecognition.routes.js";
 import asc606Routes from "./asc606.routes.js";
@@ -72,17 +75,21 @@ import abacDemoRoutes from "./abac-demo.routes.js";
 import abacRoutes from "./abac.routes.js";
 import caslDemoRoutes from "./casl-demo.routes.js";
 import userRoutes from "./user.routes.js";
+import roleRoutes from "./role.routes.js"; // Role Management API
 import permissionRoutes from "./permission.routes.js";
+import permissionManagementRoutes from "./permissionManagement.routes.js"; // Comprehensive Permission & Role Management
 import metricsEngineRoutes from "./metricsEngine.routes.js";
 import jobsRoutes from "./jobs.routes.js";
 import electronicSignatureRoutes from "./electronicSignature.routes.js";
 import wongBakerFacesScaleRoutes from "./wongBakerFacesScale.routes.js";
+import multiScalePainAssessmentRoutes from "./multiScalePainAssessment.routes.js";
 import edi837Routes from "./edi837.routes.js";
 import excelReportRoutes from "./excelReport.routes.js";
 import pdfReportRoutes from "./pdfReport.routes.js";
 import dataExportRoutes from "./dataExport.routes.js";
 import adminSettingsRoutes from "./adminSettings.routes.js";
 import socketIORoutes from "./socketio.routes.js";
+import apmRoutes from "./apm.routes.js"; // Application Performance Monitoring
 // Comprehensive Body Systems Assessment Routes
 import cardiacSystemAssessmentRoutes from "./cardiacSystemAssessment.routes.js";
 import endocrineSystemAssessmentRoutes from "./endocrineSystemAssessment.routes.js";
@@ -207,7 +214,12 @@ async function apiRoutes(fastify, options) {
   await fastify.register(painTypeRoutes);
   
   await fastify.register(patientRoutes, { prefix: "/patient" });
+
+  // Comprehensive patient CRUD routes with full validation, pagination, filtering, and soft-delete
+  // These routes are exposed at /api directly (/api/patients, /api/patients/:id, etc.)
+  await fastify.register(patientCrudRoutes);
   await fastify.register(prognosisRoutes, { prefix: "/prognosis" });
+  await fastify.register(prognosisTrackingRoutes, { prefix: "/prognosis-tracking" }); // Comprehensive Prognosis Tracking - Temporal tracking, clinical indicators, outcome analysis
   await fastify.register(selectRoutes, { prefix: "/select" });
   await fastify.register(vitalSignsRoutes); // Vital Signs - routes define their own paths (patient-scoped + global)
   await fastify.register(visitInformationRoutes, { prefix: "/visit-information" });
@@ -218,6 +230,7 @@ async function apiRoutes(fastify, options) {
   await fastify.register(painadScaleRoutes); // PAINAD Scale - Pain Assessment in Advanced Dementia
   await fastify.register(numericRatingScaleRoutes); // NRS - Numeric Rating Scale (0-10) Pain Assessment
   await fastify.register(wongBakerFacesScaleRoutes); // Wong-Baker FACES - Visual Pain Scale
+  await fastify.register(multiScalePainAssessmentRoutes); // Multi-Scale Pain Assessment - NRS, VAS, FLACC, PAINAD, CPOT, Wong-Baker
 
   // Comprehensive Body Systems Assessment Routes
   await fastify.register(cardiacSystemAssessmentRoutes); // Cardiac System Assessment - AHA/JNC/NYHA compliant
@@ -243,11 +256,12 @@ async function apiRoutes(fastify, options) {
   await fastify.register(eraRoutes, { prefix: "/era" }); // ERA Processing & Auto-Posting - Phase 3B
   await fastify.register(denialManagementRoutes, { prefix: "/denials" }); // Denial Management & Appeals - Phase 3C
   await fastify.register(denialCodesRoutes, { prefix: "/denial-codes" }); // CARC/RARC Denial Codes Library - Phase 3C
+  await fastify.register(icd10Routes, { prefix: "/icd10" }); // ICD-10 Diagnosis Code Lookup with Caching & Autocomplete
   await fastify.register(denialAnalysisRoutes, { prefix: "/denial-analysis" }); // Denial Analytics Engine - Trend Analysis & Prevention
   await fastify.register(revenueRecognitionRoutes, { prefix: "/revenue" }); // Revenue Recognition & Forecasting - Phase 3D
   await fastify.register(asc606Routes, { prefix: "/asc606" }); // ASC 606 Revenue Recognition - Five-Step Model Compliance
   await fastify.register(staffRoutes); // Staff Management (no prefix, routes define their own paths)
-  await fastify.register(schedulingRoutes); // Scheduling (no prefix, routes define their own paths)
+  await fastify.register(schedulingRoutes, { prefix: "/scheduling" }); // Scheduling - Calendar management, GPS check-in/out, on-call rotations
   await fastify.register(bereavementRoutes); // Bereavement (no prefix, routes define their own paths)
   await fastify.register(qapiRoutes); // QAPI (no prefix, routes define their own paths)
   await fastify.register(reportsRoutes); // Reports (no prefix, routes define their own paths)
@@ -274,7 +288,9 @@ async function apiRoutes(fastify, options) {
   await fastify.register(abacRoutes, { prefix: "/abac" }); // ABAC Policy Management
   await fastify.register(caslDemoRoutes, { prefix: "/casl-demo" });
   await fastify.register(userRoutes);
+  await fastify.register(roleRoutes); // Role Management API - CRUD, permissions, RBAC
   await fastify.register(permissionRoutes);
+  await fastify.register(permissionManagementRoutes); // Comprehensive Permission & Role Assignment Management
   await fastify.register(metricsEngineRoutes); // Metrics Engine & Dashboard Aggregation
   await fastify.register(jobsRoutes); // Background Jobs Management
   await fastify.register(electronicSignatureRoutes); // Electronic Signatures - 21 CFR Part 11 Compliance
@@ -283,6 +299,7 @@ async function apiRoutes(fastify, options) {
   await fastify.register(pdfReportRoutes); // PDF Report Export - Puppeteer-based HTML-to-PDF generation
   await fastify.register(dataExportRoutes); // Data Export - Multi-format export (CSV, JSON, XML, Excel)
   await fastify.register(adminSettingsRoutes); // Admin Settings - System Configuration & Clearinghouse Settings
+  await fastify.register(apmRoutes); // APM - Application Performance Monitoring Dashboard & Metrics
 
   // Error handling test routes (development/testing only)
   if (process.env.NODE_ENV !== 'production') {

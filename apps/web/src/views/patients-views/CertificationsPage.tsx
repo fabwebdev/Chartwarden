@@ -24,7 +24,7 @@ import {
   BenefitPeriodTimeline,
   CertificationDashboard
 } from './certifications';
-import { Certification, signCertification } from '../../api/certification';
+import { Certification, signCertification } from 'api/certification';
 
 interface TabPanelProps {
   children?: React.ReactNode;

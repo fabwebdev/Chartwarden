@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Typography, Tooltip, useTheme, Paper } from '@mui/material';
+import { Box, Typography, useTheme, Paper } from '@mui/material';
 import { useState, useRef } from 'react';
 
 export interface LineChartDataPoint {

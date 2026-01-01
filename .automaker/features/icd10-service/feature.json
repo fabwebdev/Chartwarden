@@ -3,14 +3,14 @@
   "category": "Service",
   "title": "ICD-10 Lookup Service",
   "description": "ICD-10 Diagnosis Code Lookup Service with Caching and Autocomplete\n\nBuild a service to look up ICD-10 diagnosis codes that provides fast autocomplete suggestions and caches results for improved performance.\n\nRequirements:\n- Create a service class/module for ICD-10 code lookups\n- Implement autocomplete functionality that searches by code or description\n- Add caching layer to store frequently accessed codes and reduce API/database calls\n- Support both exact code lookups (e.g., \"E11.9\") and partial text searches (e.g., \"diabetes\")\n- Return standardized results including code, full description, and category\n- Configure cache expiration policy appropriate for medical reference data\n- Handle invalid codes gracefully with clear error messages\n- Ensure case-insensitive search functionality\n- Implement rate limiting if using external ICD-10 API\n- Add proper error handling for network failures or missing data\n\nTechnical Considerations:\n- Choose appropriate caching strategy (in-memory, Redis, etc.) based on dataset size\n- Determine ICD-10 data source (local database, third-party API, flat file)\n- Optimize autocomplete for sub-200ms response time\n- Consider data freshness requirements for ICD-10 updates\n- Add unit tests for search accuracy and cache hit rates\n- Document API interface for consuming applications\n\nSuccess Criteria:\n- Autocomplete returns relevant results within 200ms\n- Cache hit rate above 70% for common lookups\n- Supports minimum 10,000 ICD-10 codes\n- Handles concurrent requests efficiently",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
     "redis-cache-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.249Z",
-  "updatedAt": "2025-12-31T20:47:09.042Z",
+  "updatedAt": "2026-01-01T07:08:58.048Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -19,5 +19,5 @@
   "branchName": "main",
   "planningMode": "skip",
   "requirePlanApproval": false,
-  "startedAt": "2025-12-31T20:40:48.514Z"
+  "startedAt": "2026-01-01T06:58:48.701Z"
 }

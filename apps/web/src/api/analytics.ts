@@ -149,6 +149,10 @@ export interface ExecutiveDashboard {
     completed_encounters: number;
     avg_encounter_duration: string;
     encounter_completion_rate: number;
+    by_discipline?: Array<{
+      discipline: string;
+      count: number;
+    }>;
   };
   operational: {
     claims_by_status: Array<{

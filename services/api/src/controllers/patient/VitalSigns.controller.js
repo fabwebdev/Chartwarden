@@ -1,13 +1,30 @@
 import { db } from '../../config/db.drizzle.js';
-import { vital_signs, VITAL_SIGN_RANGES } from '../../db/schemas/vitalSign.schema.js';
+import {
+  vital_signs,
+  VITAL_SIGN_RANGES,
+  VITAL_SIGN_VALID_RANGES,
+  VITAL_SIGN_ALERT_THRESHOLDS,
+  VITAL_SIGN_ERROR_CODES
+} from '../../db/schemas/vitalSign.schema.js';
 import { patients } from '../../db/schemas/index.js';
-import { eq, and, desc, sql, gte, lte, or } from 'drizzle-orm';
+import { eq, and, desc, asc, sql, gte, lte, or, isNull, isNotNull, count } from 'drizzle-orm';
 import { logger } from '../../utils/logger.js';
-import { logAudit } from '../../middleware/audit.middleware.js';
+import AuditService from '../../services/AuditService.js';
+import { ROLES } from '../../config/rbac.js';
 
 /**
  * Vital Signs Controller
- * Manages comprehensive vital signs (BP, HR, RR, Temp, SpO2, Pain) with timestamp, value, and unit information
+ * HIPAA-compliant vital signs management with comprehensive CRUD operations,
+ * clinical validation, optimistic locking, soft delete, and audit logging.
+ *
+ * Features:
+ * - Full CRUD operations with proper HTTP semantics
+ * - Clinical validation with alerts for abnormal values
+ * - Optimistic locking for concurrent modification detection
+ * - Soft delete with audit trail
+ * - Pagination with comprehensive metadata
+ * - Role-based access control
+ * - 21 CFR Part 11 compliance for electronic signatures
  */
 class VitalSignsController {
   /**
@@ -75,21 +92,267 @@ class VitalSignsController {
   }
 
   /**
+   * Convert temperature between Fahrenheit and Celsius
+   */
+  convertTemperature(value, fromUnit) {
+    if (value === null || value === undefined) return null;
+    const temp = parseFloat(value);
+    if (isNaN(temp)) return null;
+
+    if (fromUnit === 'C') {
+      // Celsius to Fahrenheit
+      return parseFloat((temp * 9 / 5 + 32).toFixed(2));
+    } else {
+      // Fahrenheit to Celsius
+      return parseFloat(((temp - 32) * 5 / 9).toFixed(2));
+    }
+  }
+
+  /**
+   * Validate vital signs data against clinical ranges
+   * Returns validation errors if any values are outside valid ranges
+   */
+  validateClinicalRanges(data) {
+    const errors = [];
+    const { VITAL_SIGN_VALID_RANGES: ranges } = { VITAL_SIGN_VALID_RANGES };
+
+    // Validate temperature
+    if (data.degrees_fahrenheit !== null && data.degrees_fahrenheit !== undefined) {
+      const temp = parseFloat(data.degrees_fahrenheit);
+      if (temp < VITAL_SIGN_VALID_RANGES.temperature_fahrenheit.min ||
+          temp > VITAL_SIGN_VALID_RANGES.temperature_fahrenheit.max) {
+        errors.push({
+          field: 'degrees_fahrenheit',
+          message: `Temperature must be between ${VITAL_SIGN_VALID_RANGES.temperature_fahrenheit.min}°F and ${VITAL_SIGN_VALID_RANGES.temperature_fahrenheit.max}°F`,
+          code: VITAL_SIGN_ERROR_CODES.TEMPERATURE_OUT_OF_RANGE,
+          rejectedValue: temp
+        });
+      }
+    }
+
+    if (data.degrees_celsius !== null && data.degrees_celsius !== undefined) {
+      const temp = parseFloat(data.degrees_celsius);
+      if (temp < VITAL_SIGN_VALID_RANGES.temperature_celsius.min ||
+          temp > VITAL_SIGN_VALID_RANGES.temperature_celsius.max) {
+        errors.push({
+          field: 'degrees_celsius',
+          message: `Temperature must be between ${VITAL_SIGN_VALID_RANGES.temperature_celsius.min}°C and ${VITAL_SIGN_VALID_RANGES.temperature_celsius.max}°C`,
+          code: VITAL_SIGN_ERROR_CODES.TEMPERATURE_OUT_OF_RANGE,
+          rejectedValue: temp
+        });
+      }
+    }
+
+    // Validate blood pressure
+    if (data.bp_systolic !== null && data.bp_systolic !== undefined) {
+      const sys = parseInt(data.bp_systolic);
+      if (sys < VITAL_SIGN_VALID_RANGES.bp_systolic.min ||
+          sys > VITAL_SIGN_VALID_RANGES.bp_systolic.max) {
+        errors.push({
+          field: 'bp_systolic',
+          message: `Systolic BP must be between ${VITAL_SIGN_VALID_RANGES.bp_systolic.min} and ${VITAL_SIGN_VALID_RANGES.bp_systolic.max} mmHg`,
+          code: VITAL_SIGN_ERROR_CODES.BP_OUT_OF_RANGE,
+          rejectedValue: sys
+        });
+      }
+    }
+
+    if (data.bp_diastolic !== null && data.bp_diastolic !== undefined) {
+      const dia = parseInt(data.bp_diastolic);
+      if (dia < VITAL_SIGN_VALID_RANGES.bp_diastolic.min ||
+          dia > VITAL_SIGN_VALID_RANGES.bp_diastolic.max) {
+        errors.push({
+          field: 'bp_diastolic',
+          message: `Diastolic BP must be between ${VITAL_SIGN_VALID_RANGES.bp_diastolic.min} and ${VITAL_SIGN_VALID_RANGES.bp_diastolic.max} mmHg`,
+          code: VITAL_SIGN_ERROR_CODES.BP_OUT_OF_RANGE,
+          rejectedValue: dia
+        });
+      }
+    }
+
+    // Validate systolic > diastolic
+    if (data.bp_systolic !== null && data.bp_diastolic !== null &&
+        data.bp_systolic !== undefined && data.bp_diastolic !== undefined) {
+      const sys = parseInt(data.bp_systolic);
+      const dia = parseInt(data.bp_diastolic);
+      if (sys <= dia) {
+        errors.push({
+          field: 'bp_systolic',
+          message: 'Systolic BP must be greater than diastolic BP',
+          code: VITAL_SIGN_ERROR_CODES.BP_SYSTOLIC_DIASTOLIC_INVALID,
+          rejectedValue: { systolic: sys, diastolic: dia }
+        });
+      }
+    }
+
+    // Validate heart rate
+    if (data.heart_rate !== null && data.heart_rate !== undefined) {
+      const hr = parseInt(data.heart_rate);
+      if (hr < VITAL_SIGN_VALID_RANGES.heart_rate.min ||
+          hr > VITAL_SIGN_VALID_RANGES.heart_rate.max) {
+        errors.push({
+          field: 'heart_rate',
+          message: `Heart rate must be between ${VITAL_SIGN_VALID_RANGES.heart_rate.min} and ${VITAL_SIGN_VALID_RANGES.heart_rate.max} bpm`,
+          code: VITAL_SIGN_ERROR_CODES.HEART_RATE_OUT_OF_RANGE,
+          rejectedValue: hr
+        });
+      }
+    }
+
+    // Validate respiratory rate
+    if (data.respiratory_rate !== null && data.respiratory_rate !== undefined) {
+      const rr = parseInt(data.respiratory_rate);
+      if (rr < VITAL_SIGN_VALID_RANGES.respiratory_rate.min ||
+          rr > VITAL_SIGN_VALID_RANGES.respiratory_rate.max) {
+        errors.push({
+          field: 'respiratory_rate',
+          message: `Respiratory rate must be between ${VITAL_SIGN_VALID_RANGES.respiratory_rate.min} and ${VITAL_SIGN_VALID_RANGES.respiratory_rate.max} breaths/min`,
+          code: VITAL_SIGN_ERROR_CODES.RESPIRATORY_RATE_OUT_OF_RANGE,
+          rejectedValue: rr
+        });
+      }
+    }
+
+    // Validate oxygen saturation
+    if (data.pulse_oximetry_percentage !== null && data.pulse_oximetry_percentage !== undefined) {
+      const spo2 = parseFloat(data.pulse_oximetry_percentage);
+      if (spo2 < VITAL_SIGN_VALID_RANGES.oxygen_saturation.min ||
+          spo2 > VITAL_SIGN_VALID_RANGES.oxygen_saturation.max) {
+        errors.push({
+          field: 'pulse_oximetry_percentage',
+          message: `Oxygen saturation must be between ${VITAL_SIGN_VALID_RANGES.oxygen_saturation.min}% and ${VITAL_SIGN_VALID_RANGES.oxygen_saturation.max}%`,
+          code: VITAL_SIGN_ERROR_CODES.OXYGEN_SATURATION_OUT_OF_RANGE,
+          rejectedValue: spo2
+        });
+      }
+    }
+
+    // Validate notes length
+    if (data.general_notes && data.general_notes.length > 1000) {
+      errors.push({
+        field: 'general_notes',
+        message: 'Notes must not exceed 1000 characters',
+        code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+        rejectedValue: `${data.general_notes.length} characters`
+      });
+    }
+
+    return errors;
+  }
+
+  /**
+   * Validate measurement timestamp
+   */
+  async validateTimestamp(timestamp, patientId) {
+    const errors = [];
+
+    if (!timestamp) return errors;
+
+    const recordedAt = new Date(timestamp);
+    const now = new Date();
+
+    // Check if timestamp is in the future
+    if (recordedAt > now) {
+      errors.push({
+        field: 'measurement_timestamp',
+        message: 'Recorded timestamp cannot be in the future',
+        code: VITAL_SIGN_ERROR_CODES.RECORDED_TIMESTAMP_FUTURE,
+        rejectedValue: timestamp
+      });
+    }
+
+    // Check if timestamp is before patient's birth date (if available)
+    if (patientId) {
+      try {
+        const patient = await db
+          .select({ date_of_birth: patients.date_of_birth })
+          .from(patients)
+          .where(eq(patients.id, parseInt(patientId)))
+          .limit(1);
+
+        if (patient[0]?.date_of_birth) {
+          const dob = new Date(patient[0].date_of_birth);
+          if (recordedAt < dob) {
+            errors.push({
+              field: 'measurement_timestamp',
+              message: 'Recorded timestamp cannot be before patient birth date',
+              code: VITAL_SIGN_ERROR_CODES.RECORDED_TIMESTAMP_BEFORE_BIRTH,
+              rejectedValue: timestamp
+            });
+          }
+        }
+      } catch (error) {
+        logger.warn('Error checking patient DOB for timestamp validation:', error.message);
+      }
+    }
+
+    return errors;
+  }
+
+  /**
+   * Check for potential duplicate measurements (within 2 minutes)
+   */
+  async checkDuplicateMeasurement(patientId, timestamp) {
+    if (!patientId || !timestamp) return null;
+
+    const recordedAt = new Date(timestamp);
+    const twoMinutesBefore = new Date(recordedAt.getTime() - 2 * 60 * 1000);
+    const twoMinutesAfter = new Date(recordedAt.getTime() + 2 * 60 * 1000);
+
+    try {
+      const duplicates = await db
+        .select({ id: vital_signs.id, measurement_timestamp: vital_signs.measurement_timestamp })
+        .from(vital_signs)
+        .where(and(
+          eq(vital_signs.patient_id, parseInt(patientId)),
+          isNull(vital_signs.deleted_at),
+          gte(vital_signs.measurement_timestamp, twoMinutesBefore),
+          lte(vital_signs.measurement_timestamp, twoMinutesAfter)
+        ))
+        .limit(1);
+
+      return duplicates[0] || null;
+    } catch (error) {
+      logger.warn('Error checking for duplicate measurements:', error.message);
+      return null;
+    }
+  }
+
+  /**
    * Check if vital signs are abnormal based on defined ranges
    * @param {object} data - Vital sign data
-   * @returns {object} { isAbnormal: boolean, abnormalValues: string[] }
+   * @returns {object} { isAbnormal: boolean, abnormalValues: string[], clinicalAlerts: object[] }
    */
   checkAbnormalValues(data) {
     const abnormalValues = [];
+    const clinicalAlerts = [];
 
     // Check temperature
     if (data.degrees_fahrenheit !== null && data.degrees_fahrenheit !== undefined) {
       const temp = parseFloat(data.degrees_fahrenheit);
       const range = VITAL_SIGN_RANGES.temperature_fahrenheit;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.temperature_fahrenheit;
+
       if (temp < range.critical_low || temp > range.critical_high) {
         abnormalValues.push(`TEMP_CRITICAL:${temp}F`);
-      } else if (temp < range.low || temp > range.high) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'temperature',
+          value: temp,
+          unit: 'F',
+          message: temp < range.critical_low
+            ? 'Hypothermia - Critical low temperature'
+            : 'Hyperthermia - Critical high temperature'
+        });
+      } else if (temp < alerts.low_alert || temp > alerts.high_alert) {
         abnormalValues.push(`TEMP_ABNORMAL:${temp}F`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'temperature',
+          value: temp,
+          unit: 'F',
+          message: temp < alerts.low_alert ? 'Low temperature' : 'Elevated temperature (fever)'
+        });
       }
     }
 
@@ -97,10 +360,26 @@ class VitalSignsController {
     if (data.heart_rate !== null && data.heart_rate !== undefined) {
       const hr = parseInt(data.heart_rate);
       const range = VITAL_SIGN_RANGES.heart_rate;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.heart_rate;
+
       if (hr < range.critical_low || hr > range.critical_high) {
         abnormalValues.push(`HR_CRITICAL:${hr}`);
-      } else if (hr < range.low || hr > range.high) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'heart_rate',
+          value: hr,
+          unit: 'bpm',
+          message: hr < range.critical_low ? 'Severe bradycardia' : 'Severe tachycardia'
+        });
+      } else if (hr < alerts.low_normal || hr > alerts.high_normal) {
         abnormalValues.push(`HR_ABNORMAL:${hr}`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'heart_rate',
+          value: hr,
+          unit: 'bpm',
+          message: hr < alerts.low_normal ? 'Bradycardia' : 'Tachycardia'
+        });
       }
     }
 
@@ -108,10 +387,26 @@ class VitalSignsController {
     if (data.bp_systolic !== null && data.bp_systolic !== undefined) {
       const sys = parseInt(data.bp_systolic);
       const range = VITAL_SIGN_RANGES.bp_systolic;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.bp_systolic;
+
       if (sys < range.critical_low || sys > range.critical_high) {
         abnormalValues.push(`BP_SYS_CRITICAL:${sys}`);
-      } else if (sys < range.low || sys > range.high) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'bp_systolic',
+          value: sys,
+          unit: 'mmHg',
+          message: sys < range.critical_low ? 'Severe hypotension' : 'Severe hypertension'
+        });
+      } else if (sys < alerts.low_warn || sys > alerts.high_warn) {
         abnormalValues.push(`BP_SYS_ABNORMAL:${sys}`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'bp_systolic',
+          value: sys,
+          unit: 'mmHg',
+          message: sys < alerts.low_warn ? 'Hypotension' : 'Hypertension'
+        });
       }
     }
 
@@ -119,9 +414,18 @@ class VitalSignsController {
     if (data.bp_diastolic !== null && data.bp_diastolic !== undefined) {
       const dia = parseInt(data.bp_diastolic);
       const range = VITAL_SIGN_RANGES.bp_diastolic;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.bp_diastolic;
+
       if (dia < range.critical_low || dia > range.critical_high) {
         abnormalValues.push(`BP_DIA_CRITICAL:${dia}`);
-      } else if (dia < range.low || dia > range.high) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'bp_diastolic',
+          value: dia,
+          unit: 'mmHg',
+          message: dia < range.critical_low ? 'Severe hypotension (diastolic)' : 'Severe hypertension (diastolic)'
+        });
+      } else if (dia < alerts.low_warn || dia > alerts.high_warn) {
         abnormalValues.push(`BP_DIA_ABNORMAL:${dia}`);
       }
     }
@@ -130,10 +434,26 @@ class VitalSignsController {
     if (data.respiratory_rate !== null && data.respiratory_rate !== undefined) {
       const rr = parseInt(data.respiratory_rate);
       const range = VITAL_SIGN_RANGES.respiratory_rate;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.respiratory_rate;
+
       if (rr < range.critical_low || rr > range.critical_high) {
         abnormalValues.push(`RR_CRITICAL:${rr}`);
-      } else if (rr < range.low || rr > range.high) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'respiratory_rate',
+          value: rr,
+          unit: 'breaths/min',
+          message: rr < range.critical_low ? 'Severe bradypnea' : 'Severe tachypnea'
+        });
+      } else if (rr < alerts.low_normal || rr > alerts.high_normal) {
         abnormalValues.push(`RR_ABNORMAL:${rr}`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'respiratory_rate',
+          value: rr,
+          unit: 'breaths/min',
+          message: rr < alerts.low_normal ? 'Bradypnea' : 'Tachypnea'
+        });
       }
     }
 
@@ -141,10 +461,35 @@ class VitalSignsController {
     if (data.pulse_oximetry_percentage !== null && data.pulse_oximetry_percentage !== undefined) {
       const spo2 = parseFloat(data.pulse_oximetry_percentage);
       const range = VITAL_SIGN_RANGES.spo2;
+      const alerts = VITAL_SIGN_ALERT_THRESHOLDS.oxygen_saturation;
+
       if (spo2 < range.critical_low) {
         abnormalValues.push(`SPO2_CRITICAL:${spo2}%`);
-      } else if (spo2 < range.low) {
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'oxygen_saturation',
+          value: spo2,
+          unit: '%',
+          message: 'Severe hypoxemia - Immediate attention required'
+        });
+      } else if (spo2 < alerts.critical) {
+        abnormalValues.push(`SPO2_HYPOXEMIA:${spo2}%`);
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'oxygen_saturation',
+          value: spo2,
+          unit: '%',
+          message: 'Hypoxemia - Immediate attention required'
+        });
+      } else if (spo2 < alerts.warning) {
         abnormalValues.push(`SPO2_ABNORMAL:${spo2}%`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'oxygen_saturation',
+          value: spo2,
+          unit: '%',
+          message: 'Low oxygen saturation'
+        });
       }
     }
 
@@ -152,18 +497,98 @@ class VitalSignsController {
     if (data.pain_score !== null && data.pain_score !== undefined) {
       const pain = parseInt(data.pain_score);
       const range = VITAL_SIGN_RANGES.pain_score;
+
       if (pain >= range.critical_high) {
         abnormalValues.push(`PAIN_CRITICAL:${pain}`);
+        clinicalAlerts.push({
+          type: 'CRITICAL',
+          measurement: 'pain_score',
+          value: pain,
+          unit: '0-10',
+          message: 'Severe pain - Intervention needed'
+        });
       } else if (pain > range.high) {
         abnormalValues.push(`PAIN_ABNORMAL:${pain}`);
+        clinicalAlerts.push({
+          type: 'WARNING',
+          measurement: 'pain_score',
+          value: pain,
+          unit: '0-10',
+          message: 'Moderate to significant pain'
+        });
       }
     }
 
     return {
       isAbnormal: abnormalValues.length > 0,
-      abnormalValues: abnormalValues
+      abnormalValues,
+      clinicalAlerts
     };
   }
+
+  /**
+   * Check if at least one vital measurement is provided
+   */
+  hasAtLeastOneMeasurement(data) {
+    const measurementFields = [
+      'degrees_fahrenheit',
+      'degrees_celsius',
+      'bp_systolic',
+      'bp_diastolic',
+      'heart_rate',
+      'respiratory_rate',
+      'pulse_oximetry_percentage',
+      'pain_score'
+    ];
+
+    return measurementFields.some(field =>
+      data[field] !== null && data[field] !== undefined && data[field] !== ''
+    );
+  }
+
+  /**
+   * Build pagination metadata
+   */
+  buildPaginationMetadata(total, limit, offset) {
+    const totalPages = Math.ceil(total / limit);
+    const currentPage = Math.floor(offset / limit) + 1;
+
+    return {
+      totalCount: total,
+      currentPage,
+      totalPages,
+      limit,
+      offset,
+      hasNext: currentPage < totalPages,
+      hasPrevious: currentPage > 1
+    };
+  }
+
+  /**
+   * Create audit log entry
+   */
+  async createAuditLog(request, action, recordId, additionalData = {}) {
+    try {
+      await AuditService.createAuditLog({
+        user_id: request.user?.id,
+        action,
+        resource_type: 'vital_signs',
+        resource_id: String(recordId),
+        ip_address: request.ip,
+        user_agent: request.headers?.['user-agent'],
+        metadata: JSON.stringify({
+          ...additionalData,
+          patient_id: additionalData.patient_id
+        })
+      });
+    } catch (error) {
+      logger.error('Failed to create audit log for vital signs:', error);
+    }
+  }
+
+  // =========================================
+  // CRUD OPERATIONS
+  // =========================================
 
   /**
    * Get all vital signs (with optional filters)
@@ -171,7 +596,20 @@ class VitalSignsController {
    */
   async index(request, reply) {
     try {
-      const { patient_id, limit = 50, offset = 0, from_date, to_date, abnormal_only } = request.query;
+      const {
+        patient_id,
+        limit = 50,
+        offset = 0,
+        from_date,
+        to_date,
+        abnormal_only,
+        include_deleted,
+        sortBy = 'measurement_timestamp',
+        sortOrder = 'desc'
+      } = request.query;
+
+      const limitNum = Math.min(200, Math.max(1, parseInt(limit) || 50));
+      const offsetNum = Math.max(0, parseInt(offset) || 0);
 
       let conditions = [];
 
@@ -190,32 +628,51 @@ class VitalSignsController {
         conditions.push(eq(vital_signs.is_abnormal, true));
       }
 
-      let query = db.select().from(vital_signs);
+      // Only admins can see deleted records
+      const isAdmin = request.user?.role === ROLES.ADMIN;
+      if (include_deleted !== 'true' || !isAdmin) {
+        conditions.push(isNull(vital_signs.deleted_at));
+      }
 
+      // Get total count
+      const countResult = await db
+        .select({ value: count() })
+        .from(vital_signs)
+        .where(conditions.length > 0 ? and(...conditions) : undefined);
+      const total = Number(countResult[0]?.value || 0);
+
+      // Build order by
+      const orderColumn = vital_signs[sortBy] || vital_signs.measurement_timestamp;
+      const orderDirection = sortOrder === 'asc' ? asc : desc;
+
+      // Get paginated results
+      let query = db.select().from(vital_signs);
       if (conditions.length > 0) {
         query = query.where(and(...conditions));
       }
 
-      const vitalSigns = await query
-        .orderBy(desc(vital_signs.measurement_timestamp))
-        .limit(parseInt(limit))
-        .offset(parseInt(offset));
+      const vitalSignsList = await query
+        .orderBy(orderDirection(orderColumn))
+        .limit(limitNum)
+        .offset(offsetNum);
 
       reply.code(200);
       return {
-        status: 200,
-        data: vitalSigns,
-        count: vitalSigns.length,
-        limit: parseInt(limit),
-        offset: parseInt(offset)
+        success: true,
+        data: vitalSignsList,
+        pagination: this.buildPaginationMetadata(total, limitNum, offsetNum)
       };
     } catch (error) {
       logger.error('Error fetching vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Server error while fetching vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Server error while fetching vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -227,41 +684,82 @@ class VitalSignsController {
   async getPatientVitalSigns(request, reply) {
     try {
       const { patientId } = request.params;
-      const { limit = 50, offset = 0, from_date, to_date } = request.query;
+      const {
+        limit = 50,
+        offset = 0,
+        dateFrom,
+        dateTo,
+        sortBy = 'measurement_timestamp',
+        sortOrder = 'desc',
+        include_deleted
+      } = request.query;
+
+      const limitNum = Math.min(200, Math.max(1, parseInt(limit) || 50));
+      const offsetNum = Math.max(0, parseInt(offset) || 0);
 
       let conditions = [eq(vital_signs.patient_id, parseInt(patientId))];
 
-      if (from_date) {
-        conditions.push(gte(vital_signs.measurement_timestamp, new Date(from_date)));
+      if (dateFrom) {
+        conditions.push(gte(vital_signs.measurement_timestamp, new Date(dateFrom)));
       }
-      if (to_date) {
-        conditions.push(lte(vital_signs.measurement_timestamp, new Date(to_date)));
+      if (dateTo) {
+        conditions.push(lte(vital_signs.measurement_timestamp, new Date(dateTo)));
       }
 
-      const vitalSigns = await db
+      // Only admins can see deleted records
+      const isAdmin = request.user?.role === ROLES.ADMIN;
+      if (include_deleted !== 'true' || !isAdmin) {
+        conditions.push(isNull(vital_signs.deleted_at));
+      }
+
+      // Get total count
+      const countResult = await db
+        .select({ value: count() })
+        .from(vital_signs)
+        .where(and(...conditions));
+      const total = Number(countResult[0]?.value || 0);
+
+      // Build order by
+      const orderColumn = vital_signs[sortBy] || vital_signs.measurement_timestamp;
+      const orderDirection = sortOrder === 'asc' ? asc : desc;
+
+      const vitalSignsList = await db
         .select()
         .from(vital_signs)
         .where(and(...conditions))
-        .orderBy(desc(vital_signs.measurement_timestamp))
-        .limit(parseInt(limit))
-        .offset(parseInt(offset));
+        .orderBy(orderDirection(orderColumn))
+        .limit(limitNum)
+        .offset(offsetNum);
+
+      // Apply clinical flags to abnormal values
+      const dataWithFlags = vitalSignsList.map(record => {
+        if (record.is_abnormal && record.abnormal_values) {
+          try {
+            record.clinical_flags = JSON.parse(record.abnormal_values);
+          } catch {
+            record.clinical_flags = [];
+          }
+        }
+        return record;
+      });
 
       reply.code(200);
       return {
-        status: 200,
-        message: 'Vital signs retrieved successfully',
-        data: vitalSigns,
-        count: vitalSigns.length,
-        limit: parseInt(limit),
-        offset: parseInt(offset)
+        success: true,
+        data: dataWithFlags,
+        pagination: this.buildPaginationMetadata(total, limitNum, offsetNum)
       };
     } catch (error) {
       logger.error('Error fetching patient vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error fetching vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -277,30 +775,42 @@ class VitalSignsController {
       const result = await db
         .select()
         .from(vital_signs)
-        .where(eq(vital_signs.patient_id, parseInt(patientId)))
+        .where(and(
+          eq(vital_signs.patient_id, parseInt(patientId)),
+          isNull(vital_signs.deleted_at)
+        ))
         .orderBy(desc(vital_signs.measurement_timestamp))
         .limit(1);
 
       if (!result[0]) {
         reply.code(404);
         return {
-          status: 404,
-          message: 'No vital signs found for this patient'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'No vital signs found for this patient',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
       reply.code(200);
       return {
-        status: 200,
+        success: true,
         data: result[0]
       };
     } catch (error) {
       logger.error('Error fetching latest vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error fetching latest vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching latest vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -322,74 +832,63 @@ class VitalSignsController {
       if (!result[0]) {
         reply.code(404);
         return {
-          status: 404,
-          message: 'Vital signs not found'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
+      // Check if deleted and user is not admin
+      if (result[0].deleted_at && request.user?.role !== ROLES.ADMIN) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Add audit trail info
+      const record = result[0];
+      record.audit_trail = {
+        created: {
+          at: record.createdAt,
+          by: record.created_by_id
+        },
+        modified: record.updatedAt !== record.createdAt ? {
+          at: record.updatedAt,
+          by: record.updated_by_id
+        } : null,
+        deleted: record.deleted_at ? {
+          at: record.deleted_at,
+          by: record.deleted_by_id
+        } : null
+      };
+
       reply.code(200);
       return {
-        status: 200,
-        data: result[0]
+        success: true,
+        data: record
       };
     } catch (error) {
       logger.error('Error fetching vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Server error while fetching vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
-      };
-    }
-  }
-
-  /**
-   * Store new vital signs
-   * POST /vital-signs/store or POST /patients/:patientId/vital-signs
-   */
-  async store(request, reply) {
-    try {
-      const patientId = request.params?.patientId || request.body?.patient_id;
-      const cleanedData = this.cleanVitalSignData(request.body);
-
-      // Check for abnormal values
-      const { isAbnormal, abnormalValues } = this.checkAbnormalValues(cleanedData);
-
-      const insertData = {
-        ...cleanedData,
-        patient_id: patientId ? parseInt(patientId) : cleanedData.patient_id,
-        is_abnormal: isAbnormal,
-        abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
-        measurement_timestamp: cleanedData.measurement_timestamp ? new Date(cleanedData.measurement_timestamp) : new Date(),
-        measured_by_id: cleanedData.measured_by_id || request.user?.id,
-        created_by_id: request.user?.id,
-        updated_by_id: request.user?.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
-      const newVitalSign = await db.insert(vital_signs).values(insertData).returning();
-      const vitalSign = newVitalSign[0];
-
-      await logAudit(request, 'CREATE', 'vital_signs', vitalSign.id);
-
-      reply.code(201);
-      return {
-        status: 201,
-        message: 'Vital signs created successfully',
-        data: vitalSign,
-        alerts: isAbnormal ? {
-          has_abnormal_values: true,
-          abnormal_values: abnormalValues
-        } : null
-      };
-    } catch (error) {
-      logger.error('Error creating vital signs:', error);
-      reply.code(500);
-      return {
-        status: 500,
-        message: 'Server error while creating vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Server error while fetching vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -399,12 +898,350 @@ class VitalSignsController {
    * POST /patients/:patientId/vital-signs
    */
   async create(request, reply) {
-    return this.store(request, reply);
+    try {
+      const patientId = request.params?.patientId || request.body?.patient_id;
+
+      if (!patientId) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'Patient ID is required',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Verify patient exists
+      const patient = await db
+        .select({ id: patients.id })
+        .from(patients)
+        .where(eq(patients.id, parseInt(patientId)))
+        .limit(1);
+
+      if (!patient[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: 'PATIENT_NOT_FOUND',
+            message: 'Patient not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      const cleanedData = this.cleanVitalSignData(request.body);
+
+      // Check at least one measurement is provided
+      if (!this.hasAtLeastOneMeasurement(cleanedData)) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.AT_LEAST_ONE_MEASUREMENT_REQUIRED,
+            message: 'At least one vital sign measurement is required',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Validate clinical ranges
+      const validationErrors = this.validateClinicalRanges(cleanedData);
+      if (validationErrors.length > 0) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'One or more fields contain invalid values',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            fields: validationErrors
+          }
+        };
+      }
+
+      // Validate timestamp
+      const timestamp = cleanedData.measurement_timestamp || new Date().toISOString();
+      const timestampErrors = await this.validateTimestamp(timestamp, patientId);
+      if (timestampErrors.length > 0) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'Invalid measurement timestamp',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            fields: timestampErrors
+          }
+        };
+      }
+
+      // Check for duplicates (warn but don't block)
+      const duplicate = await this.checkDuplicateMeasurement(patientId, timestamp);
+
+      // Handle temperature unit conversion
+      if (cleanedData.temperature_unit === 'C' && cleanedData.degrees_celsius && !cleanedData.degrees_fahrenheit) {
+        cleanedData.degrees_fahrenheit = this.convertTemperature(cleanedData.degrees_celsius, 'C');
+      } else if (cleanedData.temperature_unit === 'F' && cleanedData.degrees_fahrenheit && !cleanedData.degrees_celsius) {
+        cleanedData.degrees_celsius = this.convertTemperature(cleanedData.degrees_fahrenheit, 'F');
+      }
+
+      // Check for abnormal values
+      const { isAbnormal, abnormalValues, clinicalAlerts } = this.checkAbnormalValues(cleanedData);
+
+      const insertData = {
+        ...cleanedData,
+        patient_id: parseInt(patientId),
+        is_abnormal: isAbnormal,
+        abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
+        measurement_timestamp: new Date(timestamp),
+        measured_by_id: cleanedData.measured_by_id || request.user?.id,
+        created_by_id: request.user?.id,
+        updated_by_id: request.user?.id,
+        version: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Remove fields that shouldn't be in insert
+      delete insertData.id;
+
+      const newVitalSign = await db.insert(vital_signs).values(insertData).returning();
+      const vitalSign = newVitalSign[0];
+
+      // Create audit log
+      await this.createAuditLog(request, 'CREATE', vitalSign.id, {
+        patient_id: patientId,
+        has_abnormal_values: isAbnormal
+      });
+
+      const response = {
+        success: true,
+        message: 'Vital signs created successfully',
+        data: vitalSign
+      };
+
+      // Include clinical alerts if any
+      if (clinicalAlerts.length > 0) {
+        response.alerts = {
+          has_abnormal_values: true,
+          clinical_alerts: clinicalAlerts
+        };
+      }
+
+      // Include duplicate warning if applicable
+      if (duplicate) {
+        response.warnings = [{
+          code: VITAL_SIGN_ERROR_CODES.DUPLICATE_MEASUREMENT,
+          message: 'A vital signs record exists within 2 minutes of this measurement',
+          existing_record_id: duplicate.id,
+          existing_timestamp: duplicate.measurement_timestamp
+        }];
+      }
+
+      reply.code(201);
+      return response;
+    } catch (error) {
+      logger.error('Error creating vital signs:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Server error while creating vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
+      };
+    }
   }
 
   /**
-   * Update vital signs by ID (upsert pattern for backward compatibility)
-   * POST /vital-signs/:id or PATCH /vital-signs/:id
+   * Store new vital signs (alias for create)
+   * POST /vital-signs/store
+   */
+  async store(request, reply) {
+    return this.create(request, reply);
+  }
+
+  /**
+   * Full record update (PUT)
+   * PUT /vital-signs/:id
+   */
+  async fullUpdate(request, reply) {
+    try {
+      const { id } = request.params;
+      const vitalSignData = this.cleanVitalSignData(request.body);
+      const idNum = parseInt(id);
+
+      // Check at least one measurement is provided
+      if (!this.hasAtLeastOneMeasurement(vitalSignData)) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.AT_LEAST_ONE_MEASUREMENT_REQUIRED,
+            message: 'At least one vital sign measurement is required',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if record exists
+      const existing = await db
+        .select()
+        .from(vital_signs)
+        .where(eq(vital_signs.id, idNum))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if record is deleted
+      if (existing[0].deleted_at) {
+        reply.code(410);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_DELETED,
+            message: 'Cannot update deleted vital signs record',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if record is signed
+      if (existing[0].signed_at) {
+        reply.code(403);
+        return {
+          success: false,
+          error: {
+            code: 'RECORD_SIGNED',
+            message: 'Cannot update signed vital signs. Use amendment instead.',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Optimistic locking check
+      const clientVersion = vitalSignData.version;
+      if (clientVersion !== undefined && clientVersion !== existing[0].version) {
+        reply.code(409);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.CONCURRENT_MODIFICATION,
+            message: 'Record has been modified by another user',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            currentVersion: existing[0].version,
+            yourVersion: clientVersion
+          }
+        };
+      }
+
+      // Validate clinical ranges
+      const validationErrors = this.validateClinicalRanges(vitalSignData);
+      if (validationErrors.length > 0) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'One or more fields contain invalid values',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            fields: validationErrors
+          }
+        };
+      }
+
+      // Handle temperature unit conversion
+      if (vitalSignData.temperature_unit === 'C' && vitalSignData.degrees_celsius && !vitalSignData.degrees_fahrenheit) {
+        vitalSignData.degrees_fahrenheit = this.convertTemperature(vitalSignData.degrees_celsius, 'C');
+      } else if (vitalSignData.temperature_unit === 'F' && vitalSignData.degrees_fahrenheit && !vitalSignData.degrees_celsius) {
+        vitalSignData.degrees_celsius = this.convertTemperature(vitalSignData.degrees_fahrenheit, 'F');
+      }
+
+      // Check for abnormal values
+      const { isAbnormal, abnormalValues, clinicalAlerts } = this.checkAbnormalValues(vitalSignData);
+
+      // Remove fields that shouldn't be updated
+      const { id: _, patient_id, created_by_id, createdAt, version, ...updateFields } = vitalSignData;
+
+      const result = await db
+        .update(vital_signs)
+        .set({
+          ...updateFields,
+          is_abnormal: isAbnormal,
+          abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
+          updated_by_id: request.user?.id,
+          version: existing[0].version + 1,
+          updatedAt: new Date()
+        })
+        .where(eq(vital_signs.id, idNum))
+        .returning();
+
+      // Create audit log
+      await this.createAuditLog(request, 'UPDATE', result[0].id, {
+        patient_id: existing[0].patient_id,
+        update_type: 'FULL',
+        previous_version: existing[0].version
+      });
+
+      const response = {
+        success: true,
+        message: 'Vital signs updated successfully',
+        data: result[0]
+      };
+
+      if (clinicalAlerts.length > 0) {
+        response.alerts = {
+          has_abnormal_values: true,
+          clinical_alerts: clinicalAlerts
+        };
+      }
+
+      reply.code(200);
+      return response;
+    } catch (error) {
+      logger.error('Error in full update vital signs:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Server error while updating vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
+      };
+    }
+  }
+
+  /**
+   * Partial record update (PATCH)
+   * PATCH /vital-signs/:id
    */
   async update(request, reply) {
     try {
@@ -412,160 +1249,218 @@ class VitalSignsController {
       const vitalSignData = this.cleanVitalSignData(request.body);
       const idNum = parseInt(id);
 
-      // First, check if vital signs exist with this ID (as vital_signs.id)
-      const existingVitalSign = await db
+      // Check if at least one field is being updated
+      const updateableFields = Object.keys(vitalSignData).filter(key =>
+        !['id', 'patient_id', 'created_by_id', 'createdAt', 'version'].includes(key) &&
+        vitalSignData[key] !== undefined
+      );
+
+      if (updateableFields.length === 0) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'At least one field must be provided for update',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if record exists
+      const existing = await db
         .select()
         .from(vital_signs)
         .where(eq(vital_signs.id, idNum))
         .limit(1);
 
-      let result;
-      if (existingVitalSign[0]) {
-        // Don't allow updates to signed assessments
-        if (existingVitalSign[0].signed_at) {
-          reply.code(403);
-          return {
-            status: 403,
-            message: 'Cannot update signed vital signs. Use amendment instead.'
-          };
-        }
-
-        // Check for abnormal values
-        const mergedData = { ...existingVitalSign[0], ...vitalSignData };
-        const { isAbnormal, abnormalValues } = this.checkAbnormalValues(mergedData);
-
-        // Remove fields that shouldn't be updated directly
-        const { id: _, patient_id, created_by_id, createdAt, ...updateData } = vitalSignData;
-
-        result = await db
-          .update(vital_signs)
-          .set({
-            ...updateData,
-            is_abnormal: isAbnormal,
-            abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
-            updated_by_id: request.user?.id,
-            updatedAt: new Date()
-          })
-          .where(eq(vital_signs.id, idNum))
-          .returning();
-
-        await logAudit(request, 'UPDATE', 'vital_signs', result[0].id);
-
-        reply.code(200);
+      if (!existing[0]) {
+        reply.code(404);
         return {
-          status: 200,
-          message: 'Vital signs updated successfully',
-          data: result[0],
-          alerts: isAbnormal ? {
-            has_abnormal_values: true,
-            abnormal_values: abnormalValues
-          } : null
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
-      } else {
-        // ID doesn't exist as vital_signs id, so treat it as note_id for backward compatibility
-        const existingByNoteId = await db
-          .select()
-          .from(vital_signs)
-          .where(eq(vital_signs.note_id, idNum))
-          .limit(1);
-
-        if (existingByNoteId[0]) {
-          // Don't allow updates to signed assessments
-          if (existingByNoteId[0].signed_at) {
-            reply.code(403);
-            return {
-              status: 403,
-              message: 'Cannot update signed vital signs. Use amendment instead.'
-            };
-          }
-
-          const mergedData = { ...existingByNoteId[0], ...vitalSignData };
-          const { isAbnormal, abnormalValues } = this.checkAbnormalValues(mergedData);
-
-          result = await db
-            .update(vital_signs)
-            .set({
-              ...vitalSignData,
-              is_abnormal: isAbnormal,
-              abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
-              updated_by_id: request.user?.id,
-              updatedAt: new Date()
-            })
-            .where(eq(vital_signs.note_id, idNum))
-            .returning();
-
-          await logAudit(request, 'UPDATE', 'vital_signs', result[0].id);
-
-          reply.code(200);
-          return {
-            status: 200,
-            message: 'Vital signs updated successfully',
-            data: result[0]
-          };
-        } else {
-          // Create new vital signs with note_id from URL
-          const { isAbnormal, abnormalValues } = this.checkAbnormalValues(vitalSignData);
-
-          vitalSignData.note_id = idNum;
-          if (vitalSignData.id) {
-            delete vitalSignData.id;
-          }
-
-          const now = new Date();
-          result = await db
-            .insert(vital_signs)
-            .values({
-              ...vitalSignData,
-              is_abnormal: isAbnormal,
-              abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
-              measurement_timestamp: vitalSignData.measurement_timestamp ? new Date(vitalSignData.measurement_timestamp) : now,
-              created_by_id: request.user?.id,
-              updated_by_id: request.user?.id,
-              createdAt: now,
-              updatedAt: now
-            })
-            .returning();
-
-          await logAudit(request, 'CREATE', 'vital_signs', result[0].id);
-
-          reply.code(201);
-          return {
-            status: 201,
-            message: 'Vital signs created successfully',
-            data: result[0]
-          };
-        }
       }
+
+      // Check if record is deleted
+      if (existing[0].deleted_at) {
+        reply.code(410);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_DELETED,
+            message: 'Cannot update deleted vital signs record',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if record is signed
+      if (existing[0].signed_at) {
+        reply.code(403);
+        return {
+          success: false,
+          error: {
+            code: 'RECORD_SIGNED',
+            message: 'Cannot update signed vital signs. Use amendment instead.',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Optimistic locking check
+      const clientVersion = vitalSignData.version;
+      if (clientVersion !== undefined && clientVersion !== existing[0].version) {
+        reply.code(409);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.CONCURRENT_MODIFICATION,
+            message: 'Record has been modified by another user',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            currentVersion: existing[0].version,
+            yourVersion: clientVersion
+          }
+        };
+      }
+
+      // Merge with existing data for validation
+      const mergedData = { ...existing[0], ...vitalSignData };
+
+      // Validate clinical ranges on merged data
+      const validationErrors = this.validateClinicalRanges(mergedData);
+      if (validationErrors.length > 0) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'One or more fields contain invalid values',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            fields: validationErrors
+          }
+        };
+      }
+
+      // Handle temperature unit conversion
+      if (vitalSignData.temperature_unit === 'C' && vitalSignData.degrees_celsius && !vitalSignData.degrees_fahrenheit) {
+        vitalSignData.degrees_fahrenheit = this.convertTemperature(vitalSignData.degrees_celsius, 'C');
+      } else if (vitalSignData.temperature_unit === 'F' && vitalSignData.degrees_fahrenheit && !vitalSignData.degrees_celsius) {
+        vitalSignData.degrees_celsius = this.convertTemperature(vitalSignData.degrees_fahrenheit, 'F');
+      }
+
+      // Check for abnormal values on merged data
+      const { isAbnormal, abnormalValues, clinicalAlerts } = this.checkAbnormalValues(mergedData);
+
+      // Build update object with only provided fields
+      const updateData = {
+        is_abnormal: isAbnormal,
+        abnormal_values: abnormalValues.length > 0 ? JSON.stringify(abnormalValues) : null,
+        updated_by_id: request.user?.id,
+        version: existing[0].version + 1,
+        updatedAt: new Date()
+      };
+
+      // Add only the fields that were actually provided
+      updateableFields.forEach(field => {
+        if (vitalSignData[field] !== undefined) {
+          updateData[field] = vitalSignData[field];
+        }
+      });
+
+      const result = await db
+        .update(vital_signs)
+        .set(updateData)
+        .where(eq(vital_signs.id, idNum))
+        .returning();
+
+      // Create audit log
+      await this.createAuditLog(request, 'UPDATE', result[0].id, {
+        patient_id: existing[0].patient_id,
+        update_type: 'PARTIAL',
+        updated_fields: updateableFields,
+        previous_version: existing[0].version
+      });
+
+      const response = {
+        success: true,
+        message: 'Vital signs updated successfully',
+        data: result[0]
+      };
+
+      if (clinicalAlerts.length > 0) {
+        response.alerts = {
+          has_abnormal_values: true,
+          clinical_alerts: clinicalAlerts
+        };
+      }
+
+      reply.code(200);
+      return response;
     } catch (error) {
       logger.error('Error in update vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Server error while updating vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Server error while updating vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
 
   /**
-   * Delete vital signs by ID
+   * Soft delete vital signs by ID
    * DELETE /vital-signs/:id
    */
   async delete(request, reply) {
     try {
       const { id } = request.params;
+      const idNum = parseInt(id);
 
       const existing = await db
         .select()
         .from(vital_signs)
-        .where(eq(vital_signs.id, parseInt(id)))
+        .where(eq(vital_signs.id, idNum))
         .limit(1);
 
       if (!existing[0]) {
         reply.code(404);
         return {
-          status: 404,
-          message: 'Vital signs not found'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      // Check if already deleted
+      if (existing[0].deleted_at) {
+        reply.code(410);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_DELETED,
+            message: 'Vital signs record has already been deleted',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
@@ -573,29 +1468,139 @@ class VitalSignsController {
       if (existing[0].signed_at) {
         reply.code(403);
         return {
-          status: 403,
-          message: 'Cannot delete signed vital signs'
+          success: false,
+          error: {
+            code: 'RECORD_SIGNED',
+            message: 'Cannot delete signed vital signs',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
+      // Soft delete
       await db
-        .delete(vital_signs)
-        .where(eq(vital_signs.id, parseInt(id)));
+        .update(vital_signs)
+        .set({
+          deleted_at: new Date(),
+          deleted_by_id: request.user?.id,
+          updated_by_id: request.user?.id,
+          version: existing[0].version + 1,
+          updatedAt: new Date()
+        })
+        .where(eq(vital_signs.id, idNum));
 
-      await logAudit(request, 'DELETE', 'vital_signs', parseInt(id));
+      // Create audit log
+      await this.createAuditLog(request, 'DELETE', idNum, {
+        patient_id: existing[0].patient_id
+      });
 
-      reply.code(200);
-      return {
-        status: 200,
-        message: 'Vital signs deleted successfully'
-      };
+      reply.code(204);
+      return;
     } catch (error) {
       logger.error('Error deleting vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error deleting vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error deleting vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
+      };
+    }
+  }
+
+  /**
+   * Restore soft-deleted vital signs
+   * POST /vital-signs/:id/restore
+   */
+  async restore(request, reply) {
+    try {
+      const { id } = request.params;
+      const idNum = parseInt(id);
+
+      // Only admins can restore
+      if (request.user?.role !== ROLES.ADMIN) {
+        reply.code(403);
+        return {
+          success: false,
+          error: {
+            code: 'ACCESS_DENIED',
+            message: 'Only administrators can restore deleted records',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      const existing = await db
+        .select()
+        .from(vital_signs)
+        .where(eq(vital_signs.id, idNum))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs record not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      if (!existing[0].deleted_at) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'NOT_DELETED',
+            message: 'Record is not deleted',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
+        };
+      }
+
+      const result = await db
+        .update(vital_signs)
+        .set({
+          deleted_at: null,
+          deleted_by_id: null,
+          updated_by_id: request.user?.id,
+          version: existing[0].version + 1,
+          updatedAt: new Date()
+        })
+        .where(eq(vital_signs.id, idNum))
+        .returning();
+
+      // Create audit log
+      await this.createAuditLog(request, 'RESTORE', idNum, {
+        patient_id: existing[0].patient_id
+      });
+
+      reply.code(200);
+      return {
+        success: true,
+        message: 'Vital signs record restored successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error restoring vital signs:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error restoring vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -611,22 +1616,35 @@ class VitalSignsController {
       const existing = await db
         .select()
         .from(vital_signs)
-        .where(eq(vital_signs.id, parseInt(id)))
+        .where(and(
+          eq(vital_signs.id, parseInt(id)),
+          isNull(vital_signs.deleted_at)
+        ))
         .limit(1);
 
       if (!existing[0]) {
         reply.code(404);
         return {
-          status: 404,
-          message: 'Vital signs not found'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
       if (existing[0].signed_at) {
         reply.code(400);
         return {
-          status: 400,
-          message: 'Vital signs already signed'
+          success: false,
+          error: {
+            code: 'ALREADY_SIGNED',
+            message: 'Vital signs already signed',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
@@ -636,16 +1654,19 @@ class VitalSignsController {
           signed_at: new Date(),
           signed_by_id: request.user?.id,
           updated_by_id: request.user?.id,
+          version: existing[0].version + 1,
           updatedAt: new Date()
         })
         .where(eq(vital_signs.id, parseInt(id)))
         .returning();
 
-      await logAudit(request, 'SIGN', 'vital_signs', result[0].id);
+      await this.createAuditLog(request, 'SIGN', result[0].id, {
+        patient_id: existing[0].patient_id
+      });
 
       reply.code(200);
       return {
-        status: 200,
+        success: true,
         message: 'Vital signs signed successfully',
         data: result[0]
       };
@@ -653,9 +1674,13 @@ class VitalSignsController {
       logger.error('Error signing vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error signing vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error signing vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -672,36 +1697,71 @@ class VitalSignsController {
       if (!amendment_reason) {
         reply.code(400);
         return {
-          status: 400,
-          message: 'Amendment reason is required'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'Amendment reason is required',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
       const existing = await db
         .select()
         .from(vital_signs)
-        .where(eq(vital_signs.id, parseInt(id)))
+        .where(and(
+          eq(vital_signs.id, parseInt(id)),
+          isNull(vital_signs.deleted_at)
+        ))
         .limit(1);
 
       if (!existing[0]) {
         reply.code(404);
         return {
-          status: 404,
-          message: 'Vital signs not found'
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.RECORD_NOT_FOUND,
+            message: 'Vital signs not found',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
       if (!existing[0].signed_at) {
         reply.code(400);
         return {
-          status: 400,
-          message: 'Cannot amend unsigned vital signs. Use update instead.'
+          success: false,
+          error: {
+            code: 'NOT_SIGNED',
+            message: 'Cannot amend unsigned vital signs. Use update instead.',
+            timestamp: new Date().toISOString(),
+            path: request.url
+          }
         };
       }
 
       const cleanedData = this.cleanVitalSignData(updateData);
       const mergedData = { ...existing[0], ...cleanedData };
-      const { isAbnormal, abnormalValues } = this.checkAbnormalValues(mergedData);
+
+      // Validate clinical ranges
+      const validationErrors = this.validateClinicalRanges(mergedData);
+      if (validationErrors.length > 0) {
+        reply.code(422);
+        return {
+          success: false,
+          error: {
+            code: VITAL_SIGN_ERROR_CODES.VALIDATION_ERROR,
+            message: 'One or more fields contain invalid values',
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            fields: validationErrors
+          }
+        };
+      }
+
+      const { isAbnormal, abnormalValues, clinicalAlerts } = this.checkAbnormalValues(mergedData);
 
       const result = await db
         .update(vital_signs)
@@ -714,26 +1774,43 @@ class VitalSignsController {
           amended_at: new Date(),
           amended_by_id: request.user?.id,
           updated_by_id: request.user?.id,
+          version: existing[0].version + 1,
           updatedAt: new Date()
         })
         .where(eq(vital_signs.id, parseInt(id)))
         .returning();
 
-      await logAudit(request, 'AMEND', 'vital_signs', result[0].id, { amendment_reason });
+      await this.createAuditLog(request, 'AMEND', result[0].id, {
+        patient_id: existing[0].patient_id,
+        amendment_reason
+      });
 
-      reply.code(200);
-      return {
-        status: 200,
+      const response = {
+        success: true,
         message: 'Vital signs amended successfully',
         data: result[0]
       };
+
+      if (clinicalAlerts.length > 0) {
+        response.alerts = {
+          has_abnormal_values: true,
+          clinical_alerts: clinicalAlerts
+        };
+      }
+
+      reply.code(200);
+      return response;
     } catch (error) {
       logger.error('Error amending vital signs:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error amending vital signs',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error amending vital signs',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -754,7 +1831,10 @@ class VitalSignsController {
       const latestVitalSigns = await db
         .select()
         .from(vital_signs)
-        .where(eq(vital_signs.patient_id, parseInt(patientId)))
+        .where(and(
+          eq(vital_signs.patient_id, parseInt(patientId)),
+          isNull(vital_signs.deleted_at)
+        ))
         .orderBy(desc(vital_signs.measurement_timestamp))
         .limit(1);
 
@@ -762,7 +1842,10 @@ class VitalSignsController {
       const countResult = await db
         .select({ count: sql`count(*)` })
         .from(vital_signs)
-        .where(eq(vital_signs.patient_id, parseInt(patientId)));
+        .where(and(
+          eq(vital_signs.patient_id, parseInt(patientId)),
+          isNull(vital_signs.deleted_at)
+        ));
 
       // Get average values for the time period
       const avgResult = await db
@@ -787,13 +1870,14 @@ class VitalSignsController {
         .where(
           and(
             eq(vital_signs.patient_id, parseInt(patientId)),
+            isNull(vital_signs.deleted_at),
             gte(vital_signs.measurement_timestamp, startDate)
           )
         );
 
       reply.code(200);
       return {
-        status: 200,
+        success: true,
         data: {
           total_records: parseInt(countResult[0]?.count || 0),
           latest_vital_signs: latestVitalSigns[0] || null,
@@ -831,9 +1915,13 @@ class VitalSignsController {
       logger.error('Error fetching vital signs stats:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error fetching vital signs statistics',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching vital signs statistics',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -850,7 +1938,7 @@ class VitalSignsController {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - parseInt(days));
 
-      const vitalSigns = await db
+      const vitalSignsList = await db
         .select({
           id: vital_signs.id,
           measurement_timestamp: vital_signs.measurement_timestamp,
@@ -867,6 +1955,7 @@ class VitalSignsController {
         .where(
           and(
             eq(vital_signs.patient_id, parseInt(patientId)),
+            isNull(vital_signs.deleted_at),
             gte(vital_signs.measurement_timestamp, startDate)
           )
         )
@@ -875,20 +1964,24 @@ class VitalSignsController {
 
       reply.code(200);
       return {
-        status: 200,
+        success: true,
         data: {
           period_days: parseInt(days),
-          vital_signs: vitalSigns.reverse(), // Chronological order for charting
-          count: vitalSigns.length
+          vital_signs: vitalSignsList.reverse(), // Chronological order for charting
+          count: vitalSignsList.length
         }
       };
     } catch (error) {
       logger.error('Error fetching vital signs trend:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error fetching vital signs trend data',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching vital signs trend data',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }
@@ -901,7 +1994,7 @@ class VitalSignsController {
     try {
       reply.code(200);
       return {
-        status: 200,
+        success: true,
         data: {
           name: 'Vital Signs',
           description: 'Standard vital signs for patient assessment',
@@ -910,33 +2003,48 @@ class VitalSignsController {
               name: 'Blood Pressure',
               unit: 'mmHg',
               components: ['Systolic', 'Diastolic'],
-              normal_ranges: VITAL_SIGN_RANGES.bp_systolic
+              valid_range: VITAL_SIGN_VALID_RANGES.bp_systolic,
+              normal_range: {
+                systolic: { low: 90, high: 140 },
+                diastolic: { low: 60, high: 90 }
+              }
             },
             heart_rate: {
               name: 'Heart Rate',
               unit: 'BPM',
-              normal_ranges: VITAL_SIGN_RANGES.heart_rate
+              valid_range: VITAL_SIGN_VALID_RANGES.heart_rate,
+              normal_range: VITAL_SIGN_RANGES.heart_rate
             },
             respiratory_rate: {
               name: 'Respiratory Rate',
               unit: 'breaths/min',
-              normal_ranges: VITAL_SIGN_RANGES.respiratory_rate
+              valid_range: VITAL_SIGN_VALID_RANGES.respiratory_rate,
+              normal_range: VITAL_SIGN_RANGES.respiratory_rate
             },
             temperature: {
               name: 'Temperature',
-              unit: 'F',
-              normal_ranges: VITAL_SIGN_RANGES.temperature_fahrenheit
+              unit: 'F/C',
+              valid_range: VITAL_SIGN_VALID_RANGES.temperature_fahrenheit,
+              normal_range: VITAL_SIGN_RANGES.temperature_fahrenheit
             },
             spo2: {
               name: 'Oxygen Saturation (SpO2)',
               unit: '%',
-              normal_ranges: VITAL_SIGN_RANGES.spo2
+              valid_range: VITAL_SIGN_VALID_RANGES.oxygen_saturation,
+              normal_range: VITAL_SIGN_RANGES.spo2
             },
             pain: {
               name: 'Pain Score',
               unit: '0-10 scale',
-              normal_ranges: VITAL_SIGN_RANGES.pain_score
+              normal_range: VITAL_SIGN_RANGES.pain_score
             }
+          },
+          validation_rules: {
+            temperature: 'Must be between 95-106°F (35-41.1°C)',
+            blood_pressure: 'Systolic 70-200 mmHg, Diastolic 40-130 mmHg, Systolic > Diastolic',
+            heart_rate: 'Must be between 40-200 bpm',
+            respiratory_rate: 'Must be between 8-40 breaths/min',
+            oxygen_saturation: 'Must be between 70-100%'
           }
         }
       };
@@ -944,9 +2052,13 @@ class VitalSignsController {
       logger.error('Error fetching vital signs reference:', error);
       reply.code(500);
       return {
-        status: 500,
-        message: 'Error fetching vital signs reference',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching vital signs reference',
+          timestamp: new Date().toISOString(),
+          path: request.url
+        }
       };
     }
   }

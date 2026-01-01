@@ -12,8 +12,7 @@ import {
   Stack,
   Typography,
   Alert,
-  CircularProgress,
-  Tooltip
+  CircularProgress
 } from '@mui/material';
 import {
   Timeline,

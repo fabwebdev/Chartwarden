@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
-import { MedicineBox, TableDocument, Diagram } from 'iconsax-react';
+import { Box, Tab, Tabs } from '@mui/material';
+import { Hospital, TableDocument, Diagram } from 'iconsax-react';
 
 import MedicationList from './MedicationList';
 import MedicationAdministrationRecord from './MedicationAdministrationRecord';
@@ -57,7 +57,7 @@ const MedicationsPage = ({ patientId }: MedicationsPageProps) => {
           scrollButtons="auto"
         >
           <Tab
-            icon={<MedicineBox size={20} />}
+            icon={<Hospital size={20} />}
             iconPosition="start"
             label="Medication Orders"
             {...a11yProps(0)}

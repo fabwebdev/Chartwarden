@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // ASSETS
-import {BrifecaseTick,User,KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag,Unlock } from 'iconsax-react';
+import {BrifecaseTick,User,KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag,Unlock, Setting2 } from 'iconsax-react';
 
 // TYPE
 import { NavItemType } from 'types/menu';
@@ -18,8 +18,9 @@ const icons = {
   profile: UserSquare,
   ecommerce: ShoppingBag,
   users: User,
-  permissions:Unlock,
-  roles:BrifecaseTick,
+  permissions: Unlock,
+  roles: BrifecaseTick,
+  adminDashboard: Setting2,
 };
 
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
@@ -61,6 +62,15 @@ const userManagement: NavItemType = {
   icon: icons.applications,
   type: 'group',
   children: ([] as NavItemType[]).concat(
+    // Admin Dashboard - shown to admins and users with manage:users permission
+    (isAdmin || hasPermission('manage:users')) ? [{
+        id: 'admin-user-management',
+        title: <FormattedMessage id="Admin Dashboard" />,
+        type: 'item',
+        url: '/admin/user-management',
+        icon: icons.adminDashboard,
+        breadcrumbs: false
+    }] : [],
     hasPermission('permissions_principal_menu') ? [{
         id: 'permissions',
         title: <FormattedMessage id="permissions" />,

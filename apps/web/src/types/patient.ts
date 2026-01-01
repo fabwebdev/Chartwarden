@@ -557,3 +557,247 @@ export interface UpdatePatientRequest extends Partial<CreatePatientRequest> {
   id: number | string;
 }
 
+// ==============================|| PATIENT CONTACT ||============================== //
+
+export interface PatientContact {
+  id?: number | string;
+  patient_id?: number | string;
+  contact_type?: 'EMERGENCY' | 'FAMILY' | 'CAREGIVER' | 'HEALTHCARE_PROXY' | 'LEGAL' | 'FUNERAL_HOME' | 'CLERGY' | 'OTHER';
+  first_name: string;
+  last_name: string;
+  middle_name?: string;
+  suffix?: string;
+  preferred_name?: string;
+  relationship: string;
+  relationship_detail?: string;
+  primary_phone: string;
+  primary_phone_type?: 'MOBILE' | 'HOME' | 'WORK';
+  secondary_phone?: string;
+  secondary_phone_type?: 'MOBILE' | 'HOME' | 'WORK';
+  email?: string;
+  address_line_1?: string;
+  address_line_2?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  preferred_contact_method?: 'PHONE' | 'EMAIL' | 'TEXT';
+  preferred_contact_time?: string;
+  preferred_language?: string;
+  priority?: number;
+  is_primary?: boolean;
+  is_active?: boolean;
+  authorized_for_phi?: boolean;
+  authorized_for_decisions?: boolean;
+  has_key_to_home?: boolean;
+  lives_with_patient?: boolean;
+  healthcare_proxy_document?: boolean;
+  power_of_attorney?: boolean;
+  document_date?: string;
+  notes?: string;
+  special_instructions?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreatePatientContactRequest {
+  contact_type?: 'EMERGENCY' | 'FAMILY' | 'CAREGIVER' | 'HEALTHCARE_PROXY' | 'LEGAL' | 'FUNERAL_HOME' | 'CLERGY' | 'OTHER';
+  first_name: string;
+  last_name: string;
+  relationship: string;
+  primary_phone: string;
+  middle_name?: string;
+  suffix?: string;
+  preferred_name?: string;
+  relationship_detail?: string;
+  primary_phone_type?: 'MOBILE' | 'HOME' | 'WORK';
+  secondary_phone?: string;
+  secondary_phone_type?: 'MOBILE' | 'HOME' | 'WORK';
+  email?: string;
+  address_line_1?: string;
+  address_line_2?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  preferred_contact_method?: 'PHONE' | 'EMAIL' | 'TEXT';
+  preferred_contact_time?: string;
+  preferred_language?: string;
+  priority?: number;
+  is_primary?: boolean;
+  authorized_for_phi?: boolean;
+  authorized_for_decisions?: boolean;
+  has_key_to_home?: boolean;
+  lives_with_patient?: boolean;
+  healthcare_proxy_document?: boolean;
+  power_of_attorney?: boolean;
+  document_date?: string;
+  notes?: string;
+  special_instructions?: string;
+}
+
+// ==============================|| PATIENT ADDRESS ||============================== //
+
+export interface PatientAddress {
+  id?: number | string;
+  patient_id?: number | string;
+  address_type?: 'PRIMARY' | 'BILLING' | 'MAILING' | 'FACILITY' | 'TEMPORARY';
+  address_line_1: string;
+  address_line_2?: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  county?: string;
+  cbsa_code?: string;
+  latitude?: string;
+  longitude?: string;
+  phone_number?: string;
+  alternate_phone?: string;
+  is_primary?: boolean;
+  is_verified?: boolean;
+  is_active?: boolean;
+  effective_from?: string;
+  effective_to?: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreatePatientAddressRequest {
+  address_type?: 'PRIMARY' | 'BILLING' | 'MAILING' | 'FACILITY' | 'TEMPORARY';
+  address_line_1: string;
+  address_line_2?: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  county?: string;
+  cbsa_code?: string;
+  latitude?: string;
+  longitude?: string;
+  phone_number?: string;
+  alternate_phone?: string;
+  is_primary?: boolean;
+  is_verified?: boolean;
+  is_active?: boolean;
+  effective_from?: string;
+  effective_to?: string;
+  notes?: string;
+}
+
+// ==============================|| PATIENT PAYER ||============================== //
+
+export type PayerType = 'MEDICARE' | 'MEDICAID' | 'COMMERCIAL' | 'MANAGED_CARE' | 'TRICARE' | 'CHAMPVA' | 'WORKERS_COMP' | 'AUTO' | 'SELF_PAY' | 'OTHER';
+export type EligibilityStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING' | 'UNKNOWN';
+export type SubscriberRelationship = 'SELF' | 'SPOUSE' | 'CHILD' | 'OTHER';
+
+export interface PatientPayer {
+  id?: number | string;
+  patient_id?: number | string;
+  payer_type: PayerType;
+  payer_order?: number;
+  payer_name: string;
+  payer_id?: string;
+  payer_phone?: string;
+  payer_fax?: string;
+  payer_email?: string;
+  payer_website?: string;
+  payer_address_line1?: string;
+  payer_address_line2?: string;
+  payer_city?: string;
+  payer_state?: string;
+  payer_zip?: string;
+  payer_country?: string;
+  policy_number?: string;
+  group_number?: string;
+  group_name?: string;
+  plan_name?: string;
+  plan_type?: string;
+  subscriber_id?: string;
+  subscriber_name?: string;
+  subscriber_dob?: string;
+  subscriber_relationship?: SubscriberRelationship;
+  subscriber_ssn?: string;
+  medicare_beneficiary_id?: string;
+  medicare_part_a_effective?: string;
+  medicare_part_b_effective?: string;
+  medicare_hospice_election_date?: string;
+  medicare_advantage_plan?: boolean;
+  medicare_advantage_plan_name?: string;
+  medicaid_id?: string;
+  medicaid_state?: string;
+  medicaid_plan_name?: string;
+  is_dual_eligible?: boolean;
+  effective_date?: string;
+  termination_date?: string;
+  authorization_number?: string;
+  authorization_start_date?: string;
+  authorization_end_date?: string;
+  authorization_units?: number;
+  authorization_notes?: string;
+  cob_order?: number;
+  accepts_assignment?: boolean;
+  assignment_of_benefits?: boolean;
+  is_verified?: boolean;
+  verified_at?: string;
+  verification_method?: string;
+  verification_response?: string;
+  last_eligibility_check?: string;
+  eligibility_status?: EligibilityStatus;
+  is_active?: boolean;
+  is_primary?: boolean;
+  notes?: string;
+  internal_notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreatePatientPayerRequest {
+  payer_type: PayerType;
+  payer_name: string;
+  payer_order?: number;
+  payer_id?: string;
+  payer_phone?: string;
+  payer_fax?: string;
+  payer_email?: string;
+  payer_website?: string;
+  payer_address_line1?: string;
+  payer_address_line2?: string;
+  payer_city?: string;
+  payer_state?: string;
+  payer_zip?: string;
+  payer_country?: string;
+  policy_number?: string;
+  group_number?: string;
+  group_name?: string;
+  plan_name?: string;
+  plan_type?: string;
+  subscriber_id?: string;
+  subscriber_name?: string;
+  subscriber_dob?: string;
+  subscriber_relationship?: SubscriberRelationship;
+  medicare_beneficiary_id?: string;
+  medicare_part_a_effective?: string;
+  medicare_part_b_effective?: string;
+  medicare_hospice_election_date?: string;
+  medicare_advantage_plan?: boolean;
+  medicare_advantage_plan_name?: string;
+  medicaid_id?: string;
+  medicaid_state?: string;
+  medicaid_plan_name?: string;
+  is_dual_eligible?: boolean;
+  effective_date?: string;
+  termination_date?: string;
+  authorization_number?: string;
+  authorization_start_date?: string;
+  authorization_end_date?: string;
+  authorization_units?: number;
+  authorization_notes?: string;
+  cob_order?: number;
+  accepts_assignment?: boolean;
+  assignment_of_benefits?: boolean;
+  is_active?: boolean;
+  is_primary?: boolean;
+  notes?: string;
+  internal_notes?: string;
+}
+

@@ -156,6 +156,17 @@ export const vital_signs = pgTable('vital_signs', {
   updated_by_id: bigint('updated_by_id', { mode: 'number' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+
+  // =========================================
+  // SOFT DELETE FIELDS
+  // =========================================
+  deleted_at: timestamp('deleted_at'),
+  deleted_by_id: bigint('deleted_by_id', { mode: 'number' }),
+
+  // =========================================
+  // OPTIMISTIC LOCKING
+  // =========================================
+  version: integer('version').default(1).notNull(),
 }, (table) => ({
   // Performance indexes for common queries
   patientIdx: index('idx_vital_signs_patient_id').on(table.patient_id),
@@ -163,6 +174,7 @@ export const vital_signs = pgTable('vital_signs', {
   noteIdx: index('idx_vital_signs_note_id').on(table.note_id),
   patientTimestampIdx: index('idx_vital_signs_patient_timestamp').on(table.patient_id, table.measurement_timestamp),
   abnormalIdx: index('idx_vital_signs_abnormal').on(table.is_abnormal),
+  deletedAtIdx: index('idx_vital_signs_deleted_at').on(table.deleted_at),
 }));
 
 // Temperature methods
@@ -266,4 +278,52 @@ export const VITAL_SIGN_RANGES = {
   respiratory_rate: { low: 12, high: 20, critical_low: 8, critical_high: 30 },
   spo2: { low: 95, high: 100, critical_low: 88, critical_high: 100 },
   pain_score: { low: 0, high: 3, critical_low: 0, critical_high: 7 }
+};
+
+/**
+ * Clinical validation rules per the feature specification
+ * These are the absolute valid ranges - values outside are rejected
+ */
+export const VITAL_SIGN_VALID_RANGES = {
+  temperature_fahrenheit: { min: 95.0, max: 106.0 },
+  temperature_celsius: { min: 35.0, max: 41.1 },
+  bp_systolic: { min: 70, max: 200 },
+  bp_diastolic: { min: 40, max: 130 },
+  heart_rate: { min: 40, max: 200 },
+  respiratory_rate: { min: 8, max: 40 },
+  oxygen_saturation: { min: 70, max: 100 }
+};
+
+/**
+ * Clinical alert thresholds
+ * Values outside these ranges trigger clinical flags
+ */
+export const VITAL_SIGN_ALERT_THRESHOLDS = {
+  temperature_fahrenheit: { low_alert: 96.8, high_alert: 100.4 },
+  temperature_celsius: { low_alert: 36.0, high_alert: 38.0 },
+  bp_systolic: { low_warn: 90, high_warn: 140 },
+  bp_diastolic: { low_warn: 60, high_warn: 90 },
+  heart_rate: { low_normal: 60, high_normal: 100 },
+  respiratory_rate: { low_normal: 12, high_normal: 20 },
+  oxygen_saturation: { critical: 90, warning: 95 }
+};
+
+/**
+ * Vital signs validation error codes
+ */
+export const VITAL_SIGN_ERROR_CODES = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  TEMPERATURE_OUT_OF_RANGE: 'TEMPERATURE_OUT_OF_RANGE',
+  BP_OUT_OF_RANGE: 'BP_OUT_OF_RANGE',
+  BP_SYSTOLIC_DIASTOLIC_INVALID: 'BP_SYSTOLIC_DIASTOLIC_INVALID',
+  HEART_RATE_OUT_OF_RANGE: 'HEART_RATE_OUT_OF_RANGE',
+  RESPIRATORY_RATE_OUT_OF_RANGE: 'RESPIRATORY_RATE_OUT_OF_RANGE',
+  OXYGEN_SATURATION_OUT_OF_RANGE: 'OXYGEN_SATURATION_OUT_OF_RANGE',
+  RECORDED_TIMESTAMP_FUTURE: 'RECORDED_TIMESTAMP_FUTURE',
+  RECORDED_TIMESTAMP_BEFORE_BIRTH: 'RECORDED_TIMESTAMP_BEFORE_BIRTH',
+  DUPLICATE_MEASUREMENT: 'DUPLICATE_MEASUREMENT',
+  CONCURRENT_MODIFICATION: 'CONCURRENT_MODIFICATION',
+  RECORD_DELETED: 'RECORD_DELETED',
+  RECORD_NOT_FOUND: 'RECORD_NOT_FOUND',
+  AT_LEAST_ONE_MEASUREMENT_REQUIRED: 'AT_LEAST_ONE_MEASUREMENT_REQUIRED'
 };

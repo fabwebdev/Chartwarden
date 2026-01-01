@@ -27,6 +27,8 @@ import EncountersPage from './EncountersPage';
 import DoseSpotPage from './DoseSpotPage';
 import MedListPage from './MedListPage';
 import { MedicationsPage } from './medications';
+import { VitalSignsPage } from './vital-signs';
+import BereavementPage from './BereavementPage';
 import { useEffect, useState } from 'react';
 import TrendsPage from './TrendsPage';
 import HisPage from './his/HisPage';
@@ -128,6 +130,18 @@ const hasPatientInfoAccess = () => {
   return hasPermission('patient_info_secondary_menu') ||
          hasPermission('view:patient') ||
          hasPermission('update:patient');
+};
+
+// Check if user has access to vital signs
+const hasVitalSignsAccess = () => {
+  if (isAdmin) {
+    return true;
+  }
+  return hasPermission('vital_signs_secondary_menu') ||
+         hasPermission('view:vital_signs') ||
+         hasPermission('create:vital_signs') ||
+         hasPermission('VIEW_VITAL_SIGNS') ||
+         hasPermission('CREATE_VITAL_SIGNS');
 };
 
   return (
@@ -253,14 +267,20 @@ const hasPatientInfoAccess = () => {
       {hasPermission('medications_secondary_menu') &&
         <Tab label="Medications" value={`medications/${id}`} iconPosition="start" sx={{ color: tab.startsWith('medications') ? 'primary.main' : 'inherit' }} />
       }
-      {hasPermission('dose_spot_secondary_menu') && 
+      {hasPermission('dose_spot_secondary_menu') &&
         <Tab label="Dose Spot" value={`dose-spot/${id}`} iconPosition="start" sx={{ color: tab.startsWith('dose-spot') ? 'primary.main' : 'inherit' }} />
       }
-      {hasPatientChartsAccess() && 
+      {hasVitalSignsAccess() &&
+        <Tab label="Vital Signs" value={`vital-signs/${id}`} iconPosition="start" sx={{ color: tab.startsWith('vital-signs') ? 'primary.main' : 'inherit' }} />
+      }
+      {hasPatientChartsAccess() &&
         <Tab label="Patient Charts" value={`patient_chart/${id}`} iconPosition="start" sx={{ color: tab.startsWith('patient_chart') ? 'primary.main' : 'inherit' }} />
       }
+      {hasPatientChartsAccess() &&
+        <Tab label="Bereavement" value={`bereavement/${id}`} iconPosition="start" sx={{ color: tab.startsWith('bereavement') ? 'primary.main' : 'inherit' }} />
+      }
 
-      
+
       {/* <Tab label="Generate PDF" value={`generate_pdf`} iconPosition="start"  sx={{ color: tab.startsWith('generate_pdf') ? 'primary.main' : 'inherit' }}/> */}
     </Tabs>
   </Box>
@@ -276,9 +296,12 @@ const hasPatientInfoAccess = () => {
     {tab.startsWith('library') && <LibraryPage />}
     {tab.startsWith('certifications') && <CerticationsPage />}
     {tab.startsWith('med-list') && <MedListPage />}
+    {tab.startsWith('medications') && patientId && <MedicationsPage patientId={patientId} />}
     {tab.startsWith('dose-spot') && <DoseSpotPage />}
+    {tab.startsWith('vital-signs') && patientId && <VitalSignsPage patientId={patientId} />}
     {/* {tab.startsWith('generate_pdf') && <GeneratePdf />} */}
-    {tab.startsWith('patient_chart') && <PatientChartPage id={patientId}/>} 
+    {tab.startsWith('patient_chart') && <PatientChartPage id={patientId}/>}
+    {tab.startsWith('bereavement') && patientId && <BereavementPage patientId={patientId} />} 
   </Box>
 </MainCard>
 

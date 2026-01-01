@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Bereavement Services UI",
   "description": "Bereavement Services Tracking System\n\nBuild a HIPAA-compliant case management system for healthcare organizations to track and coordinate bereavement services for families of deceased patients, ensuring timely follow-up care and comprehensive documentation of grief support activities.\n\nCore Functionality:\n\n1. Case Management\n- Create new bereavement cases linked to deceased patient records\n- Capture essential patient information (name, date of death, service location, cause category)\n- Assign cases to bereavement coordinators or counselors\n- Track case status (active, closed, referred to external services)\n- Advanced search and filtering (by date range, assigned staff, follow-up status, service type)\n\n2. Family Contact Management\n- Store primary contact information with validation (name, relationship to deceased, phone, email, mailing address)\n- Support multiple family member contacts per case\n- Record preferred contact method (phone, email, mail, in-person) and best times to reach\n- Flag special considerations (language preference, cultural/religious needs, accessibility requirements)\n- Maintain contact history with timestamps\n\n3. Follow-Up Tracking System\n- Schedule follow-up actions at standard intervals (72-hour, 30-day, 90-day, 1-year milestones)\n- Create custom follow-up tasks with due dates and assigned staff\n- Log completed interactions with detailed notes\n- Document family needs assessment and emotional state observations\n- Set automated reminders for upcoming and overdue follow-ups\n- Mark tasks complete with required documentation\n- Escalation workflow for families requiring additional support\n\n4. Service and Resource Documentation\n- Record services provided: counseling referrals, support group information, memorial service details, practical assistance\n- Track resources shared: grief literature, community resources, financial assistance programs\n- Document referrals to internal/external providers with follow-up status\n- Maintain timeline view of all services and interactions per family\n\n5. Reporting and Analytics\n- Dashboard view of pending and overdue follow-ups by staff member\n- Generate activity reports (outreach completed, services provided, families served) by date range\n- Identify families requiring escalated support based on missed contacts or expressed needs\n- Export data for quality improvement and compliance audits\n- Metrics tracking: response times, completion rates, family satisfaction\n\n6. HIPAA Compliance and Security\n- Role-based access control (administrators, coordinators, view-only)\n- Audit trail of all data access and modifications (who, when, what changed)\n- Encrypted data storage for all family and patient information\n- Secure authentication with password requirements\n- Session timeout and automatic logout\n- Compliance with minimum necessary standard for data access\n\n7. User Interface Requirements\n- Professional, calming design using muted, respectful color palette\n- Compassionate language in labels and messaging\n- Clear navigation between cases, contacts, and follow-up tasks\n- Dashboard prioritizing urgent items (overdue follow-ups, recent intakes)\n- Mobile-responsive design for staff accessing system remotely\n- Accessibility compliance (WCAG 2.1 AA standards)\n\nSuccess Criteria:\n- System reduces missed follow-ups by providing automated reminders\n- Staff can locate any case and its complete history within 30 seconds\n- All bereavement interactions are documented consistently\n- Audit logs demonstrate HIPAA compliance readiness\n- Interface demonstrates sensitivity appropriate for grief support context\n\nTechnical Considerations:\n- Database schema supports historical tracking and reporting queries\n- Integration points identified for EHR/patient records system if applicable\n- Backup and disaster recovery procedures for sensitive data\n- Data retention policy implementation (how long cases remain active vs archived)",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,7 +11,7 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.250Z",
-  "updatedAt": "2025-12-31T05:55:26.250Z",
+  "updatedAt": "2026-01-01T07:08:59.783Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -19,5 +19,6 @@
   "textFilePaths": [],
   "branchName": "main",
   "planningMode": "skip",
-  "requirePlanApproval": false
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T06:53:19.995Z"
 }

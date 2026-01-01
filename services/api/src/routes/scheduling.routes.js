@@ -15,8 +15,10 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * - On-call schedule management (3 endpoints)
  * - On-call log tracking (2 endpoints)
  * - Visit compliance monitoring (3 endpoints)
+ * - Staff availability (2 endpoints) - NEW
+ * - Strict scheduling (1 endpoint) - NEW
  * - Scheduling conflict tracking (6 endpoints)
- * Total: 27 endpoints
+ * Total: 30 endpoints
  */
 export default async function schedulingRoutes(fastify, options) {
   // ============================================================================
@@ -143,6 +145,29 @@ export default async function schedulingRoutes(fastify, options) {
   fastify.get('/compliance/visits/rn-overdue', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
   }, controller.getOverdueRNVisits);
+
+  // ============================================================================
+  // STAFF AVAILABILITY ROUTES
+  // ============================================================================
+
+  // Get available time slots for a staff member
+  fastify.get('/staff/:staff_id/available-slots', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getAvailableSlots);
+
+  // Check staff availability for a specific time range
+  fastify.get('/staff/:staff_id/check-availability', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.checkStaffAvailability);
+
+  // ============================================================================
+  // STRICT SCHEDULING ROUTE
+  // ============================================================================
+
+  // Schedule a visit with strict conflict prevention (rejects if conflicts exist)
+  fastify.post('/visits/schedule-strict', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.scheduleVisitStrict);
 
   // ============================================================================
   // SCHEDULING CONFLICTS ROUTES

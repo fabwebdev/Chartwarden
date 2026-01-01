@@ -10,7 +10,7 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * Compliance: CMS requires hospices to provide bereavement services for 13 months after patient death
  *
  * Endpoints:
- * - Bereavement case management (4 endpoints)
+ * - Bereavement case management (7 endpoints - CRUD, delete, assign, summary, audit-log)
  * - Contact management (5 endpoints - including grief assessment and consent)
  * - Care plan development (2 endpoints)
  * - Encounter documentation (2 endpoints)
@@ -19,14 +19,15 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * - Follow-up tracking (4 endpoints)
  * - Resource management (3 endpoints)
  * - Memorial services (6 endpoints)
- * Total: 32 endpoints
+ * - Document management (6 endpoints - CRUD, verify)
+ * Total: 41 endpoints
  */
 export default async function bereavementRoutes(fastify, options) {
   // ============================================================================
   // BEREAVEMENT CASES ROUTES
   // ============================================================================
 
-  // Get all bereavement cases
+  // Get all bereavement cases (with enhanced search and filtering)
   fastify.get('/bereavement/cases', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
   }, controller.getAllCases);
@@ -41,10 +42,30 @@ export default async function bereavementRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
   }, controller.getCaseById);
 
-  // Update bereavement case
+  // Update bereavement case (with optimistic locking)
   fastify.patch('/bereavement/cases/:id', {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateCase);
+
+  // Delete bereavement case (soft delete)
+  fastify.delete('/bereavement/cases/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.deleteCase);
+
+  // Assign staff to bereavement case
+  fastify.post('/bereavement/cases/:id/assign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.assignStaff);
+
+  // Get case summary/report
+  fastify.get('/bereavement/cases/:id/summary', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCaseSummary);
+
+  // Get case audit log
+  fastify.get('/bereavement/cases/:id/audit-log', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_AUDIT_LOGS)]
+  }, controller.getCaseAuditLog);
 
   // ============================================================================
   // BEREAVEMENT CONTACTS ROUTES
@@ -226,4 +247,38 @@ export default async function bereavementRoutes(fastify, options) {
   fastify.patch('/bereavement/contacts/:id/consent', {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateContactConsent);
+
+  // ============================================================================
+  // DOCUMENT MANAGEMENT ROUTES
+  // ============================================================================
+
+  // Get documents for a bereavement case
+  fastify.get('/bereavement/cases/:id/documents', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCaseDocuments);
+
+  // Add document to bereavement case
+  fastify.post('/bereavement/cases/:id/documents', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.addDocument);
+
+  // Get document by ID
+  fastify.get('/bereavement/documents/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getDocumentById);
+
+  // Update document metadata
+  fastify.patch('/bereavement/documents/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateDocument);
+
+  // Delete document (soft delete)
+  fastify.delete('/bereavement/documents/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.deleteDocument);
+
+  // Verify document
+  fastify.post('/bereavement/documents/:id/verify', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.verifyDocument);
 }

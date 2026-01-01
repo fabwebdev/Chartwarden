@@ -1,5 +1,8 @@
 import { useState, MouseEvent } from 'react';
 
+// NEXT
+import { useRouter } from 'next/navigation';
+
 // MATERIAL - UI
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -16,33 +19,38 @@ interface Props {
 }
 
 const ProfileTab = ({ handleLogout }: Props) => {
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const handleListItemClick = (event: MouseEvent<HTMLDivElement>, index: number) => {
+
+  const handleListItemClick = (event: MouseEvent<HTMLDivElement>, index: number, path?: string) => {
     setSelectedIndex(index);
+    if (path) {
+      router.push(path);
+    }
   };
 
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <ListItemButton selected={selectedIndex === 0} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 0)}>
+      <ListItemButton selected={selectedIndex === 0} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 0, '/profile')}>
         <ListItemIcon>
           <Edit2 variant="Bulk" size={18} />
         </ListItemIcon>
         <ListItemText primary="Edit Profile" />
       </ListItemButton>
-      <ListItemButton selected={selectedIndex === 1} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 1)}>
+      <ListItemButton selected={selectedIndex === 1} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 1, '/profile')}>
         <ListItemIcon>
           <Profile variant="Bulk" size={18} />
         </ListItemIcon>
         <ListItemText primary="View Profile" />
       </ListItemButton>
 
-      <ListItemButton selected={selectedIndex === 3} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 3)}>
+      <ListItemButton selected={selectedIndex === 3} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 3, '/profile')}>
         <ListItemIcon>
           <Profile2User variant="Bulk" size={18} />
         </ListItemIcon>
         <ListItemText primary="Social Profile" />
       </ListItemButton>
-      <ListItemButton selected={selectedIndex === 4} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 4)}>
+      <ListItemButton selected={selectedIndex === 4} onClick={(event: MouseEvent<HTMLDivElement>) => handleListItemClick(event, 4, '/billing')}>
         <ListItemIcon>
           <Card variant="Bulk" size={18} />
         </ListItemIcon>

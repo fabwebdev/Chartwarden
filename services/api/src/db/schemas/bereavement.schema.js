@@ -662,3 +662,93 @@ export const bereavement_memorial_attendees = pgTable('bereavement_memorial_atte
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+/**
+ * Bereavement Documents Table
+ * Tracks document attachments for bereavement cases (death certificates, service agreements, correspondence)
+ */
+export const bereavement_documents = pgTable('bereavement_documents', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  bereavement_case_id: bigint('bereavement_case_id', { mode: 'number' }).references(() => bereavement_cases.id).notNull(),
+
+  // Document details
+  document_type: varchar('document_type', { length: 100 }).notNull(), // DEATH_CERTIFICATE, SERVICE_AGREEMENT, CORRESPONDENCE, CONSENT_FORM, ASSESSMENT_FORM, OTHER
+  document_name: varchar('document_name', { length: 255 }).notNull(),
+  document_description: text('document_description'),
+
+  // File information
+  file_name: varchar('file_name', { length: 255 }).notNull(),
+  file_path: text('file_path').notNull(), // Storage path or S3 key
+  file_size: integer('file_size'), // Size in bytes
+  file_type: varchar('file_type', { length: 100 }), // MIME type (application/pdf, image/jpeg, etc.)
+
+  // Document metadata
+  document_date: date('document_date'), // Date on the document (e.g., death date on certificate)
+  effective_date: date('effective_date'), // When the document becomes effective
+  expiration_date: date('expiration_date'), // When the document expires (if applicable)
+
+  // Status and workflow
+  document_status: varchar('document_status', { length: 50 }).default('PENDING').notNull(), // PENDING, VERIFIED, APPROVED, REJECTED, ARCHIVED
+  verification_date: date('verification_date'),
+  verified_by_id: text('verified_by_id').references(() => users.id),
+  verification_notes: text('verification_notes'),
+
+  // Related entities
+  bereavement_contact_id: bigint('bereavement_contact_id', { mode: 'number' }).references(() => bereavement_contacts.id),
+
+  // Access control
+  is_confidential: boolean('is_confidential').default(false),
+  access_restrictions: jsonb('access_restrictions'), // JSON object with access rules
+
+  // Version control
+  version: integer('version').default(1),
+  parent_document_id: bigint('parent_document_id', { mode: 'number' }), // For document revisions
+
+  // Notes
+  notes: text('notes'),
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  uploaded_by_id: text('uploaded_by_id').references(() => users.id),
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Bereavement Audit Log Table
+ * Tracks all modifications to bereavement cases for HIPAA compliance
+ */
+export const bereavement_audit_log = pgTable('bereavement_audit_log', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  bereavement_case_id: bigint('bereavement_case_id', { mode: 'number' }).references(() => bereavement_cases.id).notNull(),
+
+  // Action details
+  action_type: varchar('action_type', { length: 50 }).notNull(), // CREATE, UPDATE, DELETE, VIEW, EXPORT, STATUS_CHANGE, ASSIGNMENT_CHANGE
+  entity_type: varchar('entity_type', { length: 100 }).notNull(), // bereavement_cases, bereavement_contacts, bereavement_documents, etc.
+  entity_id: bigint('entity_id', { mode: 'number' }),
+
+  // Change tracking
+  field_name: varchar('field_name', { length: 255 }), // The field that was changed (for UPDATE actions)
+  old_value: text('old_value'), // Previous value (JSON stringified for complex types)
+  new_value: text('new_value'), // New value (JSON stringified for complex types)
+  changes_summary: jsonb('changes_summary'), // JSON object with all changes in a single update
+
+  // User and session info
+  user_id: text('user_id').references(() => users.id).notNull(),
+  user_name: varchar('user_name', { length: 255 }),
+  user_role: varchar('user_role', { length: 100 }),
+  ip_address: varchar('ip_address', { length: 45 }), // IPv6 support
+  user_agent: text('user_agent'),
+  session_id: varchar('session_id', { length: 255 }),
+
+  // Additional context
+  reason: text('reason'), // Reason for the change (optional)
+  additional_context: jsonb('additional_context'), // Any additional context
+
+  // Timestamp
+  action_timestamp: timestamp('action_timestamp').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull()
+});

@@ -51,6 +51,10 @@ export const patients = pgTable('patients', {
   emergency_preparedness_level_id: bigint('emergency_preparedness_level_id', { mode: 'number' }),
   patient_identifier_id: bigint('patient_identifier_id', { mode: 'number' }),
 
+  // Status and soft delete
+  status: varchar('status', { length: 50 }).default('active'), // active, inactive, discharged, deceased
+  deleted_at: timestamp('deleted_at'), // Soft delete timestamp
+
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -61,4 +65,6 @@ export const patients = pgTable('patients', {
   dobIdx: index('idx_patients_date_of_birth').on(table.date_of_birth),
   mbiIdx: index('idx_patients_medicare_beneficiary_id').on(table.medicare_beneficiary_id),
   mrnIdx: index('idx_patients_medical_record_number').on(table.medical_record_number),
+  statusIdx: index('idx_patients_status').on(table.status),
+  deletedAtIdx: index('idx_patients_deleted_at').on(table.deleted_at),
 }));

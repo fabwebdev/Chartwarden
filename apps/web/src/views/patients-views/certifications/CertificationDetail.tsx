@@ -21,8 +21,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
-  Tooltip
+  ListItemText
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -45,7 +44,7 @@ import {
   formatCertificationPeriod,
   getStatusColor,
   getDaysUntilDeadline
-} from '../../../api/certification';
+} from 'api/certification';
 import Swal from 'sweetalert2';
 
 interface CertificationDetailProps {

@@ -36,12 +36,24 @@ export const PERMISSIONS = {
   UPDATE_MEDICATIONS: "update:medications",
   DELETE_MEDICATIONS: "delete:medications",
 
+  // Pain Assessments
+  VIEW_PAIN_ASSESSMENTS: "view:pain_assessments",
+  CREATE_PAIN_ASSESSMENTS: "create:pain_assessments",
+  UPDATE_PAIN_ASSESSMENTS: "update:pain_assessments",
+  DELETE_PAIN_ASSESSMENTS: "delete:pain_assessments",
+
   // Eligibility & Coverage Verification
   ELIGIBILITY_VIEW: "eligibility:view",
   ELIGIBILITY_VERIFY: "eligibility:verify",
   ELIGIBILITY_BATCH_VERIFY: "eligibility:batch-verify",
   ELIGIBILITY_PROCESS: "eligibility:process",
   ELIGIBILITY_MANAGE: "eligibility:manage",
+
+  // Staff/User Management
+  VIEW_USERS: "view:users",
+  CREATE_USER: "create:user",
+  UPDATE_USER: "update:user",
+  DELETE_USER: "delete:user",
 
   // Reports
   VIEW_REPORTS: "view:reports",
@@ -74,12 +86,22 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CREATE_MEDICATIONS,
     PERMISSIONS.UPDATE_MEDICATIONS,
     PERMISSIONS.DELETE_MEDICATIONS,
+    // Pain Assessments - Admin has all permissions
+    PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
+    PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
+    PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
+    PERMISSIONS.DELETE_PAIN_ASSESSMENTS,
     // Eligibility - Admin has all permissions
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
     PERMISSIONS.ELIGIBILITY_BATCH_VERIFY,
     PERMISSIONS.ELIGIBILITY_PROCESS,
     PERMISSIONS.ELIGIBILITY_MANAGE,
+    // Staff/User Management - Admin has all permissions
+    PERMISSIONS.VIEW_USERS,
+    PERMISSIONS.CREATE_USER,
+    PERMISSIONS.UPDATE_USER,
+    PERMISSIONS.DELETE_USER,
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.GENERATE_REPORTS,
     PERMISSIONS.MANAGE_USERS,
@@ -102,9 +124,15 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_MEDICATIONS,
     PERMISSIONS.CREATE_MEDICATIONS,
     PERMISSIONS.UPDATE_MEDICATIONS,
+    // Pain Assessments - Doctors can view, create, and update
+    PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
+    PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
+    PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
     // Eligibility - Doctors can view and verify
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
+    // Staff/User Management - Doctors can view staff
+    PERMISSIONS.VIEW_USERS,
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.GENERATE_REPORTS,
   ],
@@ -119,8 +147,14 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CREATE_VITAL_SIGNS,
     PERMISSIONS.UPDATE_VITAL_SIGNS,
     PERMISSIONS.VIEW_MEDICATIONS,
+    // Pain Assessments - Nurses can view, create, and update
+    PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
+    PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
+    PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
     // Eligibility - Nurses can view coverage
     PERMISSIONS.ELIGIBILITY_VIEW,
+    // Staff/User Management - Nurses can view staff
+    PERMISSIONS.VIEW_USERS,
   ],
 
   [ROLES.PATIENT]: [PERMISSIONS.VIEW_PATIENT],
@@ -130,10 +164,14 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_CLINICAL_NOTES,
     PERMISSIONS.VIEW_VITAL_SIGNS,
     PERMISSIONS.VIEW_MEDICATIONS,
+    // Pain Assessments - Staff can view
+    PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
     // Eligibility - Staff can view and verify (billing staff role)
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
     PERMISSIONS.ELIGIBILITY_BATCH_VERIFY,
+    // Staff/User Management - Staff can view other staff
+    PERMISSIONS.VIEW_USERS,
   ],
 };
 

@@ -1,25 +1,24 @@
-import { 
-  getAllPermissions, 
-  getPermissionList,
-  createPermission, 
-  getPermissionById, 
-  updatePermission, 
-  deletePermission,
+/**
+ * Permission Routes (Legacy)
+ *
+ * NOTE: Most permission routes are now handled by permissionManagement.routes.js
+ * This file only provides backwards-compatible routes that don't conflict.
+ *
+ * @deprecated Use permissionManagement.routes.js for new development
+ */
+import {
+  createPermission,
   permissionValidation
 } from '../controllers/Permission.controller.js';
 import validate from '../middleware/validation.middleware.js';
 
 // Fastify plugin for permission routes
 async function permissionRoutes(fastify, options) {
-  // Permission routes
-  fastify.get('/permissions', getAllPermissions);
-  fastify.get('/permissions/list', getPermissionList);
+  // Legacy permission store route (for backward compatibility)
+  // Main /permissions routes are handled by permissionManagement.routes.js
   fastify.post('/permissions/store', {
     preHandler: [permissionValidation, validate],
   }, createPermission);
-  fastify.get('/permissions/:id', getPermissionById);
-  fastify.put('/permissions/:id', updatePermission);
-  fastify.delete('/permissions/:id', deletePermission);
 }
 
 export default permissionRoutes;

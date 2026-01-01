@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { CreateF2FData, createF2F, Certification } from '../../../api/certification';
+import { CreateF2FData, createF2F, Certification } from 'api/certification';
 
 interface F2FEncounterFormProps {
   open: boolean;

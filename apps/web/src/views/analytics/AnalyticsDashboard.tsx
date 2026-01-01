@@ -40,11 +40,8 @@ import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import PieChartIcon from '@mui/icons-material/PieChart';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -65,7 +62,6 @@ import {
   TimeSeriesResponse,
   ForecastResponse,
   MetricType,
-  TimeInterval,
   getDateRangeForPeriod,
   getStatusColor
 } from 'api/analytics';
@@ -77,7 +73,8 @@ import {
   SimpleDonutChart,
   SimpleGaugeChart,
   BarChartDataPoint,
-  LineChartDataPoint
+  LineChartDataPoint,
+  DonutChartSegment
 } from 'components/charts';
 
 // ==============================|| TAB PANEL ||============================== //
@@ -941,6 +938,33 @@ const AnalyticsDashboard = () => {
                       thickness={40}
                       centerLabel="Claims"
                     />
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Claims Trend Chart */}
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>Claims Trend</Typography>
+                    {claimsTimeSeries?.data_points?.length ? (
+                      <SimpleLineChart
+                        data={claimsTimeSeries.data_points.map(dp => ({
+                          label: dp.period,
+                          value: dp.value,
+                          secondary: dp.moving_avg || undefined
+                        }))}
+                        height={200}
+                        showArea
+                        showDots
+                        primaryLabel="Claims"
+                        secondaryLabel="Moving Avg"
+                      />
+                    ) : (
+                      <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Typography color="text.secondary">No claims trend data available</Typography>
+                      </Box>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>

@@ -12,12 +12,106 @@ import {
   bereavement_resources,
   bereavement_memorial_services,
   bereavement_memorial_attendees,
-  patients
+  bereavement_documents,
+  bereavement_audit_log,
+  patients,
+  users
 } from '../db/schemas/index.js';
-import { eq, and, desc, isNull, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, desc, asc, isNull, gte, lte, sql, or, ilike, count } from 'drizzle-orm';
 import crypto from 'crypto';
 
 import { logger } from '../utils/logger.js';
+
+// Allowed document types
+const ALLOWED_DOCUMENT_TYPES = ['DEATH_CERTIFICATE', 'SERVICE_AGREEMENT', 'CORRESPONDENCE', 'CONSENT_FORM', 'ASSESSMENT_FORM', 'OTHER'];
+
+// Allowed document MIME types (security)
+const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain'
+];
+
+// Maximum file size (10MB)
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+/**
+ * Log audit entry for bereavement operations
+ */
+async function logBereavementAudit(request, action_type, entity_type, entity_id, caseId, changes = null) {
+  try {
+    await db.insert(bereavement_audit_log).values({
+      bereavement_case_id: caseId,
+      action_type,
+      entity_type,
+      entity_id,
+      changes_summary: changes,
+      user_id: request.user?.id || 'system',
+      user_name: request.user?.name || 'System',
+      user_role: request.user?.role || 'unknown',
+      ip_address: request.ip || request.headers?.['x-forwarded-for'] || 'unknown',
+      user_agent: request.headers?.['user-agent'] || 'unknown',
+      session_id: request.session?.id || null
+    });
+  } catch (error) {
+    logger.error('Failed to log bereavement audit:', { error: error.message, action_type, entity_type, entity_id });
+  }
+}
+
+/**
+ * Validate required fields for bereavement case creation
+ */
+function validateBereavementCase(data) {
+  const errors = [];
+
+  if (!data.patient_id) {
+    errors.push({ field: 'patient_id', message: 'Patient ID is required' });
+  }
+
+  if (!data.date_of_death) {
+    errors.push({ field: 'date_of_death', message: 'Date of death is required' });
+  } else {
+    const deathDate = new Date(data.date_of_death);
+    const today = new Date();
+    if (deathDate > today) {
+      errors.push({ field: 'date_of_death', message: 'Date of death cannot be in the future' });
+    }
+  }
+
+  if (data.case_status && !['ACTIVE', 'COMPLETED', 'CLOSED_EARLY'].includes(data.case_status)) {
+    errors.push({ field: 'case_status', message: 'Invalid case status. Must be ACTIVE, COMPLETED, or CLOSED_EARLY' });
+  }
+
+  if (data.service_level && !['STANDARD', 'ENHANCED', 'HIGH_RISK'].includes(data.service_level)) {
+    errors.push({ field: 'service_level', message: 'Invalid service level. Must be STANDARD, ENHANCED, or HIGH_RISK' });
+  }
+
+  return errors;
+}
+
+/**
+ * Calculate changes between old and new data for audit logging
+ */
+function calculateChanges(oldData, newData) {
+  const changes = {};
+  const excludeFields = ['id', 'createdAt', 'created_by_id'];
+
+  for (const key of Object.keys(newData)) {
+    if (excludeFields.includes(key)) continue;
+    if (JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])) {
+      changes[key] = {
+        old: oldData[key],
+        new: newData[key]
+      };
+    }
+  }
+
+  return Object.keys(changes).length > 0 ? changes : null;
+}
 /**
  * Bereavement Controller
  * Module K - MEDIUM Priority
@@ -39,14 +133,87 @@ class BereavementController {
   // ============================================
 
   /**
-   * Get all bereavement cases
+   * Get all bereavement cases with enhanced search and filtering
    * GET /bereavement/cases
+   *
+   * Query params:
+   * - limit: number (default 50, max 100)
+   * - offset: number (default 0)
+   * - case_status: ACTIVE | COMPLETED | CLOSED_EARLY
+   * - service_level: STANDARD | ENHANCED | HIGH_RISK
+   * - date_from: YYYY-MM-DD (filter by death date from)
+   * - date_to: YYYY-MM-DD (filter by death date to)
+   * - search: string (search by patient name, case number)
+   * - assigned_counselor_id: string (filter by assigned staff)
+   * - sort_by: date_of_death | createdAt | case_status (default: date_of_death)
+   * - sort_order: asc | desc (default: desc)
    */
   async getAllCases(request, reply) {
     try {
-      const { limit = 50, offset = 0, case_status, service_level } = request.query;
+      const {
+        limit = 50,
+        offset = 0,
+        case_status,
+        service_level,
+        date_from,
+        date_to,
+        search,
+        assigned_counselor_id,
+        sort_by = 'date_of_death',
+        sort_order = 'desc'
+      } = request.query;
 
-      let query = db
+      // Cap limit at 100
+      const parsedLimit = Math.min(parseInt(limit) || 50, 100);
+      const parsedOffset = parseInt(offset) || 0;
+
+      // Build base query
+      const filters = [isNull(bereavement_cases.deleted_at)];
+
+      if (case_status) {
+        filters.push(eq(bereavement_cases.case_status, case_status));
+      }
+      if (service_level) {
+        filters.push(eq(bereavement_cases.service_level, service_level));
+      }
+      if (date_from) {
+        filters.push(gte(bereavement_cases.date_of_death, date_from));
+      }
+      if (date_to) {
+        filters.push(lte(bereavement_cases.date_of_death, date_to));
+      }
+      if (assigned_counselor_id) {
+        filters.push(eq(bereavement_cases.assigned_counselor_id, assigned_counselor_id));
+      }
+      if (search) {
+        filters.push(
+          or(
+            ilike(patients.first_name, `%${search}%`),
+            ilike(patients.last_name, `%${search}%`),
+            ilike(patients.medical_record_number, `%${search}%`)
+          )
+        );
+      }
+
+      // Get total count for pagination
+      const countResult = await db
+        .select({ value: count() })
+        .from(bereavement_cases)
+        .leftJoin(patients, eq(bereavement_cases.patient_id, patients.id))
+        .where(and(...filters));
+      const totalCount = countResult[0]?.value || 0;
+
+      // Determine sort order
+      const sortColumn = {
+        date_of_death: bereavement_cases.date_of_death,
+        createdAt: bereavement_cases.createdAt,
+        case_status: bereavement_cases.case_status
+      }[sort_by] || bereavement_cases.date_of_death;
+
+      const orderFn = sort_order === 'asc' ? asc : desc;
+
+      // Execute main query
+      const results = await db
         .select({
           case: bereavement_cases,
           patient: {
@@ -58,38 +225,34 @@ class BereavementController {
         })
         .from(bereavement_cases)
         .leftJoin(patients, eq(bereavement_cases.patient_id, patients.id))
-        .where(isNull(bereavement_cases.deleted_at));
-
-      const filters = [];
-      if (case_status) {
-        filters.push(eq(bereavement_cases.case_status, case_status));
-      }
-      if (service_level) {
-        filters.push(eq(bereavement_cases.service_level, service_level));
-      }
-
-      if (filters.length > 0) {
-        query = query.where(and(...filters));
-      }
-
-      const results = await query
-        .orderBy(desc(bereavement_cases.date_of_death))
-        .limit(parseInt(limit))
-        .offset(parseInt(offset));
+        .where(and(...filters))
+        .orderBy(orderFn(sortColumn))
+        .limit(parsedLimit)
+        .offset(parsedOffset);
 
       reply.code(200);
       return {
+        success: true,
         status: 200,
         data: results,
-        count: results.length
+        count: results.length,
+        total: totalCount,
+        pagination: {
+          limit: parsedLimit,
+          offset: parsedOffset,
+          hasMore: parsedOffset + results.length < totalCount
+        }
       };
     } catch (error) {
       logger.error('Error fetching bereavement cases:', error)
       reply.code(500);
       return {
+        success: false,
         status: 500,
-        message: 'Error fetching bereavement cases',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'Error fetching bereavement cases'
+        }
       };
     }
   }
@@ -102,26 +265,55 @@ class BereavementController {
     try {
       const data = request.body;
 
+      // Validate required fields
+      const validationErrors = validateBereavementCase(data);
+      if (validationErrors.length > 0) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Validation failed',
+            fields: validationErrors
+          }
+        };
+      }
+
+      // Remove immutable fields if provided
+      const { id, createdAt, deleted_at, ...safeData } = data;
+
       // Calculate bereavement period (13 months from date of death)
-      if (data.date_of_death && !data.bereavement_end_date) {
-        const deathDate = new Date(data.date_of_death);
+      if (safeData.date_of_death && !safeData.bereavement_end_date) {
+        const deathDate = new Date(safeData.date_of_death);
         const endDate = new Date(deathDate);
         endDate.setMonth(endDate.getMonth() + 13);
-        data.bereavement_end_date = endDate.toISOString().split('T')[0];
-        data.bereavement_start_date = data.date_of_death;
+        safeData.bereavement_end_date = endDate.toISOString().split('T')[0];
+        safeData.bereavement_start_date = safeData.date_of_death;
       }
 
       const result = await db
         .insert(bereavement_cases)
         .values({
-          ...data,
+          ...safeData,
           created_by_id: request.user?.id,
           updated_by_id: request.user?.id
         })
         .returning();
 
+      // Log audit entry
+      await logBereavementAudit(
+        request,
+        'CREATE',
+        'bereavement_cases',
+        result[0].id,
+        result[0].id,
+        { created: result[0] }
+      );
+
       reply.code(201);
       return {
+        success: true,
         status: 201,
         message: 'Bereavement case created successfully',
         data: result[0]
@@ -130,9 +322,12 @@ class BereavementController {
       logger.error('Error creating bereavement case:', error)
       reply.code(500);
       return {
+        success: false,
         status: 500,
-        message: 'Error creating bereavement case',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'Error creating bereavement case'
+        }
       };
     }
   }
@@ -183,34 +378,102 @@ class BereavementController {
   }
 
   /**
-   * Update bereavement case
+   * Update bereavement case with optimistic locking
    * PATCH /bereavement/cases/:id
+   *
+   * Supports optimistic locking via updatedAt field.
+   * If client provides updatedAt, it will be compared with server value.
+   * If they don't match, a 409 Conflict is returned.
    */
   async updateCase(request, reply) {
     try {
       const { id } = request.params;
       const data = request.body;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      // Fetch existing case for optimistic locking check and audit
+      const existing = await db
+        .select()
+        .from(bereavement_cases)
+        .where(and(
+          eq(bereavement_cases.id, caseId),
+          isNull(bereavement_cases.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Bereavement case not found'
+          }
+        };
+      }
+
+      // Optimistic locking check
+      if (data.updatedAt) {
+        const clientUpdatedAt = new Date(data.updatedAt);
+        const serverUpdatedAt = new Date(existing[0].updatedAt);
+        if (clientUpdatedAt.getTime() !== serverUpdatedAt.getTime()) {
+          reply.code(409);
+          return {
+            success: false,
+            status: 409,
+            error: {
+              code: 'CONCURRENT_MODIFICATION',
+              message: 'This record has been modified by another user. Please refresh and try again.',
+              serverUpdatedAt: serverUpdatedAt.toISOString()
+            }
+          };
+        }
+      }
+
+      // Remove immutable fields
+      const { id: _, createdAt, deleted_at, created_by_id, updatedAt: clientUpdatedAt, ...safeData } = data;
+
+      // Calculate changes for audit
+      const changes = calculateChanges(existing[0], safeData);
 
       const result = await db
         .update(bereavement_cases)
         .set({
-          ...data,
+          ...safeData,
           updated_by_id: request.user?.id,
           updatedAt: new Date()
         })
-        .where(eq(bereavement_cases.id, parseInt(id)))
+        .where(eq(bereavement_cases.id, caseId))
         .returning();
 
-      if (!result[0]) {
-        reply.code(404);
-        return {
-          status: 404,
-          message: 'Bereavement case not found'
-        };
+      // Log audit entry with changes
+      if (changes) {
+        await logBereavementAudit(
+          request,
+          'UPDATE',
+          'bereavement_cases',
+          caseId,
+          caseId,
+          changes
+        );
       }
 
       reply.code(200);
       return {
+        success: true,
         status: 200,
         message: 'Bereavement case updated successfully',
         data: result[0]
@@ -219,9 +482,416 @@ class BereavementController {
       logger.error('Error updating bereavement case:', error)
       reply.code(500);
       return {
+        success: false,
         status: 500,
-        message: 'Error updating bereavement case',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'Error updating bereavement case'
+        }
+      };
+    }
+  }
+
+  /**
+   * Soft delete bereavement case
+   * DELETE /bereavement/cases/:id
+   */
+  async deleteCase(request, reply) {
+    try {
+      const { id } = request.params;
+      const { reason } = request.body || {};
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      // Check if case exists
+      const existing = await db
+        .select()
+        .from(bereavement_cases)
+        .where(and(
+          eq(bereavement_cases.id, caseId),
+          isNull(bereavement_cases.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Bereavement case not found'
+          }
+        };
+      }
+
+      // Perform soft delete
+      const result = await db
+        .update(bereavement_cases)
+        .set({
+          deleted_at: new Date(),
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(bereavement_cases.id, caseId))
+        .returning();
+
+      // Log audit entry
+      await logBereavementAudit(
+        request,
+        'DELETE',
+        'bereavement_cases',
+        caseId,
+        caseId,
+        { reason: reason || 'No reason provided', deleted_at: result[0].deleted_at }
+      );
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        message: 'Bereavement case deleted successfully'
+      };
+    } catch (error) {
+      logger.error('Error deleting bereavement case:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'Error deleting bereavement case'
+        }
+      };
+    }
+  }
+
+  /**
+   * Assign staff member to bereavement case
+   * POST /bereavement/cases/:id/assign
+   */
+  async assignStaff(request, reply) {
+    try {
+      const { id } = request.params;
+      const { assigned_counselor_id } = request.body;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      if (!assigned_counselor_id) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'assigned_counselor_id is required'
+          }
+        };
+      }
+
+      // Verify case exists
+      const existing = await db
+        .select()
+        .from(bereavement_cases)
+        .where(and(
+          eq(bereavement_cases.id, caseId),
+          isNull(bereavement_cases.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Bereavement case not found'
+          }
+        };
+      }
+
+      const previousCounselor = existing[0].assigned_counselor_id;
+
+      const result = await db
+        .update(bereavement_cases)
+        .set({
+          assigned_counselor_id,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(bereavement_cases.id, caseId))
+        .returning();
+
+      // Log audit entry for assignment change
+      await logBereavementAudit(
+        request,
+        'ASSIGNMENT_CHANGE',
+        'bereavement_cases',
+        caseId,
+        caseId,
+        {
+          assigned_counselor_id: {
+            old: previousCounselor,
+            new: assigned_counselor_id
+          }
+        }
+      );
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        message: 'Staff assigned successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error assigning staff:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'ASSIGNMENT_ERROR',
+          message: 'Error assigning staff to case'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get case summary/report
+   * GET /bereavement/cases/:id/summary
+   */
+  async getCaseSummary(request, reply) {
+    try {
+      const { id } = request.params;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      // Get case details
+      const caseResult = await db
+        .select({
+          case: bereavement_cases,
+          patient: patients,
+          counselor: users
+        })
+        .from(bereavement_cases)
+        .leftJoin(patients, eq(bereavement_cases.patient_id, patients.id))
+        .leftJoin(users, eq(bereavement_cases.assigned_counselor_id, users.id))
+        .where(and(
+          eq(bereavement_cases.id, caseId),
+          isNull(bereavement_cases.deleted_at)
+        ))
+        .limit(1);
+
+      if (!caseResult[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Bereavement case not found'
+          }
+        };
+      }
+
+      // Get contacts count
+      const contactsCount = await db
+        .select({ value: count() })
+        .from(bereavement_contacts)
+        .where(and(
+          eq(bereavement_contacts.bereavement_case_id, caseId),
+          isNull(bereavement_contacts.deleted_at)
+        ));
+
+      // Get encounters count
+      const encountersCount = await db
+        .select({ value: count() })
+        .from(bereavement_encounters)
+        .where(and(
+          eq(bereavement_encounters.bereavement_case_id, caseId),
+          isNull(bereavement_encounters.deleted_at)
+        ));
+
+      // Get follow-ups summary
+      const followUpStats = await db
+        .select({
+          status: bereavement_follow_ups.follow_up_status,
+          count: count()
+        })
+        .from(bereavement_follow_ups)
+        .where(and(
+          eq(bereavement_follow_ups.bereavement_case_id, caseId),
+          isNull(bereavement_follow_ups.deleted_at)
+        ))
+        .groupBy(bereavement_follow_ups.follow_up_status);
+
+      // Get documents count
+      const documentsCount = await db
+        .select({ value: count() })
+        .from(bereavement_documents)
+        .where(and(
+          eq(bereavement_documents.bereavement_case_id, caseId),
+          isNull(bereavement_documents.deleted_at)
+        ));
+
+      // Get latest risk assessment
+      const latestRiskAssessment = await db
+        .select()
+        .from(bereavement_risk_assessments)
+        .where(and(
+          eq(bereavement_risk_assessments.bereavement_case_id, caseId),
+          isNull(bereavement_risk_assessments.deleted_at)
+        ))
+        .orderBy(desc(bereavement_risk_assessments.assessment_date))
+        .limit(1);
+
+      // Log audit entry for viewing report
+      await logBereavementAudit(
+        request,
+        'VIEW',
+        'bereavement_case_summary',
+        caseId,
+        caseId
+      );
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        data: {
+          case: caseResult[0].case,
+          patient: caseResult[0].patient,
+          assigned_counselor: caseResult[0].counselor,
+          statistics: {
+            total_contacts: contactsCount[0]?.value || 0,
+            total_encounters: encountersCount[0]?.value || 0,
+            total_documents: documentsCount[0]?.value || 0,
+            follow_ups: followUpStats.reduce((acc, stat) => {
+              acc[stat.status?.toLowerCase() || 'unknown'] = stat.count;
+              return acc;
+            }, {})
+          },
+          latest_risk_assessment: latestRiskAssessment[0] || null,
+          bereavement_progress: {
+            start_date: caseResult[0].case.bereavement_start_date,
+            end_date: caseResult[0].case.bereavement_end_date,
+            days_remaining: Math.max(0, Math.ceil(
+              (new Date(caseResult[0].case.bereavement_end_date) - new Date()) / (1000 * 60 * 60 * 24)
+            ))
+          }
+        }
+      };
+    } catch (error) {
+      logger.error('Error getting case summary:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'SUMMARY_ERROR',
+          message: 'Error generating case summary'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get audit log for a bereavement case
+   * GET /bereavement/cases/:id/audit-log
+   */
+  async getCaseAuditLog(request, reply) {
+    try {
+      const { id } = request.params;
+      const { limit = 50, offset = 0 } = request.query;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      const parsedLimit = Math.min(parseInt(limit) || 50, 100);
+      const parsedOffset = parseInt(offset) || 0;
+
+      const results = await db
+        .select()
+        .from(bereavement_audit_log)
+        .where(eq(bereavement_audit_log.bereavement_case_id, caseId))
+        .orderBy(desc(bereavement_audit_log.action_timestamp))
+        .limit(parsedLimit)
+        .offset(parsedOffset);
+
+      const totalCount = await db
+        .select({ value: count() })
+        .from(bereavement_audit_log)
+        .where(eq(bereavement_audit_log.bereavement_case_id, caseId));
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        data: results,
+        count: results.length,
+        total: totalCount[0]?.value || 0,
+        pagination: {
+          limit: parsedLimit,
+          offset: parsedOffset,
+          hasMore: parsedOffset + results.length < (totalCount[0]?.value || 0)
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching audit log:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'AUDIT_LOG_ERROR',
+          message: 'Error fetching audit log'
+        }
       };
     }
   }
@@ -1480,6 +2150,574 @@ class BereavementController {
         status: 500,
         message: 'Error updating consent',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // DOCUMENT MANAGEMENT
+  // ============================================
+
+  /**
+   * Get documents for a bereavement case
+   * GET /bereavement/cases/:id/documents
+   */
+  async getCaseDocuments(request, reply) {
+    try {
+      const { id } = request.params;
+      const { document_type, document_status, limit = 50, offset = 0 } = request.query;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      const parsedLimit = Math.min(parseInt(limit) || 50, 100);
+      const parsedOffset = parseInt(offset) || 0;
+
+      const filters = [
+        eq(bereavement_documents.bereavement_case_id, caseId),
+        isNull(bereavement_documents.deleted_at)
+      ];
+
+      if (document_type) {
+        filters.push(eq(bereavement_documents.document_type, document_type));
+      }
+      if (document_status) {
+        filters.push(eq(bereavement_documents.document_status, document_status));
+      }
+
+      const results = await db
+        .select()
+        .from(bereavement_documents)
+        .where(and(...filters))
+        .orderBy(desc(bereavement_documents.createdAt))
+        .limit(parsedLimit)
+        .offset(parsedOffset);
+
+      const totalCount = await db
+        .select({ value: count() })
+        .from(bereavement_documents)
+        .where(and(...filters));
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        data: results,
+        count: results.length,
+        total: totalCount[0]?.value || 0,
+        pagination: {
+          limit: parsedLimit,
+          offset: parsedOffset,
+          hasMore: parsedOffset + results.length < (totalCount[0]?.value || 0)
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching documents:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'Error fetching documents'
+        }
+      };
+    }
+  }
+
+  /**
+   * Add document to bereavement case
+   * POST /bereavement/cases/:id/documents
+   *
+   * Note: This endpoint records document metadata. File upload should be handled
+   * separately via a file upload service that returns the file_path.
+   */
+  async addDocument(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+      const caseId = parseInt(id);
+
+      if (isNaN(caseId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid case ID provided'
+          }
+        };
+      }
+
+      // Validate required fields
+      const errors = [];
+      if (!data.document_type) {
+        errors.push({ field: 'document_type', message: 'Document type is required' });
+      } else if (!ALLOWED_DOCUMENT_TYPES.includes(data.document_type)) {
+        errors.push({ field: 'document_type', message: `Invalid document type. Must be one of: ${ALLOWED_DOCUMENT_TYPES.join(', ')}` });
+      }
+      if (!data.document_name) {
+        errors.push({ field: 'document_name', message: 'Document name is required' });
+      }
+      if (!data.file_name) {
+        errors.push({ field: 'file_name', message: 'File name is required' });
+      }
+      if (!data.file_path) {
+        errors.push({ field: 'file_path', message: 'File path is required' });
+      }
+
+      // Validate file type if provided
+      if (data.file_type && !ALLOWED_MIME_TYPES.includes(data.file_type)) {
+        errors.push({ field: 'file_type', message: `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}` });
+      }
+
+      // Validate file size if provided
+      if (data.file_size && data.file_size > MAX_FILE_SIZE) {
+        errors.push({ field: 'file_size', message: `File size exceeds maximum allowed (${MAX_FILE_SIZE / 1024 / 1024}MB)` });
+      }
+
+      if (errors.length > 0) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Validation failed',
+            fields: errors
+          }
+        };
+      }
+
+      // Verify case exists
+      const existingCase = await db
+        .select()
+        .from(bereavement_cases)
+        .where(and(
+          eq(bereavement_cases.id, caseId),
+          isNull(bereavement_cases.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existingCase[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Bereavement case not found'
+          }
+        };
+      }
+
+      const result = await db
+        .insert(bereavement_documents)
+        .values({
+          ...data,
+          bereavement_case_id: caseId,
+          uploaded_by_id: request.user?.id,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      // Log audit entry
+      await logBereavementAudit(
+        request,
+        'CREATE',
+        'bereavement_documents',
+        result[0].id,
+        caseId,
+        { document_type: data.document_type, document_name: data.document_name }
+      );
+
+      reply.code(201);
+      return {
+        success: true,
+        status: 201,
+        message: 'Document added successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error adding document:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'CREATE_ERROR',
+          message: 'Error adding document'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get document by ID
+   * GET /bereavement/documents/:id
+   */
+  async getDocumentById(request, reply) {
+    try {
+      const { id } = request.params;
+      const docId = parseInt(id);
+
+      if (isNaN(docId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid document ID provided'
+          }
+        };
+      }
+
+      const result = await db
+        .select()
+        .from(bereavement_documents)
+        .where(and(
+          eq(bereavement_documents.id, docId),
+          isNull(bereavement_documents.deleted_at)
+        ))
+        .limit(1);
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Document not found'
+          }
+        };
+      }
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error fetching document:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'FETCH_ERROR',
+          message: 'Error fetching document'
+        }
+      };
+    }
+  }
+
+  /**
+   * Update document metadata
+   * PATCH /bereavement/documents/:id
+   */
+  async updateDocument(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+      const docId = parseInt(id);
+
+      if (isNaN(docId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid document ID provided'
+          }
+        };
+      }
+
+      // Fetch existing document
+      const existing = await db
+        .select()
+        .from(bereavement_documents)
+        .where(and(
+          eq(bereavement_documents.id, docId),
+          isNull(bereavement_documents.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Document not found'
+          }
+        };
+      }
+
+      // Remove immutable fields
+      const { id: _, bereavement_case_id, createdAt, deleted_at, uploaded_by_id, created_by_id, ...safeData } = data;
+
+      // Validate document type if being changed
+      if (safeData.document_type && !ALLOWED_DOCUMENT_TYPES.includes(safeData.document_type)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: `Invalid document type. Must be one of: ${ALLOWED_DOCUMENT_TYPES.join(', ')}`
+          }
+        };
+      }
+
+      const changes = calculateChanges(existing[0], safeData);
+
+      const result = await db
+        .update(bereavement_documents)
+        .set({
+          ...safeData,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(bereavement_documents.id, docId))
+        .returning();
+
+      // Log audit entry
+      if (changes) {
+        await logBereavementAudit(
+          request,
+          'UPDATE',
+          'bereavement_documents',
+          docId,
+          existing[0].bereavement_case_id,
+          changes
+        );
+      }
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        message: 'Document updated successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating document:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'UPDATE_ERROR',
+          message: 'Error updating document'
+        }
+      };
+    }
+  }
+
+  /**
+   * Delete document (soft delete)
+   * DELETE /bereavement/documents/:id
+   */
+  async deleteDocument(request, reply) {
+    try {
+      const { id } = request.params;
+      const { reason } = request.body || {};
+      const docId = parseInt(id);
+
+      if (isNaN(docId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid document ID provided'
+          }
+        };
+      }
+
+      // Fetch existing document
+      const existing = await db
+        .select()
+        .from(bereavement_documents)
+        .where(and(
+          eq(bereavement_documents.id, docId),
+          isNull(bereavement_documents.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Document not found'
+          }
+        };
+      }
+
+      const result = await db
+        .update(bereavement_documents)
+        .set({
+          deleted_at: new Date(),
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(bereavement_documents.id, docId))
+        .returning();
+
+      // Log audit entry
+      await logBereavementAudit(
+        request,
+        'DELETE',
+        'bereavement_documents',
+        docId,
+        existing[0].bereavement_case_id,
+        { reason: reason || 'No reason provided', document_name: existing[0].document_name }
+      );
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        message: 'Document deleted successfully'
+      };
+    } catch (error) {
+      logger.error('Error deleting document:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'DELETE_ERROR',
+          message: 'Error deleting document'
+        }
+      };
+    }
+  }
+
+  /**
+   * Verify document
+   * POST /bereavement/documents/:id/verify
+   */
+  async verifyDocument(request, reply) {
+    try {
+      const { id } = request.params;
+      const { verification_notes, document_status = 'VERIFIED' } = request.body || {};
+      const docId = parseInt(id);
+
+      if (isNaN(docId)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'INVALID_ID',
+            message: 'Invalid document ID provided'
+          }
+        };
+      }
+
+      const validStatuses = ['VERIFIED', 'APPROVED', 'REJECTED'];
+      if (!validStatuses.includes(document_status)) {
+        reply.code(400);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+          }
+        };
+      }
+
+      // Fetch existing document
+      const existing = await db
+        .select()
+        .from(bereavement_documents)
+        .where(and(
+          eq(bereavement_documents.id, docId),
+          isNull(bereavement_documents.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          status: 404,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Document not found'
+          }
+        };
+      }
+
+      const result = await db
+        .update(bereavement_documents)
+        .set({
+          document_status,
+          verification_date: new Date().toISOString().split('T')[0],
+          verified_by_id: request.user?.id,
+          verification_notes,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(bereavement_documents.id, docId))
+        .returning();
+
+      // Log audit entry
+      await logBereavementAudit(
+        request,
+        'STATUS_CHANGE',
+        'bereavement_documents',
+        docId,
+        existing[0].bereavement_case_id,
+        {
+          document_status: {
+            old: existing[0].document_status,
+            new: document_status
+          },
+          verification_notes
+        }
+      );
+
+      reply.code(200);
+      return {
+        success: true,
+        status: 200,
+        message: `Document ${document_status.toLowerCase()} successfully`,
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error verifying document:', error)
+      reply.code(500);
+      return {
+        success: false,
+        status: 500,
+        error: {
+          code: 'VERIFY_ERROR',
+          message: 'Error verifying document'
+        }
       };
     }
   }
