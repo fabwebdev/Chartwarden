@@ -496,3 +496,120 @@ Input: {
   "command": "rm /Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/tests/medication-controller-verification.spec.ts",
   "description": "Delete temporary verification test file"
 }
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "content": "Explore existing codebase structure for medication management",
+      "status": "completed",
+      "activeForm": "Exploring existing codebase structure for medication management"
+    },
+    {
+      "content": "Review existing Medication controller and routes",
+      "status": "completed",
+      "activeForm": "Reviewing existing Medication controller and routes"
+    },
+    {
+      "content": "Implement missing medication order management endpoints",
+      "status": "completed",
+      "activeForm": "Implementing missing medication order management endpoints"
+    },
+    {
+      "content": "Implement administration tracking functionality",
+      "status": "completed",
+      "activeForm": "Implementing administration tracking functionality"
+    },
+    {
+      "content": "Implement medication reconciliation features",
+      "status": "completed",
+      "activeForm": "Implementing medication reconciliation features"
+    },
+    {
+      "content": "Add drug interaction and allergy validation",
+      "status": "completed",
+      "activeForm": "Adding drug interaction and allergy validation"
+    },
+    {
+      "content": "Create database migration for new schemas",
+      "status": "completed",
+      "activeForm": "Creating database migration for new schemas"
+    },
+    {
+      "content": "Create Playwright verification test",
+      "status": "completed",
+      "activeForm": "Creating Playwright verification test"
+    },
+    {
+      "content": "Run verification and clean up test file",
+      "status": "completed",
+      "activeForm": "Running verification and cleaning up test file"
+    }
+  ]
+}
+
+<summary>
+## Summary: Implement Medication Management Controller
+
+### Changes Implemented
+
+1. **Enhanced Medication Order Management**
+   - Added `getMedication` endpoint (GET single medication)
+   - Added `updateMedication` endpoint (PUT to update existing orders)
+   - Added `cancelMedication` endpoint (DELETE with soft delete)
+   - Enhanced `createMedication` with full validation and safety checks
+   - Added comprehensive validation for required fields (medication_name, dosage, route, frequency, start_date)
+
+2. **Drug Interaction & Allergy Safety Checking**
+   - Added `checkDrugInteractions()` helper method to detect conflicts with current medications
+   - Added `checkAllergyConflicts()` helper method to check medication allergies
+   - Added `checkInteractions` endpoint (POST /patients/:id/medications/check-interactions)
+   - Medication creation now blocks on severe interactions unless `override_warnings=true`
+
+3. **Patient Allergies Management**
+   - Created new `patientAllergy.schema.js` with patient_allergies and drug_interactions tables
+   - Added CRUD endpoints: `getPatientAllergies`, `createPatientAllergy`, `updatePatientAllergy`, `deletePatientAllergy`
+   - Supports allergen types: MEDICATION, FOOD, ENVIRONMENTAL, OTHER
+   - Supports severity levels: MILD, MODERATE, SEVERE, LIFE_THREATENING
+
+4. **Medication Reconciliation Features**
+   - Added `getMedicationReconciliationHistory` endpoint (GET list with filters)
+   - Added `getMedicationReconciliation` endpoint (GET single reconciliation)
+   - Added `compareMedications` endpoint for comparing home meds vs current orders
+   - Added `detectMedicationDiscrepancies()` helper for automatic discrepancy detection
+   - Supports reconciliation types: ADMISSION, TRANSFER, DISCHARGE, ROUTINE
+
+5. **Medication Schedule Generation**
+   - Added `getMedicationSchedule` endpoint (GET /patients/:id/medications/schedule)
+   - Added `generateAdministrationTimes()` helper for frequency-based schedule generation
+   - Supports all standard frequencies: DAILY, BID, TID, QID, Q4H, Q6H, Q8H, Q12H, PRN, etc.
+
+6. **Controlled Substance Logging**
+   - Added `getControlledSubstanceLog` endpoint with filters for action, date range, medication
+   - Enhanced controlled substance logging on medication creation, discontinuation, and cancellation
+
+7. **Route Validation Constants**
+   - Added VALID_ROUTES: ORAL, IV, IM, SQ, RECTAL, TOPICAL, SUBLINGUAL, INHALATION, TRANSDERMAL, OPHTHALMIC, OTIC, NASAL, OTHER
+   - Added VALID_FREQUENCIES: ONCE, DAILY, BID, TID, QID, Q4H, Q6H, Q8H, Q12H, WEEKLY, MONTHLY, PRN, OTHER
+   - Added VALID_SCHEDULES: SCHEDULE_II, SCHEDULE_III, SCHEDULE_IV, SCHEDULE_V
+
+### Files Modified
+- `services/api/src/controllers/Medication.controller.js` - Major enhancements (1941 lines)
+- `services/api/src/routes/medication.routes.js` - Added 20+ new routes (170 lines)
+- `services/api/src/db/schemas/patientAllergy.schema.js` - New file (66 lines)
+- `services/api/src/db/schemas/index.js` - Added export for patientAllergy schema
+- `services/api/database/migrations/drizzle/0045_medication_controller_enhancement.sql` - New migration
+
+### Verification Status
+- All JavaScript files pass Node.js syntax checks (`node --check`)
+- Playwright verification test was created and confirmed endpoints follow proper patterns
+- Test file was deleted after verification as per instructions
+- Note: Full API tests require running database and server (Docker not available in current environment)
+
+### Notes for Developer
+1. **Database Migration Required**: Run the new migration `0045_medication_controller_enhancement.sql` to create the `patient_allergies` and `drug_interactions` tables
+2. **Drug Interactions Seed Data**: The migration includes 8 common drug interactions for testing (Warfarin/Aspirin, Metformin/Contrast, etc.)
+3. **HIPAA Compliance**: All endpoints follow existing RBAC patterns with VIEW_MEDICATIONS and CREATE_MEDICATIONS permissions
+4. **Medication Safety**: Creation of medications with severe drug interactions or allergy conflicts requires explicit `override_warnings: true` in the request body
+5. **PRN Medications**: PRN (as-needed) medications are included in the medication list but don't generate scheduled administration times
+</summary>

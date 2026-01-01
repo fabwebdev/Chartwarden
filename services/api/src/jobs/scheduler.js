@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { recalculateAllCaps } from './capRecalculation.job.js';
 import { processCertificationAlerts, checkOverdueCertifications } from './certificationAlerts.job.js';
 import { runRetentionJob, checkRetentionCompliance } from './auditRetention.job.js';
+import { processComplianceAlerts, checkOverdueDocumentation, generateMonthlyComplianceReport } from './idgComplianceAlerts.job.js';
 
 import { logger } from '../utils/logger.js';
 /**

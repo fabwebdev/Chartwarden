@@ -391,3 +391,51 @@ Input: {
   "old_string": "import controller from '../controllers/Certification.controller.js';\nimport { PERMISSIONS } from '../config/rbac.js';\nimport { requireAnyPermission } from '../middleware/rbac.middleware.js';\n\n/**\n * Certification Routes\n * Medicare certification periods, Face-to-Face encounters, and physician orders\n * CRITICAL: Required for Medicare reimbursement\n */\nexport default async function certificationRoutes(fastify, options) {\n  // ============================================================================\n  // CERTIFICATION ROUTES\n  // ============================================================================\n\n  // Get patient certifications\n  fastify.get('/patients/:id/certifications', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientCertifications);\n\n  // Create certification\n  fastify.post('/patients/:id/certifications', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createCertification);\n\n  // Sign certification\n  fastify.post('/certifications/:id/sign', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.signCertification);\n\n  // Complete certification (with timeliness tracking)\n  fastify.post('/certifications/:id/complete', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.completeCertification);\n\n  // Get pending certifications\n  fastify.get('/certifications/pending', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPendingCertifications);\n\n  // Get certifications due within 30 days\n  fastify.get('/certifications/due', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getCertificationsDue);\n\n  // Get overdue certifications\n  fastify.get('/certifications/overdue', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getCertificationsOverdue);\n\n  // ============================================================================\n  // FACE-TO-FACE ENCOUNTER ROUTES\n  // ============================================================================\n\n  // Get patient F2F encounters\n  fastify.get('/patients/:id/f2f', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientF2F);\n\n  // Create F2F encounter\n  fastify.post('/patients/:id/f2f', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createF2F);\n\n  // Attest F2F encounter\n  fastify.post('/f2f/:id/attestation', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.attestF2F);\n\n  // ============================================================================\n  // ORDER ROUTES\n  // ============================================================================\n\n  // Get patient orders\n  fastify.get('/patients/:id/orders', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientOrders);\n\n  // Create order\n  fastify.post('/patients/:id/orders', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createOrder);\n\n  // Sign order\n  fastify.post('/orders/:id/sign', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.signOrder);\n}",
   "new_string": "import controller from '../controllers/Certification.controller.js';\nimport { PERMISSIONS } from '../config/rbac.js';\nimport { requireAnyPermission } from '../middleware/rbac.middleware.js';\n\n/**\n * Certification Routes\n * Medicare certification periods, Face-to-Face encounters, and physician orders\n * CRITICAL: Required for Medicare reimbursement\n *\n * CMS Requirements:\n * - Initial certification within 2 days of start of care\n * - Face-to-Face required from 3rd benefit period onwards\n * - F2F must occur within 90 days before or 30 days after start of care\n */\nexport default async function certificationRoutes(fastify, options) {\n  // ============================================================================\n  // CERTIFICATION ROUTES\n  // ============================================================================\n\n  // Get patient certifications\n  fastify.get('/patients/:id/certifications', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientCertifications.bind(controller));\n\n  // Create certification\n  fastify.post('/patients/:id/certifications', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createCertification.bind(controller));\n\n  // Get single certification by ID\n  fastify.get('/certifications/:id', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getCertificationById.bind(controller));\n\n  // Update certification (only unsigned)\n  fastify.patch('/certifications/:id', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.updateCertification.bind(controller));\n\n  // Sign certification\n  fastify.post('/certifications/:id/sign', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.signCertification.bind(controller));\n\n  // Complete certification (with timeliness tracking)\n  fastify.post('/certifications/:id/complete', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.completeCertification.bind(controller));\n\n  // Revoke certification\n  fastify.post('/certifications/:id/revoke', {\n    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]\n  }, controller.revokeCertification.bind(controller));\n\n  // Validate F2F for certification\n  fastify.post('/certifications/:id/validate-f2f', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.validateF2FForCertification.bind(controller));\n\n  // Get pending certifications\n  fastify.get('/certifications/pending', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPendingCertifications.bind(controller));\n\n  // Get certifications due within 30 days\n  fastify.get('/certifications/due', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getCertificationsDue.bind(controller));\n\n  // Get overdue certifications\n  fastify.get('/certifications/overdue', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getCertificationsOverdue.bind(controller));\n\n  // ============================================================================\n  // FACE-TO-FACE ENCOUNTER ROUTES\n  // ============================================================================\n\n  // Get patient F2F encounters\n  fastify.get('/patients/:id/f2f', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientF2F.bind(controller));\n\n  // Create F2F encounter\n  fastify.post('/patients/:id/f2f', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createF2F.bind(controller));\n\n  // Attest F2F encounter\n  fastify.post('/f2f/:id/attestation', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.attestF2F.bind(controller));\n\n  // ============================================================================\n  // ORDER ROUTES\n  // ============================================================================\n\n  // Get patient orders\n  fastify.get('/patients/:id/orders', {\n    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]\n  }, controller.getPatientOrders.bind(controller));\n\n  // Create order\n  fastify.post('/patients/:id/orders', {\n    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]\n  }, controller.createOrder.bind(controller));\n\n  // Sign order\n  fastify.post('/orders/:id/sign', {\n    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]\n  }, controller.signOrder.bind(controller));\n}"
 }
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "content": "Explore codebase to understand existing patterns",
+      "status": "completed",
+      "activeForm": "Exploring codebase structure"
+    },
+    {
+      "content": "Plan certification controller implementation",
+      "status": "completed",
+      "activeForm": "Planning implementation approach"
+    },
+    {
+      "content": "Create certification schema",
+      "status": "completed",
+      "activeForm": "Creating certification schema"
+    },
+    {
+      "content": "Enhance certification controller with F2F validation",
+      "status": "completed",
+      "activeForm": "Enhancing certification controller"
+    },
+    {
+      "content": "Add audit logging to controller",
+      "status": "completed",
+      "activeForm": "Adding audit logging"
+    },
+    {
+      "content": "Add validation for physician credentials",
+      "status": "completed",
+      "activeForm": "Adding physician validation"
+    },
+    {
+      "content": "Handle edge cases (expiration, duplicates, etc.)",
+      "status": "completed",
+      "activeForm": "Handling edge cases"
+    },
+    {
+      "content": "Verify with Playwright test",
+      "status": "in_progress",
+      "activeForm": "Verifying with Playwright test"
+    }
+  ]
+}
+
+Now let me create a Playwright verification test to verify the implementation works correctly:
