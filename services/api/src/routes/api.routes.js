@@ -24,8 +24,10 @@ import visitInformationRoutes from "./patient/VisitInformation.routes.js";
 import hisPdfRoutes from "./patient/HisPdf.routes.js";
 import hopeAssessmentRoutes from "./hopeAssessment.routes.js";
 import encounterRoutes from "./encounter.routes.js";
+import nursingNoteRoutes from "./nursingNote.routes.js";
 import carePlanRoutes from "./carePlan.routes.js";
 import idgMeetingRoutes from "./idgMeeting.routes.js";
+import idgMeetingDocumentationRoutes from "./idgMeetingDocumentation.routes.js";
 import certificationRoutes from "./certification.routes.js";
 import medicationRoutes from "./medication.routes.js";
 import billingRoutes from "./billing.routes.js";
@@ -225,8 +227,10 @@ async function apiRoutes(fastify, options) {
   await fastify.register(respiratorySystemAssessmentRoutes); // Respiratory System Assessment - ATS/GOLD/NCCN compliant
 
   await fastify.register(encounterRoutes); // Encounters (no prefix, routes define their own paths)
+  await fastify.register(nursingNoteRoutes); // Nursing Notes REST API (no prefix, routes define their own paths)
   await fastify.register(carePlanRoutes); // Care planning (no prefix, routes define their own paths)
   await fastify.register(idgMeetingRoutes); // IDG meetings (no prefix, routes define their own paths)
+  await fastify.register(idgMeetingDocumentationRoutes); // IDG Documentation with 14-day CMS compliance (42 CFR §418.56)
   await fastify.register(certificationRoutes); // Certifications (no prefix, routes define their own paths)
   await fastify.register(medicationRoutes); // Medications (no prefix, routes define their own paths)
   await fastify.register(billingRoutes); // Billing (no prefix, routes define their own paths)

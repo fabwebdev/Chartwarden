@@ -6,7 +6,7 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * Billing Routes
  * Module G - HIGH Priority
  *
- * Purpose: Claims, payments, NOE, AR aging
+ * Purpose: Claims, payments, NOE, AR aging, invoices, statements
  * Compliance: Revenue cycle critical, CMS billing requirements
  *
  * Endpoints:
@@ -19,6 +19,8 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * - Claim submission history tracking
  * - Claim status history tracking
  * - Claim diagnosis and procedure codes
+ * - Invoice management (create, update, payments)
+ * - Billing statements (generate, list)
  */
 export default async function billingRoutes(fastify, options) {
   // ============================================================================
@@ -75,8 +77,13 @@ export default async function billingRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateClaimAmount);
 
-  // Update claim status with history tracking and workflow validation
+  // Update claim status with history tracking and workflow validation (full update)
   fastify.put('/claims/:id/status', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateClaimStatus);
+
+  // Update claim status (PATCH - partial update per REST specification)
+  fastify.patch('/claims/:id/status', {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateClaimStatus);
 
@@ -180,6 +187,20 @@ export default async function billingRoutes(fastify, options) {
   }, controller.applyPayment);
 
   // ============================================================================
+  // DASHBOARD & ANALYTICS ROUTES
+  // ============================================================================
+
+  // Get billing dashboard with KPIs
+  fastify.get('/billing/dashboard', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getBillingDashboard);
+
+  // Get billing KPIs
+  fastify.get('/billing/kpis', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getBillingKPIs);
+
+  // ============================================================================
   // AR AGING & BILLING PERIOD ROUTES
   // ============================================================================
 
@@ -216,4 +237,57 @@ export default async function billingRoutes(fastify, options) {
   fastify.put('/billing/codes/:id', {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateBillingCode);
+
+  // ============================================================================
+  // INVOICE ROUTES
+  // ============================================================================
+
+  // Get all invoices (with filters)
+  fastify.get('/billing/invoices', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getAllInvoices);
+
+  // Get invoice by ID (with line items and payments)
+  fastify.get('/billing/invoices/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getInvoiceById);
+
+  // Create invoice from approved claims
+  fastify.post('/billing/invoices', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createInvoice);
+
+  // Update invoice
+  fastify.put('/billing/invoices/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateInvoice);
+
+  // Record payment against invoice
+  fastify.post('/billing/invoices/:id/payments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.recordInvoicePayment);
+
+  // Get payment history for an invoice
+  fastify.get('/billing/invoices/:id/payments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getInvoicePayments);
+
+  // ============================================================================
+  // BILLING STATEMENT ROUTES
+  // ============================================================================
+
+  // Get all billing statements (with filters)
+  fastify.get('/billing/statements', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getAllStatements);
+
+  // Get statement by ID (with line items)
+  fastify.get('/billing/statements/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getStatementById);
+
+  // Generate billing statement for a period
+  fastify.post('/billing/statements', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generateStatement);
 }

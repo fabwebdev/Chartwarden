@@ -22,115 +22,16 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
 export default async function idgMeetingDocumentationRoutes(fastify, options) {
 
   // ============================================================================
-  // CORE CRUD ENDPOINTS
+  // STATIC ROUTES (must be registered BEFORE parameterized routes)
   // ============================================================================
 
   /**
    * Create new IDG meeting documentation
    * POST /idg-meetings/documentation
-   *
-   * Required body:
-   * - idg_meeting_id: number (required)
-   * - documentation_content: string (optional, can be added later)
-   * - meeting_summary: string (optional)
-   * - documentation_owner_id: string (optional, defaults to current user)
-   *
-   * Validation:
-   * - Meeting must exist
-   * - Meeting date cannot be in the future
-   * - Cannot create duplicate documentation for the same meeting
-   * - If already past 14-day deadline, documentation is flagged for override
    */
   fastify.post('/idg-meetings/documentation', {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createDocumentation.bind(controller));
-
-  /**
-   * Get documentation by ID
-   * GET /idg-meetings/documentation/:id
-   *
-   * Returns documentation with real-time deadline countdown
-   */
-  fastify.get('/idg-meetings/documentation/:id', {
-    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
-  }, controller.getDocumentation.bind(controller));
-
-  /**
-   * Update documentation (draft save)
-   * PUT /idg-meetings/documentation/:id
-   *
-   * Notes:
-   * - Draft saves are allowed at any time (no deadline enforcement)
-   * - Cannot modify meeting_date after creation
-   * - Cannot update finalized (submitted/approved) documentation
-   * - Each update increments draft_version
-   */
-  fastify.put('/idg-meetings/documentation/:id', {
-    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
-  }, controller.updateDocumentation.bind(controller));
-
-  /**
-   * Delete documentation (soft delete with audit trail)
-   * DELETE /idg-meetings/documentation/:id
-   *
-   * Required body:
-   * - deletion_reason: string (minimum 20 characters)
-   *
-   * Notes:
-   * - Requires administrator role
-   * - Creates immutable audit trail entry
-   * - Cancels pending compliance alerts
-   */
-  fastify.delete('/idg-meetings/documentation/:id', {
-    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
-  }, controller.deleteDocumentation.bind(controller));
-
-  // ============================================================================
-  // SUBMISSION & OVERRIDE ENDPOINTS
-  // ============================================================================
-
-  /**
-   * Submit documentation (final submission with 14-day deadline enforcement)
-   * POST /idg-meetings/documentation/:id/submit
-   *
-   * IMPORTANT: This endpoint enforces the CMS 14-day deadline per 42 CFR §418.56
-   *
-   * Behavior:
-   * - If within deadline: Accepts submission, marks as SUBMITTED
-   * - If past deadline without override: Returns HTTP 422 with CMS regulation reference
-   * - If past deadline with override: Accepts submission, marks as OVERRIDDEN
-   *
-   * Validation:
-   * - Required fields must be complete
-   * - Cannot resubmit already submitted documentation
-   */
-  fastify.post('/idg-meetings/documentation/:id/submit', {
-    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
-  }, controller.submitDocumentation.bind(controller));
-
-  /**
-   * Request late submission override
-   * POST /idg-meetings/documentation/:id/override
-   *
-   * Required body:
-   * - justification: string (minimum 50 characters)
-   *
-   * Authorization:
-   * - Requires supervisor, administrator, director, or compliance_officer role
-   *
-   * Effects:
-   * - Grants override for this documentation
-   * - Flags documentation in compliance reports
-   * - Creates audit trail entry
-   * - Notifies compliance team (when notification service available)
-   */
-  fastify.post('/idg-meetings/documentation/:id/override', {
-    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SETTINGS)] // Admin-level permission
-  }, controller.requestOverride.bind(controller));
-
-  // ============================================================================
-  // PENDING & COMPLIANCE ENDPOINTS
-  // ============================================================================
 
   /**
    * Get all pending documentation with deadline status
@@ -172,6 +73,89 @@ export default async function idgMeetingDocumentationRoutes(fastify, options) {
   fastify.get('/idg-meetings/documentation/compliance-report', {
     preHandler: [requireAnyPermission(PERMISSIONS.GENERATE_REPORTS)]
   }, controller.getComplianceReport.bind(controller));
+
+  // ============================================================================
+  // PARAMETERIZED ROUTES (must be registered AFTER static routes)
+  // ============================================================================
+
+  /**
+   * Get documentation by ID
+   * GET /idg-meetings/documentation/:id
+   *
+   * Returns documentation with real-time deadline countdown
+   */
+  fastify.get('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getDocumentation.bind(controller));
+
+  /**
+   * Update documentation (draft save)
+   * PUT /idg-meetings/documentation/:id
+   *
+   * Notes:
+   * - Draft saves are allowed at any time (no deadline enforcement)
+   * - Cannot modify meeting_date after creation
+   * - Cannot update finalized (submitted/approved) documentation
+   * - Each update increments draft_version
+   */
+  fastify.put('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateDocumentation.bind(controller));
+
+  /**
+   * Delete documentation (soft delete with audit trail)
+   * DELETE /idg-meetings/documentation/:id
+   *
+   * Required body:
+   * - deletion_reason: string (minimum 20 characters)
+   *
+   * Notes:
+   * - Requires administrator role
+   * - Creates immutable audit trail entry
+   * - Cancels pending compliance alerts
+   */
+  fastify.delete('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.deleteDocumentation.bind(controller));
+
+  /**
+   * Submit documentation (final submission with 14-day deadline enforcement)
+   * POST /idg-meetings/documentation/:id/submit
+   *
+   * IMPORTANT: This endpoint enforces the CMS 14-day deadline per 42 CFR §418.56
+   *
+   * Behavior:
+   * - If within deadline: Accepts submission, marks as SUBMITTED
+   * - If past deadline without override: Returns HTTP 422 with CMS regulation reference
+   * - If past deadline with override: Accepts submission, marks as OVERRIDDEN
+   *
+   * Validation:
+   * - Required fields must be complete
+   * - Cannot resubmit already submitted documentation
+   */
+  fastify.post('/idg-meetings/documentation/:id/submit', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.submitDocumentation.bind(controller));
+
+  /**
+   * Request late submission override
+   * POST /idg-meetings/documentation/:id/override
+   *
+   * Required body:
+   * - justification: string (minimum 50 characters)
+   *
+   * Authorization:
+   * - Requires supervisor, administrator, director, or compliance_officer role
+   *
+   * Effects:
+   * - Grants override for this documentation
+   * - Flags documentation in compliance reports
+   * - Creates audit trail entry
+   * - Notifies compliance team (when notification service available)
+   */
+  fastify.post('/idg-meetings/documentation/:id/override', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SETTINGS)] // Admin-level permission
+  }, controller.requestOverride.bind(controller));
 
   /**
    * Get documentation audit trail

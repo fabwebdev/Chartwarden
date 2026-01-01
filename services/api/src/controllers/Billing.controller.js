@@ -14,7 +14,12 @@ import {
   claim_submission_history,
   claim_status_history,
   claim_diagnosis_codes,
-  claim_procedure_codes
+  claim_procedure_codes,
+  invoices,
+  invoice_line_items,
+  invoice_payments,
+  billing_statements,
+  statement_line_items
 } from '../db/schemas/index.js';
 import { eq, and, gte, lte, desc, asc, sql, or, isNull, inArray, like, ilike, count } from 'drizzle-orm';
 
@@ -2378,6 +2383,1248 @@ class BillingController {
   }
 
   // ============================================
+  // INVOICES MANAGEMENT
+  // ============================================
+
+  /**
+   * Get all invoices with optional filters
+   * GET /billing/invoices
+   *
+   * Query Parameters:
+   * - limit: Number of results per page (default: 50)
+   * - offset: Starting offset for pagination (default: 0)
+   * - status: Filter by invoice status
+   * - patient_id: Filter by patient ID
+   * - payer_id: Filter by payer ID
+   * - start_date: Filter by invoice date (>=)
+   * - end_date: Filter by invoice date (<=)
+   * - min_amount: Filter by minimum total_amount
+   * - max_amount: Filter by maximum total_amount
+   * - sort_by: Field to sort by (default: createdAt)
+   * - sort_order: Sort direction (asc/desc, default: desc)
+   */
+  async getAllInvoices(request, reply) {
+    try {
+      const {
+        limit = 50,
+        offset = 0,
+        status,
+        patient_id,
+        payer_id,
+        start_date,
+        end_date,
+        min_amount,
+        max_amount,
+        sort_by = 'createdAt',
+        sort_order = 'desc'
+      } = request.query;
+
+      const filters = [isNull(invoices.deleted_at)];
+
+      if (status) {
+        const statuses = status.split(',').map(s => s.trim());
+        if (statuses.length > 1) {
+          filters.push(inArray(invoices.invoice_status, statuses));
+        } else {
+          filters.push(eq(invoices.invoice_status, status));
+        }
+      }
+      if (patient_id) {
+        filters.push(eq(invoices.patient_id, parseInt(patient_id)));
+      }
+      if (payer_id) {
+        filters.push(eq(invoices.payer_id, parseInt(payer_id)));
+      }
+      if (start_date) {
+        filters.push(gte(invoices.invoice_date, start_date));
+      }
+      if (end_date) {
+        filters.push(lte(invoices.invoice_date, end_date));
+      }
+      if (min_amount) {
+        filters.push(gte(invoices.total_amount, parseInt(min_amount)));
+      }
+      if (max_amount) {
+        filters.push(lte(invoices.total_amount, parseInt(max_amount)));
+      }
+
+      const sortField = invoices[sort_by] || invoices.createdAt;
+      const orderByClause = sort_order === 'asc' ? asc(sortField) : desc(sortField);
+
+      const results = await db
+        .select({
+          invoice: invoices,
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name,
+            medical_record_number: patients.medical_record_number
+          },
+          payer: {
+            id: payers.id,
+            payer_name: payers.payer_name,
+            payer_type: payers.payer_type
+          }
+        })
+        .from(invoices)
+        .leftJoin(patients, eq(invoices.patient_id, patients.id))
+        .leftJoin(payers, eq(invoices.payer_id, payers.id))
+        .where(and(...filters))
+        .orderBy(orderByClause)
+        .limit(parseInt(limit))
+        .offset(parseInt(offset));
+
+      const countResult = await db
+        .select({ total: count() })
+        .from(invoices)
+        .where(and(...filters));
+
+      const total = Number(countResult[0]?.total || 0);
+
+      reply.code(200);
+      return {
+        success: true,
+        data: results,
+        count: results.length,
+        total: total,
+        pagination: {
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          total: total,
+          pages: Math.ceil(total / parseInt(limit)),
+          currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching invoices:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching invoices'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get invoice by ID with line items
+   * GET /billing/invoices/:id
+   */
+  async getInvoiceById(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const invoiceResult = await db
+        .select({
+          invoice: invoices,
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name,
+            medical_record_number: patients.medical_record_number
+          },
+          payer: payers
+        })
+        .from(invoices)
+        .leftJoin(patients, eq(invoices.patient_id, patients.id))
+        .leftJoin(payers, eq(invoices.payer_id, payers.id))
+        .where(and(
+          eq(invoices.id, parseInt(id)),
+          isNull(invoices.deleted_at)
+        ))
+        .limit(1);
+
+      if (!invoiceResult[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Invoice not found'
+          }
+        };
+      }
+
+      // Get line items
+      const lineItems = await db
+        .select()
+        .from(invoice_line_items)
+        .where(eq(invoice_line_items.invoice_id, parseInt(id)))
+        .orderBy(invoice_line_items.line_number);
+
+      // Get payments for this invoice
+      const invoicePaymentsList = await db
+        .select()
+        .from(invoice_payments)
+        .where(eq(invoice_payments.invoice_id, parseInt(id)))
+        .orderBy(desc(invoice_payments.payment_date));
+
+      reply.code(200);
+      return {
+        success: true,
+        data: {
+          ...invoiceResult[0],
+          line_items: lineItems,
+          payments: invoicePaymentsList
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching invoice:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching invoice'
+        }
+      };
+    }
+  }
+
+  /**
+   * Create invoice from approved claims
+   * POST /billing/invoices
+   *
+   * Body:
+   * - claim_ids: Array of claim IDs to include (optional)
+   * - patient_id: Patient ID (required if no claim_ids)
+   * - payer_id: Payer ID (optional)
+   * - line_items: Manual line items (optional)
+   * - payment_terms: Payment terms (default: NET_30)
+   * - notes: Invoice notes
+   */
+  async createInvoice(request, reply) {
+    try {
+      const data = request.body;
+
+      // Validate required fields
+      if (!data.claim_ids?.length && !data.patient_id && !data.line_items?.length) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Either claim_ids, patient_id with line_items, or manual line_items are required'
+          }
+        };
+      }
+
+      // Generate invoice number
+      const invoiceNumber = await this.generateInvoiceNumber();
+
+      // Calculate due date based on payment terms
+      const invoiceDate = new Date();
+      let dueDate = new Date(invoiceDate);
+      switch (data.payment_terms) {
+        case 'NET_45':
+          dueDate.setDate(dueDate.getDate() + 45);
+          break;
+        case 'NET_60':
+          dueDate.setDate(dueDate.getDate() + 60);
+          break;
+        case 'DUE_ON_RECEIPT':
+          // Due date is today
+          break;
+        case 'NET_30':
+        default:
+          dueDate.setDate(dueDate.getDate() + 30);
+          break;
+      }
+
+      let patientId = data.patient_id;
+      let payerId = data.payer_id;
+      let lineItemsToCreate = [];
+      let subtotal = 0;
+
+      // If claim_ids provided, generate line items from claims
+      if (data.claim_ids?.length) {
+        const claimsData = await db
+          .select()
+          .from(claims)
+          .where(and(
+            inArray(claims.id, data.claim_ids.map(id => parseInt(id))),
+            eq(claims.claim_status, 'ACCEPTED'),
+            isNull(claims.deleted_at)
+          ));
+
+        if (claimsData.length === 0) {
+          reply.code(400);
+          return {
+            success: false,
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'No approved claims found with the provided IDs'
+            }
+          };
+        }
+
+        // Use the first claim's patient and payer if not specified
+        if (!patientId) patientId = claimsData[0].patient_id;
+        if (!payerId) payerId = claimsData[0].payer_id;
+
+        // Create line items from claims
+        claimsData.forEach((claim, index) => {
+          const claimAmount = claim.total_charges || 0;
+          subtotal += claimAmount;
+          lineItemsToCreate.push({
+            line_number: index + 1,
+            claim_id: claim.id,
+            description: `Claim ${claim.claim_number} - Service Period: ${claim.service_start_date} to ${claim.service_end_date}`,
+            service_date: claim.service_start_date,
+            quantity: 1,
+            unit_price: claimAmount,
+            line_total: claimAmount,
+            net_amount: claimAmount
+          });
+        });
+      }
+
+      // Add manual line items if provided
+      if (data.line_items?.length) {
+        const startLineNumber = lineItemsToCreate.length + 1;
+        data.line_items.forEach((item, index) => {
+          const lineTotal = (item.quantity || 1) * (item.unit_price || 0);
+          const discountAmt = item.discount_amount || 0;
+          const adjustmentAmt = item.adjustment_amount || 0;
+          const netAmount = lineTotal - discountAmt - adjustmentAmt;
+          subtotal += netAmount;
+
+          lineItemsToCreate.push({
+            line_number: startLineNumber + index,
+            description: item.description,
+            service_date: item.service_date,
+            revenue_code: item.revenue_code,
+            cpt_code: item.cpt_code,
+            hcpcs_code: item.hcpcs_code,
+            quantity: item.quantity || 1,
+            unit_price: item.unit_price || 0,
+            line_total: lineTotal,
+            discount_percent: item.discount_percent || 0,
+            discount_amount: discountAmt,
+            adjustment_amount: adjustmentAmt,
+            adjustment_reason: item.adjustment_reason,
+            net_amount: netAmount
+          });
+        });
+      }
+
+      // Calculate totals
+      const taxAmount = data.tax_amount || 0;
+      const discountAmount = data.discount_amount || 0;
+      const totalAmount = subtotal + taxAmount - discountAmount;
+
+      // Create invoice
+      const invoiceResult = await db
+        .insert(invoices)
+        .values({
+          invoice_number: invoiceNumber,
+          invoice_date: invoiceDate.toISOString().split('T')[0],
+          due_date: dueDate.toISOString().split('T')[0],
+          invoice_status: 'DRAFT',
+          patient_id: patientId ? parseInt(patientId) : null,
+          payer_id: payerId ? parseInt(payerId) : null,
+          billing_period_start: data.billing_period_start,
+          billing_period_end: data.billing_period_end,
+          subtotal: subtotal,
+          tax_amount: taxAmount,
+          discount_amount: discountAmount,
+          total_amount: totalAmount,
+          amount_paid: 0,
+          balance_due: totalAmount,
+          payment_terms: data.payment_terms || 'NET_30',
+          notes: data.notes,
+          internal_notes: data.internal_notes,
+          metadata: data.metadata,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      // Create line items
+      if (lineItemsToCreate.length > 0) {
+        const lineItemsWithInvoiceId = lineItemsToCreate.map(item => ({
+          ...item,
+          invoice_id: invoiceResult[0].id
+        }));
+        await db.insert(invoice_line_items).values(lineItemsWithInvoiceId);
+      }
+
+      reply.code(201);
+      return {
+        success: true,
+        data: invoiceResult[0],
+        message: 'Invoice created successfully'
+      };
+    } catch (error) {
+      logger.error('Error creating invoice:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error creating invoice'
+        }
+      };
+    }
+  }
+
+  /**
+   * Update invoice
+   * PUT /billing/invoices/:id
+   */
+  async updateInvoice(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      const existing = await db
+        .select()
+        .from(invoices)
+        .where(and(
+          eq(invoices.id, parseInt(id)),
+          isNull(invoices.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Invoice not found'
+          }
+        };
+      }
+
+      // Prevent updates to PAID or VOID invoices
+      if (['PAID', 'VOID'].includes(existing[0].invoice_status)) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_STATUS',
+            message: `Cannot update invoice with status: ${existing[0].invoice_status}`
+          }
+        };
+      }
+
+      const updateData = {
+        ...data,
+        updated_by_id: request.user?.id,
+        updatedAt: new Date()
+      };
+
+      delete updateData.id;
+      delete updateData.invoice_number;
+      delete updateData.created_by_id;
+      delete updateData.createdAt;
+
+      const result = await db
+        .update(invoices)
+        .set(updateData)
+        .where(eq(invoices.id, parseInt(id)))
+        .returning();
+
+      reply.code(200);
+      return {
+        success: true,
+        data: result[0],
+        message: 'Invoice updated successfully'
+      };
+    } catch (error) {
+      logger.error('Error updating invoice:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error updating invoice'
+        }
+      };
+    }
+  }
+
+  /**
+   * Record payment against invoice
+   * POST /billing/invoices/:id/payments
+   */
+  async recordInvoicePayment(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      if (!data.payment_amount || !data.payment_date) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Missing required fields: payment_amount, payment_date'
+          }
+        };
+      }
+
+      // Get invoice
+      const invoice = await db
+        .select()
+        .from(invoices)
+        .where(and(
+          eq(invoices.id, parseInt(id)),
+          isNull(invoices.deleted_at)
+        ))
+        .limit(1);
+
+      if (!invoice[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Invoice not found'
+          }
+        };
+      }
+
+      const paymentAmount = parseInt(data.payment_amount);
+
+      // Create payment record
+      const paymentResult = await db
+        .insert(invoice_payments)
+        .values({
+          invoice_id: parseInt(id),
+          payment_id: data.payment_id ? parseInt(data.payment_id) : null,
+          payment_date: data.payment_date,
+          payment_amount: paymentAmount,
+          payment_method: data.payment_method,
+          reference_number: data.reference_number,
+          check_number: data.check_number,
+          transaction_id: data.transaction_id,
+          notes: data.notes,
+          created_by_id: request.user?.id
+        })
+        .returning();
+
+      // Update invoice amounts
+      const newAmountPaid = (invoice[0].amount_paid || 0) + paymentAmount;
+      const newBalanceDue = invoice[0].total_amount - newAmountPaid;
+      let newStatus = invoice[0].invoice_status;
+
+      if (newBalanceDue <= 0) {
+        newStatus = 'PAID';
+      } else if (newAmountPaid > 0) {
+        newStatus = 'PARTIALLY_PAID';
+      }
+
+      await db
+        .update(invoices)
+        .set({
+          amount_paid: newAmountPaid,
+          balance_due: Math.max(0, newBalanceDue),
+          invoice_status: newStatus,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(invoices.id, parseInt(id)));
+
+      reply.code(201);
+      return {
+        success: true,
+        data: paymentResult[0],
+        message: 'Payment recorded successfully',
+        invoice_summary: {
+          total_amount: invoice[0].total_amount,
+          amount_paid: newAmountPaid,
+          balance_due: Math.max(0, newBalanceDue),
+          status: newStatus
+        }
+      };
+    } catch (error) {
+      logger.error('Error recording invoice payment:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error recording invoice payment'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get payment history for an invoice
+   * GET /billing/invoices/:id/payments
+   */
+  async getInvoicePayments(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const paymentsList = await db
+        .select()
+        .from(invoice_payments)
+        .where(eq(invoice_payments.invoice_id, parseInt(id)))
+        .orderBy(desc(invoice_payments.payment_date));
+
+      reply.code(200);
+      return {
+        success: true,
+        data: paymentsList,
+        count: paymentsList.length
+      };
+    } catch (error) {
+      logger.error('Error fetching invoice payments:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching invoice payments'
+        }
+      };
+    }
+  }
+
+  // ============================================
+  // BILLING STATEMENTS
+  // ============================================
+
+  /**
+   * Get all billing statements with optional filters
+   * GET /billing/statements
+   */
+  async getAllStatements(request, reply) {
+    try {
+      const {
+        limit = 50,
+        offset = 0,
+        status,
+        patient_id,
+        payer_id,
+        start_date,
+        end_date,
+        sort_by = 'createdAt',
+        sort_order = 'desc'
+      } = request.query;
+
+      const filters = [isNull(billing_statements.deleted_at)];
+
+      if (status) {
+        filters.push(eq(billing_statements.statement_status, status));
+      }
+      if (patient_id) {
+        filters.push(eq(billing_statements.patient_id, parseInt(patient_id)));
+      }
+      if (payer_id) {
+        filters.push(eq(billing_statements.payer_id, parseInt(payer_id)));
+      }
+      if (start_date) {
+        filters.push(gte(billing_statements.statement_date, start_date));
+      }
+      if (end_date) {
+        filters.push(lte(billing_statements.statement_date, end_date));
+      }
+
+      const sortField = billing_statements[sort_by] || billing_statements.createdAt;
+      const orderByClause = sort_order === 'asc' ? asc(sortField) : desc(sortField);
+
+      const results = await db
+        .select({
+          statement: billing_statements,
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name,
+            medical_record_number: patients.medical_record_number
+          },
+          payer: {
+            id: payers.id,
+            payer_name: payers.payer_name,
+            payer_type: payers.payer_type
+          }
+        })
+        .from(billing_statements)
+        .leftJoin(patients, eq(billing_statements.patient_id, patients.id))
+        .leftJoin(payers, eq(billing_statements.payer_id, payers.id))
+        .where(and(...filters))
+        .orderBy(orderByClause)
+        .limit(parseInt(limit))
+        .offset(parseInt(offset));
+
+      const countResult = await db
+        .select({ total: count() })
+        .from(billing_statements)
+        .where(and(...filters));
+
+      const total = Number(countResult[0]?.total || 0);
+
+      reply.code(200);
+      return {
+        success: true,
+        data: results,
+        count: results.length,
+        total: total,
+        pagination: {
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          total: total,
+          pages: Math.ceil(total / parseInt(limit)),
+          currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching billing statements:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching billing statements'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get statement by ID with line items
+   * GET /billing/statements/:id
+   */
+  async getStatementById(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const statementResult = await db
+        .select({
+          statement: billing_statements,
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name,
+            medical_record_number: patients.medical_record_number
+          },
+          payer: payers
+        })
+        .from(billing_statements)
+        .leftJoin(patients, eq(billing_statements.patient_id, patients.id))
+        .leftJoin(payers, eq(billing_statements.payer_id, payers.id))
+        .where(and(
+          eq(billing_statements.id, parseInt(id)),
+          isNull(billing_statements.deleted_at)
+        ))
+        .limit(1);
+
+      if (!statementResult[0]) {
+        reply.code(404);
+        return {
+          success: false,
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Statement not found'
+          }
+        };
+      }
+
+      // Get line items
+      const lineItems = await db
+        .select()
+        .from(statement_line_items)
+        .where(eq(statement_line_items.statement_id, parseInt(id)))
+        .orderBy(statement_line_items.line_date);
+
+      reply.code(200);
+      return {
+        success: true,
+        data: {
+          ...statementResult[0],
+          line_items: lineItems
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching statement:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching statement'
+        }
+      };
+    }
+  }
+
+  /**
+   * Generate billing statement for a period
+   * POST /billing/statements
+   */
+  async generateStatement(request, reply) {
+    try {
+      const data = request.body;
+
+      if (!data.period_start || !data.period_end) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Missing required fields: period_start, period_end'
+          }
+        };
+      }
+
+      if (!data.patient_id && !data.payer_id) {
+        reply.code(400);
+        return {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Either patient_id or payer_id is required'
+          }
+        };
+      }
+
+      const statementNumber = await this.generateStatementNumber();
+      const statementDate = new Date().toISOString().split('T')[0];
+
+      // Get invoices for the period
+      const invoiceFilters = [
+        isNull(invoices.deleted_at),
+        gte(invoices.invoice_date, data.period_start),
+        lte(invoices.invoice_date, data.period_end)
+      ];
+
+      if (data.patient_id) {
+        invoiceFilters.push(eq(invoices.patient_id, parseInt(data.patient_id)));
+      }
+      if (data.payer_id) {
+        invoiceFilters.push(eq(invoices.payer_id, parseInt(data.payer_id)));
+      }
+
+      const periodInvoices = await db
+        .select()
+        .from(invoices)
+        .where(and(...invoiceFilters))
+        .orderBy(invoices.invoice_date);
+
+      // Calculate statement totals
+      let newCharges = 0;
+      let paymentsReceived = 0;
+      let adjustments = 0;
+
+      periodInvoices.forEach(inv => {
+        newCharges += inv.total_amount || 0;
+        paymentsReceived += inv.amount_paid || 0;
+      });
+
+      // Calculate aging buckets based on invoice dates
+      const today = new Date();
+      let currentAmount = 0;
+      let amount30Days = 0;
+      let amount60Days = 0;
+      let amount90Days = 0;
+      let amountOver120Days = 0;
+
+      periodInvoices.forEach(inv => {
+        if (inv.balance_due > 0) {
+          const invoiceDate = new Date(inv.invoice_date);
+          const daysOutstanding = Math.floor((today - invoiceDate) / (1000 * 60 * 60 * 24));
+
+          if (daysOutstanding <= 30) {
+            currentAmount += inv.balance_due;
+          } else if (daysOutstanding <= 60) {
+            amount30Days += inv.balance_due;
+          } else if (daysOutstanding <= 90) {
+            amount60Days += inv.balance_due;
+          } else if (daysOutstanding <= 120) {
+            amount90Days += inv.balance_due;
+          } else {
+            amountOver120Days += inv.balance_due;
+          }
+        }
+      });
+
+      const currentBalance = newCharges - paymentsReceived - adjustments + (data.previous_balance || 0);
+
+      // Create statement
+      const statementResult = await db
+        .insert(billing_statements)
+        .values({
+          statement_number: statementNumber,
+          statement_date: statementDate,
+          period_start: data.period_start,
+          period_end: data.period_end,
+          patient_id: data.patient_id ? parseInt(data.patient_id) : null,
+          payer_id: data.payer_id ? parseInt(data.payer_id) : null,
+          previous_balance: data.previous_balance || 0,
+          new_charges: newCharges,
+          payments_received: paymentsReceived,
+          adjustments: adjustments,
+          current_balance: currentBalance,
+          current_amount: currentAmount,
+          amount_30_days: amount30Days,
+          amount_60_days: amount60Days,
+          amount_90_days: amount90Days,
+          amount_over_120_days: amountOver120Days,
+          statement_status: 'GENERATED',
+          notes: data.notes,
+          metadata: data.metadata,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      // Create line items from invoices
+      const lineItemsToCreate = [];
+
+      // Add balance forward if applicable
+      if (data.previous_balance && data.previous_balance !== 0) {
+        lineItemsToCreate.push({
+          statement_id: statementResult[0].id,
+          line_date: data.period_start,
+          description: 'Previous Balance',
+          line_type: 'BALANCE_FORWARD',
+          amount: data.previous_balance,
+          running_balance: data.previous_balance
+        });
+      }
+
+      let runningBalance = data.previous_balance || 0;
+
+      // Add invoice charges
+      periodInvoices.forEach(inv => {
+        runningBalance += inv.total_amount || 0;
+        lineItemsToCreate.push({
+          statement_id: statementResult[0].id,
+          invoice_id: inv.id,
+          line_date: inv.invoice_date,
+          description: `Invoice #${inv.invoice_number}`,
+          line_type: 'CHARGE',
+          amount: inv.total_amount || 0,
+          running_balance: runningBalance
+        });
+
+        // Add payment if any
+        if (inv.amount_paid > 0) {
+          runningBalance -= inv.amount_paid;
+          lineItemsToCreate.push({
+            statement_id: statementResult[0].id,
+            invoice_id: inv.id,
+            line_date: inv.invoice_date,
+            description: `Payment - Invoice #${inv.invoice_number}`,
+            line_type: 'PAYMENT',
+            amount: -inv.amount_paid,
+            running_balance: runningBalance
+          });
+        }
+      });
+
+      if (lineItemsToCreate.length > 0) {
+        await db.insert(statement_line_items).values(lineItemsToCreate);
+      }
+
+      reply.code(201);
+      return {
+        success: true,
+        data: statementResult[0],
+        message: 'Statement generated successfully',
+        summary: {
+          invoices_included: periodInvoices.length,
+          new_charges: newCharges,
+          payments_received: paymentsReceived,
+          current_balance: currentBalance
+        }
+      };
+    } catch (error) {
+      logger.error('Error generating statement:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error generating statement'
+        }
+      };
+    }
+  }
+
+  // ============================================
+  // DASHBOARD & ANALYTICS
+  // ============================================
+
+  /**
+   * Get billing dashboard with KPIs
+   * GET /billing/dashboard
+   */
+  async getBillingDashboard(request, reply) {
+    try {
+      const { period = 'current_month' } = request.query;
+
+      // Calculate date range based on period
+      const now = new Date();
+      let startDate, endDate;
+
+      switch (period) {
+        case 'current_month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          break;
+        case 'last_month':
+          startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+          break;
+        case 'current_quarter':
+          const quarter = Math.floor(now.getMonth() / 3);
+          startDate = new Date(now.getFullYear(), quarter * 3, 1);
+          endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+          break;
+        case 'ytd':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          endDate = now;
+          break;
+        case 'last_30_days':
+          startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          endDate = now;
+          break;
+        case 'last_90_days':
+          startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+          endDate = now;
+          break;
+        default:
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      }
+
+      // Get claims for the period
+      const periodClaims = await db
+        .select()
+        .from(claims)
+        .where(and(
+          gte(claims.service_start_date, startDate.toISOString().split('T')[0]),
+          lte(claims.service_start_date, endDate.toISOString().split('T')[0]),
+          isNull(claims.deleted_at)
+        ));
+
+      // Calculate KPIs
+      const totalClaims = periodClaims.length;
+      const totalRevenue = periodClaims.reduce((sum, c) => sum + (c.total_charges || 0), 0);
+      const totalPayments = periodClaims.reduce((sum, c) => sum + (c.total_paid || 0), 0);
+      const totalOutstanding = periodClaims.reduce((sum, c) => sum + (c.balance || 0), 0);
+
+      const acceptedClaims = periodClaims.filter(c => ['ACCEPTED', 'PAID'].includes(c.claim_status)).length;
+      const cleanClaimRate = totalClaims > 0 ? (acceptedClaims / totalClaims) * 100 : 0;
+      const collectionRate = totalRevenue > 0 ? (totalPayments / totalRevenue) * 100 : 0;
+
+      const deniedClaims = periodClaims.filter(c => c.claim_status === 'DENIED').length;
+      const denialRate = totalClaims > 0 ? (deniedClaims / totalClaims) * 100 : 0;
+
+      // Calculate average days to payment
+      const paidClaims = periodClaims.filter(c => c.paid_date && c.submission_date);
+      const avgDaysToPayment = paidClaims.length > 0
+        ? paidClaims.reduce((sum, c) => {
+            const diffTime = new Date(c.paid_date).getTime() - new Date(c.submission_date).getTime();
+            return sum + Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          }, 0) / paidClaims.length
+        : 0;
+
+      // Claims by status
+      const statusCounts = {};
+      periodClaims.forEach(c => {
+        if (!statusCounts[c.claim_status]) {
+          statusCounts[c.claim_status] = { count: 0, amount: 0 };
+        }
+        statusCounts[c.claim_status].count++;
+        statusCounts[c.claim_status].amount += c.total_charges || 0;
+      });
+
+      const claimsByStatus = Object.entries(statusCounts).map(([status, data]) => ({
+        status,
+        count: data.count,
+        amount: data.amount,
+        amount_formatted: `$${(data.amount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      }));
+
+      // Action required counts
+      const readyToSubmit = periodClaims.filter(c => c.claim_status === 'READY_TO_SUBMIT').length;
+      const rejectedClaims = periodClaims.filter(c => c.claim_status === 'REJECTED').length;
+      const deniedClaimsCount = periodClaims.filter(c => c.claim_status === 'DENIED').length;
+
+      // Get unbilled periods count
+      const unbilledResult = await db
+        .select({ count: count() })
+        .from(billing_periods)
+        .where(eq(billing_periods.billed, false));
+      const unbilledPeriods = Number(unbilledResult[0]?.count || 0);
+
+      // Get top payers
+      const payerStats = {};
+      periodClaims.forEach(c => {
+        if (c.payer_id) {
+          if (!payerStats[c.payer_id]) {
+            payerStats[c.payer_id] = { claim_count: 0, total_billed: 0, total_paid: 0 };
+          }
+          payerStats[c.payer_id].claim_count++;
+          payerStats[c.payer_id].total_billed += c.total_charges || 0;
+          payerStats[c.payer_id].total_paid += c.total_paid || 0;
+        }
+      });
+
+      // Get payer names
+      const payerIds = Object.keys(payerStats).map(id => parseInt(id));
+      const payerNames = payerIds.length > 0 ? await db
+        .select({ id: payers.id, payer_name: payers.payer_name })
+        .from(payers)
+        .where(inArray(payers.id, payerIds)) : [];
+
+      const payerNameMap = {};
+      payerNames.forEach(p => { payerNameMap[p.id] = p.payer_name; });
+
+      const topPayers = Object.entries(payerStats)
+        .map(([payerId, data]) => ({
+          payer_id: parseInt(payerId),
+          payer_name: payerNameMap[payerId] || 'Unknown',
+          claim_count: data.claim_count,
+          total_billed: data.total_billed,
+          total_paid: data.total_paid,
+          collection_rate: data.total_billed > 0 ? (data.total_paid / data.total_billed) * 100 : 0
+        }))
+        .sort((a, b) => b.total_billed - a.total_billed)
+        .slice(0, 5);
+
+      // AR Aging buckets
+      const arBuckets = [
+        { bucket: 'Current (0-30)', min: 0, max: 30 },
+        { bucket: '31-60 Days', min: 31, max: 60 },
+        { bucket: '61-90 Days', min: 61, max: 90 },
+        { bucket: '90+ Days', min: 91, max: Infinity }
+      ];
+
+      const arAgingData = arBuckets.map(bucket => {
+        const bucketClaims = periodClaims.filter(c => {
+          if (c.balance <= 0) return false;
+          const daysSince = Math.floor((now.getTime() - new Date(c.service_start_date).getTime()) / (1000 * 60 * 60 * 24));
+          return daysSince >= bucket.min && daysSince <= bucket.max;
+        });
+        const totalAmount = bucketClaims.reduce((sum, c) => sum + (c.balance || 0), 0);
+        return {
+          bucket: bucket.bucket,
+          claim_count: bucketClaims.length,
+          total_amount: totalAmount,
+          total_amount_formatted: `$${(totalAmount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          percentage: totalOutstanding > 0 ? (totalAmount / totalOutstanding) * 100 : 0
+        };
+      });
+
+      reply.code(200);
+      return {
+        success: true,
+        data: {
+          period: {
+            label: period.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            start: startDate.toISOString().split('T')[0],
+            end: endDate.toISOString().split('T')[0]
+          },
+          kpis: {
+            total_claims: totalClaims,
+            total_revenue: totalRevenue,
+            total_revenue_formatted: `$${(totalRevenue / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            total_payments: totalPayments,
+            total_payments_formatted: `$${(totalPayments / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            total_outstanding: totalOutstanding,
+            total_outstanding_formatted: `$${(totalOutstanding / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            collection_rate: Math.round(collectionRate * 10) / 10,
+            clean_claim_rate: Math.round(cleanClaimRate * 10) / 10,
+            denial_rate: Math.round(denialRate * 10) / 10,
+            avg_days_to_payment: Math.round(avgDaysToPayment),
+            claims_by_status: claimsByStatus
+          },
+          trends: {
+            revenue_trend: 'stable',
+            revenue_change: 0,
+            collection_trend: 'stable',
+            collection_change: 0
+          },
+          ar_aging: arAgingData,
+          top_payers: topPayers,
+          recent_activity: [],
+          action_required: {
+            ready_to_submit: readyToSubmit,
+            rejected_claims: rejectedClaims,
+            denied_claims: deniedClaimsCount,
+            unbilled_periods: unbilledPeriods
+          },
+          generated_at: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching billing dashboard:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching billing dashboard'
+        }
+      };
+    }
+  }
+
+  /**
+   * Get billing KPIs
+   * GET /billing/kpis
+   */
+  async getBillingKPIs(request, reply) {
+    try {
+      // Get summary counts
+      const claimsCounts = await db
+        .select({
+          status: claims.claim_status,
+          count: count(),
+          total_charges: sql`SUM(${claims.total_charges})`,
+          total_paid: sql`SUM(${claims.total_paid})`
+        })
+        .from(claims)
+        .where(isNull(claims.deleted_at))
+        .groupBy(claims.claim_status);
+
+      const totalClaims = claimsCounts.reduce((sum, c) => sum + Number(c.count), 0);
+      const totalCharges = claimsCounts.reduce((sum, c) => sum + Number(c.total_charges || 0), 0);
+      const totalPaid = claimsCounts.reduce((sum, c) => sum + Number(c.total_paid || 0), 0);
+
+      const collectionRate = totalCharges > 0 ? (totalPaid / totalCharges) * 100 : 0;
+
+      reply.code(200);
+      return {
+        success: true,
+        data: {
+          total_claims: totalClaims,
+          total_revenue: totalCharges,
+          total_revenue_formatted: `$${(totalCharges / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          total_payments: totalPaid,
+          total_payments_formatted: `$${(totalPaid / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          collection_rate: Math.round(collectionRate * 10) / 10,
+          claims_by_status: claimsCounts.map(c => ({
+            status: c.status,
+            count: Number(c.count),
+            amount: Number(c.total_charges || 0),
+            amount_formatted: `$${(Number(c.total_charges || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          }))
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching billing KPIs:', error);
+      reply.code(500);
+      return {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Error fetching billing KPIs'
+        }
+      };
+    }
+  }
+
+  // ============================================
   // UTILITY METHODS
   // ============================================
 
@@ -2389,6 +3636,26 @@ class BillingController {
     const timestamp = Date.now().toString().slice(-6);
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     return `CLM-${year}-${timestamp}${random}`;
+  }
+
+  /**
+   * Generate unique invoice number
+   */
+  async generateInvoiceNumber() {
+    const year = new Date().getFullYear();
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `INV-${year}-${timestamp}${random}`;
+  }
+
+  /**
+   * Generate unique statement number
+   */
+  async generateStatementNumber() {
+    const year = new Date().getFullYear();
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    const timestamp = Date.now().toString().slice(-6);
+    return `STMT-${year}${month}-${timestamp}`;
   }
 }
 

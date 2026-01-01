@@ -620,6 +620,123 @@ export const medicationSchemas = {
 };
 
 /**
+ * Certification schemas (CMS Compliance)
+ * Validates Medicare certification data per CMS requirements
+ */
+export const certificationSchemas = {
+  create: yup.object({
+    certification_period: fields.oneOf(
+      ['INITIAL_90', 'SUBSEQUENT_90', 'SUBSEQUENT_60'],
+      'Invalid certification period. CMS allows: INITIAL_90 (first 90 days), SUBSEQUENT_90 (second 90 days), SUBSEQUENT_60 (subsequent 60-day periods)'
+    ).required('Certification period is required per CMS requirements'),
+    certification_status: fields.oneOf(
+      ['PENDING', 'ACTIVE', 'COMPLETED', 'EXPIRED', 'REVOKED']
+    ).default('PENDING'),
+    start_date: fields.requiredDate()
+      .test('not-too-old', 'Retroactive certifications more than 30 days in the past require additional documentation', function(value) {
+        if (!value) return true;
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return new Date(value) >= thirtyDaysAgo;
+      }),
+    end_date: fields.requiredDate()
+      .test('after-start', 'End date must be after start date', function(value) {
+        const { start_date } = this.parent;
+        if (!value || !start_date) return true;
+        return new Date(value) > new Date(start_date);
+      }),
+    terminal_illness_narrative: sanitizedString()
+      .required('Terminal illness narrative is required for CMS certification')
+      .min(50, 'Terminal illness narrative must be at least 50 characters for CMS compliance')
+      .max(5000, 'Terminal illness narrative exceeds maximum length'),
+    clinical_progression: sanitizedString().max(5000),
+    decline_indicators: sanitizedString().max(5000),
+    noe_id: yup.number().integer().positive().nullable(),
+    alert_recipients: yup.array().of(yup.string().email()).default([])
+  }),
+
+  update: yup.object({
+    terminal_illness_narrative: sanitizedString()
+      .min(50, 'Terminal illness narrative must be at least 50 characters for CMS compliance')
+      .max(5000, 'Terminal illness narrative exceeds maximum length'),
+    clinical_progression: sanitizedString().max(5000),
+    decline_indicators: sanitizedString().max(5000)
+  }),
+
+  list: yup.object({
+    status: fields.oneOf(['PENDING', 'ACTIVE', 'COMPLETED', 'EXPIRED', 'REVOKED']),
+    patient_id: yup.number().integer().positive(),
+    period: fields.oneOf(['INITIAL_90', 'SUBSEQUENT_90', 'SUBSEQUENT_60']),
+    start_date_from: fields.date(),
+    start_date_to: fields.date(),
+    limit: yup.number().integer().min(1).max(100).default(50),
+    offset: yup.number().integer().min(0).default(0),
+    sort_by: fields.oneOf(['start_date', 'end_date', 'certification_due_date']).default('start_date'),
+    sort_order: fields.oneOf(['asc', 'desc']).default('desc')
+  }),
+
+  revoke: yup.object({
+    revocation_reason: sanitizedString()
+      .required('Revocation reason is required for audit trail')
+      .min(10, 'Revocation reason must be at least 10 characters')
+      .max(1000, 'Revocation reason exceeds maximum length')
+  }),
+
+  delete: yup.object({
+    reason: sanitizedString()
+      .max(1000, 'Reason exceeds maximum length')
+  })
+};
+
+/**
+ * Face-to-Face encounter schemas (CMS Compliance)
+ * Validates F2F encounter data per CMS requirements
+ */
+export const f2fSchemas = {
+  create: yup.object({
+    encounter_date: fields.requiredDate(),
+    performed_by_id: fields.uuid(),
+    performed_by_name: sanitizedString()
+      .required('Provider name is required for Face-to-Face encounters')
+      .max(255),
+    performed_by_type: fields.oneOf(
+      ['PHYSICIAN', 'NP', 'PA'],
+      'CMS requires Face-to-Face encounters to be performed by PHYSICIAN, NP, or PA'
+    ).required('Provider type is required'),
+    visit_type: fields.oneOf(['IN_PERSON', 'TELEHEALTH']).default('IN_PERSON'),
+    findings: sanitizedString()
+      .required('Findings documentation is required for Face-to-Face encounters')
+      .min(50, 'Findings must be at least 50 characters')
+      .max(10000),
+    terminal_prognosis_confirmed: yup.boolean().default(true),
+    certification_id: yup.number().integer().positive()
+  })
+};
+
+/**
+ * Order schemas
+ */
+export const orderSchemas = {
+  create: yup.object({
+    order_type: fields.oneOf(
+      ['MEDICATION', 'TREATMENT', 'DME', 'LABORATORY', 'IMAGING', 'CONSULTATION', 'OTHER']
+    ).required('Order type is required'),
+    order_status: fields.oneOf(['ACTIVE', 'COMPLETED', 'DISCONTINUED', 'EXPIRED', 'PENDING']).default('ACTIVE'),
+    order_priority: fields.oneOf(['ROUTINE', 'URGENT', 'STAT']).default('ROUTINE'),
+    order_description: sanitizedString()
+      .required('Order description is required')
+      .min(10, 'Order description must be at least 10 characters')
+      .max(5000),
+    start_date: fields.requiredDate(),
+    end_date: fields.date(),
+    ordered_by_id: fields.uuid(),
+    is_verbal_order: yup.boolean().default(false),
+    physician_name: sanitizedString().max(255),
+    read_back_verified: yup.boolean()
+  })
+};
+
+/**
  * All domain schemas organized by resource
  */
 export const schemas = {
@@ -628,6 +745,9 @@ export const schemas = {
   user: userSchemas,
   encounter: encounterSchemas,
   medication: medicationSchemas,
+  certification: certificationSchemas,
+  f2f: f2fSchemas,
+  order: orderSchemas,
   common: {
     pagination: paginationSchema,
     idParam: idParamSchema,

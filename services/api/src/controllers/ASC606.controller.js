@@ -1,4 +1,4 @@
-import { db } from '../config/db.js';
+import { db } from '../config/db.drizzle.js';
 import {
   asc606_contracts,
   asc606_performance_obligations,

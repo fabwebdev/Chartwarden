@@ -10,10 +10,11 @@ import {
   patient_allergies,
   drug_interactions
 } from '../db/schemas/index.js';
-import { eq, and, desc, asc, sql, or, isNull, ilike, gte, lte } from 'drizzle-orm';
+import { eq, and, desc, asc, sql, or, isNull, ilike, gte, lte, count } from 'drizzle-orm';
 import crypto from 'crypto';
 
 import { logger } from '../utils/logger.js';
+import AuditService from '../services/AuditService.js';
 
 // Valid medication administration routes
 const VALID_ROUTES = ['ORAL', 'IV', 'IM', 'SQ', 'RECTAL', 'TOPICAL', 'SUBLINGUAL', 'INHALATION', 'TRANSDERMAL', 'OPHTHALMIC', 'OTIC', 'NASAL', 'OTHER'];
@@ -173,39 +174,61 @@ class MedicationController {
   }
 
   /**
-   * Get all medications for a patient
+   * Get all medications for a patient with pagination
    * GET /patients/:id/medications
+   * Query params: status, is_hospice_related, page, limit
    */
   async getPatientMedications(request, reply) {
     try {
       const { id } = request.params;
-      const { status, is_hospice_related } = request.query;
+      const { status, is_hospice_related, page = '1', limit = '20' } = request.query;
+      const patientId = parseInt(id);
+      const pageNum = Math.max(1, parseInt(page) || 1);
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
+      const offset = (pageNum - 1) * limitNum;
 
-      let query = db
-        .select()
-        .from(medications)
-        .where(and(
-          eq(medications.patient_id, parseInt(id)),
-          isNull(medications.deleted_at)
-        ));
+      // Build base conditions
+      const conditions = [
+        eq(medications.patient_id, patientId),
+        isNull(medications.deleted_at)
+      ];
 
       // Filter by status if provided
       if (status) {
-        query = query.where(eq(medications.medication_status, status));
+        conditions.push(eq(medications.medication_status, status));
       }
 
       // Filter by hospice-related if provided
       if (is_hospice_related !== undefined) {
-        query = query.where(eq(medications.is_hospice_related, is_hospice_related === 'true'));
+        conditions.push(eq(medications.is_hospice_related, is_hospice_related === 'true'));
       }
 
-      const results = await query.orderBy(desc(medications.start_date));
+      // Get total count for pagination
+      const totalCountResult = await db
+        .select({ value: count() })
+        .from(medications)
+        .where(and(...conditions));
+      const total = Number(totalCountResult[0]?.value || 0);
+
+      // Get paginated results
+      const results = await db
+        .select()
+        .from(medications)
+        .where(and(...conditions))
+        .orderBy(desc(medications.start_date))
+        .limit(limitNum)
+        .offset(offset);
 
       reply.code(200);
       return {
         status: 200,
         data: results,
-        count: results.length
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum)
+        }
       };
     } catch (error) {
       logger.error('Error fetching patient medications:', error)
@@ -353,6 +376,29 @@ class MedicationController {
         });
       }
 
+      // Create audit log for medication creation
+      try {
+        await AuditService.createAuditLog({
+          user_id: request.user?.id,
+          action: 'CREATE',
+          resource_type: 'medications',
+          resource_id: String(result[0].id),
+          ip_address: request.ip,
+          user_agent: request.headers?.['user-agent'],
+          metadata: JSON.stringify({
+            patient_id: patientId,
+            medication_name: result[0].medication_name,
+            dosage: result[0].dosage,
+            frequency: result[0].frequency,
+            is_controlled: !!data.controlled_schedule,
+            has_warnings_overridden: drugInteractions.length > 0 || allergyConflicts.length > 0
+          })
+        });
+      } catch (auditError) {
+        logger.error('Failed to create audit log for medication creation:', auditError);
+        // Don't fail the request if audit logging fails
+      }
+
       // Build response with any warnings
       const response = {
         status: 201,
@@ -383,7 +429,7 @@ class MedicationController {
   }
 
   /**
-   * Update existing medication order
+   * Update existing medication order with drug interaction checking
    * PUT /patients/:id/medications/:medId
    */
   async updateMedication(request, reply) {
@@ -439,6 +485,51 @@ class MedicationController {
         };
       }
 
+      // If medication_name is being changed, check for drug interactions
+      let drugInteractions = [];
+      let allergyConflicts = [];
+      if (data.medication_name && data.medication_name !== existing[0].medication_name) {
+        // Check for drug interactions and allergy conflicts with the new medication name
+        [drugInteractions, allergyConflicts] = await Promise.all([
+          this.checkDrugInteractions(patientId, data.medication_name),
+          this.checkAllergyConflicts(patientId, data.medication_name)
+        ]);
+
+        // Filter out interactions with the current medication being updated
+        drugInteractions = drugInteractions.filter(i => i.conflicting_medication_id !== medicationId);
+
+        // Filter severe interactions
+        const severeInteractions = drugInteractions.filter(i =>
+          ['CONTRAINDICATED', 'SEVERE'].includes(i.interaction_severity)
+        );
+
+        // Block if severe interactions found and no override
+        if (severeInteractions.length > 0 && !data.override_warnings) {
+          reply.code(409);
+          return {
+            status: 409,
+            message: 'Severe drug interactions detected. Set override_warnings=true to proceed.',
+            warnings: {
+              drug_interactions: severeInteractions,
+              allergy_conflicts: allergyConflicts
+            }
+          };
+        }
+
+        // Block if allergy conflicts found and no override
+        if (allergyConflicts.length > 0 && !data.override_warnings) {
+          reply.code(409);
+          return {
+            status: 409,
+            message: 'Allergy conflicts detected. Set override_warnings=true to proceed.',
+            warnings: {
+              allergy_conflicts: allergyConflicts,
+              drug_interactions: drugInteractions
+            }
+          };
+        }
+      }
+
       // Build update object with only provided fields
       const updateData = {
         updatedAt: new Date(),
@@ -462,12 +553,44 @@ class MedicationController {
         .where(eq(medications.id, medicationId))
         .returning();
 
-      reply.code(200);
-      return {
+      // Create audit log for medication update
+      try {
+        await AuditService.createAuditLog({
+          user_id: request.user?.id,
+          action: 'UPDATE',
+          resource_type: 'medications',
+          resource_id: String(medicationId),
+          ip_address: request.ip,
+          user_agent: request.headers?.['user-agent'],
+          metadata: JSON.stringify({
+            patient_id: patientId,
+            medication_name: result[0].medication_name,
+            changes: Object.keys(updateData).filter(k => k !== 'updatedAt' && k !== 'updated_by_id')
+          })
+        });
+      } catch (auditError) {
+        logger.error('Failed to create audit log for medication update:', auditError);
+        // Don't fail the request if audit logging fails
+      }
+
+      // Build response
+      const response = {
         status: 200,
         message: 'Medication updated',
         data: result[0]
       };
+
+      // Include warnings if any were overridden
+      if (drugInteractions.length > 0 || allergyConflicts.length > 0) {
+        response.warnings = {
+          drug_interactions: drugInteractions,
+          allergy_conflicts: allergyConflicts,
+          overridden: true
+        };
+      }
+
+      reply.code(200);
+      return response;
     } catch (error) {
       logger.error('Error updating medication:', error);
       reply.code(500);
@@ -533,6 +656,27 @@ class MedicationController {
           notes: `Order cancelled: ${reason || 'No reason provided'}`,
           logged_by_id: request.user?.id
         });
+      }
+
+      // Create audit log for medication cancellation
+      try {
+        await AuditService.createAuditLog({
+          user_id: request.user?.id,
+          action: 'DELETE',
+          resource_type: 'medications',
+          resource_id: String(medicationId),
+          ip_address: request.ip,
+          user_agent: request.headers?.['user-agent'],
+          metadata: JSON.stringify({
+            patient_id: patientId,
+            medication_name: existing[0].medication_name,
+            cancellation_reason: reason || 'Order cancelled',
+            is_controlled: !!existing[0].controlled_schedule
+          })
+        });
+      } catch (auditError) {
+        logger.error('Failed to create audit log for medication cancellation:', auditError);
+        // Don't fail the request if audit logging fails
       }
 
       reply.code(200);
@@ -646,6 +790,28 @@ class MedicationController {
           notes: `Discontinued: ${reason}`,
           logged_by_id: request.user?.id
         });
+      }
+
+      // Create audit log for medication discontinuation
+      try {
+        await AuditService.createAuditLog({
+          user_id: request.user?.id,
+          action: 'UPDATE',
+          resource_type: 'medications',
+          resource_id: String(medId),
+          ip_address: request.ip,
+          user_agent: request.headers?.['user-agent'],
+          metadata: JSON.stringify({
+            patient_id: parseInt(id),
+            medication_name: existing[0].medication_name,
+            action_type: 'DISCONTINUE',
+            discontinuation_reason: reason,
+            is_controlled: !!existing[0].controlled_schedule
+          })
+        });
+      } catch (auditError) {
+        logger.error('Failed to create audit log for medication discontinuation:', auditError);
+        // Don't fail the request if audit logging fails
       }
 
       reply.code(200);

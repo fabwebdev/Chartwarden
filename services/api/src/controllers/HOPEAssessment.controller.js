@@ -1,6 +1,6 @@
 import { db } from '../config/db.drizzle.js';
 import { hope_assessments, hope_submissions, hope_compliance_metrics, hope_symptom_tracking, patients, audit_logs } from '../db/schemas/index.js';
-import { eq, and, gte, lte, desc, sql, or, isNull, ne } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, sql, or, isNull, ne, count, asc } from 'drizzle-orm';
 import crypto from 'crypto';
 
 import { logger } from '../utils/logger.js';
@@ -2230,6 +2230,863 @@ class HOPEAssessmentController {
       return {
         status: 500,
         message: 'Error fetching compliance metrics',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================================================
+  // ADDITIONAL REST API ENDPOINTS
+  // ============================================================================
+
+  /**
+   * Create a new assessment (generic endpoint)
+   * POST /assessments
+   *
+   * Creates a new HOPE assessment with automatic CMS validation
+   * Supports all assessment types via request body
+   */
+  async create(request, reply) {
+    try {
+      const data = request.body;
+
+      // Validate required fields
+      if (!data.patient_id) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Validation error',
+          error: {
+            code: 'MISSING_PATIENT_ID',
+            message: 'patient_id is required'
+          }
+        };
+      }
+
+      if (!data.assessment_type) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Validation error',
+          error: {
+            code: 'MISSING_ASSESSMENT_TYPE',
+            message: 'assessment_type is required'
+          }
+        };
+      }
+
+      // Validate assessment type
+      if (!VALID_ASSESSMENT_TYPES.includes(data.assessment_type)) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Invalid assessment type',
+          error: {
+            code: 'INVALID_ASSESSMENT_TYPE',
+            message: `assessment_type must be one of: ${VALID_ASSESSMENT_TYPES.join(', ')}`
+          }
+        };
+      }
+
+      // Validate clinician authorization
+      const authCheck = CMSValidationService.validateClinicianAuthorization(
+        data.assessment_type,
+        request.user?.role
+      );
+      if (!authCheck.authorized) {
+        reply.code(403);
+        return {
+          status: 403,
+          message: 'Not authorized to create this assessment type',
+          error: authCheck.error
+        };
+      }
+
+      const assessmentDate = data.assessment_date ? new Date(data.assessment_date) : new Date();
+      const admissionDate = data.a0220_admission_date ? new Date(data.a0220_admission_date) : assessmentDate;
+
+      // Check for duplicate assessment
+      const duplicateCheck = await CMSValidationService.checkDuplicateAssessment(
+        parseInt(data.patient_id),
+        data.assessment_type,
+        assessmentDate
+      );
+      if (duplicateCheck.isDuplicate) {
+        reply.code(409);
+        return {
+          status: 409,
+          message: 'Duplicate assessment exists for this patient and time period',
+          error: {
+            code: 'DUPLICATE_ASSESSMENT',
+            existingAssessmentId: duplicateCheck.existingAssessment?.id,
+            message: `A ${data.assessment_type} assessment already exists for this patient on this date`
+          }
+        };
+      }
+
+      // Calculate due date based on assessment type
+      let dueDate;
+      const timingRules = ASSESSMENT_TIMING_RULES[data.assessment_type];
+      if (timingRules) {
+        dueDate = new Date(admissionDate);
+        if (timingRules.windowDays) {
+          dueDate.setDate(dueDate.getDate() + timingRules.windowDays);
+        } else if (timingRules.windowEndDay) {
+          dueDate.setDate(dueDate.getDate() + timingRules.windowEndDay);
+        } else if (timingRules.windowHours) {
+          dueDate.setHours(dueDate.getHours() + timingRules.windowHours);
+        }
+      }
+
+      // Validate timing
+      const timingValidation = CMSValidationService.validateTiming(
+        data.assessment_type,
+        assessmentDate,
+        admissionDate,
+        data.a0270_discharge_date || data.sfv_trigger_date
+      );
+
+      // Validate required fields for assessment type
+      const fieldValidation = CMSValidationService.validateRequiredFields(
+        data.assessment_type,
+        data
+      );
+
+      // Set reference date if not provided
+      const referenceDate = data.a0310_assessment_reference_date || assessmentDate;
+
+      const result = await db
+        .insert(hope_assessments)
+        .values({
+          patient_id: parseInt(data.patient_id),
+          assessment_type: data.assessment_type,
+          assessment_status: data.assessment_status || 'IN_PROGRESS',
+          assessment_date: assessmentDate,
+          due_date: dueDate,
+          a0310_assessment_reference_date: referenceDate,
+          a0220_admission_date: admissionDate,
+          ...data,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      // Create audit log entry
+      await createAuditLog({
+        userId: request.user?.id,
+        action: 'CREATE_HOPE_ASSESSMENT',
+        resourceType: 'hope_assessment',
+        resourceId: result[0].id,
+        newValue: { assessment_type: data.assessment_type, patient_id: data.patient_id },
+        status: 'success',
+        ipAddress: request.ip,
+        userAgent: request.headers['user-agent'],
+        metadata: { assessmentType: data.assessment_type, cmsCompliant: timingValidation.valid }
+      });
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Assessment created successfully',
+        data: result[0],
+        validation: {
+          timingWarnings: timingValidation.warnings,
+          timingErrors: timingValidation.errors,
+          fieldErrors: fieldValidation.errors
+        }
+      };
+    } catch (error) {
+      logger.error('Error creating assessment:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error creating assessment',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * List all assessments with filters and pagination
+   * GET /assessments
+   *
+   * Supports filtering by:
+   * - patient_id: Filter by patient
+   * - assessment_type: Filter by type (ADMISSION, HUV1, etc.)
+   * - assessment_status: Filter by status
+   * - date_from, date_to: Date range filter
+   * - compliance_status: Filter by CMS compliance status
+   * - limit, offset: Pagination
+   * - sort_by, sort_order: Sorting
+   */
+  async index(request, reply) {
+    try {
+      const {
+        patient_id,
+        assessment_type,
+        assessment_status,
+        date_from,
+        date_to,
+        compliance_status,
+        limit = 50,
+        offset = 0,
+        sort_by = 'assessment_date',
+        sort_order = 'desc'
+      } = request.query;
+
+      // Build conditions
+      const conditions = [isNull(hope_assessments.deleted_at)];
+
+      if (patient_id) {
+        conditions.push(eq(hope_assessments.patient_id, parseInt(patient_id)));
+      }
+
+      if (assessment_type) {
+        conditions.push(eq(hope_assessments.assessment_type, assessment_type));
+      }
+
+      if (assessment_status) {
+        conditions.push(eq(hope_assessments.assessment_status, assessment_status));
+      }
+
+      if (date_from) {
+        conditions.push(gte(hope_assessments.assessment_date, new Date(date_from)));
+      }
+
+      if (date_to) {
+        conditions.push(lte(hope_assessments.assessment_date, new Date(date_to)));
+      }
+
+      // Determine sort column
+      let sortColumn;
+      switch (sort_by) {
+        case 'due_date':
+          sortColumn = hope_assessments.due_date;
+          break;
+        case 'created_at':
+          sortColumn = hope_assessments.createdAt;
+          break;
+        case 'updated_at':
+          sortColumn = hope_assessments.updatedAt;
+          break;
+        case 'assessment_type':
+          sortColumn = hope_assessments.assessment_type;
+          break;
+        case 'assessment_status':
+          sortColumn = hope_assessments.assessment_status;
+          break;
+        default:
+          sortColumn = hope_assessments.assessment_date;
+      }
+
+      const sortOrder = sort_order === 'asc' ? sortColumn : desc(sortColumn);
+
+      // Get total count
+      const countResult = await db
+        .select({ count: sql`count(*)::int` })
+        .from(hope_assessments)
+        .where(and(...conditions));
+
+      const total = countResult[0]?.count || 0;
+
+      // Get paginated results
+      const assessments = await db
+        .select({
+          id: hope_assessments.id,
+          patient_id: hope_assessments.patient_id,
+          assessment_type: hope_assessments.assessment_type,
+          assessment_status: hope_assessments.assessment_status,
+          assessment_date: hope_assessments.assessment_date,
+          due_date: hope_assessments.due_date,
+          completed_date: hope_assessments.completed_date,
+          primary_diagnosis: hope_assessments.i0010_principal_diagnosis_icd10,
+          signature: hope_assessments.signature,
+          submitted_to_iqies: hope_assessments.z0200_submitted_to_iqies,
+          submission_id: hope_assessments.z0200_submission_id,
+          submission_date: hope_assessments.z0200_submission_date,
+          created_by_id: hope_assessments.created_by_id,
+          updated_by_id: hope_assessments.updated_by_id,
+          createdAt: hope_assessments.createdAt,
+          updatedAt: hope_assessments.updatedAt
+        })
+        .from(hope_assessments)
+        .where(and(...conditions))
+        .orderBy(sortOrder)
+        .limit(Math.min(parseInt(limit), 100))
+        .offset(parseInt(offset));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: assessments,
+        pagination: {
+          total,
+          limit: Math.min(parseInt(limit), 100),
+          offset: parseInt(offset),
+          hasMore: parseInt(offset) + assessments.length < total
+        }
+      };
+    } catch (error) {
+      logger.error('Error listing assessments:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error listing assessments',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Full update of an assessment
+   * PUT /assessments/:id
+   *
+   * Replaces the entire assessment (all fields must be provided)
+   * CMS Reference: 21 CFR Part 11 - Electronic Records (locking after signature)
+   */
+  async replace(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      // Check if assessment exists
+      const existing = await db
+        .select({
+          id: hope_assessments.id,
+          patient_id: hope_assessments.patient_id,
+          assessment_type: hope_assessments.assessment_type,
+          assessment_status: hope_assessments.assessment_status,
+          deleted_at: hope_assessments.deleted_at
+        })
+        .from(hope_assessments)
+        .where(eq(hope_assessments.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Assessment not found'
+        };
+      }
+
+      if (existing[0].deleted_at) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Assessment has been deleted'
+        };
+      }
+
+      // Check if modification is allowed
+      const modCheck = CMSValidationService.checkModificationAllowed(existing[0]);
+      if (!modCheck.canModify) {
+        reply.code(403);
+        return {
+          status: 403,
+          message: 'Assessment cannot be modified',
+          error: modCheck.reason
+        };
+      }
+
+      // Validate ICD-10 code if provided
+      if (data.i0010_principal_diagnosis_icd10) {
+        const icd10Validation = CMSValidationService.validateICD10Code(data.i0010_principal_diagnosis_icd10);
+        if (!icd10Validation.valid) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: 'Invalid ICD-10 code format',
+            error: icd10Validation.error
+          };
+        }
+      }
+
+      // Store old values for audit log
+      const oldValues = { ...existing[0] };
+
+      // Perform full update
+      const result = await db
+        .update(hope_assessments)
+        .set({
+          ...data,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(hope_assessments.id, parseInt(id)))
+        .returning();
+
+      // Create audit log entry
+      await createAuditLog({
+        userId: request.user?.id,
+        action: 'REPLACE_HOPE_ASSESSMENT',
+        resourceType: 'hope_assessment',
+        resourceId: id,
+        oldValue: oldValues,
+        newValue: data,
+        status: 'success',
+        ipAddress: request.ip,
+        userAgent: request.headers['user-agent']
+      });
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Assessment replaced successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error replacing assessment:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error replacing assessment',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get assessment version history
+   * GET /assessments/:id/history
+   *
+   * Retrieves complete version history from audit logs
+   * CMS Reference: 42 CFR § 418.310 - Record retention requirements
+   */
+  async getHistory(request, reply) {
+    try {
+      const { id } = request.params;
+
+      // Check if assessment exists
+      const existing = await db
+        .select({ id: hope_assessments.id })
+        .from(hope_assessments)
+        .where(eq(hope_assessments.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Assessment not found'
+        };
+      }
+
+      // Get history from audit logs
+      const history = await db
+        .select({
+          id: audit_logs.id,
+          action: audit_logs.action,
+          old_value: audit_logs.old_value,
+          new_value: audit_logs.new_value,
+          user_id: audit_logs.user_id,
+          ip_address: audit_logs.ip_address,
+          status: audit_logs.status,
+          metadata: audit_logs.metadata,
+          createdAt: audit_logs.createdAt
+        })
+        .from(audit_logs)
+        .where(
+          and(
+            eq(audit_logs.resource_type, 'hope_assessment'),
+            eq(audit_logs.resource_id, id.toString())
+          )
+        )
+        .orderBy(desc(audit_logs.createdAt));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: {
+          assessment_id: parseInt(id),
+          version_count: history.length,
+          history: history
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching assessment history:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching assessment history',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get detailed CMS compliance status for an assessment
+   * GET /assessments/:id/cms-compliance
+   *
+   * Returns comprehensive compliance check with missing requirements
+   */
+  async getCMSComplianceStatus(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const existing = await db
+        .select()
+        .from(hope_assessments)
+        .where(eq(hope_assessments.id, parseInt(id)))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Assessment not found'
+        };
+      }
+
+      const assessment = existing[0];
+      const complianceStatus = {
+        assessment_id: assessment.id,
+        assessment_type: assessment.assessment_type,
+        overall_compliant: true,
+        compliance_score: 100,
+        checks: [],
+        missing_requirements: [],
+        warnings: [],
+        cms_references: []
+      };
+
+      // 1. Required Fields Check
+      const fieldValidation = CMSValidationService.validateRequiredFields(
+        assessment.assessment_type,
+        assessment
+      );
+      if (!fieldValidation.valid) {
+        complianceStatus.overall_compliant = false;
+        complianceStatus.checks.push({
+          category: 'Required Fields',
+          passed: false,
+          errors: fieldValidation.errors
+        });
+        complianceStatus.missing_requirements.push(...fieldValidation.errors.map(e => ({
+          field: e.field,
+          description: e.message,
+          cfrReference: e.cfrReference
+        })));
+        complianceStatus.compliance_score -= 20;
+      } else {
+        complianceStatus.checks.push({
+          category: 'Required Fields',
+          passed: true,
+          message: 'All required fields present'
+        });
+      }
+
+      // 2. Timing Check
+      const timingValidation = CMSValidationService.validateTiming(
+        assessment.assessment_type,
+        assessment.assessment_date,
+        assessment.a0220_admission_date,
+        assessment.a0270_discharge_date || assessment.sfv_trigger_date
+      );
+      if (!timingValidation.valid) {
+        complianceStatus.overall_compliant = false;
+        complianceStatus.checks.push({
+          category: 'Assessment Timing',
+          passed: false,
+          errors: timingValidation.errors
+        });
+        complianceStatus.compliance_score -= 30;
+        complianceStatus.cms_references.push('42 CFR § 418.54');
+      } else {
+        complianceStatus.checks.push({
+          category: 'Assessment Timing',
+          passed: true,
+          message: 'Assessment completed within required timeframe'
+        });
+      }
+      if (timingValidation.warnings.length > 0) {
+        complianceStatus.warnings.push(...timingValidation.warnings);
+      }
+
+      // 3. ICD-10 Validation
+      if (assessment.i0010_principal_diagnosis_icd10) {
+        const icd10Validation = CMSValidationService.validateICD10Code(
+          assessment.i0010_principal_diagnosis_icd10
+        );
+        if (!icd10Validation.valid) {
+          complianceStatus.overall_compliant = false;
+          complianceStatus.checks.push({
+            category: 'ICD-10 Code',
+            passed: false,
+            error: icd10Validation.error
+          });
+          complianceStatus.compliance_score -= 15;
+        } else {
+          complianceStatus.checks.push({
+            category: 'ICD-10 Code',
+            passed: true,
+            message: 'Valid ICD-10-CM code format'
+          });
+        }
+      }
+
+      // 4. Signature Check (21 CFR Part 11)
+      if (assessment.signature) {
+        complianceStatus.checks.push({
+          category: 'Electronic Signature',
+          passed: true,
+          message: '21 CFR Part 11 compliant electronic signature present',
+          details: {
+            signedBy: assessment.signature.signedByName,
+            signedAt: assessment.signature.signedAt,
+            signatureType: assessment.signature.signatureType
+          }
+        });
+        complianceStatus.cms_references.push('21 CFR Part 11');
+      } else if (['COMPLETED', 'SIGNED', 'SUBMITTED'].includes(assessment.assessment_status)) {
+        complianceStatus.overall_compliant = false;
+        complianceStatus.checks.push({
+          category: 'Electronic Signature',
+          passed: false,
+          error: 'Assessment status indicates completion but signature is missing'
+        });
+        complianceStatus.missing_requirements.push({
+          field: 'signature',
+          description: 'Electronic signature required for completed assessments',
+          cfrReference: '21 CFR Part 11'
+        });
+        complianceStatus.compliance_score -= 25;
+      }
+
+      // 5. Submission Status Check
+      if (assessment.z0200_submitted_to_iqies) {
+        complianceStatus.checks.push({
+          category: 'CMS Submission',
+          passed: true,
+          message: 'Assessment submitted to iQIES',
+          details: {
+            submission_id: assessment.z0200_submission_id,
+            submission_date: assessment.z0200_submission_date,
+            status: assessment.z0200_submission_status
+          }
+        });
+      } else if (assessment.due_date) {
+        const now = new Date();
+        const dueDate = new Date(assessment.due_date);
+        const daysUntilDue = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+
+        if (daysUntilDue < 0) {
+          complianceStatus.warnings.push({
+            category: 'CMS Submission',
+            message: `Assessment is ${Math.abs(daysUntilDue)} days past due date`,
+            cfrReference: '42 CFR § 418.54'
+          });
+        } else if (daysUntilDue <= 7) {
+          complianceStatus.warnings.push({
+            category: 'CMS Submission',
+            message: `Assessment due in ${daysUntilDue} days`,
+            cfrReference: '42 CFR § 418.54'
+          });
+        }
+      }
+
+      // Calculate final compliance score (minimum 0)
+      complianceStatus.compliance_score = Math.max(0, complianceStatus.compliance_score);
+
+      // Add standard CMS references
+      complianceStatus.cms_references = [...new Set([
+        ...complianceStatus.cms_references,
+        '42 CFR § 418.54 - Initial and Comprehensive Assessment',
+        '42 CFR § 418.56 - Hospice Aide and Homemaker Services',
+        '42 CFR § 418.76 - Hospice Care Team'
+      ])];
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: complianceStatus
+      };
+    } catch (error) {
+      logger.error('Error checking CMS compliance:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error checking CMS compliance',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get CMS requirements by assessment type
+   * GET /cms-requirements
+   *
+   * Returns current CMS requirement rules for different assessment types
+   */
+  async getCMSRequirements(request, reply) {
+    try {
+      const { assessment_type } = request.query;
+
+      const requirements = {};
+
+      const typesToInclude = assessment_type
+        ? [assessment_type]
+        : VALID_ASSESSMENT_TYPES;
+
+      for (const type of typesToInclude) {
+        requirements[type] = {
+          assessment_type: type,
+          timing_rules: ASSESSMENT_TIMING_RULES[type] || null,
+          required_fields: REQUIRED_FIELDS_BY_TYPE[type] || [],
+          authorized_clinicians: AUTHORIZED_CLINICIAN_TYPES[type] || [],
+          cms_references: [
+            '42 CFR § 418.54 - Condition of Participation: Initial and Comprehensive Assessment',
+            '42 CFR § 418.56 - Condition of Participation: Hospice Aide and Homemaker Services',
+            '42 CFR § 418.76 - Condition of Participation: Hospice Care Team',
+            '21 CFR Part 11 - Electronic Records; Electronic Signatures'
+          ],
+          compliance_threshold: 90, // 90% completion required
+          penalty_for_non_compliance: '4% Medicare payment reduction',
+          effective_date: '2025-10-01' // HOPE 2.0 effective date
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: requirements,
+        metadata: {
+          valid_assessment_types: VALID_ASSESSMENT_TYPES,
+          valid_statuses: VALID_STATUSES,
+          hope_version: '2.0',
+          effective_date: '2025-10-01'
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching CMS requirements:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching CMS requirements',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get aggregate compliance dashboard data
+   * GET /reports/compliance
+   *
+   * Returns aggregate compliance data for dashboard display
+   * Filters: date range, facility, assessment type
+   */
+  async getComplianceDashboard(request, reply) {
+    try {
+      const {
+        date_from,
+        date_to,
+        assessment_type,
+        group_by = 'assessment_type'
+      } = request.query;
+
+      // Build date conditions
+      const dateConditions = [isNull(hope_assessments.deleted_at)];
+      if (date_from) {
+        dateConditions.push(gte(hope_assessments.assessment_date, new Date(date_from)));
+      }
+      if (date_to) {
+        dateConditions.push(lte(hope_assessments.assessment_date, new Date(date_to)));
+      }
+      if (assessment_type) {
+        dateConditions.push(eq(hope_assessments.assessment_type, assessment_type));
+      }
+
+      // Get overall statistics
+      const totalStats = await db
+        .select({
+          total: sql`count(*)::int`,
+          completed: sql`count(*) filter (where assessment_status in ('COMPLETED', 'SIGNED', 'SUBMITTED', 'ACCEPTED'))::int`,
+          pending: sql`count(*) filter (where assessment_status in ('NOT_STARTED', 'IN_PROGRESS'))::int`,
+          overdue: sql`count(*) filter (where due_date < now() and assessment_status in ('NOT_STARTED', 'IN_PROGRESS'))::int`,
+          submitted: sql`count(*) filter (where z0200_submitted_to_iqies = true)::int`,
+          signed: sql`count(*) filter (where signature is not null)::int`
+        })
+        .from(hope_assessments)
+        .where(and(...dateConditions));
+
+      // Get statistics by assessment type
+      const typeStats = await db
+        .select({
+          assessment_type: hope_assessments.assessment_type,
+          total: sql`count(*)::int`,
+          completed: sql`count(*) filter (where assessment_status in ('COMPLETED', 'SIGNED', 'SUBMITTED', 'ACCEPTED'))::int`,
+          pending: sql`count(*) filter (where assessment_status in ('NOT_STARTED', 'IN_PROGRESS'))::int`,
+          overdue: sql`count(*) filter (where due_date < now() and assessment_status in ('NOT_STARTED', 'IN_PROGRESS'))::int`
+        })
+        .from(hope_assessments)
+        .where(and(...dateConditions))
+        .groupBy(hope_assessments.assessment_type);
+
+      // Get statistics by status
+      const statusStats = await db
+        .select({
+          assessment_status: hope_assessments.assessment_status,
+          count: sql`count(*)::int`
+        })
+        .from(hope_assessments)
+        .where(and(...dateConditions))
+        .groupBy(hope_assessments.assessment_status);
+
+      // Calculate compliance rate
+      const stats = totalStats[0] || { total: 0, completed: 0, pending: 0, overdue: 0, submitted: 0, signed: 0 };
+      const complianceRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+      const meetsThreshold = complianceRate >= 90;
+
+      // Get recent overdue assessments
+      const overdueAssessments = await db
+        .select({
+          id: hope_assessments.id,
+          patient_id: hope_assessments.patient_id,
+          assessment_type: hope_assessments.assessment_type,
+          due_date: hope_assessments.due_date,
+          days_overdue: sql`extract(day from now() - due_date)::int`
+        })
+        .from(hope_assessments)
+        .where(
+          and(
+            ...dateConditions,
+            sql`due_date < now()`,
+            or(
+              eq(hope_assessments.assessment_status, 'NOT_STARTED'),
+              eq(hope_assessments.assessment_status, 'IN_PROGRESS')
+            )
+          )
+        )
+        .orderBy(hope_assessments.due_date)
+        .limit(10);
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: {
+          summary: {
+            ...stats,
+            compliance_rate: complianceRate,
+            meets_threshold: meetsThreshold,
+            threshold: 90,
+            potential_penalty: meetsThreshold ? null : '4% Medicare payment reduction'
+          },
+          by_type: typeStats,
+          by_status: statusStats,
+          recent_overdue: overdueAssessments,
+          period: {
+            from: date_from || null,
+            to: date_to || null
+          },
+          generated_at: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      logger.error('Error generating compliance dashboard:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error generating compliance dashboard',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }

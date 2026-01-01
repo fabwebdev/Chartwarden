@@ -114,3 +114,5 @@ export * from './vitalSign.schema.js';
 export * from './wongBakerFacesScale.schema.js';
 export * from './icd10Codes.schema.js';
 export * from './patientAllergy.schema.js';
+export * from './idgMeetingDocumentation.schema.js';
+export * from './complianceTracking.schema.js';

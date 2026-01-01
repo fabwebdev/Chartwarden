@@ -75,6 +75,14 @@ const billing: NavItemType = {
   type: 'group',
   children: ([] as NavItemType[]).concat(
     hasBillingAccess() ? [{
+      id: 'billing-dashboard',
+      title: <FormattedMessage id="billing-dashboard" defaultMessage="Claims Dashboard" />,
+      type: 'item',
+      url: '/billing',
+      icon: icons.claims,
+      breadcrumbs: false
+    }] : [],
+    hasBillingAccess() ? [{
       id: 'denial-management',
       title: <FormattedMessage id="denial-management" defaultMessage="Denial Management" />,
       type: 'item',

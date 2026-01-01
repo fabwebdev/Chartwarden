@@ -226,6 +226,141 @@ class CertificationController {
   // ============================================================================
 
   /**
+   * List all certifications with filtering and pagination
+   * GET /certifications?status=PENDING&patient_id=123&period=INITIAL_90&limit=20&offset=0
+   *
+   * Query Parameters:
+   * - status: Filter by certification status (PENDING, ACTIVE, COMPLETED, EXPIRED, REVOKED)
+   * - patient_id: Filter by patient ID
+   * - period: Filter by certification period (INITIAL_90, SUBSEQUENT_90, SUBSEQUENT_60)
+   * - start_date_from: Filter certifications starting on or after this date
+   * - start_date_to: Filter certifications starting on or before this date
+   * - limit: Number of results to return (default: 50, max: 100)
+   * - offset: Number of results to skip (default: 0)
+   * - sort_by: Field to sort by (start_date, end_date, certification_due_date)
+   * - sort_order: Sort order (asc, desc - default: desc)
+   */
+  async listCertifications(request, reply) {
+    try {
+      const {
+        status,
+        patient_id,
+        period,
+        start_date_from,
+        start_date_to,
+        limit = 50,
+        offset = 0,
+        sort_by = 'start_date',
+        sort_order = 'desc'
+      } = request.query;
+
+      // Build filter conditions
+      const conditions = [isNull(certifications.deleted_at)];
+
+      if (status) {
+        // Validate status
+        const validStatuses = ['PENDING', 'ACTIVE', 'COMPLETED', 'EXPIRED', 'REVOKED'];
+        if (!validStatuses.includes(status)) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+          };
+        }
+        conditions.push(eq(certifications.certification_status, status));
+      }
+
+      if (patient_id) {
+        conditions.push(eq(certifications.patient_id, parseInt(patient_id)));
+      }
+
+      if (period) {
+        // Validate period
+        const validPeriods = ['INITIAL_90', 'SUBSEQUENT_90', 'SUBSEQUENT_60'];
+        if (!validPeriods.includes(period)) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: `Invalid period. Must be one of: ${validPeriods.join(', ')}`
+          };
+        }
+        conditions.push(eq(certifications.certification_period, period));
+      }
+
+      if (start_date_from) {
+        conditions.push(gte(certifications.start_date, start_date_from));
+      }
+
+      if (start_date_to) {
+        conditions.push(lte(certifications.start_date, start_date_to));
+      }
+
+      // Validate and apply pagination limits
+      const parsedLimit = Math.min(Math.max(1, parseInt(limit) || 50), 100);
+      const parsedOffset = Math.max(0, parseInt(offset) || 0);
+
+      // Determine sort column
+      let sortColumn = certifications.start_date;
+      if (sort_by === 'end_date') {
+        sortColumn = certifications.end_date;
+      } else if (sort_by === 'certification_due_date') {
+        sortColumn = certifications.certification_due_date;
+      }
+
+      // Get total count for pagination
+      const countResult = await db
+        .select({ count: sql`count(*)` })
+        .from(certifications)
+        .where(and(...conditions));
+
+      const totalCount = parseInt(countResult[0]?.count || 0);
+
+      // Fetch certifications with patient info
+      const results = await db
+        .select({
+          certification: certifications,
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name,
+            medical_record_number: patients.medical_record_number
+          }
+        })
+        .from(certifications)
+        .leftJoin(patients, eq(certifications.patient_id, patients.id))
+        .where(and(...conditions))
+        .orderBy(sort_order === 'asc' ? sortColumn : desc(sortColumn))
+        .limit(parsedLimit)
+        .offset(parsedOffset);
+
+      await logAudit(request, 'READ', 'certifications', null);
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results.map(r => ({
+          ...r.certification,
+          patient: r.patient
+        })),
+        pagination: {
+          total: totalCount,
+          limit: parsedLimit,
+          offset: parsedOffset,
+          hasMore: parsedOffset + parsedLimit < totalCount
+        }
+      };
+    } catch (error) {
+      logger.error('Error listing certifications:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error listing certifications',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
    * Get all certifications for a patient
    * GET /patients/:id/certifications
    */
@@ -1661,6 +1796,108 @@ class CertificationController {
       return {
         status: 500,
         message: 'Error validating F2F encounter',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Soft delete certification
+   * DELETE /certifications/:id
+   *
+   * CMS Compliance Note: Certifications cannot be permanently deleted for audit trail purposes.
+   * This performs a soft delete by setting the deleted_at timestamp.
+   *
+   * Restrictions:
+   * - Cannot delete signed certifications (use revoke instead)
+   * - Cannot delete completed certifications
+   */
+  async deleteCertification(request, reply) {
+    try {
+      const { id } = request.params;
+      const certId = parseInt(id);
+      const { reason } = request.body || {};
+
+      const existing = await db
+        .select()
+        .from(certifications)
+        .where(and(
+          eq(certifications.id, certId),
+          isNull(certifications.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Certification not found'
+        };
+      }
+
+      // Cannot delete signed certifications - must use revoke
+      if (existing[0].physician_signature) {
+        reply.code(403);
+        return {
+          status: 403,
+          message: 'Cannot delete signed certifications. Use the revoke endpoint instead to maintain audit compliance.',
+          code: 'SIGNED_CERTIFICATION_CANNOT_DELETE'
+        };
+      }
+
+      // Cannot delete completed certifications
+      if (existing[0].certification_status === 'COMPLETED') {
+        reply.code(403);
+        return {
+          status: 403,
+          message: 'Cannot delete completed certifications. Use the revoke endpoint instead.',
+          code: 'COMPLETED_CERTIFICATION_CANNOT_DELETE'
+        };
+      }
+
+      // Perform soft delete
+      const result = await db
+        .update(certifications)
+        .set({
+          deleted_at: new Date(),
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(certifications.id, certId))
+        .returning();
+
+      // Log audit event for deletion
+      await logAudit(request, 'DELETE', 'certifications', certId);
+
+      // Also soft delete any associated alerts
+      await db
+        .update(certification_alerts)
+        .set({
+          alert_status: 'DISMISSED',
+          sent_at: new Date()
+        })
+        .where(and(
+          eq(certification_alerts.certification_id, certId),
+          eq(certification_alerts.alert_status, 'PENDING')
+        ));
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Certification deleted successfully',
+        data: {
+          id: certId,
+          deletedAt: result[0].deleted_at,
+          deletedBy: request.user?.id,
+          reason: reason || 'No reason provided'
+        }
+      };
+    } catch (error) {
+      logger.error('Error deleting certification:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error deleting certification',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }

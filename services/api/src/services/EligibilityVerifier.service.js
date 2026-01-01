@@ -802,6 +802,358 @@ class EligibilityVerifier {
 
     return statusResult;
   }
+
+  /**
+   * Query coverage information with flexible filters
+   * @param {object} filters - Filter parameters
+   * @returns {Promise<object>} Coverage records and total count
+   */
+  async queryCoverage(filters = {}) {
+    const {
+      patientId,
+      memberId,
+      payerId,
+      isActive,
+      serviceDate,
+      authorizationRequired,
+      hospiceCovered,
+      needsReverification,
+      includeExpired = false,
+      limit = 20,
+      offset = 0
+    } = filters;
+
+    // Build filter conditions
+    const conditions = [];
+
+    if (patientId !== undefined) {
+      conditions.push(eq(patient_coverage.patient_id, patientId));
+    }
+
+    if (memberId) {
+      conditions.push(eq(patient_coverage.member_id, memberId));
+    }
+
+    if (payerId !== undefined) {
+      conditions.push(eq(patient_coverage.payer_id, payerId));
+    }
+
+    if (isActive !== undefined) {
+      conditions.push(eq(patient_coverage.is_active, isActive));
+    }
+
+    if (authorizationRequired !== undefined) {
+      conditions.push(eq(patient_coverage.authorization_required, authorizationRequired));
+    }
+
+    if (hospiceCovered !== undefined) {
+      conditions.push(eq(patient_coverage.hospice_covered, hospiceCovered));
+    }
+
+    if (needsReverification !== undefined) {
+      conditions.push(eq(patient_coverage.needs_reverification, needsReverification));
+    }
+
+    // Filter by service date - coverage must be effective on that date
+    if (serviceDate) {
+      conditions.push(lte(patient_coverage.effective_date, serviceDate));
+      // Termination date is null (ongoing) or after service date
+      conditions.push(
+        sql`(${patient_coverage.termination_date} IS NULL OR ${patient_coverage.termination_date} >= ${serviceDate})`
+      );
+    }
+
+    // Filter out expired cache unless includeExpired is true
+    if (!includeExpired) {
+      const now = new Date();
+      conditions.push(
+        sql`(${patient_coverage.cache_expires_at} IS NULL OR ${patient_coverage.cache_expires_at} >= ${now})`
+      );
+    }
+
+    // Build the where clause
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Get total count
+    const [countResult] = await db.select({ count: count() })
+      .from(patient_coverage)
+      .where(whereClause);
+
+    const total = parseInt(countResult?.count || 0);
+
+    // Get coverage records with pagination
+    let query = db.select()
+      .from(patient_coverage)
+      .orderBy(desc(patient_coverage.last_verified_date))
+      .limit(limit)
+      .offset(offset);
+
+    if (whereClause) {
+      query = query.where(whereClause);
+    }
+
+    const records = await query;
+
+    // Transform records to include cache status
+    const coverage = records.map(record => ({
+      id: record.id,
+      patientId: record.patient_id,
+      payerId: record.payer_id,
+      isActive: record.is_active,
+      eligibilityVerified: record.eligibility_verified,
+      lastVerifiedDate: record.last_verified_date,
+      effectiveDate: record.effective_date,
+      terminationDate: record.termination_date,
+      planName: record.plan_name,
+      planNumber: record.plan_number,
+      groupNumber: record.group_number,
+      memberId: record.member_id,
+      copayAmount: record.copay_amount,
+      deductibleAmount: record.deductible_amount,
+      deductibleRemaining: record.deductible_remaining,
+      outOfPocketMax: record.out_of_pocket_max,
+      outOfPocketRemaining: record.out_of_pocket_remaining,
+      authorizationRequired: record.authorization_required,
+      authorizationNumber: record.authorization_number,
+      authorizationExpiration: record.authorization_expiration,
+      hospiceCovered: record.hospice_covered,
+      limitations: record.limitations,
+      cacheExpiresAt: record.cache_expires_at,
+      needsReverification: record.needs_reverification,
+      reverificationReason: record.reverification_reason,
+      cacheStatus: {
+        expired: !this.isCacheValid(record),
+        daysUntilExpiration: this.getDaysUntilExpiration(record.cache_expires_at)
+      }
+    }));
+
+    return {
+      coverage,
+      total
+    };
+  }
+
+  /**
+   * Get comprehensive coverage summary for a patient
+   * @param {number} patientId - Patient ID
+   * @returns {Promise<object|null>} Coverage summary with benefits and history
+   */
+  async getCoverageSummary(patientId) {
+    // Get current coverage
+    const coverage = await this.getCurrentCoverage(patientId);
+
+    if (!coverage) {
+      return null;
+    }
+
+    // Get benefit details from latest response
+    let benefits = [];
+    if (coverage.latest_response_id) {
+      benefits = await this.getBenefitDetails(coverage.latest_response_id);
+    }
+
+    // Get recent verification history (last 5)
+    const recentVerifications = await this.getEligibilityHistory(patientId, 5);
+
+    // Generate recommendations based on coverage status
+    const recommendations = [];
+
+    if (!coverage.eligibility_verified) {
+      recommendations.push({
+        type: 'ACTION_REQUIRED',
+        priority: 'HIGH',
+        message: 'Eligibility has not been verified. Please verify coverage before providing services.'
+      });
+    }
+
+    if (coverage.cacheExpired) {
+      recommendations.push({
+        type: 'REVERIFICATION_NEEDED',
+        priority: 'MEDIUM',
+        message: 'Coverage cache has expired. Consider reverifying eligibility.'
+      });
+    } else if (coverage.daysUntilExpiration && coverage.daysUntilExpiration <= 7) {
+      recommendations.push({
+        type: 'EXPIRING_SOON',
+        priority: 'LOW',
+        message: `Coverage verification expires in ${coverage.daysUntilExpiration} days. Plan ahead for reverification.`
+      });
+    }
+
+    if (coverage.needs_reverification) {
+      recommendations.push({
+        type: 'REVERIFICATION_FLAGGED',
+        priority: 'HIGH',
+        message: coverage.reverification_reason || 'Patient flagged for eligibility reverification.'
+      });
+    }
+
+    if (coverage.authorization_required) {
+      const hasAuth = coverage.authorization_number && coverage.authorization_expiration;
+      if (!hasAuth) {
+        recommendations.push({
+          type: 'AUTHORIZATION_NEEDED',
+          priority: 'HIGH',
+          message: 'Coverage requires prior authorization. Obtain authorization before providing services.'
+        });
+      } else {
+        const authExpires = new Date(coverage.authorization_expiration);
+        const daysUntilAuthExpires = Math.ceil((authExpires - new Date()) / (1000 * 60 * 60 * 24));
+        if (daysUntilAuthExpires <= 7) {
+          recommendations.push({
+            type: 'AUTHORIZATION_EXPIRING',
+            priority: 'MEDIUM',
+            message: `Authorization expires in ${daysUntilAuthExpires} days. Request renewal if needed.`
+          });
+        }
+      }
+    }
+
+    if (!coverage.hospice_covered) {
+      recommendations.push({
+        type: 'NO_HOSPICE_COVERAGE',
+        priority: 'HIGH',
+        message: 'Hospice services are not covered under this plan. Verify coverage or explore alternative options.'
+      });
+    }
+
+    return {
+      coverage: {
+        ...coverage,
+        // Add formatted financial amounts (convert from cents to dollars)
+        copayAmountFormatted: coverage.copay_amount ? (coverage.copay_amount / 100).toFixed(2) : null,
+        deductibleAmountFormatted: coverage.deductible_amount ? (coverage.deductible_amount / 100).toFixed(2) : null,
+        deductibleRemainingFormatted: coverage.deductible_remaining ? (coverage.deductible_remaining / 100).toFixed(2) : null,
+        outOfPocketMaxFormatted: coverage.out_of_pocket_max ? (coverage.out_of_pocket_max / 100).toFixed(2) : null,
+        outOfPocketRemainingFormatted: coverage.out_of_pocket_remaining ? (coverage.out_of_pocket_remaining / 100).toFixed(2) : null
+      },
+      benefits: benefits.map(b => ({
+        ...b,
+        monetaryAmountFormatted: b.monetary_amount ? (b.monetary_amount / 100).toFixed(2) : null
+      })),
+      recentVerifications: recentVerifications.map(v => ({
+        responseId: v.response_id,
+        responseDate: v.response_date,
+        eligibilityStatus: v.eligibility_status,
+        isEligible: v.is_eligible,
+        planName: v.plan_name
+      })),
+      recommendations
+    };
+  }
+
+  /**
+   * Retry a failed eligibility verification
+   * @param {string} requestId - Original request ID
+   * @param {string} userId - User initiating retry
+   * @returns {Promise<object|null>} Retry result
+   */
+  async retryVerification(requestId, userId) {
+    // Find the original request
+    const [originalRequest] = await db.select()
+      .from(eligibility_requests)
+      .where(eq(eligibility_requests.request_id, requestId))
+      .limit(1);
+
+    if (!originalRequest) {
+      return null;
+    }
+
+    // Only allow retry for ERROR or TIMEOUT status
+    if (!['ERROR', 'TIMEOUT'].includes(originalRequest.status)) {
+      return {
+        error: `Cannot retry request with status '${originalRequest.status}'. Only ERROR or TIMEOUT requests can be retried.`
+      };
+    }
+
+    // Check retry count limit (max 3 retries)
+    const maxRetries = 3;
+    if (originalRequest.retry_count >= maxRetries) {
+      return {
+        error: `Maximum retry limit (${maxRetries}) reached for this request.`
+      };
+    }
+
+    try {
+      // Update original request retry count
+      await db.update(eligibility_requests)
+        .set({
+          retry_count: (originalRequest.retry_count || 0) + 1,
+          updated_at: new Date()
+        })
+        .where(eq(eligibility_requests.id, originalRequest.id));
+
+      // Create new verification request based on original
+      const result = await this.verifyEligibility({
+        patientId: originalRequest.patient_id,
+        payerId: originalRequest.payer_id,
+        serviceType: originalRequest.service_type,
+        forceRefresh: true,
+        submittedBy: userId
+      });
+
+      return {
+        originalRequestId: requestId,
+        newRequestId: result.requestId,
+        status: result.status,
+        retryCount: (originalRequest.retry_count || 0) + 1,
+        message: 'Verification retry initiated successfully'
+      };
+    } catch (error) {
+      logger.error('Error retrying verification:', error);
+      return {
+        error: `Retry failed: ${error.message}`
+      };
+    }
+  }
+
+  /**
+   * Cancel a pending eligibility request
+   * @param {string} requestId - Request ID to cancel
+   * @param {string} reason - Reason for cancellation
+   * @param {string} userId - User initiating cancellation
+   * @returns {Promise<object|null>} Cancellation result
+   */
+  async cancelRequest(requestId, reason, userId) {
+    // Find the request
+    const [request] = await db.select()
+      .from(eligibility_requests)
+      .where(eq(eligibility_requests.request_id, requestId))
+      .limit(1);
+
+    if (!request) {
+      return null;
+    }
+
+    // Only allow cancellation for PENDING or SENT status
+    if (!['PENDING', 'SENT'].includes(request.status)) {
+      return {
+        error: `Cannot cancel request with status '${request.status}'. Only PENDING or SENT requests can be cancelled.`
+      };
+    }
+
+    // Update request status to CANCELLED
+    await db.update(eligibility_requests)
+      .set({
+        status: 'CANCELLED',
+        error_message: reason || 'Cancelled by user',
+        metadata: {
+          ...request.metadata,
+          cancelledBy: userId,
+          cancelledAt: new Date().toISOString(),
+          cancellationReason: reason
+        },
+        updated_at: new Date()
+      })
+      .where(eq(eligibility_requests.id, request.id));
+
+    return {
+      success: true,
+      requestId,
+      previousStatus: request.status,
+      newStatus: 'CANCELLED'
+    };
+  }
 }
 
 // Export singleton instance

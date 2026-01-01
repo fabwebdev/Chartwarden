@@ -528,6 +528,220 @@ class EligibilityController {
       });
     }
   }
+
+  /**
+   * 10. Query coverage information with flexible filters
+   * GET /api/eligibility/coverage/query
+   *
+   * @query {number} patientId - Filter by patient ID
+   * @query {string} memberId - Filter by insurance member ID
+   * @query {number} payerId - Filter by payer ID
+   * @query {boolean} isActive - Filter by active coverage status
+   * @query {string} serviceDate - Check coverage for specific service date (YYYY-MM-DD)
+   * @query {boolean} authorizationRequired - Filter by authorization requirement
+   * @query {boolean} hospiceCovered - Filter by hospice coverage
+   * @query {boolean} needsReverification - Filter by reverification status
+   * @query {boolean} includeExpired - Include expired coverage records
+   * @query {number} page - Page number (default 1)
+   * @query {number} limit - Items per page (default 20, max 100)
+   */
+  async queryCoverage(request, reply) {
+    try {
+      const {
+        patientId,
+        memberId,
+        payerId,
+        isActive,
+        serviceDate,
+        authorizationRequired,
+        hospiceCovered,
+        needsReverification,
+        includeExpired = false,
+        page = 1,
+        limit = 20
+      } = request.query;
+
+      // Validate limit
+      const itemsPerPage = Math.min(parseInt(limit) || 20, 100);
+      const pageNumber = Math.max(parseInt(page) || 1, 1);
+      const offset = (pageNumber - 1) * itemsPerPage;
+
+      // Validate serviceDate format if provided
+      if (serviceDate && isNaN(Date.parse(serviceDate))) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid serviceDate format. Use ISO date format (YYYY-MM-DD)'
+        });
+      }
+
+      // Build filter parameters
+      const filters = {
+        patientId: patientId ? parseInt(patientId) : undefined,
+        memberId,
+        payerId: payerId ? parseInt(payerId) : undefined,
+        isActive: isActive !== undefined ? isActive === 'true' || isActive === true : undefined,
+        serviceDate: serviceDate ? new Date(serviceDate) : undefined,
+        authorizationRequired: authorizationRequired !== undefined ? authorizationRequired === 'true' || authorizationRequired === true : undefined,
+        hospiceCovered: hospiceCovered !== undefined ? hospiceCovered === 'true' || hospiceCovered === true : undefined,
+        needsReverification: needsReverification !== undefined ? needsReverification === 'true' || needsReverification === true : undefined,
+        includeExpired: includeExpired === 'true' || includeExpired === true,
+        limit: itemsPerPage,
+        offset
+      };
+
+      const result = await EligibilityVerifier.queryCoverage(filters);
+
+      return reply.code(200).send({
+        success: true,
+        data: result.coverage,
+        pagination: {
+          page: pageNumber,
+          limit: itemsPerPage,
+          total: result.total,
+          totalPages: Math.ceil(result.total / itemsPerPage)
+        }
+      });
+    } catch (error) {
+      logger.error('Error querying coverage:', error);
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * 11. Get coverage summary for a patient with benefit details
+   * GET /api/eligibility/coverage/:patientId/summary
+   *
+   * @param {number} patientId - Patient ID
+   */
+  async getCoverageSummary(request, reply) {
+    try {
+      const { patientId } = request.params;
+
+      if (!patientId) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Patient ID is required'
+        });
+      }
+
+      const summary = await EligibilityVerifier.getCoverageSummary(parseInt(patientId));
+
+      if (!summary) {
+        return reply.code(404).send({
+          success: false,
+          error: 'No coverage information found for this patient'
+        });
+      }
+
+      return reply.code(200).send({
+        success: true,
+        data: summary
+      });
+    } catch (error) {
+      logger.error('Error getting coverage summary:', error);
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * 12. Retry failed eligibility verification
+   * POST /api/eligibility/retry/:requestId
+   *
+   * @param {string} requestId - Original request ID to retry
+   */
+  async retryVerification(request, reply) {
+    try {
+      const { requestId } = request.params;
+
+      if (!requestId) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Request ID is required'
+        });
+      }
+
+      const result = await EligibilityVerifier.retryVerification(requestId, request.user?.id);
+
+      if (!result) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Original verification request not found'
+        });
+      }
+
+      if (result.error) {
+        return reply.code(400).send({
+          success: false,
+          error: result.error
+        });
+      }
+
+      return reply.code(200).send({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      logger.error('Error retrying verification:', error);
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * 13. Cancel pending eligibility request
+   * POST /api/eligibility/cancel/:requestId
+   *
+   * @param {string} requestId - Request ID to cancel
+   * @body {string} reason - Reason for cancellation
+   */
+  async cancelRequest(request, reply) {
+    try {
+      const { requestId } = request.params;
+      const { reason } = request.body || {};
+
+      if (!requestId) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Request ID is required'
+        });
+      }
+
+      const result = await EligibilityVerifier.cancelRequest(requestId, reason, request.user?.id);
+
+      if (!result) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Request not found'
+        });
+      }
+
+      if (result.error) {
+        return reply.code(400).send({
+          success: false,
+          error: result.error
+        });
+      }
+
+      return reply.code(200).send({
+        success: true,
+        message: 'Request cancelled successfully'
+      });
+    } catch (error) {
+      logger.error('Error cancelling request:', error);
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
 }
 
 export default new EligibilityController();

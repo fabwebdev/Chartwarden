@@ -2,8 +2,8 @@
   "id": "eligibility-ui",
   "category": "UI",
   "title": "Eligibility Verification UI",
-  "description": "Create eligibility verification interface with request submission and coverage display.",
-  "status": "backlog",
+  "description": "Build Healthcare Eligibility Verification System\n\nCreate a comprehensive eligibility verification interface that enables healthcare providers to submit real-time verification requests and view patient coverage information.\n\nCore Functionality:\n\n1. Eligibility Verification Form\n   - Required fields: Patient first/last name, date of birth (MM/DD/YYYY), member/subscriber ID, insurance provider/payer selection\n   - Optional fields: Service type code, rendering provider NPI, date of service\n   - Input validation: Format checking (DOB format, ID alphanumeric patterns), required field enforcement, real-time inline error messages\n   - Support for both subscriber and dependent verification\n   - Clear distinction between subscriber information and patient information when different\n\n2. Request Submission & State Management\n   - POST eligibility verification request to backend API endpoint\n   - Display loading spinner with \"Verifying coverage...\" message during API call\n   - Handle success: Store response with unique request ID and timestamp\n   - Handle errors: Network failures, timeout scenarios, invalid member ID, payer system unavailable\n   - Implement retry mechanism for transient failures\n   - Prevent duplicate submissions (disable button during processing)\n\n3. Coverage Information Display\n   - Status indicator: Active (green), Inactive (red), Pending (yellow) with clear visual differentiation\n   - Coverage period: Effective date, termination date (if applicable), plan year dates\n   - Financial responsibility breakdown:\n     * Individual/family deductible (met amount / total amount)\n     * Out-of-pocket maximum (met amount / total amount)\n     * Copay amounts by service type\n     * Coinsurance percentages\n   - Benefit categories: Medical, dental, vision, pharmacy, mental health\n   - Network status: In-network vs out-of-network benefit differences\n   - Plan details: Plan name, group number, payer contact information\n\n4. Edge Case Handling\n   - No active coverage: Display clear message with last known coverage dates\n   - Partial data: Show available information, indicate missing fields\n   - Multiple active plans: Display all plans with coordination of benefits information\n   - Future-dated coverage: Show pending effective date prominently\n   - Terminated coverage: Display termination date and reason if available\n   - Real-time eligibility unavailable: Offer batch verification option\n\n5. User Experience Enhancements\n   - Export functionality: Download as PDF, export to CSV, copy to clipboard\n   - Print view: Clean, formatted printout without navigation elements\n   - Verification history: Searchable table of past verifications with date, patient name, status\n   - Insurance terminology tooltips: Hover explanations for deductible, coinsurance, out-of-pocket maximum, etc.\n   - Auto-save form data to prevent re-entry on errors\n   - Recent searches: Quick access to previously verified member IDs\n\nTechnical Considerations:\n- Ensure HIPAA compliance for all patient data handling\n- Implement proper authentication/authorization before accessing verification features\n- Add audit logging for all verification requests\n- Cache verification results appropriately (typically 24-hour validity)\n- Support keyboard navigation and screen reader accessibility\n- Responsive design for tablet/mobile access\n- Handle timezone differences for date/timestamp display\n\nSuccess Criteria:\n- Form submission completes within 3 seconds under normal conditions\n- Coverage information displays in scannable, hierarchical format\n- All required fields validated before submission\n- Error states provide actionable guidance to users\n- Exported/printed results contain all relevant coverage details",
+  "status": "in_progress",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.254Z",
-  "updatedAt": "2025-12-31T05:55:26.254Z"
+  "updatedAt": "2026-01-01T06:21:13.000Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T06:21:12.607Z"
 }

@@ -3,14 +3,14 @@
   "category": "API",
   "title": "Certification API Routes",
   "description": "Create REST API Routes for Certification Management with CMS Compliance Validation\n\nBuild a comprehensive REST API for managing certifications with integrated CMS (Centers for Medicare & Medicaid Services) compliance validation.\n\nRequirements:\n- Define RESTful endpoints for certification CRUD operations:\n  - GET /certifications - List all certifications with filtering/pagination\n  - GET /certifications/:id - Retrieve specific certification details\n  - POST /certifications - Create new certification\n  - PUT/PATCH /certifications/:id - Update existing certification\n  - DELETE /certifications/:id - Remove certification\n\n- Implement CMS compliance validation:\n  - Validate certification data against CMS regulatory requirements\n  - Check required fields per CMS specifications\n  - Validate certification dates (issue, expiration, renewal periods)\n  - Verify certification types against approved CMS categories\n  - Return clear validation error messages with specific compliance failures\n\n- Data handling:\n  - Define certification schema/model with all required CMS fields\n  - Implement proper request/response data structures\n  - Handle file uploads for certification documents if applicable\n  - Support bulk operations if needed\n\n- Security and access control:\n  - Add authentication middleware to protect endpoints\n  - Implement role-based authorization (who can create/modify/view certifications)\n  - Sanitize and validate all input data\n  - Log certification changes for audit trail\n\n- Error handling:\n  - Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)\n  - Provide detailed error messages for validation failures\n  - Handle database connection errors gracefully\n\n- Testing:\n  - Create test cases for each endpoint\n  - Test CMS validation rules with valid and invalid data\n  - Verify error handling scenarios\n  - Test authorization/authentication flows\n\n- Documentation:\n  - Document API endpoints with request/response examples\n  - List all CMS compliance rules being validated\n  - Provide error code reference guide",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "certification-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.247Z",
-  "updatedAt": "2025-12-31T05:55:26.247Z",
+  "updatedAt": "2026-01-01T00:47:00.383Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -18,5 +18,6 @@
   "textFilePaths": [],
   "branchName": "main",
   "planningMode": "skip",
-  "requirePlanApproval": false
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:38:41.783Z"
 }

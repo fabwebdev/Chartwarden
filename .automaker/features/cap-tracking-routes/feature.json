@@ -3,14 +3,14 @@
   "category": "API",
   "title": "Cap Tracking API Routes",
   "description": "Create REST API Routes for Cap Tracking and Compliance Monitoring\n\nDevelop a comprehensive set of RESTful API endpoints to manage cap tracking and compliance monitoring functionality.\n\nRequirements:\n- Define resource endpoints for cap tracking (e.g., GET/POST/PUT/DELETE /api/caps)\n- Create endpoints for compliance monitoring data (e.g., GET /api/compliance/status, GET /api/compliance/reports)\n- Implement query parameters for filtering, sorting, and pagination\n- Add endpoints to retrieve cap utilization metrics and historical trends\n- Create endpoints for compliance alert configuration and notifications\n- Include validation middleware for request payloads\n- Implement proper HTTP status codes and error responses\n- Add rate limiting to prevent API abuse\n- Document all endpoints with request/response schemas\n- Include authentication and authorization checks\n- Add audit logging for compliance-related operations\n- Write integration tests for all endpoints\n\nEdge Cases to Consider:\n- Handling concurrent cap updates\n- Managing caps that span multiple time periods\n- Dealing with partial compliance data\n- Handling timezone differences in compliance reporting",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "cap-tracking-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.258Z",
-  "updatedAt": "2025-12-31T05:55:26.258Z",
+  "updatedAt": "2026-01-01T00:50:01.570Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -18,5 +18,6 @@
   "textFilePaths": [],
   "branchName": "main",
   "planningMode": "skip",
-  "requirePlanApproval": false
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:38:40.511Z"
 }

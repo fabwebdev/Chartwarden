@@ -16,7 +16,85 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  */
 export default async function hopeAssessmentRoutes(fastify, options) {
   // ============================================================================
-  // Query routes (must be registered before parameterized routes)
+  // REST API Endpoints - Generic CRUD Operations
+  // ============================================================================
+
+  // List all assessments with filters and pagination
+  // GET /assessments?patient_id=&assessment_type=&date_from=&date_to=&limit=&offset=
+  fastify.get('/assessments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.index);
+
+  // Create new assessment (generic endpoint with type in body)
+  // POST /assessments { patient_id, assessment_type, ... }
+  fastify.post('/assessments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.create);
+
+  // Get single assessment by ID
+  // GET /assessments/:id
+  fastify.get('/assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.show);
+
+  // Full update (PUT) - replaces entire assessment
+  // PUT /assessments/:id
+  fastify.put('/assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.replace);
+
+  // Partial update (PATCH) - updates specific fields
+  // PATCH /assessments/:id
+  fastify.patch('/assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.update);
+
+  // Soft delete assessment
+  // DELETE /assessments/:id
+  fastify.delete('/assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.delete);
+
+  // Get assessment version history
+  // GET /assessments/:id/history
+  fastify.get('/assessments/:id/history', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getHistory);
+
+  // Get detailed CMS compliance status for assessment
+  // GET /assessments/:id/cms-compliance
+  fastify.get('/assessments/:id/cms-compliance', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCMSComplianceStatus);
+
+  // Submit assessment to CMS iQIES (alias for existing route)
+  // POST /assessments/:id/submit
+  fastify.post('/assessments/:id/submit', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.submit);
+
+  // ============================================================================
+  // CMS Requirements Endpoints
+  // ============================================================================
+
+  // Get CMS requirements by assessment type
+  // GET /cms-requirements?assessment_type=
+  fastify.get('/cms-requirements', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCMSRequirements);
+
+  // ============================================================================
+  // Reports & Dashboard Endpoints
+  // ============================================================================
+
+  // Get aggregate compliance dashboard data
+  // GET /reports/compliance?date_from=&date_to=&assessment_type=
+  fastify.get('/reports/compliance', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getComplianceDashboard);
+
+  // ============================================================================
+  // Legacy Query routes (must be registered before parameterized routes)
   // ============================================================================
   fastify.get('/hope-assessments/pending', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]

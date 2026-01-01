@@ -95,6 +95,59 @@ class JobScheduler {
       })
     );
 
+    // ============================================================================
+    // IDG 14-DAY COMPLIANCE JOBS (42 CFR §418.56)
+    // ============================================================================
+
+    // IDG Compliance Alerts - Every 2 hours during business hours
+    this.jobs.push(
+      cron.schedule('0 */2 6-20 * * *', async () => {
+        logger.info('Running scheduled IDG compliance alert processing')
+        try {
+          await processComplianceAlerts();
+        } catch (error) {
+          logger.error('IDG compliance alert processing failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
+    // IDG Overdue Documentation Check - Daily at 6:00 AM
+    this.jobs.push(
+      cron.schedule('0 6 * * *', async () => {
+        logger.info('Running scheduled IDG overdue documentation check')
+        try {
+          await checkOverdueDocumentation();
+        } catch (error) {
+          logger.error('IDG overdue documentation check failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
+    // IDG Monthly Compliance Report Generation - 1st of each month at 1:00 AM
+    this.jobs.push(
+      cron.schedule('0 1 1 * *', async () => {
+        logger.info('Running scheduled IDG monthly compliance report generation')
+        try {
+          const now = new Date();
+          // Generate report for previous month
+          const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth();
+          const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+          await generateMonthlyComplianceReport(prevMonth, prevYear);
+        } catch (error) {
+          logger.error('IDG monthly compliance report generation failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
     logger.info(`Initialized ${this.jobs.length} scheduled jobs`)
   }
 
@@ -124,6 +177,13 @@ class JobScheduler {
         return await runRetentionJob();
       case 'audit-compliance-check':
         return await checkRetentionCompliance();
+      case 'idg-compliance-alerts':
+        return await processComplianceAlerts();
+      case 'idg-overdue-check':
+        return await checkOverdueDocumentation();
+      case 'idg-monthly-report':
+        const now = new Date();
+        return await generateMonthlyComplianceReport(now.getMonth() + 1, now.getFullYear());
       default:
         throw new Error(`Unknown job: ${jobName}`);
     }

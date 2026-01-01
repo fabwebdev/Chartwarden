@@ -26,6 +26,7 @@ import CerticationsPage from './CertificationsPage';
 import EncountersPage from './EncountersPage';
 import DoseSpotPage from './DoseSpotPage';
 import MedListPage from './MedListPage';
+import { MedicationsPage } from './medications';
 import { useEffect, useState } from 'react';
 import TrendsPage from './TrendsPage';
 import HisPage from './his/HisPage';
@@ -246,8 +247,11 @@ const hasPatientInfoAccess = () => {
       {hasPermission('certifications_secondary_menu') && 
         <Tab label="Certifications" value={`certifications/${id}`} iconPosition="start" sx={{ color: tab.startsWith('certifications') ? 'primary.main' : 'inherit' }} />
       }
-      {hasPermission('med_list_secondary_menu') && 
+      {hasPermission('med_list_secondary_menu') &&
         <Tab label="Med List" value={`med-list/${id}`} iconPosition="start" sx={{ color: tab.startsWith('med-list') ? 'primary.main' : 'inherit' }} />
+      }
+      {hasPermission('medications_secondary_menu') &&
+        <Tab label="Medications" value={`medications/${id}`} iconPosition="start" sx={{ color: tab.startsWith('medications') ? 'primary.main' : 'inherit' }} />
       }
       {hasPermission('dose_spot_secondary_menu') && 
         <Tab label="Dose Spot" value={`dose-spot/${id}`} iconPosition="start" sx={{ color: tab.startsWith('dose-spot') ? 'primary.main' : 'inherit' }} />
@@ -264,7 +268,7 @@ const hasPatientInfoAccess = () => {
     {tab.startsWith('teamComm') && <TeamCommPage />}
     {tab.startsWith('trends') && <TrendsPage />}
     {tab.startsWith('hope') && <HisPage id={patientId} />}
-    {tab.startsWith('encounters') && <EncountersPage />}
+    {tab.startsWith('encounters') && <EncountersPage patientId={patientId} />}
     {tab.startsWith('care-plan') && <CarePlanPage />}
     {tab.startsWith('patient-info') && <PatientInfoPage />}
     {tab.startsWith('idg-team') && <IdgTeamPage2 />}

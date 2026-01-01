@@ -2,8 +2,8 @@
   "id": "cap-tracking-ui",
   "category": "UI",
   "title": "Cap Tracking Dashboard UI",
-  "description": "Create cap tracking dashboard with remaining cap display and limit warning alerts.",
-  "status": "backlog",
+  "description": "Implement Capital Tracking Dashboard with Usage Monitoring and Alerts\n\nCreate a comprehensive dashboard that tracks capital usage against defined limits, displaying remaining capacity and proactively alerting users when approaching or exceeding thresholds.\n\nRequirements:\n- Display current capital usage with visual progress indicators (e.g., progress bars, gauges)\n- Show remaining capital capacity prominently with clear numerical and percentage values\n- Calculate and display usage trends over time (daily, weekly, monthly views)\n- Implement configurable warning thresholds (e.g., 75%, 90%, 100% of cap)\n- Trigger visual alerts when usage approaches or exceeds defined limits\n- Support multiple capital categories or pools if applicable\n- Ensure real-time or near-real-time data updates\n- Provide historical data visualization to track patterns\n- Include filtering options by time period, category, or department\n- Make dashboard responsive for desktop and mobile viewing\n\nEdge Cases to Consider:\n- Handle scenarios where cap limits are modified mid-period\n- Display appropriate messaging when no cap is defined\n- Account for negative adjustments or refunds to capital usage\n- Handle concurrent updates to prevent race conditions\n\nSuccess Criteria:\n- Users can quickly identify current capital position at a glance\n- Alerts are delivered before limits are reached to enable proactive action\n- Dashboard loads within 2 seconds with up-to-date information\n- All stakeholders have appropriate access based on permissions",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.259Z",
-  "updatedAt": "2025-12-31T05:55:26.259Z"
+  "updatedAt": "2026-01-01T01:06:02.700Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:56:47.744Z"
 }

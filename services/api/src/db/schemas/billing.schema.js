@@ -616,3 +616,189 @@ export const claim_procedure_codes = pgTable('claim_procedure_codes', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+/**
+ * Invoices Table
+ * Invoices generated from approved claims for billing purposes
+ * An invoice can include one or more approved claims
+ */
+export const invoices = pgTable('invoices', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Invoice identification
+  invoice_number: varchar('invoice_number', { length: 50 }).unique().notNull(),
+  invoice_date: date('invoice_date').notNull(),
+  due_date: date('due_date'),
+
+  // Invoice status
+  invoice_status: varchar('invoice_status', { length: 50 }).default('DRAFT').notNull(), // DRAFT, SENT, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED, VOID
+
+  // Patient/Payer information
+  patient_id: bigint('patient_id', { mode: 'number' }).references(() => patients.id),
+  payer_id: bigint('payer_id', { mode: 'number' }).references(() => payers.id),
+
+  // Billing period covered
+  billing_period_start: date('billing_period_start'),
+  billing_period_end: date('billing_period_end'),
+
+  // Financial totals (stored in cents)
+  subtotal: integer('subtotal').default(0).notNull(), // Sum of all line items
+  tax_amount: integer('tax_amount').default(0), // Applicable taxes in cents
+  discount_amount: integer('discount_amount').default(0), // Discounts in cents
+  total_amount: integer('total_amount').default(0).notNull(), // Final invoice amount
+  amount_paid: integer('amount_paid').default(0), // Amount already paid
+  balance_due: integer('balance_due').default(0), // Remaining balance
+
+  // Payment terms
+  payment_terms: varchar('payment_terms', { length: 100 }), // NET_30, NET_45, DUE_ON_RECEIPT, etc.
+
+  // Notes and metadata
+  notes: text('notes'),
+  internal_notes: text('internal_notes'), // Internal notes not shown on invoice
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Invoice Line Items Table
+ * Individual line items on an invoice (can be linked to claims or standalone)
+ */
+export const invoice_line_items = pgTable('invoice_line_items', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  invoice_id: bigint('invoice_id', { mode: 'number' }).references(() => invoices.id).notNull(),
+  claim_id: bigint('claim_id', { mode: 'number' }).references(() => claims.id), // Optional link to source claim
+
+  // Line item details
+  line_number: integer('line_number').notNull(),
+  description: varchar('description', { length: 500 }).notNull(),
+  service_date: date('service_date'),
+
+  // Code references (optional)
+  revenue_code: varchar('revenue_code', { length: 4 }),
+  cpt_code: varchar('cpt_code', { length: 10 }),
+  hcpcs_code: varchar('hcpcs_code', { length: 10 }),
+
+  // Quantities and amounts (in cents)
+  quantity: integer('quantity').default(1).notNull(),
+  unit_price: integer('unit_price').notNull(), // Price per unit in cents
+  line_total: integer('line_total').notNull(), // quantity * unit_price in cents
+
+  // Discounts and adjustments
+  discount_percent: integer('discount_percent').default(0),
+  discount_amount: integer('discount_amount').default(0),
+  adjustment_amount: integer('adjustment_amount').default(0),
+  adjustment_reason: varchar('adjustment_reason', { length: 255 }),
+
+  // Net amount after adjustments
+  net_amount: integer('net_amount').notNull(), // line_total - discount - adjustments
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Invoice Payments Table
+ * Tracks payments made against specific invoices
+ */
+export const invoice_payments = pgTable('invoice_payments', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  invoice_id: bigint('invoice_id', { mode: 'number' }).references(() => invoices.id).notNull(),
+  payment_id: bigint('payment_id', { mode: 'number' }).references(() => payments.id), // Link to payment record if exists
+
+  // Payment details
+  payment_date: date('payment_date').notNull(),
+  payment_amount: integer('payment_amount').notNull(), // Amount in cents
+  payment_method: varchar('payment_method', { length: 50 }), // CHECK, EFT, ACH, WIRE, CARD, CASH
+
+  // Reference numbers
+  reference_number: varchar('reference_number', { length: 100 }),
+  check_number: varchar('check_number', { length: 50 }),
+  transaction_id: varchar('transaction_id', { length: 100 }),
+
+  notes: text('notes'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Billing Statements Table
+ * Monthly/periodic billing statements sent to patients/payers
+ * Summarizes all invoices and payments for a period
+ */
+export const billing_statements = pgTable('billing_statements', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Statement identification
+  statement_number: varchar('statement_number', { length: 50 }).unique().notNull(),
+  statement_date: date('statement_date').notNull(),
+
+  // Period covered
+  period_start: date('period_start').notNull(),
+  period_end: date('period_end').notNull(),
+
+  // Patient/Payer
+  patient_id: bigint('patient_id', { mode: 'number' }).references(() => patients.id),
+  payer_id: bigint('payer_id', { mode: 'number' }).references(() => payers.id),
+
+  // Financial summary (all in cents)
+  previous_balance: integer('previous_balance').default(0),
+  new_charges: integer('new_charges').default(0),
+  payments_received: integer('payments_received').default(0),
+  adjustments: integer('adjustments').default(0),
+  current_balance: integer('current_balance').default(0),
+
+  // Aging buckets (in cents)
+  current_amount: integer('current_amount').default(0), // 0-30 days
+  amount_30_days: integer('amount_30_days').default(0), // 31-60 days
+  amount_60_days: integer('amount_60_days').default(0), // 61-90 days
+  amount_90_days: integer('amount_90_days').default(0), // 91-120 days
+  amount_over_120_days: integer('amount_over_120_days').default(0), // 120+ days
+
+  // Statement status
+  statement_status: varchar('statement_status', { length: 50 }).default('DRAFT').notNull(), // DRAFT, GENERATED, SENT, VOID
+
+  // Delivery tracking
+  sent_date: timestamp('sent_date'),
+  sent_method: varchar('sent_method', { length: 50 }), // MAIL, EMAIL, PORTAL
+  email_sent_to: varchar('email_sent_to', { length: 255 }),
+
+  notes: text('notes'),
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Statement Line Items Table
+ * Details of invoices included in a billing statement
+ */
+export const statement_line_items = pgTable('statement_line_items', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  statement_id: bigint('statement_id', { mode: 'number' }).references(() => billing_statements.id).notNull(),
+  invoice_id: bigint('invoice_id', { mode: 'number' }).references(() => invoices.id),
+
+  // Line details
+  line_date: date('line_date').notNull(),
+  description: varchar('description', { length: 500 }).notNull(),
+  line_type: varchar('line_type', { length: 50 }).notNull(), // CHARGE, PAYMENT, ADJUSTMENT, BALANCE_FORWARD
+
+  // Amount (in cents, positive for charges, negative for payments/credits)
+  amount: integer('amount').notNull(),
+  running_balance: integer('running_balance'), // Running balance after this line
+
+  createdAt: timestamp('created_at').defaultNow().notNull()
+});

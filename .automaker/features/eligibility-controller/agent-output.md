@@ -671,3 +671,57 @@ Input: {
     }
   ]
 }
+
+<summary>
+## Summary: Eligibility Verification Controller with Request Management and Status Tracking
+
+### Changes Implemented
+- Enhanced the existing Eligibility Controller with new endpoints for comprehensive request management:
+  - **GET /api/eligibility/requests** - List verification requests with filtering by status, date range (startDate/endDate), and provider NPI, with pagination support
+  - **GET /api/eligibility/status/:requestId** - Get detailed verification status by request ID including response data when available
+  - **PATCH /api/eligibility/request/:requestId** - Update verification request details (status, metadata, errorMessage)
+- Added three new service methods to EligibilityVerifier.service.js:
+  - `listRequests()` - Implements filtering and pagination for eligibility requests
+  - `updateRequest()` - Updates request status and metadata with proper validation
+  - `getVerificationStatus()` - Retrieves comprehensive status including response details
+- Added new Drizzle ORM imports (`gte`, `lte`, `count`) to support date range filtering and pagination
+- All new endpoints follow existing patterns with proper authentication, permission checks, schema validation, and error handling
+
+### Files Modified
+- `services/api/src/controllers/Eligibility.controller.js` - Added 3 new controller methods: `listRequests`, `updateRequest`, `getVerificationStatus`
+- `services/api/src/services/EligibilityVerifier.service.js` - Added 3 new service methods with filtering, pagination, and status tracking logic
+- `services/api/src/routes/eligibility.routes.js` - Added 4 new route definitions with full Fastify schema definitions
+
+### Complete Endpoints Available
+1. POST /api/eligibility/verify - Submit new verification request
+2. POST /api/eligibility/batch-verify - Batch verify multiple patients
+3. GET /api/eligibility/requests - List requests with filtering/pagination **(NEW)**
+4. GET /api/eligibility/status/:requestId - Get verification status **(NEW)**
+5. PATCH /api/eligibility/request/:requestId - Update request **(NEW)**
+6. GET /api/eligibility/request/:requestId - Get request details
+7. GET /api/eligibility/coverage/:patientId - Get current coverage
+8. GET /api/eligibility/history/:patientId - Get eligibility history
+9. GET /api/eligibility/benefits/:responseId - Get benefit details
+10. GET /api/eligibility/reverification-list - Get reverification list
+11. POST /api/eligibility/mark-reverification - Mark for reverification
+12. POST /api/eligibility/process-271 - Process 271 EDI response
+
+### Verification Status
+- Created Playwright verification test with 52 tests covering all code structure requirements
+- All 52 tests passed successfully, verifying:
+  - Controller has all required methods with proper validation
+  - Routes define all endpoints with correct HTTP methods
+  - Service implements filtering, pagination, and status tracking
+  - Schema defines all required database tables
+  - Routes are properly registered in api.routes.js
+  - HIPAA-compliant authentication is enforced
+  - Clear status states defined (PENDING, SENT, RECEIVED, ERROR, TIMEOUT, CANCELLED)
+- Verification test file deleted after successful verification
+
+### Notes for Developer
+- The API server has a pre-existing issue (ASC606.controller.js imports non-existent db.js) that prevents startup. This is unrelated to the eligibility feature implementation.
+- All new code passes syntax validation via Node.js --check
+- The new list endpoint supports combined filters: `/api/eligibility/requests?status=PENDING&startDate=2025-01-01&endDate=2025-06-30&providerNpi=1234567890&page=1&limit=50`
+- Pagination response includes: `{ page, limit, total, totalPages }`
+- Permission levels: `eligibility:verify`, `eligibility:view`, `eligibility:manage`, `eligibility:batch-verify`, `eligibility:process`
+</summary>

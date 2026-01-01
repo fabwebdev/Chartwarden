@@ -538,4 +538,309 @@ export default async function eligibilityRoutes(fastify, options) {
     },
     EligibilityController.updateRequest.bind(EligibilityController)
   );
+
+  /**
+   * 10. Query coverage information with flexible filters
+   * GET /api/eligibility/coverage/query
+   * Permission: eligibility:view
+   *
+   * Allows querying coverage by various criteria:
+   * - Patient ID
+   * - Member ID (insurance member number)
+   * - Date of service
+   * - Active status
+   * - Authorization requirements
+   */
+  fastify.get(
+    '/coverage/query',
+    {
+      preHandler: checkPermission('eligibility:view'),
+      schema: {
+        description: 'Query coverage information with flexible filters. Returns coverage details for verified patients.',
+        tags: ['Eligibility', 'Coverage'],
+        querystring: {
+          type: 'object',
+          properties: {
+            patientId: {
+              type: 'number',
+              description: 'Filter by patient ID'
+            },
+            memberId: {
+              type: 'string',
+              description: 'Filter by insurance member ID/number'
+            },
+            payerId: {
+              type: 'number',
+              description: 'Filter by payer/insurance company ID'
+            },
+            isActive: {
+              type: 'boolean',
+              description: 'Filter by active coverage status'
+            },
+            serviceDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Check coverage for specific service date (YYYY-MM-DD)'
+            },
+            authorizationRequired: {
+              type: 'boolean',
+              description: 'Filter by authorization requirement'
+            },
+            hospiceCovered: {
+              type: 'boolean',
+              description: 'Filter by hospice coverage'
+            },
+            needsReverification: {
+              type: 'boolean',
+              description: 'Filter by reverification status'
+            },
+            includeExpired: {
+              type: 'boolean',
+              default: false,
+              description: 'Include expired coverage records'
+            },
+            page: {
+              type: 'number',
+              default: 1,
+              minimum: 1,
+              description: 'Page number for pagination'
+            },
+            limit: {
+              type: 'number',
+              default: 20,
+              minimum: 1,
+              maximum: 100,
+              description: 'Items per page (max 100)'
+            }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number' },
+                    patientId: { type: 'number' },
+                    payerId: { type: 'number' },
+                    isActive: { type: 'boolean' },
+                    eligibilityVerified: { type: 'boolean' },
+                    lastVerifiedDate: { type: 'string' },
+                    effectiveDate: { type: 'string' },
+                    terminationDate: { type: 'string' },
+                    planName: { type: 'string' },
+                    memberId: { type: 'string' },
+                    copayAmount: { type: 'number' },
+                    deductibleAmount: { type: 'number' },
+                    deductibleRemaining: { type: 'number' },
+                    outOfPocketMax: { type: 'number' },
+                    outOfPocketRemaining: { type: 'number' },
+                    authorizationRequired: { type: 'boolean' },
+                    hospiceCovered: { type: 'boolean' },
+                    limitations: { type: 'string' },
+                    cacheExpiresAt: { type: 'string' },
+                    needsReverification: { type: 'boolean' },
+                    cacheStatus: {
+                      type: 'object',
+                      properties: {
+                        expired: { type: 'boolean' },
+                        daysUntilExpiration: { type: 'number' }
+                      }
+                    }
+                  }
+                }
+              },
+              pagination: {
+                type: 'object',
+                properties: {
+                  page: { type: 'number' },
+                  limit: { type: 'number' },
+                  total: { type: 'number' },
+                  totalPages: { type: 'number' }
+                }
+              }
+            }
+          },
+          400: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.queryCoverage.bind(EligibilityController)
+  );
+
+  /**
+   * 11. Get coverage summary for a patient with benefit details
+   * GET /api/eligibility/coverage/:patientId/summary
+   * Permission: eligibility:view
+   *
+   * Returns comprehensive coverage summary including:
+   * - Current coverage status
+   * - All benefit details
+   * - Recent verification history
+   * - Authorization information
+   */
+  fastify.get(
+    '/coverage/:patientId/summary',
+    {
+      preHandler: checkPermission('eligibility:view'),
+      schema: {
+        description: 'Get comprehensive coverage summary with benefits for a patient',
+        tags: ['Eligibility', 'Coverage'],
+        params: {
+          type: 'object',
+          required: ['patientId'],
+          properties: {
+            patientId: { type: 'number', description: 'Patient ID' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  coverage: { type: 'object' },
+                  benefits: { type: 'array' },
+                  recentVerifications: { type: 'array' },
+                  recommendations: { type: 'array' }
+                }
+              }
+            }
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.getCoverageSummary.bind(EligibilityController)
+  );
+
+  /**
+   * 12. Retry failed eligibility verification
+   * POST /api/eligibility/retry/:requestId
+   * Permission: eligibility:verify
+   *
+   * Retries a failed or timed out eligibility verification request
+   */
+  fastify.post(
+    '/retry/:requestId',
+    {
+      preHandler: checkPermission('eligibility:verify'),
+      schema: {
+        description: 'Retry a failed or timed out eligibility verification request',
+        tags: ['Eligibility'],
+        params: {
+          type: 'object',
+          required: ['requestId'],
+          properties: {
+            requestId: { type: 'string', description: 'Original request ID to retry' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  originalRequestId: { type: 'string' },
+                  newRequestId: { type: 'string' },
+                  status: { type: 'string' },
+                  retryCount: { type: 'number' }
+                }
+              }
+            }
+          },
+          400: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.retryVerification.bind(EligibilityController)
+  );
+
+  /**
+   * 13. Cancel pending eligibility request
+   * POST /api/eligibility/cancel/:requestId
+   * Permission: eligibility:manage
+   *
+   * Cancels a pending eligibility verification request
+   */
+  fastify.post(
+    '/cancel/:requestId',
+    {
+      preHandler: checkPermission('eligibility:manage'),
+      schema: {
+        description: 'Cancel a pending eligibility verification request',
+        tags: ['Eligibility'],
+        params: {
+          type: 'object',
+          required: ['requestId'],
+          properties: {
+            requestId: { type: 'string', description: 'Request ID to cancel' }
+          }
+        },
+        body: {
+          type: 'object',
+          properties: {
+            reason: { type: 'string', description: 'Reason for cancellation' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' }
+            }
+          },
+          400: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.cancelRequest.bind(EligibilityController)
+  );
 }
