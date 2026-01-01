@@ -145,9 +145,57 @@ export function hasAbacAccess(user, resource, environment = {}) {
   return evaluatePolicies(policiesToApply, context);
 }
 
+/**
+ * Check if user can perform action on resource using the enhanced ABAC service
+ * Falls back to legacy evaluation if service is unavailable
+ * @param {Object} user - User making the request
+ * @param {Object} resource - Resource being accessed
+ * @param {string} action - Action being performed (default: 'read')
+ * @param {Object} environment - Environmental context
+ * @returns {Promise<boolean>}
+ */
+export async function canAccess(user, resource, action = 'read', environment = {}) {
+  try {
+    const { abacService } = await import('../services/ABAC.service.js');
+    return abacService.can(user, resource, action, environment);
+  } catch (error) {
+    // Fall back to legacy evaluation if service fails to load
+    console.warn('ABAC service unavailable, using legacy evaluation:', error.message);
+    return hasAbacAccess(user, resource, environment);
+  }
+}
+
+/**
+ * Get full authorization decision with details using the enhanced ABAC service
+ * @param {Object} user - User making the request
+ * @param {Object} resource - Resource being accessed
+ * @param {string} action - Action being performed
+ * @param {Object} environment - Environmental context
+ * @returns {Promise<Object>} Authorization decision with details
+ */
+export async function authorize(user, resource, action, environment = {}) {
+  try {
+    const { abacService } = await import('../services/ABAC.service.js');
+    return abacService.authorize(user, resource, action, environment);
+  } catch (error) {
+    console.warn('ABAC service unavailable:', error.message);
+    // Return a basic decision using legacy evaluation
+    const allowed = hasAbacAccess(user, resource, environment);
+    return {
+      allow: allowed,
+      decision: allowed ? 'allow' : 'deny',
+      reason: 'legacy_evaluation',
+      matchedPolicy: null,
+      evaluatedPolicies: [],
+    };
+  }
+}
+
 export default {
   ATTRIBUTES,
   ABAC_POLICIES,
   evaluatePolicies,
   hasAbacAccess,
+  canAccess,
+  authorize,
 };

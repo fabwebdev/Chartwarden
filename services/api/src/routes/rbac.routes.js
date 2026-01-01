@@ -239,25 +239,65 @@ async function rbacRoutes(fastify, options) {
   }, async (request, reply) => {
     try {
       const { userId } = request.params;
-      const { role } = request.body;
-      
-      // Validate role
-      if (!Object.values(ROLES).includes(role)) {
+      const { role: roleName } = request.body;
+
+      // Validate role name
+      if (!Object.values(ROLES).includes(roleName)) {
         reply.code(400);
         return {
           status: 400,
           message: 'Invalid role'
         };
       }
-      
-      // In a real implementation, you would update the user's role in the database
-      // For now, we'll just return a success response
+
+      // Get the role ID from database
+      const roleResult = await db
+        .select()
+        .from(roles)
+        .where(eq(roles.name, roleName))
+        .limit(1);
+
+      if (roleResult.length === 0) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Role not found in database'
+        };
+      }
+
+      const roleId = roleResult[0].id;
+
+      // Import user_has_roles for the operation
+      const { user_has_roles } = await import('../db/schemas/index.js');
+
+      // Remove any existing roles for this user (single role per user model)
+      await db
+        .delete(user_has_roles)
+        .where(eq(user_has_roles.user_id, userId));
+
+      // Assign new role
+      await db
+        .insert(user_has_roles)
+        .values({
+          user_id: userId,
+          role_id: roleId,
+          assigned_by: request.user.id
+        });
+
+      // Clear the permission cache for this user
+      const { clearPermissionCache } = await import('../middleware/rbac.middleware.js');
+      clearPermissionCache(userId);
+
+      logger.info(`Role ${roleName} assigned to user ${userId} by ${request.user.id}`);
+
       return {
         status: 200,
-        message: `Role ${role} assigned to user ${userId}`,
+        message: `Role ${roleName} assigned to user ${userId}`,
         data: {
           userId,
-          role
+          role: roleName,
+          roleId,
+          assignedBy: request.user.id
         }
       };
     } catch (error) {
@@ -266,6 +306,130 @@ async function rbacRoutes(fastify, options) {
       return {
         status: 500,
         message: 'Server error while assigning role'
+      };
+    }
+  });
+
+  // Remove role from user
+  fastify.delete('/users/:userId/role', {
+    preHandler: [verifyToken, requireAdmin],
+  }, async (request, reply) => {
+    try {
+      const { userId } = request.params;
+
+      // Import user_has_roles for the operation
+      const { user_has_roles } = await import('../db/schemas/index.js');
+
+      // Remove all roles for this user
+      await db
+        .delete(user_has_roles)
+        .where(eq(user_has_roles.user_id, userId));
+
+      // Clear the permission cache for this user
+      const { clearPermissionCache } = await import('../middleware/rbac.middleware.js');
+      clearPermissionCache(userId);
+
+      logger.info(`All roles removed from user ${userId} by ${request.user.id}`);
+
+      return {
+        status: 200,
+        message: `All roles removed from user ${userId}`,
+        data: {
+          userId
+        }
+      };
+    } catch (error) {
+      logger.error('Error removing role:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Server error while removing role'
+      };
+    }
+  });
+
+  // Get user's roles and permissions
+  fastify.get('/users/:userId/permissions', {
+    preHandler: [verifyToken, requireAdmin],
+  }, async (request, reply) => {
+    try {
+      const { userId } = request.params;
+
+      // Import necessary schemas
+      const { user_has_roles, role_has_permissions } = await import('../db/schemas/index.js');
+      const { inArray } = await import('drizzle-orm');
+
+      // Get user's roles
+      const userRoles = await db
+        .select({
+          role_id: user_has_roles.role_id,
+          assigned_at: user_has_roles.assigned_at,
+          assigned_by: user_has_roles.assigned_by
+        })
+        .from(user_has_roles)
+        .where(eq(user_has_roles.user_id, userId));
+
+      if (userRoles.length === 0) {
+        return {
+          status: 200,
+          data: {
+            userId,
+            roles: [],
+            permissions: []
+          }
+        };
+      }
+
+      // Get role details
+      const roleIds = userRoles.map(r => r.role_id);
+      const roleDetails = await db
+        .select()
+        .from(roles)
+        .where(inArray(roles.id, roleIds));
+
+      // Get permissions for all roles
+      const rolePermissions = await db
+        .select({ permission_id: role_has_permissions.permission_id })
+        .from(role_has_permissions)
+        .where(inArray(role_has_permissions.role_id, roleIds));
+
+      const permissionIds = [...new Set(rolePermissions.map(rp => rp.permission_id))];
+
+      let permissionDetails = [];
+      if (permissionIds.length > 0) {
+        permissionDetails = await db
+          .select()
+          .from(permissions)
+          .where(inArray(permissions.id, permissionIds));
+      }
+
+      return {
+        status: 200,
+        data: {
+          userId,
+          roles: roleDetails.map(r => ({
+            id: r.id,
+            name: r.name,
+            display_name: r.display_name,
+            hierarchy_level: r.hierarchy_level,
+            assigned_at: userRoles.find(ur => ur.role_id === r.id)?.assigned_at,
+            assigned_by: userRoles.find(ur => ur.role_id === r.id)?.assigned_by
+          })),
+          permissions: permissionDetails.map(p => ({
+            id: p.id,
+            name: p.name,
+            resource: p.resource,
+            action: p.action,
+            description: p.description
+          }))
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching user permissions:', error)
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Server error while fetching user permissions'
       };
     }
   });

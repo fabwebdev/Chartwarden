@@ -2,7 +2,7 @@
   "id": "bereavement-controller",
   "category": "API",
   "title": "Bereavement Services Controller",
-  "description": "Implement controller for bereavement service documentation and tracking.",
+  "description": "Implement Bereavement Service Controller with Documentation and Tracking\n\nCreate a controller to manage bereavement service records, including comprehensive documentation, case tracking, and workflow management for deceased client services.\n\nRequirements:\n- Design and implement RESTful API endpoints for bereavement service operations (CRUD)\n- Support creation of new bereavement cases with client/deceased information\n- Track case status throughout the bereavement workflow (initial contact, documentation, service arrangement, completion)\n- Enable document attachment and management (death certificates, service agreements, correspondence)\n- Implement search and filtering capabilities (by date range, status, client name, case number)\n- Add audit logging for all case modifications and state transitions\n- Include validation for required fields and business rules\n- Support assignment of cases to specific staff members\n- Provide endpoints for generating reports and case summaries\n\nTechnical Considerations:\n- Define appropriate request/response DTOs for data validation\n- Implement proper error handling with meaningful error messages\n- Add authorization checks to ensure only authorized staff can access cases\n- Consider pagination for list endpoints\n- Include unit tests for controller endpoints and business logic\n- Document API endpoints with appropriate annotations/specifications\n\nEdge Cases:\n- Handle concurrent updates to the same case\n- Validate date fields (service dates cannot be in the past beyond death date)\n- Manage file upload size limits and allowed document types\n- Handle soft deletion to preserve historical records",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.250Z",
-  "updatedAt": "2025-12-31T05:55:26.250Z"
+  "updatedAt": "2025-12-31T05:55:26.250Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

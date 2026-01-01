@@ -2,8 +2,8 @@
   "id": "billing-controller",
   "category": "API",
   "title": "Billing CRUD Controller",
-  "description": "Implement controller for claim management with status tracking and amount management.",
-  "status": "backlog",
+  "description": "Implement Claim Management Controller with Status Tracking and Amount Management\n\nBuild a comprehensive controller to handle claim lifecycle operations, including creation, status updates, and financial amount tracking.\n\nRequirements:\n- Create RESTful endpoints for CRUD operations on claims (create, read, update, delete)\n- Implement status workflow management with defined state transitions (e.g., draft → submitted → under review → approved/rejected → paid)\n- Add validation to prevent invalid status transitions\n- Support amount/financial value tracking for each claim with proper decimal handling\n- Include endpoints for updating claim amounts with authorization checks\n- Implement filtering and querying capabilities (by status, date range, amount range, user)\n- Add proper error handling and validation for all inputs\n- Return appropriate HTTP status codes and error messages\n- Include audit logging for status changes and amount modifications\n- Support pagination for listing claims\n- Add authentication and authorization middleware to protect endpoints\n\nEdge Cases to Consider:\n- Concurrent updates to the same claim\n- Handling claims with zero or negative amounts\n- Status transition rollback scenarios\n- Partial amount updates vs full claim updates\n- Claims in terminal states (completed/cancelled) being modified\n\nDependencies:\n- Database schema/model for claims entity\n- Authentication/authorization system\n- Input validation framework\n- Logging infrastructure",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.251Z",
-  "updatedAt": "2025-12-31T05:55:26.251Z"
+  "updatedAt": "2026-01-01T00:30:57.039Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:23:07.725Z"
 }

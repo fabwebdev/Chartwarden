@@ -395,5 +395,275 @@ export const denial_analytics = pgTable('denial_analytics', {
   updated_at: timestamp('updated_at').defaultNow().notNull()
 });
 
+/**
+ * Appeal Letter Templates Table
+ * Store reusable letter templates for different appeal scenarios
+ */
+export const appeal_letter_templates = pgTable('appeal_letter_templates', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Template identification
+  template_id: varchar('template_id', { length: 50 }).unique().notNull(),
+  template_name: varchar('template_name', { length: 255 }).notNull(),
+  template_description: text('template_description'),
+
+  // Categorization
+  appeal_level: varchar('appeal_level', { length: 50 }),
+  // REDETERMINATION, RECONSIDERATION, ALJ_HEARING, etc.
+  payer_type: varchar('payer_type', { length: 50 }),
+  // MEDICARE, MEDICAID, COMMERCIAL
+  denial_category: varchar('denial_category', { length: 100 }),
+  // MEDICAL_NECESSITY, ELIGIBILITY, AUTHORIZATION, etc.
+
+  // Template content
+  letter_subject: varchar('letter_subject', { length: 500 }),
+  letter_body: text('letter_body').notNull(), // Template with placeholders
+  closing_statement: text('closing_statement'),
+
+  // Placeholders definition (array of {key, description, required})
+  placeholders: jsonb('placeholders'),
+
+  // Required attachments for this template type
+  required_documents: jsonb('required_documents'),
+  // Array of document types required: ['MEDICAL_RECORDS', 'PHYSICIAN_STATEMENT']
+
+  // Template status
+  is_active: boolean('is_active').default(true),
+  is_default: boolean('is_default').default(false),
+
+  // Usage tracking
+  times_used: bigint('times_used', { mode: 'number' }).default(0),
+  last_used_at: timestamp('last_used_at'),
+
+  // Compliance information
+  regulatory_reference: text('regulatory_reference'),
+  effective_date: date('effective_date'),
+  expiration_date: date('expiration_date'),
+
+  // Version control
+  version: bigint('version', { mode: 'number' }).default(1),
+  previous_version_id: bigint('previous_version_id', { mode: 'number' }),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+  tags: jsonb('tags'), // Array of tags for searching
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Generated Appeal Letters Table
+ * Store generated letters from templates for specific appeals
+ */
+export const appeal_letters = pgTable('appeal_letters', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // References
+  appeal_id: bigint('appeal_id', { mode: 'number' }).references(() => appeal_cases.id).notNull(),
+  template_id: bigint('template_id', { mode: 'number' }).references(() => appeal_letter_templates.id),
+
+  // Letter identification
+  letter_id: varchar('letter_id', { length: 50 }).unique().notNull(),
+  letter_type: varchar('letter_type', { length: 50 }).notNull(),
+  // INITIAL_APPEAL, RECONSIDERATION, ESCALATION, RESPONSE_TO_REQUEST
+
+  // Generated content
+  letter_subject: varchar('letter_subject', { length: 500 }),
+  letter_body: text('letter_body').notNull(),
+  closing_statement: text('closing_statement'),
+
+  // Placeholder values used (for audit/regeneration)
+  placeholder_values: jsonb('placeholder_values'),
+
+  // Letter status
+  letter_status: varchar('letter_status', { length: 50 }).default('DRAFT').notNull(),
+  // DRAFT, FINALIZED, SENT, ARCHIVED
+
+  // Finalization tracking
+  finalized_by_id: text('finalized_by_id').references(() => users.id),
+  finalized_at: timestamp('finalized_at'),
+
+  // Sending tracking
+  sent_date: timestamp('sent_date'),
+  sent_method: varchar('sent_method', { length: 50 }),
+  // PORTAL, FAX, MAIL, EMAIL
+  sent_to: varchar('sent_to', { length: 255 }),
+  tracking_number: varchar('tracking_number', { length: 100 }),
+
+  // Document reference (if exported/uploaded)
+  document_id: bigint('document_id', { mode: 'number' }).references(() => appeal_documents.id),
+  file_path: text('file_path'),
+  file_url: text('file_url'),
+
+  // Version control
+  version: bigint('version', { mode: 'number' }).default(1),
+  is_current_version: boolean('is_current_version').default(true),
+  supersedes_letter_id: bigint('supersedes_letter_id', { mode: 'number' }),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+  notes: text('notes'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Appeal Workflow Templates Table
+ * Define workflow steps for different appeal types
+ */
+export const appeal_workflow_templates = pgTable('appeal_workflow_templates', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Template identification
+  workflow_id: varchar('workflow_id', { length: 50 }).unique().notNull(),
+  workflow_name: varchar('workflow_name', { length: 255 }).notNull(),
+  workflow_description: text('workflow_description'),
+
+  // Applicability
+  appeal_level: varchar('appeal_level', { length: 50 }),
+  payer_type: varchar('payer_type', { length: 50 }),
+  denial_category: varchar('denial_category', { length: 100 }),
+
+  // Workflow configuration (array of step definitions)
+  steps: jsonb('steps').notNull(),
+  // Each step: { step_number, step_name, description, required_actions[],
+  //              required_documents[], deadline_days, responsible_role,
+  //              next_step_on_complete, next_step_on_fail }
+
+  // Total workflow metrics
+  total_steps: bigint('total_steps', { mode: 'number' }).notNull(),
+  estimated_duration_days: bigint('estimated_duration_days', { mode: 'number' }),
+
+  // Status
+  is_active: boolean('is_active').default(true),
+  is_default: boolean('is_default').default(false),
+
+  // Version control
+  version: bigint('version', { mode: 'number' }).default(1),
+  previous_version_id: bigint('previous_version_id', { mode: 'number' }),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Appeal Workflow Instances Table
+ * Track workflow progress for specific appeals
+ */
+export const appeal_workflow_instances = pgTable('appeal_workflow_instances', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // References
+  appeal_id: bigint('appeal_id', { mode: 'number' }).references(() => appeal_cases.id).notNull(),
+  workflow_template_id: bigint('workflow_template_id', { mode: 'number' }).references(() => appeal_workflow_templates.id),
+
+  // Instance identification
+  instance_id: varchar('instance_id', { length: 50 }).unique().notNull(),
+
+  // Current state
+  current_step: bigint('current_step', { mode: 'number' }).default(1).notNull(),
+  current_step_name: varchar('current_step_name', { length: 255 }),
+  workflow_status: varchar('workflow_status', { length: 50 }).default('IN_PROGRESS').notNull(),
+  // IN_PROGRESS, PAUSED, COMPLETED, FAILED, CANCELLED
+
+  // Progress tracking
+  steps_completed: bigint('steps_completed', { mode: 'number' }).default(0),
+  total_steps: bigint('total_steps', { mode: 'number' }).notNull(),
+  progress_percentage: bigint('progress_percentage', { mode: 'number' }).default(0),
+
+  // Timeline
+  started_at: timestamp('started_at').defaultNow().notNull(),
+  estimated_completion_date: date('estimated_completion_date'),
+  actual_completion_date: timestamp('actual_completion_date'),
+  paused_at: timestamp('paused_at'),
+
+  // Current step deadline
+  current_step_due_date: date('current_step_due_date'),
+  current_step_started_at: timestamp('current_step_started_at').defaultNow(),
+
+  // Assignment
+  assigned_to_id: text('assigned_to_id').references(() => users.id),
+  assigned_at: timestamp('assigned_at'),
+
+  // Snapshot of workflow steps with progress
+  steps_progress: jsonb('steps_progress'),
+  // Array of { step_number, step_name, status, started_at, completed_at,
+  //            completed_by_id, notes, documents_attached[], actions_completed[] }
+
+  // Metrics
+  days_in_current_step: bigint('days_in_current_step', { mode: 'number' }),
+  total_days_elapsed: bigint('total_days_elapsed', { mode: 'number' }),
+  steps_completed_on_time: bigint('steps_completed_on_time', { mode: 'number' }).default(0),
+  steps_overdue: bigint('steps_overdue', { mode: 'number' }).default(0),
+
+  // Blockers/Notes
+  is_blocked: boolean('is_blocked').default(false),
+  blocker_reason: text('blocker_reason'),
+  blocker_since: timestamp('blocker_since'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+  notes: text('notes'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Appeal Status History Table
+ * Comprehensive tracking of all status changes for appeals
+ */
+export const appeal_status_history = pgTable('appeal_status_history', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Reference
+  appeal_id: bigint('appeal_id', { mode: 'number' }).references(() => appeal_cases.id).notNull(),
+
+  // Status transition
+  previous_status: varchar('previous_status', { length: 50 }),
+  new_status: varchar('new_status', { length: 50 }).notNull(),
+  status_category: varchar('status_category', { length: 50 }),
+  // WORKFLOW, SUBMISSION, DECISION, DOCUMENT, COMMUNICATION
+
+  // Change details
+  change_reason: text('change_reason'),
+  change_type: varchar('change_type', { length: 50 }),
+  // MANUAL, AUTOMATIC, SYSTEM, EXTERNAL
+
+  // Related entities
+  related_document_id: bigint('related_document_id', { mode: 'number' }),
+  related_milestone_id: bigint('related_milestone_id', { mode: 'number' }),
+  related_letter_id: bigint('related_letter_id', { mode: 'number' }),
+
+  // Notification tracking
+  notification_sent: boolean('notification_sent').default(false),
+  notification_recipients: jsonb('notification_recipients'),
+  notification_sent_at: timestamp('notification_sent_at'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  changed_by_id: text('changed_by_id').references(() => users.id),
+  changed_at: timestamp('changed_at').defaultNow().notNull()
+});
+
 // Indexes for performance
 // These would be created in the migration file

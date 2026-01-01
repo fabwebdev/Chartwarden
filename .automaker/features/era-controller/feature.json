@@ -2,8 +2,8 @@
   "id": "era-controller",
   "category": "API",
   "title": "ERA Processing Controller",
-  "description": "Implement controller for ERA file upload, processing, and payment posting.",
-  "status": "backlog",
+  "description": "Implement ERA File Upload and Payment Posting Controller\n\nCreate a comprehensive controller to handle Electronic Remittance Advice (ERA) file uploads, process the file contents, and post payment transactions to the appropriate patient accounts.\n\nRequirements:\n- Implement file upload endpoint that accepts ERA files in standard formats (835 EDI, CSV, or other specified formats)\n- Validate uploaded file format and structure before processing\n- Parse ERA file contents to extract payment information (claim numbers, payment amounts, adjustment codes, patient identifiers)\n- Match ERA payment records to existing claims/invoices in the system\n- Post payments to correct patient accounts with proper transaction categorization\n- Handle adjustment codes and denials appropriately\n- Create detailed audit trail of all payment postings\n- Implement error handling for:\n  - Invalid file formats\n  - Unmatched claims/patients\n  - Duplicate ERA submissions\n  - Parsing failures\n- Generate processing summary report showing successfully posted payments and any exceptions\n- Support batch processing for ERAs containing multiple payment records\n- Implement proper transaction rollback if processing fails mid-stream\n- Add appropriate authorization/authentication checks for file upload access\n- Log all processing activities for compliance and troubleshooting\n\nSuccess Criteria:\n- ERA files upload and process without manual intervention for standard cases\n- All payments correctly posted to appropriate patient accounts\n- Clear error messages for exceptions requiring manual review\n- Complete audit trail maintained for all transactions",
+  "status": "in_progress",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.255Z",
-  "updatedAt": "2025-12-31T05:55:26.255Z"
+  "updatedAt": "2026-01-01T00:23:12.985Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:23:12.387Z"
 }

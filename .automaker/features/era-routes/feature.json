@@ -2,7 +2,7 @@
   "id": "era-routes",
   "category": "API",
   "title": "ERA API Routes",
-  "description": "Create REST API routes for ERA file upload and processing with @fastify/multipart.",
+  "description": "Create REST API Routes for ERA File Upload and Processing\n\nImplement Fastify REST API endpoints to handle Electronic Remittance Advice (ERA) file uploads using @fastify/multipart, with validation, processing, and storage capabilities.\n\nRequirements:\n- Set up @fastify/multipart plugin configuration with appropriate file size limits and allowed file types\n- Create POST endpoint for ERA file upload (e.g., /api/era/upload)\n- Validate uploaded files (file type, size, format compliance for ERA files - typically X12 835 format)\n- Implement file parsing logic to extract ERA data from uploaded files\n- Store uploaded files securely with unique identifiers\n- Save parsed ERA data to database with proper schema\n- Create GET endpoint to retrieve ERA file metadata and processing status\n- Create GET endpoint to retrieve parsed ERA data by file ID\n- Add proper error handling for invalid files, parsing failures, and storage errors\n- Return appropriate HTTP status codes and error messages\n- Implement request logging for audit trail\n\nEdge Cases to Consider:\n- Handle corrupted or malformed ERA files gracefully\n- Prevent duplicate file uploads (check by hash or filename+timestamp)\n- Handle very large files with streaming if necessary\n- Deal with concurrent upload requests\n- Handle partial processing failures (file saved but parsing failed)\n\nDependencies:\n- @fastify/multipart must be installed and registered\n- Database schema for ERA data storage must be defined\n- File storage location/service must be configured\n- ERA file format parser/validator must be available or implemented",
   "status": "backlog",
   "priority": 1,
   "complexity": "simple",
@@ -10,5 +10,13 @@
     "era-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.255Z",
-  "updatedAt": "2025-12-31T05:55:26.255Z"
+  "updatedAt": "2025-12-31T05:55:26.255Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

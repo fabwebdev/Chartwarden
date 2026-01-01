@@ -1,157 +1,320 @@
 openapi: 3.0.3
 info:
-  title: Hospice EHR API - Certifications & Medications
+  title: Chartwarden Hospice EHR API
   description: |
-    API for managing Medicare certifications, Face-to-Face encounters, physician orders,
-    medications, and medication administration in a hospice EHR system.
+    Comprehensive REST API for the Chartwarden Hospice Electronic Health Record (EHR) System.
+
+    ## Overview
+    This API provides HIPAA-compliant endpoints for managing hospice patient care, clinical documentation,
+    billing, and administrative functions.
 
     ## Key Features
-    - **Medicare Compliance**: Track certification periods (INITIAL_90, SUBSEQUENT_90, SUBSEQUENT_60)
-    - **Electronic Signatures**: 21 CFR Part 11 compliant with SHA-256 hashing
-    - **Face-to-Face Tracking**: Required encounters within 30 days of recertification
-    - **Controlled Substances**: DEA-compliant tracking and logging
-    - **MAR System**: Complete medication administration documentation
-    - **RBAC**: Role-based access control on all endpoints
-    - **Audit Logging**: Full audit trail for HIPAA compliance
+    - **HIPAA Compliance**: Full audit logging, encryption, and access controls
+    - **Medicare Compliance**: CMS-required documentation, certifications, and billing
+    - **21 CFR Part 11**: Electronic signatures with SHA-256 hashing
+    - **RBAC/ABAC**: Role-based and attribute-based access control
+    - **Real-time Updates**: Socket.IO integration for live notifications
 
     ## Authentication
-    All endpoints require Bearer token authentication with appropriate RBAC permissions.
+    All endpoints (except /health and /api/auth/*) require authentication via session cookies.
+    Use the `/api/auth/sign-in` endpoint to authenticate and obtain session cookies.
 
-  version: 1.0.0
+    ## Rate Limiting
+    - Unauthenticated requests: 100 requests/minute
+    - Authenticated requests: 500 requests/minute
+    - Authentication endpoints have additional stricter limits
+
+    ## CSRF Protection
+    State-changing requests (POST, PUT, DELETE, PATCH) require a CSRF token.
+    Obtain a token from `GET /api/auth/csrf-token` and include it in the `x-csrf-token` header.
+
+  version: 2.0.0
   contact:
-    name: API Support
-    email: api-support@hospice-ehr.com
+    name: Chartwarden API Support
+    email: api-support@chartwarden.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
+  termsOfService: https://chartwarden.com/terms
 
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:3001/api
     description: Development server
-  - url: https://staging-api.hospice-ehr.com/api
+  - url: https://staging.chartwarden.com/api
     description: Staging server
-  - url: https://api.hospice-ehr.com/api
+  - url: https://api.chartwarden.com/api
     description: Production server
 
 security:
-  - BearerAuth: []
+  - CookieAuth: []
+  - CSRFToken: []
 
 tags:
-  - name: Certifications
-    description: Medicare certification periods management
-  - name: Face-to-Face Encounters
-    description: F2F encounter tracking for recertification
-  - name: Orders
-    description: Physician orders for medications, DME, treatments
+  # Core Operations
+  - name: Health
+    description: System health and status endpoints
+  - name: Authentication
+    description: User authentication and session management
+  - name: Users
+    description: User account management
+  - name: RBAC
+    description: Role-based access control management
+  - name: ABAC
+    description: Attribute-based access control policies
+  - name: Audit
+    description: Audit logging and compliance tracking
+
+  # Patient Management
+  - name: Patients
+    description: Patient demographics and core information
+  - name: Patient Contacts
+    description: Patient emergency contacts and relationships
+  - name: Patient Identifiers
+    description: Patient identifiers (MRN, SSN, insurance IDs)
+  - name: Patient Payers
+    description: Patient insurance and payer information
+  - name: Patient Pharmacy
+    description: Patient preferred pharmacy settings
+  - name: Admission
+    description: Patient admission and enrollment information
+  - name: Discharge
+    description: Patient discharge management
+  - name: Benefit Period
+    description: Medicare benefit period tracking
+
+  # Clinical Documentation
+  - name: Encounters
+    description: Clinical visit and encounter documentation
+  - name: Nursing Notes
+    description: Nursing clinical notes and assessments
+  - name: Care Plans
+    description: Care planning and goal management
+  - name: Prognosis
+    description: Patient prognosis documentation
+  - name: HOPE Assessment
+    description: Hospice Outcome and Patient Evaluation assessments
+  - name: IDG Meetings
+    description: Interdisciplinary group meetings
+
+  # Medications
   - name: Medications
     description: Patient medication management
   - name: MAR
     description: Medication Administration Record
-  - name: Comfort Kits
-    description: Emergency medication kits
-  - name: Medication Reconciliation
-    description: CMS-required medication reconciliation
+  - name: Comfort Kit
+    description: Emergency medication kit management
+
+  # Pain Assessment
+  - name: Pain
+    description: Pain assessment and management
+  - name: Detailed Pain Assessment
+    description: Comprehensive pain assessments
+  - name: FLACC Scale
+    description: Pediatric/non-verbal pain assessment
+  - name: PAINAD Scale
+    description: Pain assessment in advanced dementia
+  - name: Numeric Rating Scale
+    description: 0-10 pain rating scale
+  - name: Wong-Baker FACES
+    description: Visual pain scale
+
+  # Body Systems Assessments
+  - name: Cardiac Assessment
+    description: Cardiovascular system assessment
+  - name: Respiratory Assessment
+    description: Respiratory system assessment
+  - name: Endocrine Assessment
+    description: Endocrine system assessment
+  - name: Hematological Assessment
+    description: Hematological system assessment
+  - name: Integumentary Assessment
+    description: Skin and wound assessment
+  - name: Nutrition Assessment
+    description: Nutritional status assessment
+
+  # Vital Signs
+  - name: Vital Signs
+    description: Patient vital signs documentation
+
+  # Certifications
+  - name: Certifications
+    description: Medicare certification periods
+  - name: Face-to-Face
+    description: F2F encounter tracking
+
+  # Billing & Revenue
+  - name: Billing
+    description: Claim and billing management
+  - name: Claims
+    description: Healthcare claim processing
+  - name: ERA
+    description: Electronic Remittance Advice processing
+  - name: Eligibility
+    description: Insurance eligibility verification
+  - name: Denial Management
+    description: Claim denial tracking and appeals
+  - name: Revenue Recognition
+    description: Revenue forecasting and recognition
+  - name: Clearinghouse
+    description: EDI clearinghouse integration
+
+  # Administrative
+  - name: Staff
+    description: Staff management
+  - name: Scheduling
+    description: Staff and visit scheduling
+  - name: Bereavement
+    description: Bereavement support tracking
+  - name: QAPI
+    description: Quality Assurance and Performance Improvement
+  - name: Reports
+    description: Report generation
+  - name: Data Export
+    description: Multi-format data export
+  - name: Admin Settings
+    description: System configuration
+
+  # Signatures
+  - name: Electronic Signatures
+    description: 21 CFR Part 11 compliant signatures
+
+  # Real-time
+  - name: Socket.IO
+    description: WebSocket real-time communication
 
 paths:
-  # ============================================================================
-  # CERTIFICATIONS
-  # ============================================================================
-  /patients/{patientId}/certifications:
+  # ==========================================================================
+  # HEALTH ENDPOINTS
+  # ==========================================================================
+  /health:
     get:
       tags:
-        - Certifications
-      summary: Get patient certifications
-      description: Retrieve all certifications for a patient, ordered by start date descending
-      operationId: getPatientCertifications
-      parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - Health
+      summary: System health check
+      description: Returns the overall health status of the API and its dependencies
+      operationId: getHealth
+      security: []
       responses:
         '200':
-          description: Successful operation
+          description: System is healthy
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Certification'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                $ref: '#/components/schemas/HealthCheck'
+              example:
+                status: healthy
+                timestamp: "2024-12-31T12:00:00.000Z"
+                services:
+                  database:
+                    status: connected
+                  redis:
+                    status: connected
+                    latencyMs: 2
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
 
+  /health/redis:
+    get:
+      tags:
+        - Health
+      summary: Redis health check
+      description: Returns detailed Redis connection status
+      operationId: getRedisHealth
+      security: []
+      responses:
+        '200':
+          description: Redis is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedisHealthCheck'
+        '503':
+          description: Redis is unhealthy
+
+  # ==========================================================================
+  # AUTHENTICATION ENDPOINTS
+  # ==========================================================================
+  /auth/sign-up:
     post:
       tags:
-        - Certifications
-      summary: Create certification
-      description: Create a new Medicare certification period for a patient
-      operationId: createCertification
-      parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - Authentication
+      summary: Register new user
+      description: Create a new user account. Rate limited to 3 attempts per hour.
+      operationId: signUp
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CertificationCreate'
-            examples:
-              initial90:
-                summary: Initial 90-day certification
-                value:
-                  certification_period: INITIAL_90
-                  start_date: '2024-01-01'
-                  end_date: '2024-03-31'
-                  terminal_illness_narrative: 'Patient has end-stage heart failure with NYHA Class IV symptoms. Expected prognosis of 6 months or less based on clinical progression and declining functional status.'
-                  clinical_progression: 'Progressive decline in functional status over past 3 months. Multiple hospitalizations for acute decompensation.'
-                  decline_indicators: 'Weight loss of 15 lbs, increasing dyspnea at rest, decreased appetite, increased fatigue'
-              subsequent60:
-                summary: Subsequent 60-day certification
-                value:
-                  certification_period: SUBSEQUENT_60
-                  start_date: '2024-04-01'
-                  end_date: '2024-05-30'
-                  terminal_illness_narrative: 'Continued end-stage heart failure with persistent NYHA Class IV symptoms despite optimal medical management.'
-                  clinical_progression: 'Further decline with increased dependency on ADLs, oxygen-dependent, multiple ER visits.'
-                  decline_indicators: 'Bed-bound majority of day, minimal oral intake, confusion episodes'
+              $ref: '#/components/schemas/SignUpRequest'
       responses:
         '201':
-          description: Certification created
+          description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CertificationResponse'
+                $ref: '#/components/schemas/AuthResponse'
         '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalError'
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          $ref: '#/components/responses/RateLimited'
 
-  /certifications/{certificationId}/sign:
+  /auth/sign-in:
     post:
       tags:
-        - Certifications
-      summary: Sign certification
-      description: Sign a certification with electronic signature (SHA-256 hash)
-      operationId: signCertification
-      parameters:
-        - name: certificationId
-          in: path
-          required: true
-          schema:
-            type: integer
+        - Authentication
+      summary: User login
+      description: Authenticate user and create session. Rate limited to 5 attempts per 15 minutes.
+      operationId: signIn
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
       responses:
         '200':
-          description: Certification signed successfully
+          description: Login successful
+          headers:
+            Set-Cookie:
+              description: Session cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /auth/sign-out:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: End the current session and clear cookies
+      operationId: signOut
+      responses:
+        '200':
+          description: Logout successful
           content:
             application/json:
               schema:
@@ -162,134 +325,61 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: Certification signed successfully
-                  data:
-                    $ref: '#/components/schemas/Certification'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                    example: Logged out successfully
 
-  /certifications/due:
+  /auth/me:
     get:
       tags:
-        - Certifications
-      summary: Get certifications due
-      description: Get certifications due within the next 30 days
-      operationId: getCertificationsDue
+        - Authentication
+      summary: Get current user
+      description: Returns the currently authenticated user's profile
+      operationId: getCurrentUser
       responses:
         '200':
-          description: Successful operation
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/csrf-token:
+    get:
+      tags:
+        - Authentication
+      summary: Get CSRF token
+      description: Obtain a CSRF token for state-changing requests
+      operationId: getCsrfToken
+      security: []
+      responses:
+        '200':
+          description: CSRF token
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Certification'
-                  count:
-                    type: integer
-                    example: 5
+                  csrfToken:
+                    type: string
+                    description: Token to include in x-csrf-token header
 
-  /certifications/overdue:
-    get:
-      tags:
-        - Certifications
-      summary: Get overdue certifications
-      description: Get certifications that are past their end date and still PENDING or ACTIVE
-      operationId: getCertificationsOverdue
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Certification'
-                  count:
-                    type: integer
-                    example: 2
-
-  # ============================================================================
-  # FACE-TO-FACE ENCOUNTERS
-  # ============================================================================
-  /patients/{patientId}/f2f:
-    get:
-      tags:
-        - Face-to-Face Encounters
-      summary: Get patient F2F encounters
-      description: Retrieve all Face-to-Face encounters for a patient
-      operationId: getPatientF2F
-      parameters:
-        - $ref: '#/components/parameters/PatientId'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/FaceToFaceEncounter'
-
+  /auth/change-password:
     post:
       tags:
-        - Face-to-Face Encounters
-      summary: Create F2F encounter
-      description: Create a Face-to-Face encounter (required within 30 days of recertification)
-      operationId: createF2F
-      parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - Authentication
+      summary: Change password
+      description: Change the current user's password. Rate limited to 3 attempts per 15 minutes.
+      operationId: changePassword
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/F2FCreate'
-      responses:
-        '201':
-          description: F2F encounter created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/F2FResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /f2f/{f2fId}/attestation:
-    post:
-      tags:
-        - Face-to-Face Encounters
-      summary: Attest F2F encounter
-      description: Add hospice physician attestation to F2F encounter
-      operationId: attestF2F
-      parameters:
-        - name: f2fId
-          in: path
-          required: true
-          schema:
-            type: integer
+              $ref: '#/components/schemas/ChangePasswordRequest'
       responses:
         '200':
-          description: F2F attested successfully
+          description: Password changed successfully
           content:
             application/json:
               schema:
@@ -300,51 +390,143 @@ paths:
                     example: 200
                   message:
                     type: string
-                  data:
-                    $ref: '#/components/schemas/FaceToFaceEncounter'
+                    example: Password changed successfully
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
 
-  # ============================================================================
-  # ORDERS
-  # ============================================================================
-  /patients/{patientId}/orders:
+  /auth/password-policy:
     get:
       tags:
-        - Orders
-      summary: Get patient orders
-      description: Retrieve all orders for a patient with optional filtering
-      operationId: getPatientOrders
+        - Authentication
+      summary: Get password policy
+      description: Returns the current password policy requirements
+      operationId: getPasswordPolicy
+      security: []
+      responses:
+        '200':
+          description: Password policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordPolicy'
+
+  /auth/check-password-strength:
+    post:
+      tags:
+        - Authentication
+      summary: Check password strength
+      description: Validate a password against the password policy
+      operationId: checkPasswordStrength
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Password strength result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordStrengthResult'
+
+  # ==========================================================================
+  # PATIENT ENDPOINTS
+  # ==========================================================================
+  /patient:
+    get:
+      tags:
+        - Patients
+      summary: List all patients
+      description: Retrieve a list of all patients with optional filtering and pagination
+      operationId: listPatients
       parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SearchParam'
         - name: status
           in: query
           schema:
-            $ref: '#/components/schemas/OrderStatus'
-        - name: type
-          in: query
-          schema:
-            $ref: '#/components/schemas/OrderType'
+            type: string
+            enum: [ACTIVE, DISCHARGED, DECEASED, PENDING]
       responses:
         '200':
-          description: Successful operation
+          description: List of patients
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/PatientListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
     post:
       tags:
-        - Orders
-      summary: Create order
-      description: Create a new physician order
-      operationId: createOrder
+        - Patients
+      summary: Create patient
+      description: Create a new patient record
+      operationId: createPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreate'
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /patient/{patientId}:
+    get:
+      tags:
+        - Patients
+      summary: Get patient
+      description: Retrieve a single patient by ID
+      operationId: getPatient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Patients
+      summary: Update patient
+      description: Update an existing patient record
+      operationId: updatePatient
       parameters:
         - $ref: '#/components/parameters/PatientId'
       requestBody:
@@ -352,49 +534,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderCreate'
-            examples:
-              medication:
-                summary: Medication order
-                value:
-                  order_type: MEDICATION
-                  order_priority: ROUTINE
-                  order_description: 'Morphine Sulfate 15mg PO every 4 hours PRN pain'
-                  start_date: '2024-01-01'
-              verbal:
-                summary: Verbal order
-                value:
-                  order_type: MEDICATION
-                  order_priority: URGENT
-                  order_description: 'Lorazepam 0.5mg SL every 6 hours PRN anxiety'
-                  start_date: '2024-01-15'
-                  is_verbal_order: true
-                  physician_name: 'Dr. Robert Williams'
-                  read_back_verified: true
+              $ref: '#/components/schemas/PatientUpdate'
       responses:
-        '201':
-          description: Order created
+        '200':
+          description: Patient updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
+                $ref: '#/components/schemas/PatientResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /orders/{orderId}/sign:
-    post:
+    delete:
       tags:
-        - Orders
-      summary: Sign order
-      description: Sign an order with physician electronic signature
-      operationId: signOrder
+        - Patients
+      summary: Delete patient
+      description: Soft delete a patient (admin only)
+      operationId: deletePatient
       parameters:
-        - name: orderId
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/PatientId'
       responses:
         '200':
-          description: Order signed successfully
+          description: Patient deleted
           content:
             application/json:
               schema:
@@ -405,19 +572,74 @@ paths:
                     example: 200
                   message:
                     type: string
-                  data:
-                    $ref: '#/components/schemas/Order'
+                    example: Patient deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  # ============================================================================
-  # MEDICATIONS
-  # ============================================================================
+  # ==========================================================================
+  # PATIENT CONTACTS
+  # ==========================================================================
+  /patients/{patientId}/contacts:
+    get:
+      tags:
+        - Patient Contacts
+      summary: List patient contacts
+      description: Get all contacts for a patient
+      operationId: listPatientContacts
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: List of patient contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientContactListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Patient Contacts
+      summary: Create patient contact
+      description: Add a new contact for a patient
+      operationId: createPatientContact
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientContactCreate'
+      responses:
+        '201':
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientContactResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==========================================================================
+  # MEDICATION ENDPOINTS
+  # ==========================================================================
   /patients/{patientId}/medications:
     get:
       tags:
         - Medications
-      summary: Get patient medications
-      description: Retrieve all medications for a patient with optional filtering
-      operationId: getPatientMedications
+      summary: List patient medications
+      description: Get all medications for a patient with optional filtering
+      operationId: listPatientMedications
       parameters:
         - $ref: '#/components/parameters/PatientId'
         - name: status
@@ -430,27 +652,21 @@ paths:
             type: boolean
       responses:
         '200':
-          description: Successful operation
+          description: List of medications
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Medication'
-                  count:
-                    type: integer
+                $ref: '#/components/schemas/MedicationListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
     post:
       tags:
         - Medications
       summary: Create medication
-      description: Create a new medication for a patient
+      description: Add a new medication for a patient
       operationId: createMedication
       parameters:
         - $ref: '#/components/parameters/PatientId'
@@ -467,6 +683,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MedicationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /patients/{patientId}/medications/{medicationId}/discontinue:
     post:
@@ -477,11 +697,7 @@ paths:
       operationId: discontinueMedication
       parameters:
         - $ref: '#/components/parameters/PatientId'
-        - name: medicationId
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/MedicationId'
       requestBody:
         required: true
         content:
@@ -493,22 +709,18 @@ paths:
               properties:
                 reason:
                   type: string
-                  example: 'No longer needed for symptom management'
+                  description: Reason for discontinuation
       responses:
         '200':
           description: Medication discontinued
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                  data:
-                    $ref: '#/components/schemas/Medication'
+                $ref: '#/components/schemas/MedicationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /patients/{patientId}/medications/{medicationId}/hold:
     post:
@@ -519,11 +731,7 @@ paths:
       operationId: holdMedication
       parameters:
         - $ref: '#/components/parameters/PatientId'
-        - name: medicationId
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/MedicationId'
       requestBody:
         required: true
         content:
@@ -535,36 +743,44 @@ paths:
               properties:
                 reason:
                   type: string
-                  example: 'Patient nausea, hold until resolved'
                 hold_until:
                   type: string
                   format: date
-                  example: '2024-01-25'
       responses:
         '200':
           description: Medication held
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                  data:
-                    $ref: '#/components/schemas/Medication'
+                $ref: '#/components/schemas/MedicationResponse'
 
-  # ============================================================================
-  # MAR (Medication Administration Record)
-  # ============================================================================
+  /patients/{patientId}/medications/{medicationId}/resume:
+    post:
+      tags:
+        - Medications
+      summary: Resume medication
+      description: Resume a held medication
+      operationId: resumeMedication
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - $ref: '#/components/parameters/MedicationId'
+      responses:
+        '200':
+          description: Medication resumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationResponse'
+
+  # ==========================================================================
+  # MAR ENDPOINTS
+  # ==========================================================================
   /patients/{patientId}/mar:
     get:
       tags:
         - MAR
       summary: Get patient MAR
-      description: Retrieve MAR entries for a patient with optional filtering
+      description: Get Medication Administration Record entries for a patient
       operationId: getPatientMAR
       parameters:
         - $ref: '#/components/parameters/PatientId'
@@ -584,26 +800,16 @@ paths:
             type: integer
       responses:
         '200':
-          description: Successful operation
+          description: MAR entries
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MAREntry'
-                  count:
-                    type: integer
+                $ref: '#/components/schemas/MARListResponse'
 
     post:
       tags:
         - MAR
-      summary: Record MAR entry
+      summary: Create MAR entry
       description: Record a medication administration
       operationId: createMAREntry
       parameters:
@@ -614,26 +820,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MARCreate'
-            examples:
-              given:
-                summary: Medication given
-                value:
-                  medication_id: 1
-                  scheduled_time: '2024-01-15T10:00:00Z'
-                  actual_time: '2024-01-15T10:05:00Z'
-                  mar_status: GIVEN
-                  dosage_given: '15mg'
-                  route_used: ORAL
-                  administered_by_name: 'Nurse Johnson'
-                  patient_response: 'Patient tolerated medication well. Pain reduced from 8/10 to 4/10 after 30 minutes.'
-              refused:
-                summary: Medication refused
-                value:
-                  medication_id: 1
-                  scheduled_time: '2024-01-15T14:00:00Z'
-                  mar_status: REFUSED
-                  administered_by_name: 'Nurse Johnson'
-                  reason_not_given: 'Patient stated pain level only 2/10, declined medication at this time.'
       responses:
         '201':
           description: MAR entry created
@@ -642,67 +828,153 @@ paths:
               schema:
                 $ref: '#/components/schemas/MARResponse'
 
-  # ============================================================================
-  # COMFORT KITS
-  # ============================================================================
-  /patients/{patientId}/comfort-kit:
+  # ==========================================================================
+  # ENCOUNTER ENDPOINTS
+  # ==========================================================================
+  /encounters:
     get:
       tags:
-        - Comfort Kits
-      summary: Get patient comfort kits
-      description: Retrieve all comfort kits for a patient
-      operationId: getPatientComfortKit
+        - Encounters
+      summary: List encounters
+      description: Get all encounters with optional filtering
+      operationId: listEncounters
       parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/EncounterStatus'
+        - name: encounter_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/EncounterType'
       responses:
         '200':
-          description: Successful operation
+          description: List of encounters
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ComfortKit'
-                  count:
-                    type: integer
+                $ref: '#/components/schemas/EncounterListResponse'
 
     post:
       tags:
-        - Comfort Kits
-      summary: Create comfort kit
-      description: Create an emergency medication kit for a patient
-      operationId: createComfortKit
-      parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - Encounters
+      summary: Create encounter
+      description: Create a new clinical encounter
+      operationId: createEncounter
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComfortKitCreate'
+              $ref: '#/components/schemas/EncounterCreate'
       responses:
         '201':
-          description: Comfort kit created
+          description: Encounter created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ComfortKitResponse'
+                $ref: '#/components/schemas/EncounterResponse'
 
-  /patients/{patientId}/comfort-kit/destroy:
+  /encounters/{encounterId}:
+    get:
+      tags:
+        - Encounters
+      summary: Get encounter
+      description: Get a single encounter by ID
+      operationId: getEncounter
+      parameters:
+        - $ref: '#/components/parameters/EncounterId'
+      responses:
+        '200':
+          description: Encounter details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterResponse'
+
+    patch:
+      tags:
+        - Encounters
+      summary: Update encounter
+      description: Update an existing encounter
+      operationId: updateEncounter
+      parameters:
+        - $ref: '#/components/parameters/EncounterId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncounterUpdate'
+      responses:
+        '200':
+          description: Encounter updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterResponse'
+
+    delete:
+      tags:
+        - Encounters
+      summary: Delete encounter
+      description: Soft delete an encounter
+      operationId: deleteEncounter
+      parameters:
+        - $ref: '#/components/parameters/EncounterId'
+      responses:
+        '200':
+          description: Encounter deleted
+
+  /encounters/{encounterId}/sign:
     post:
       tags:
-        - Comfort Kits
-      summary: Destroy comfort kit
-      description: Destroy a comfort kit with witness logging (DEA requirement)
-      operationId: destroyComfortKit
+        - Encounters
+      summary: Sign encounter
+      description: Apply electronic signature to encounter (21 CFR Part 11 compliant)
+      operationId: signEncounter
       parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - $ref: '#/components/parameters/EncounterId'
+      responses:
+        '200':
+          description: Encounter signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterResponse'
+
+  /encounters/{encounterId}/cosign:
+    post:
+      tags:
+        - Encounters
+      summary: Co-sign encounter
+      description: Apply co-signature to encounter
+      operationId: cosignEncounter
+      parameters:
+        - $ref: '#/components/parameters/EncounterId'
+      responses:
+        '200':
+          description: Encounter co-signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterResponse'
+
+  /encounters/{encounterId}/addendum:
+    post:
+      tags:
+        - Encounters
+      summary: Add addendum
+      description: Add an addendum to a signed encounter
+      operationId: addEncounterAddendum
+      parameters:
+        - $ref: '#/components/parameters/EncounterId'
       requestBody:
         required: true
         content:
@@ -710,21 +982,617 @@ paths:
             schema:
               type: object
               required:
-                - kit_id
+                - content
               properties:
-                kit_id:
-                  type: integer
-                witness_id:
+                content:
                   type: string
-                witness_name:
-                  type: string
-                  example: 'Pharmacist Brown'
-                destruction_notes:
-                  type: string
-                  example: 'Patient deceased. All remaining medications destroyed per policy.'
+                  description: Addendum text
       responses:
         '200':
-          description: Comfort kit destroyed
+          description: Addendum added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncounterResponse'
+
+  # ==========================================================================
+  # CERTIFICATION ENDPOINTS
+  # ==========================================================================
+  /patients/{patientId}/certifications:
+    get:
+      tags:
+        - Certifications
+      summary: List patient certifications
+      description: Get all Medicare certifications for a patient
+      operationId: listPatientCertifications
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: List of certifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationListResponse'
+
+    post:
+      tags:
+        - Certifications
+      summary: Create certification
+      description: Create a new Medicare certification period
+      operationId: createCertification
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificationCreate'
+      responses:
+        '201':
+          description: Certification created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationResponse'
+
+  /certifications/due:
+    get:
+      tags:
+        - Certifications
+      summary: Get certifications due
+      description: Get certifications due within the next 30 days
+      operationId: getCertificationsDue
+      responses:
+        '200':
+          description: Certifications due
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationListResponse'
+
+  /certifications/overdue:
+    get:
+      tags:
+        - Certifications
+      summary: Get overdue certifications
+      description: Get certifications past their end date
+      operationId: getCertificationsOverdue
+      responses:
+        '200':
+          description: Overdue certifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationListResponse'
+
+  /certifications/{certificationId}/sign:
+    post:
+      tags:
+        - Certifications
+      summary: Sign certification
+      description: Apply physician signature to certification
+      operationId: signCertification
+      parameters:
+        - name: certificationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Certification signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificationResponse'
+
+  # ==========================================================================
+  # VITAL SIGNS ENDPOINTS
+  # ==========================================================================
+  /patients/{patientId}/vital-signs:
+    get:
+      tags:
+        - Vital Signs
+      summary: List patient vital signs
+      description: Get vital signs history for a patient
+      operationId: listPatientVitalSigns
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of vital signs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalSignsListResponse'
+
+    post:
+      tags:
+        - Vital Signs
+      summary: Record vital signs
+      description: Record new vital signs for a patient
+      operationId: createVitalSigns
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalSignsCreate'
+      responses:
+        '201':
+          description: Vital signs recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalSignsResponse'
+
+  # ==========================================================================
+  # PAIN ASSESSMENT ENDPOINTS
+  # ==========================================================================
+  /patients/{patientId}/pain:
+    get:
+      tags:
+        - Pain
+      summary: Get patient pain assessments
+      description: Get all pain assessments for a patient
+      operationId: getPatientPainAssessments
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Pain assessments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PainAssessmentListResponse'
+
+    post:
+      tags:
+        - Pain
+      summary: Create pain assessment
+      description: Record a new pain assessment
+      operationId: createPainAssessment
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PainAssessmentCreate'
+      responses:
+        '201':
+          description: Pain assessment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PainAssessmentResponse'
+
+  /detailed-pain-assessment:
+    get:
+      tags:
+        - Detailed Pain Assessment
+      summary: List detailed pain assessments
+      description: Get all comprehensive pain assessments
+      operationId: listDetailedPainAssessments
+      parameters:
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detailed pain assessments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedPainAssessmentListResponse'
+
+    post:
+      tags:
+        - Detailed Pain Assessment
+      summary: Create detailed pain assessment
+      description: Create a comprehensive pain assessment
+      operationId: createDetailedPainAssessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetailedPainAssessmentCreate'
+      responses:
+        '201':
+          description: Assessment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedPainAssessmentResponse'
+
+  # ==========================================================================
+  # HOPE ASSESSMENT ENDPOINTS
+  # ==========================================================================
+  /hope-assessment:
+    get:
+      tags:
+        - HOPE Assessment
+      summary: List HOPE assessments
+      description: Get all Hospice Outcome and Patient Evaluation assessments
+      operationId: listHopeAssessments
+      parameters:
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: HOPE assessments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HopeAssessmentListResponse'
+
+    post:
+      tags:
+        - HOPE Assessment
+      summary: Create HOPE assessment
+      description: Create a new HOPE assessment
+      operationId: createHopeAssessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HopeAssessmentCreate'
+      responses:
+        '201':
+          description: Assessment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HopeAssessmentResponse'
+
+  # ==========================================================================
+  # CARE PLAN ENDPOINTS
+  # ==========================================================================
+  /care-plan:
+    get:
+      tags:
+        - Care Plans
+      summary: List care plans
+      description: Get all care plans
+      operationId: listCarePlans
+      parameters:
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Care plans
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarePlanListResponse'
+
+    post:
+      tags:
+        - Care Plans
+      summary: Create care plan
+      description: Create a new care plan
+      operationId: createCarePlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarePlanCreate'
+      responses:
+        '201':
+          description: Care plan created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarePlanResponse'
+
+  # ==========================================================================
+  # BILLING ENDPOINTS
+  # ==========================================================================
+  /billing/claims:
+    get:
+      tags:
+        - Billing
+      summary: List claims
+      description: Get all billing claims with filtering
+      operationId: listClaims
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [DRAFT, SUBMITTED, ACCEPTED, REJECTED, PAID, DENIED]
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of claims
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimListResponse'
+
+    post:
+      tags:
+        - Billing
+      summary: Create claim
+      description: Create a new billing claim
+      operationId: createClaim
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCreate'
+      responses:
+        '201':
+          description: Claim created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimResponse'
+
+  /billing/claims/{claimId}/submit:
+    post:
+      tags:
+        - Billing
+      summary: Submit claim
+      description: Submit a claim to the clearinghouse
+      operationId: submitClaim
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Claim submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimResponse'
+
+  # ==========================================================================
+  # DENIAL MANAGEMENT ENDPOINTS
+  # ==========================================================================
+  /denials:
+    get:
+      tags:
+        - Denial Management
+      summary: List denials
+      description: Get all claim denials
+      operationId: listDenials
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, IN_PROGRESS, APPEALED, RESOLVED, WRITTEN_OFF]
+      responses:
+        '200':
+          description: List of denials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DenialListResponse'
+
+    post:
+      tags:
+        - Denial Management
+      summary: Create denial
+      description: Record a new claim denial
+      operationId: createDenial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DenialCreate'
+      responses:
+        '201':
+          description: Denial created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DenialResponse'
+
+  /denials/{denialId}/appeal:
+    post:
+      tags:
+        - Denial Management
+      summary: File appeal
+      description: File an appeal for a denial
+      operationId: fileAppeal
+      parameters:
+        - name: denialId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppealCreate'
+      responses:
+        '200':
+          description: Appeal filed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DenialResponse'
+
+  # ==========================================================================
+  # DENIAL CODES ENDPOINTS
+  # ==========================================================================
+  /denial-codes:
+    get:
+      tags:
+        - Denial Management
+      summary: List denial codes
+      description: Get CARC/RARC denial code library
+      operationId: listDenialCodes
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [CARC, RARC]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Denial codes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DenialCodeListResponse'
+
+  # ==========================================================================
+  # ERA ENDPOINTS
+  # ==========================================================================
+  /era:
+    get:
+      tags:
+        - ERA
+      summary: List ERAs
+      description: Get all Electronic Remittance Advices
+      operationId: listERAs
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of ERAs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERAListResponse'
+
+  /era/upload:
+    post:
+      tags:
+        - ERA
+      summary: Upload ERA file
+      description: Upload and process an EDI 835 file
+      operationId: uploadERA
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: ERA processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERAResponse'
+
+  # ==========================================================================
+  # ELIGIBILITY ENDPOINTS
+  # ==========================================================================
+  /eligibility/verify:
+    post:
+      tags:
+        - Eligibility
+      summary: Verify eligibility
+      description: Verify patient insurance eligibility
+      operationId: verifyEligibility
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EligibilityRequest'
+      responses:
+        '200':
+          description: Eligibility response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibilityResponse'
+
+  # ==========================================================================
+  # RBAC ENDPOINTS
+  # ==========================================================================
+  /rbac/roles:
+    get:
+      tags:
+        - RBAC
+      summary: List roles
+      description: Get all available roles
+      operationId: listRoles
+      responses:
+        '200':
+          description: List of roles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleListResponse'
+
+  /rbac/permissions:
+    get:
+      tags:
+        - RBAC
+      summary: List permissions
+      description: Get all available permissions
+      operationId: listPermissions
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionListResponse'
+
+  /rbac/my-permissions:
+    get:
+      tags:
+        - RBAC
+      summary: Get my permissions
+      description: Get permissions for the current user
+      operationId: getMyPermissions
+      responses:
+        '200':
+          description: Current user's permissions
           content:
             application/json:
               schema:
@@ -733,88 +1601,516 @@ paths:
                   status:
                     type: integer
                     example: 200
-                  message:
-                    type: string
                   data:
-                    $ref: '#/components/schemas/ComfortKit'
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      permissions:
+                        type: array
+                        items:
+                          type: string
 
-  # ============================================================================
-  # MEDICATION RECONCILIATION
-  # ============================================================================
-  /patients/{patientId}/medication-reconciliation:
+  /rbac/users/{userId}/role:
     post:
       tags:
-        - Medication Reconciliation
-      summary: Create medication reconciliation
-      description: Create a CMS-required medication reconciliation
-      operationId: createMedicationReconciliation
+        - RBAC
+      summary: Assign role
+      description: Assign a role to a user
+      operationId: assignUserRole
       parameters:
-        - $ref: '#/components/parameters/PatientId'
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MedicationReconciliationCreate'
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
       responses:
-        '201':
-          description: Medication reconciliation created
+        '200':
+          description: Role assigned
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MedicationReconciliationResponse'
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
 
-# ============================================================================
+    delete:
+      tags:
+        - RBAC
+      summary: Remove role
+      description: Remove a role from a user
+      operationId: removeUserRole
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Role removed
+
+  # ==========================================================================
+  # AUDIT ENDPOINTS
+  # ==========================================================================
+  /audit/logs:
+    get:
+      tags:
+        - Audit
+      summary: List audit logs
+      description: Get audit logs with filtering (admin only)
+      operationId: listAuditLogs
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: user_id
+          in: query
+          schema:
+            type: string
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: resource_type
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogListResponse'
+
+  # ==========================================================================
+  # STAFF ENDPOINTS
+  # ==========================================================================
+  /staff:
+    get:
+      tags:
+        - Staff
+      summary: List staff
+      description: Get all staff members
+      operationId: listStaff
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: department
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of staff
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffListResponse'
+
+    post:
+      tags:
+        - Staff
+      summary: Create staff
+      description: Create a new staff member
+      operationId: createStaff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffCreate'
+      responses:
+        '201':
+          description: Staff created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffResponse'
+
+  # ==========================================================================
+  # SCHEDULING ENDPOINTS
+  # ==========================================================================
+  /scheduling:
+    get:
+      tags:
+        - Scheduling
+      summary: List schedules
+      description: Get all schedules
+      operationId: listSchedules
+      parameters:
+        - name: staff_id
+          in: query
+          schema:
+            type: string
+        - name: patient_id
+          in: query
+          schema:
+            type: integer
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Schedules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleListResponse'
+
+    post:
+      tags:
+        - Scheduling
+      summary: Create schedule
+      description: Create a new schedule entry
+      operationId: createSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleCreate'
+      responses:
+        '201':
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  /scheduling/conflicts:
+    get:
+      tags:
+        - Scheduling
+      summary: Get scheduling conflicts
+      description: Identify scheduling conflicts
+      operationId: getSchedulingConflicts
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Scheduling conflicts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+
+  # ==========================================================================
+  # DATA EXPORT ENDPOINTS
+  # ==========================================================================
+  /data-export:
+    post:
+      tags:
+        - Data Export
+      summary: Export data
+      description: Export data in various formats (CSV, JSON, XML, Excel)
+      operationId: exportData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataExportRequest'
+      responses:
+        '200':
+          description: Export file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+
+  # ==========================================================================
+  # ELECTRONIC SIGNATURE ENDPOINTS
+  # ==========================================================================
+  /electronic-signatures:
+    get:
+      tags:
+        - Electronic Signatures
+      summary: List electronic signatures
+      description: Get electronic signatures with filtering
+      operationId: listElectronicSignatures
+      parameters:
+        - name: document_type
+          in: query
+          schema:
+            type: string
+        - name: signer_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Electronic signatures
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElectronicSignatureListResponse'
+
+    post:
+      tags:
+        - Electronic Signatures
+      summary: Create electronic signature
+      description: Create a 21 CFR Part 11 compliant electronic signature
+      operationId: createElectronicSignature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ElectronicSignatureCreate'
+      responses:
+        '201':
+          description: Signature created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElectronicSignatureResponse'
+
+  /electronic-signatures/{signatureId}/verify:
+    get:
+      tags:
+        - Electronic Signatures
+      summary: Verify signature
+      description: Verify the integrity of an electronic signature
+      operationId: verifyElectronicSignature
+      parameters:
+        - name: signatureId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      valid:
+                        type: boolean
+                      signature_hash:
+                        type: string
+                      verified_at:
+                        type: string
+                        format: date-time
+
+  # ==========================================================================
+  # ADMIN SETTINGS ENDPOINTS
+  # ==========================================================================
+  /admin-settings:
+    get:
+      tags:
+        - Admin Settings
+      summary: Get system settings
+      description: Get all system configuration settings
+      operationId: getSystemSettings
+      responses:
+        '200':
+          description: System settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSettingsResponse'
+
+    put:
+      tags:
+        - Admin Settings
+      summary: Update system settings
+      description: Update system configuration settings
+      operationId: updateSystemSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSettingsUpdate'
+      responses:
+        '200':
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSettingsResponse'
+
+  # ==========================================================================
+  # SOCKET.IO ENDPOINTS
+  # ==========================================================================
+  /socket.io/health:
+    get:
+      tags:
+        - Socket.IO
+      summary: Socket.IO health check
+      description: Check Socket.IO server status
+      operationId: getSocketIOHealth
+      security: []
+      responses:
+        '200':
+          description: Socket.IO status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  connections:
+                    type: integer
+                  namespaces:
+                    type: array
+                    items:
+                      type: string
+
+# ==========================================================================
 # COMPONENTS
-# ============================================================================
+# ==========================================================================
 components:
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: JWT token obtained from authentication endpoint
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: better-auth.session_token
+      description: Session cookie set after successful authentication
+    CSRFToken:
+      type: apiKey
+      in: header
+      name: x-csrf-token
+      description: CSRF token for state-changing requests
 
   parameters:
     PatientId:
       name: patientId
       in: path
       required: true
+      description: Patient ID
       schema:
         type: integer
-      description: Patient ID
+
+    MedicationId:
+      name: medicationId
+      in: path
+      required: true
+      description: Medication ID
+      schema:
+        type: integer
+
+    EncounterId:
+      name: encounterId
+      in: path
+      required: true
+      description: Encounter ID
+      schema:
+        type: integer
+
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+
+    SearchParam:
+      name: search
+      in: query
+      description: Search term
+      schema:
+        type: string
 
   responses:
-    BadRequest:
-      description: Bad request - validation failed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            status: 400
-            message: 'Invalid input data'
-            error: 'certification_period must be INITIAL_90, SUBSEQUENT_90, or SUBSEQUENT_60'
-
     Unauthorized:
-      description: Unauthorized - missing or invalid authentication token
+      description: Authentication required
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
             status: 401
-            message: 'Unauthorized'
+            message: Unauthorized
 
     Forbidden:
-      description: Forbidden - insufficient permissions
+      description: Insufficient permissions
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
             status: 403
-            message: 'Forbidden - insufficient permissions'
+            message: Access denied. Insufficient permissions.
 
     NotFound:
       description: Resource not found
@@ -824,22 +2120,29 @@ components:
             $ref: '#/components/schemas/Error'
           example:
             status: 404
-            message: 'Resource not found'
+            message: Resource not found
 
-    InternalError:
-      description: Internal server error
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    RateLimited:
+      description: Rate limit exceeded
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
-            status: 500
-            message: 'Internal server error'
+            status: 429
+            message: Too many requests. Please try again later.
 
   schemas:
-    # ========================================================================
-    # COMMON
-    # ========================================================================
+    # ==========================================================================
+    # COMMON SCHEMAS
+    # ==========================================================================
     Error:
       type: object
       properties:
@@ -849,21 +2152,55 @@ components:
           type: string
         error:
           type: string
-          description: 'Detailed error message (development mode only)'
+          description: Detailed error (development only)
+
+    ValidationError:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Validation failed
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              msg:
+                type: string
+              path:
+                type: string
+              location:
+                type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
 
     Signature:
       type: object
+      description: 21 CFR Part 11 compliant electronic signature
       properties:
         signedBy:
           type: string
           description: User ID
         signedByName:
           type: string
-          description: Full name of signer
         signedAt:
           type: string
           format: date-time
-          description: ISO 8601 timestamp
         signatureType:
           type: string
           enum: [ELECTRONIC, VERBAL, WRITTEN, ATTESTATION]
@@ -877,14 +2214,679 @@ components:
           type: string
         meaning:
           type: string
-          description: Purpose of signature
         credentials:
           type: string
-          description: Role/title of signer
 
-    # ========================================================================
-    # CERTIFICATIONS
-    # ========================================================================
+    # ==========================================================================
+    # HEALTH SCHEMAS
+    # ==========================================================================
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          properties:
+            database:
+              type: object
+              properties:
+                status:
+                  type: string
+            redis:
+              type: object
+              properties:
+                status:
+                  type: string
+                latencyMs:
+                  type: integer
+
+    RedisHealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+        latencyMs:
+          type: integer
+        version:
+          type: string
+        usedMemory:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # ==========================================================================
+    # AUTH SCHEMAS
+    # ==========================================================================
+    SignUpRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 12
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    SignInRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 12
+
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/UserProfile'
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    PasswordPolicy:
+      type: object
+      properties:
+        minLength:
+          type: integer
+        requireUppercase:
+          type: boolean
+        requireLowercase:
+          type: boolean
+        requireNumbers:
+          type: boolean
+        requireSpecialChars:
+          type: boolean
+        preventPasswordReuse:
+          type: integer
+
+    PasswordStrengthResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        score:
+          type: integer
+        feedback:
+          type: array
+          items:
+            type: string
+
+    # ==========================================================================
+    # PATIENT SCHEMAS
+    # ==========================================================================
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER, UNKNOWN]
+        ssn:
+          type: string
+        mrn:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, DISCHARGED, DECEASED, PENDING]
+        admissionDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PatientCreate:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - dateOfBirth
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [MALE, FEMALE, OTHER, UNKNOWN]
+        ssn:
+          type: string
+        admissionDate:
+          type: string
+          format: date
+
+    PatientUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        status:
+          type: string
+
+    PatientResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Patient'
+
+    PatientListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Patient'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # PATIENT CONTACT SCHEMAS
+    # ==========================================================================
+    PatientContact:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        contact_type:
+          type: string
+          enum: [EMERGENCY, FAMILY, POWER_OF_ATTORNEY, CAREGIVER, OTHER]
+        relationship:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        isPrimary:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    PatientContactCreate:
+      type: object
+      required:
+        - contact_type
+        - firstName
+        - lastName
+      properties:
+        contact_type:
+          type: string
+        relationship:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        isPrimary:
+          type: boolean
+
+    PatientContactResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/PatientContact'
+
+    PatientContactListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientContact'
+
+    # ==========================================================================
+    # MEDICATION SCHEMAS
+    # ==========================================================================
+    MedicationStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - DISCONTINUED
+        - COMPLETED
+        - HELD
+        - ON_HOLD
+
+    ControlledSchedule:
+      type: string
+      enum:
+        - SCHEDULE_II
+        - SCHEDULE_III
+        - SCHEDULE_IV
+        - SCHEDULE_V
+
+    Medication:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        medication_name:
+          type: string
+        generic_name:
+          type: string
+        medication_status:
+          $ref: '#/components/schemas/MedicationStatus'
+        medication_route:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        discontinued_date:
+          type: string
+          format: date
+        discontinuation_reason:
+          type: string
+        controlled_schedule:
+          $ref: '#/components/schemas/ControlledSchedule'
+        is_hospice_related:
+          type: boolean
+        prescriber_id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MedicationCreate:
+      type: object
+      required:
+        - medication_name
+        - start_date
+      properties:
+        medication_name:
+          type: string
+        generic_name:
+          type: string
+        medication_route:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        controlled_schedule:
+          $ref: '#/components/schemas/ControlledSchedule'
+        is_hospice_related:
+          type: boolean
+          default: true
+        prescriber_id:
+          type: string
+
+    MedicationResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Medication'
+
+    MedicationListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medication'
+        count:
+          type: integer
+
+    # ==========================================================================
+    # MAR SCHEMAS
+    # ==========================================================================
+    MARStatus:
+      type: string
+      enum:
+        - GIVEN
+        - NOT_GIVEN
+        - REFUSED
+        - HELD
+        - LATE
+        - MISSED
+
+    MAREntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        medication_id:
+          type: integer
+        scheduled_time:
+          type: string
+          format: date-time
+        actual_time:
+          type: string
+          format: date-time
+        mar_status:
+          $ref: '#/components/schemas/MARStatus'
+        dosage_given:
+          type: string
+        route_used:
+          type: string
+        administered_by_id:
+          type: string
+        administered_by_name:
+          type: string
+        reason_not_given:
+          type: string
+        patient_response:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    MARCreate:
+      type: object
+      required:
+        - medication_id
+        - scheduled_time
+        - mar_status
+      properties:
+        medication_id:
+          type: integer
+        scheduled_time:
+          type: string
+          format: date-time
+        actual_time:
+          type: string
+          format: date-time
+        mar_status:
+          $ref: '#/components/schemas/MARStatus'
+        dosage_given:
+          type: string
+        route_used:
+          type: string
+        administered_by_name:
+          type: string
+        reason_not_given:
+          type: string
+        patient_response:
+          type: string
+
+    MARResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/MAREntry'
+
+    MARListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MAREntry'
+        count:
+          type: integer
+
+    # ==========================================================================
+    # ENCOUNTER SCHEMAS
+    # ==========================================================================
+    EncounterStatus:
+      type: string
+      enum:
+        - DRAFT
+        - IN_PROGRESS
+        - COMPLETED
+        - SIGNED
+        - COSIGNED
+        - AMENDED
+
+    EncounterType:
+      type: string
+      enum:
+        - ADMISSION
+        - ROUTINE_VISIT
+        - PRN_VISIT
+        - PHONE_CALL
+        - DISCHARGE
+        - RECERTIFICATION
+        - IDG
+        - BEREAVEMENT
+
+    Encounter:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        encounter_type:
+          $ref: '#/components/schemas/EncounterType'
+        encounter_status:
+          $ref: '#/components/schemas/EncounterStatus'
+        encounter_date:
+          type: string
+          format: date-time
+        duration_minutes:
+          type: integer
+        chief_complaint:
+          type: string
+        clinical_notes:
+          type: string
+        assessment:
+          type: string
+        plan:
+          type: string
+        clinician_id:
+          type: string
+        clinician_name:
+          type: string
+        signature:
+          $ref: '#/components/schemas/Signature'
+        cosignature:
+          $ref: '#/components/schemas/Signature'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EncounterCreate:
+      type: object
+      required:
+        - patient_id
+        - encounter_type
+        - encounter_date
+      properties:
+        patient_id:
+          type: integer
+        encounter_type:
+          $ref: '#/components/schemas/EncounterType'
+        encounter_date:
+          type: string
+          format: date-time
+        duration_minutes:
+          type: integer
+        chief_complaint:
+          type: string
+        clinical_notes:
+          type: string
+        assessment:
+          type: string
+        plan:
+          type: string
+
+    EncounterUpdate:
+      type: object
+      properties:
+        encounter_type:
+          $ref: '#/components/schemas/EncounterType'
+        duration_minutes:
+          type: integer
+        chief_complaint:
+          type: string
+        clinical_notes:
+          type: string
+        assessment:
+          type: string
+        plan:
+          type: string
+
+    EncounterResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Encounter'
+
+    EncounterListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Encounter'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # CERTIFICATION SCHEMAS
+    # ==========================================================================
     CertificationPeriod:
       type: string
       enum:
@@ -926,14 +2928,6 @@ components:
           type: string
         physician_signature:
           $ref: '#/components/schemas/Signature'
-        created_by_id:
-          type: string
-        updated_by_id:
-          type: string
-        deleted_at:
-          type: string
-          format: date-time
-          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -969,464 +2963,963 @@ components:
       properties:
         status:
           type: integer
-          example: 201
         message:
           type: string
-          example: 'Certification created'
         data:
           $ref: '#/components/schemas/Certification'
 
-    # ========================================================================
-    # FACE-TO-FACE ENCOUNTERS
-    # ========================================================================
-    FaceToFaceEncounter:
-      type: object
-      properties:
-        id:
-          type: integer
-        patient_id:
-          type: integer
-        certification_id:
-          type: integer
-          nullable: true
-        encounter_date:
-          type: string
-          format: date
-        performed_by_id:
-          type: string
-        performed_by_name:
-          type: string
-        performed_by_type:
-          type: string
-          enum: [PHYSICIAN, NP, PA]
-        visit_type:
-          type: string
-          enum: [IN_PERSON, TELEHEALTH]
-        findings:
-          type: string
-        terminal_prognosis_confirmed:
-          type: boolean
-        attestation:
-          $ref: '#/components/schemas/Signature'
-        attestation_date:
-          type: string
-          format: date
-          nullable: true
-        created_by_id:
-          type: string
-        updated_by_id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    F2FCreate:
-      type: object
-      required:
-        - encounter_date
-        - findings
-      properties:
-        certification_id:
-          type: integer
-        encounter_date:
-          type: string
-          format: date
-        performed_by_name:
-          type: string
-        performed_by_type:
-          type: string
-          enum: [PHYSICIAN, NP, PA]
-        visit_type:
-          type: string
-          enum: [IN_PERSON, TELEHEALTH]
-          default: IN_PERSON
-        findings:
-          type: string
-        terminal_prognosis_confirmed:
-          type: boolean
-          default: true
-
-    F2FResponse:
+    CertificationListResponse:
       type: object
       properties:
         status:
           type: integer
-          example: 201
-        message:
-          type: string
-          example: 'Face-to-Face encounter created'
         data:
-          $ref: '#/components/schemas/FaceToFaceEncounter'
+          type: array
+          items:
+            $ref: '#/components/schemas/Certification'
+        count:
+          type: integer
 
-    # ========================================================================
-    # ORDERS
-    # ========================================================================
-    OrderType:
-      type: string
-      enum:
-        - MEDICATION
-        - TREATMENT
-        - DME
-        - LABORATORY
-        - IMAGING
-        - CONSULTATION
-
-    OrderStatus:
-      type: string
-      enum:
-        - ACTIVE
-        - COMPLETED
-        - DISCONTINUED
-        - EXPIRED
-        - PENDING
-
-    Order:
+    # ==========================================================================
+    # VITAL SIGNS SCHEMAS
+    # ==========================================================================
+    VitalSigns:
       type: object
       properties:
         id:
           type: integer
         patient_id:
           type: integer
-        order_type:
-          $ref: '#/components/schemas/OrderType'
-        order_status:
-          $ref: '#/components/schemas/OrderStatus'
-        order_priority:
+        recorded_at:
           type: string
-          enum: [ROUTINE, URGENT, STAT]
-        order_description:
+          format: date-time
+        temperature:
+          type: number
+        temperature_unit:
           type: string
-        start_date:
+          enum: [F, C]
+        pulse:
+          type: integer
+        respiration:
+          type: integer
+        blood_pressure_systolic:
+          type: integer
+        blood_pressure_diastolic:
+          type: integer
+        oxygen_saturation:
+          type: integer
+        weight:
+          type: number
+        weight_unit:
           type: string
-          format: date
-        end_date:
+          enum: [LBS, KG]
+        pain_level:
+          type: integer
+          minimum: 0
+          maximum: 10
+        notes:
           type: string
-          format: date
-          nullable: true
-        ordered_by_id:
-          type: string
-        physician_signature:
-          $ref: '#/components/schemas/Signature'
-        created_by_id:
-          type: string
-        updated_by_id:
+        recorded_by_id:
           type: string
         createdAt:
           type: string
           format: date-time
-        updatedAt:
-          type: string
-          format: date-time
 
-    OrderCreate:
+    VitalSignsCreate:
       type: object
       required:
-        - order_type
-        - order_description
-        - start_date
+        - recorded_at
       properties:
-        order_type:
-          $ref: '#/components/schemas/OrderType'
-        order_priority:
+        recorded_at:
           type: string
-          enum: [ROUTINE, URGENT, STAT]
-          default: ROUTINE
-        order_description:
+          format: date-time
+        temperature:
+          type: number
+        temperature_unit:
           type: string
-        start_date:
+        pulse:
+          type: integer
+        respiration:
+          type: integer
+        blood_pressure_systolic:
+          type: integer
+        blood_pressure_diastolic:
+          type: integer
+        oxygen_saturation:
+          type: integer
+        weight:
+          type: number
+        weight_unit:
           type: string
-          format: date
-        end_date:
+        pain_level:
+          type: integer
+        notes:
           type: string
-          format: date
-        is_verbal_order:
-          type: boolean
-        physician_name:
-          type: string
-        read_back_verified:
-          type: boolean
 
-    OrderResponse:
+    VitalSignsResponse:
       type: object
       properties:
         status:
           type: integer
-          example: 201
-        message:
-          type: string
-          example: 'Order created'
         data:
-          $ref: '#/components/schemas/Order'
+          $ref: '#/components/schemas/VitalSigns'
 
-    # ========================================================================
-    # MEDICATIONS
-    # ========================================================================
-    MedicationStatus:
-      type: string
-      enum:
-        - ACTIVE
-        - DISCONTINUED
-        - COMPLETED
-        - HELD
-        - ON_HOLD
+    VitalSignsListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/VitalSigns'
 
-    ControlledSchedule:
-      type: string
-      enum:
-        - SCHEDULE_II
-        - SCHEDULE_III
-        - SCHEDULE_IV
-        - SCHEDULE_V
-
-    Medication:
+    # ==========================================================================
+    # PAIN ASSESSMENT SCHEMAS
+    # ==========================================================================
+    PainAssessment:
       type: object
       properties:
         id:
           type: integer
         patient_id:
           type: integer
-        medication_name:
+        assessment_date:
           type: string
-        generic_name:
+          format: date-time
+        pain_level:
+          type: integer
+          minimum: 0
+          maximum: 10
+        pain_location:
           type: string
-        medication_status:
-          $ref: '#/components/schemas/MedicationStatus'
-        medication_route:
+        pain_character:
           type: string
-          example: 'ORAL'
-        dosage:
+        pain_duration:
+          type: string
+        pain_frequency:
+          type: string
+        relieved_by:
+          type: string
+        worsened_by:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    PainAssessmentCreate:
+      type: object
+      required:
+        - pain_level
+      properties:
+        pain_level:
+          type: integer
+        pain_location:
+          type: string
+        pain_character:
+          type: string
+        pain_duration:
+          type: string
+        pain_frequency:
+          type: string
+        relieved_by:
+          type: string
+        worsened_by:
+          type: string
+        notes:
+          type: string
+
+    PainAssessmentResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/PainAssessment'
+
+    PainAssessmentListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PainAssessment'
+
+    DetailedPainAssessmentCreate:
+      type: object
+      required:
+        - patient_id
+      properties:
+        patient_id:
+          type: integer
+        pain_level:
+          type: integer
+        location:
+          type: string
+        character:
+          type: string
+        onset:
+          type: string
+        duration:
           type: string
         frequency:
           type: string
-        instructions:
+        aggravating_factors:
+          type: array
+          items:
+            type: string
+        relieving_factors:
+          type: array
+          items:
+            type: string
+        impact_on_function:
           type: string
-        start_date:
+        current_treatment:
           type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-          nullable: true
-        discontinued_date:
-          type: string
-          format: date
-          nullable: true
-        discontinuation_reason:
-          type: string
-          nullable: true
-        controlled_schedule:
-          $ref: '#/components/schemas/ControlledSchedule'
-        is_hospice_related:
-          type: boolean
-        prescriber_id:
-          type: string
-        order_id:
-          type: integer
-        created_by_id:
-          type: string
-        updated_by_id:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    MedicationCreate:
-      type: object
-      required:
-        - medication_name
-        - start_date
-      properties:
-        medication_name:
-          type: string
-        generic_name:
-          type: string
-        medication_route:
-          type: string
-        dosage:
-          type: string
-        frequency:
-          type: string
-        instructions:
-          type: string
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        controlled_schedule:
-          $ref: '#/components/schemas/ControlledSchedule'
-        is_hospice_related:
-          type: boolean
-          default: true
-        prescriber_id:
-          type: string
-        order_id:
-          type: integer
-        initial_quantity:
+        treatment_effectiveness:
           type: string
 
-    MedicationResponse:
+    DetailedPainAssessmentResponse:
       type: object
       properties:
         status:
           type: integer
-          example: 201
-        message:
-          type: string
-          example: 'Medication created'
         data:
-          $ref: '#/components/schemas/Medication'
+          type: object
 
-    # ========================================================================
-    # MAR
-    # ========================================================================
-    MARStatus:
-      type: string
-      enum:
-        - GIVEN
-        - NOT_GIVEN
-        - REFUSED
-        - HELD
-        - LATE
-        - MISSED
-
-    MAREntry:
+    DetailedPainAssessmentListResponse:
       type: object
       properties:
-        mar_entry:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+
+    # ==========================================================================
+    # HOPE ASSESSMENT SCHEMAS
+    # ==========================================================================
+    HopeAssessmentCreate:
+      type: object
+      required:
+        - patient_id
+        - assessment_date
+      properties:
+        patient_id:
+          type: integer
+        assessment_date:
+          type: string
+          format: date
+        assessment_type:
+          type: string
+          enum: [ADMISSION, ROUTINE, DISCHARGE, TRANSFER]
+        functional_status:
+          type: object
+        symptom_assessment:
+          type: object
+        psychosocial_assessment:
+          type: object
+
+    HopeAssessmentResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+
+    HopeAssessmentListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+
+    # ==========================================================================
+    # CARE PLAN SCHEMAS
+    # ==========================================================================
+    CarePlanCreate:
+      type: object
+      required:
+        - patient_id
+      properties:
+        patient_id:
+          type: integer
+        goals:
+          type: array
+          items:
+            type: object
+            properties:
+              goal:
+                type: string
+              target_date:
+                type: string
+                format: date
+              status:
+                type: string
+        interventions:
+          type: array
+          items:
+            type: object
+            properties:
+              intervention:
+                type: string
+              frequency:
+                type: string
+              responsible_party:
+                type: string
+
+    CarePlanResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: object
+
+    CarePlanListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+
+    # ==========================================================================
+    # BILLING SCHEMAS
+    # ==========================================================================
+    Claim:
+      type: object
+      properties:
+        id:
+          type: integer
+        patient_id:
+          type: integer
+        claim_number:
+          type: string
+        status:
+          type: string
+        service_date_from:
+          type: string
+          format: date
+        service_date_to:
+          type: string
+          format: date
+        total_amount:
+          type: number
+        paid_amount:
+          type: number
+        payer_id:
+          type: integer
+        submitted_date:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    ClaimCreate:
+      type: object
+      required:
+        - patient_id
+        - service_date_from
+        - service_date_to
+      properties:
+        patient_id:
+          type: integer
+        service_date_from:
+          type: string
+          format: date
+        service_date_to:
+          type: string
+          format: date
+        payer_id:
+          type: integer
+        diagnosis_codes:
+          type: array
+          items:
+            type: string
+        service_lines:
+          type: array
+          items:
+            type: object
+
+    ClaimResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/Claim'
+
+    ClaimListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # DENIAL SCHEMAS
+    # ==========================================================================
+    Denial:
+      type: object
+      properties:
+        id:
+          type: integer
+        claim_id:
+          type: integer
+        denial_date:
+          type: string
+          format: date
+        denial_reason:
+          type: string
+        carc_code:
+          type: string
+        rarc_code:
+          type: string
+        status:
+          type: string
+        appeal_deadline:
+          type: string
+          format: date
+        amount_denied:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    DenialCreate:
+      type: object
+      required:
+        - claim_id
+        - denial_reason
+      properties:
+        claim_id:
+          type: integer
+        denial_date:
+          type: string
+          format: date
+        denial_reason:
+          type: string
+        carc_code:
+          type: string
+        rarc_code:
+          type: string
+        amount_denied:
+          type: number
+
+    AppealCreate:
+      type: object
+      required:
+        - appeal_reason
+      properties:
+        appeal_reason:
+          type: string
+        supporting_documentation:
+          type: string
+        appeal_date:
+          type: string
+          format: date
+
+    DenialResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/Denial'
+
+    DenialListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Denial'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    DenialCodeListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              type:
+                type: string
+              description:
+                type: string
+
+    # ==========================================================================
+    # ERA SCHEMAS
+    # ==========================================================================
+    ERA:
+      type: object
+      properties:
+        id:
+          type: integer
+        file_name:
+          type: string
+        received_date:
+          type: string
+          format: date
+        payer_name:
+          type: string
+        check_number:
+          type: string
+        total_amount:
+          type: number
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ERAResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/ERA'
+
+    ERAListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ERA'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # ELIGIBILITY SCHEMAS
+    # ==========================================================================
+    EligibilityRequest:
+      type: object
+      required:
+        - patient_id
+        - payer_id
+      properties:
+        patient_id:
+          type: integer
+        payer_id:
+          type: integer
+        service_date:
+          type: string
+          format: date
+
+    EligibilityResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
           type: object
           properties:
-            id:
-              type: integer
+            eligible:
+              type: boolean
+            coverage_start:
+              type: string
+              format: date
+            coverage_end:
+              type: string
+              format: date
+            benefits:
+              type: object
+
+    # ==========================================================================
+    # RBAC SCHEMAS
+    # ==========================================================================
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    RoleListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+
+    PermissionListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              description:
+                type: string
+
+    # ==========================================================================
+    # AUDIT SCHEMAS
+    # ==========================================================================
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: string
+        user_email:
+          type: string
+        action:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+        request_method:
+          type: string
+        request_path:
+          type: string
+        response_status:
+          type: integer
+        duration_ms:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    AuditLogListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # STAFF SCHEMAS
+    # ==========================================================================
+    Staff:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        department:
+          type: string
+        credentials:
+          type: string
+        npi:
+          type: string
+        status:
+          type: string
+        hireDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    StaffCreate:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - role
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        department:
+          type: string
+        credentials:
+          type: string
+        npi:
+          type: string
+        hireDate:
+          type: string
+          format: date
+
+    StaffResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/Staff'
+
+    StaffListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Staff'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # ==========================================================================
+    # SCHEDULING SCHEMAS
+    # ==========================================================================
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
+        staff_id:
+          type: string
+        patient_id:
+          type: integer
+        schedule_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+        end_time:
+          type: string
+        visit_type:
+          type: string
+        status:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ScheduleCreate:
+      type: object
+      required:
+        - staff_id
+        - patient_id
+        - schedule_date
+        - start_time
+        - end_time
+      properties:
+        staff_id:
+          type: string
+        patient_id:
+          type: integer
+        schedule_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+        end_time:
+          type: string
+        visit_type:
+          type: string
+        notes:
+          type: string
+
+    ScheduleResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/Schedule'
+
+    ScheduleListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+
+    # ==========================================================================
+    # DATA EXPORT SCHEMAS
+    # ==========================================================================
+    DataExportRequest:
+      type: object
+      required:
+        - export_type
+        - format
+      properties:
+        export_type:
+          type: string
+          enum: [PATIENTS, ENCOUNTERS, MEDICATIONS, CLAIMS, AUDIT_LOGS]
+        format:
+          type: string
+          enum: [CSV, JSON, XML, EXCEL]
+        filters:
+          type: object
+          properties:
+            start_date:
+              type: string
+              format: date
+            end_date:
+              type: string
+              format: date
             patient_id:
               type: integer
-            medication_id:
-              type: integer
-            scheduled_time:
-              type: string
-              format: date-time
-            actual_time:
-              type: string
-              format: date-time
-            mar_status:
-              $ref: '#/components/schemas/MARStatus'
-            dosage_given:
-              type: string
-            route_used:
-              type: string
-            administered_by_id:
-              type: string
-            administered_by_name:
-              type: string
-            reason_not_given:
-              type: string
-              nullable: true
-            patient_response:
-              type: string
-              nullable: true
-            createdAt:
-              type: string
-              format: date-time
-        medication:
-          type: object
-          properties:
-            id:
-              type: integer
-            medication_name:
-              type: string
-            dosage:
-              type: string
-            frequency:
-              type: string
 
-    MARCreate:
-      type: object
-      required:
-        - medication_id
-        - scheduled_time
-        - mar_status
-      properties:
-        medication_id:
-          type: integer
-        scheduled_time:
-          type: string
-          format: date-time
-        actual_time:
-          type: string
-          format: date-time
-        mar_status:
-          $ref: '#/components/schemas/MARStatus'
-        dosage_given:
-          type: string
-        route_used:
-          type: string
-        administered_by_name:
-          type: string
-        reason_not_given:
-          type: string
-          description: 'Required when mar_status is NOT_GIVEN, REFUSED, or HELD'
-        patient_response:
-          type: string
-
-    MARResponse:
-      type: object
-      properties:
-        status:
-          type: integer
-          example: 201
-        message:
-          type: string
-          example: 'MAR entry created'
-        data:
-          type: object
-
-    # ========================================================================
-    # COMFORT KITS
-    # ========================================================================
-    ComfortKit:
+    # ==========================================================================
+    # ELECTRONIC SIGNATURE SCHEMAS
+    # ==========================================================================
+    ElectronicSignature:
       type: object
       properties:
         id:
           type: integer
-        patient_id:
+        document_type:
+          type: string
+        document_id:
           type: integer
-        kit_number:
+        signer_id:
           type: string
-        issue_date:
+        signer_name:
           type: string
-          format: date
-        expiration_date:
+        signer_credentials:
           type: string
-          format: date
+        signature_type:
+          type: string
+        signature_hash:
+          type: string
+        meaning:
+          type: string
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    ElectronicSignatureCreate:
+      type: object
+      required:
+        - document_type
+        - document_id
+        - meaning
+      properties:
+        document_type:
+          type: string
+        document_id:
+          type: integer
+        meaning:
+          type: string
+        signature_type:
+          type: string
+          enum: [ELECTRONIC, VERBAL, ATTESTATION]
+
+    ElectronicSignatureResponse:
+      type: object
+      properties:
         status:
-          type: string
-          enum: [ACTIVE, EXPIRED, DESTROYED, RETURNED]
-        medications:
+          type: integer
+        data:
+          $ref: '#/components/schemas/ElectronicSignature'
+
+    ElectronicSignatureListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
           type: array
           items:
-            type: object
-            properties:
-              medication:
-                type: string
-              quantity:
-                type: string
-              lot_number:
-                type: string
-              ndc:
-                type: string
-        location:
+            $ref: '#/components/schemas/ElectronicSignature'
+
+    # ==========================================================================
+    # ADMIN SETTINGS SCHEMAS
+    # ==========================================================================
+    AdminSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+        organization_name:
           type: string
-        created_by_id:
+        npi:
           type: string
-        updated_by_id:
-          type: string
+        address:
+          type: object
+        clearinghouse_settings:
+          type: object
+        billing_settings:
+          type: object
+        notification_settings:
+          type: object
+        security_settings:
+          type: object
         createdAt:
           type: string
           format: date-time
@@ -1434,87 +3927,28 @@ components:
           type: string
           format: date-time
 
-    ComfortKitCreate:
-      type: object
-      required:
-        - medications
-      properties:
-        kit_number:
-          type: string
-        issue_date:
-          type: string
-          format: date
-        expiration_date:
-          type: string
-          format: date
-        medications:
-          type: array
-          items:
-            type: object
-            required:
-              - medication
-              - quantity
-            properties:
-              medication:
-                type: string
-              quantity:
-                type: string
-              lot_number:
-                type: string
-              ndc:
-                type: string
-        location:
-          type: string
-
-    ComfortKitResponse:
+    AdminSettingsUpdate:
       type: object
       properties:
-        status:
-          type: integer
-          example: 201
-        message:
+        organization_name:
           type: string
-          example: 'Comfort kit created'
-        data:
-          $ref: '#/components/schemas/ComfortKit'
-
-    # ========================================================================
-    # MEDICATION RECONCILIATION
-    # ========================================================================
-    MedicationReconciliationCreate:
-      type: object
-      properties:
-        reconciliation_type:
+        npi:
           type: string
-          enum: [ADMISSION, TRANSFER, DISCHARGE, ROUTINE]
-          default: ROUTINE
-        medications_reviewed:
-          type: array
-          items:
-            type: object
-            properties:
-              medication:
-                type: string
-              action:
-                type: string
-                enum: [CONTINUED, DISCONTINUED, ADDED, MODIFIED]
-              reason:
-                type: string
-        discrepancies_found:
-          type: string
-        actions_taken:
-          type: string
-        performed_by_name:
-          type: string
-
-    MedicationReconciliationResponse:
-      type: object
-      properties:
-        status:
-          type: integer
-          example: 201
-        message:
-          type: string
-          example: 'Medication reconciliation created'
-        data:
+        address:
           type: object
+        clearinghouse_settings:
+          type: object
+        billing_settings:
+          type: object
+        notification_settings:
+          type: object
+        security_settings:
+          type: object
+
+    AdminSettingsResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        data:
+          $ref: '#/components/schemas/AdminSettings'

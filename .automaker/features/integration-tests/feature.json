@@ -2,7 +2,7 @@
   "id": "integration-tests",
   "category": "Testing",
   "title": "Integration Tests",
-  "description": "Create integration tests for critical workflows and API endpoints.",
+  "description": "Integration Test Suite for Critical Workflows and API Endpoints\n\nDevelop comprehensive integration tests that verify the correct interaction between different components, services, and API endpoints across critical user workflows.\n\nRequirements:\n- Identify and document all critical user workflows (e.g., authentication, data creation/modification, checkout process)\n- Create integration tests for each major API endpoint covering:\n  - Successful request/response cycles\n  - Error handling and validation\n  - Authentication/authorization checks\n  - Data persistence verification\n- Test end-to-end workflows that span multiple API calls or services\n- Include database state verification before and after operations\n- Test edge cases such as:\n  - Concurrent requests\n  - Invalid or malformed data\n  - Missing or expired authentication tokens\n  - Rate limiting behavior\n- Set up test database/environment isolation to prevent interference\n- Ensure tests are idempotent and can run in any order\n- Add CI/CD integration to run tests automatically on pull requests\n- Achieve minimum 80% coverage of critical paths\n- Document test scenarios and expected outcomes",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -10,5 +10,13 @@
     "unit-tests-infrastructure"
   ],
   "createdAt": "2025-12-31T05:55:26.264Z",
-  "updatedAt": "2025-12-31T05:55:26.264Z"
+  "updatedAt": "2025-12-31T05:55:26.264Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

@@ -29,6 +29,9 @@ export const csrfExemptRoutes = [
   '/api/auth/sign-up',
   '/api/auth/sign-in/email',
   '/api/auth/sign-out',
+  '/api/auth/check-password-strength', // Public password strength check
+  '/api/auth/password-policy', // Public password policy endpoint
+  '/api/auth/validate-password', // Password validation for registration
   '/api/health',
   '/health',
   '/api/status',

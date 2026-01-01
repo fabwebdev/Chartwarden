@@ -2,7 +2,7 @@
   "id": "encounter-routes",
   "category": "API",
   "title": "Encounter API Routes",
-  "description": "Create REST API routes for encounter management with proper HTTP methods and input validation.",
+  "description": "Create RESTful API Endpoints for Encounter Management\n\nImplement a complete set of REST API endpoints for managing encounters with proper HTTP method usage, request/response handling, and comprehensive input validation.\n\nRequirements:\n- Implement standard CRUD operations (Create, Read, Update, Delete) for encounters\n- Use appropriate HTTP methods: POST (create), GET (read), PUT/PATCH (update), DELETE (remove)\n- Define clear URL structure following REST conventions (e.g., /api/encounters, /api/encounters/:id)\n- Add input validation for all request payloads (required fields, data types, format constraints)\n- Return appropriate HTTP status codes (200, 201, 400, 404, 500, etc.)\n- Implement error handling with consistent error response format\n- Add request body schema validation (consider using a validation library)\n- Support query parameters for filtering/pagination on list endpoints\n- Ensure proper Content-Type headers (application/json)\n- Include basic authentication/authorization checks if applicable\n- Document expected request/response formats for each endpoint\n- Add unit tests for validation logic and edge cases",
   "status": "backlog",
   "priority": 1,
   "complexity": "simple",
@@ -10,5 +10,13 @@
     "encounter-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.241Z",
-  "updatedAt": "2025-12-31T05:55:26.241Z"
+  "updatedAt": "2025-12-31T05:55:26.241Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

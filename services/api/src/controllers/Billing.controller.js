@@ -16,9 +16,32 @@ import {
   claim_diagnosis_codes,
   claim_procedure_codes
 } from '../db/schemas/index.js';
-import { eq, and, gte, lte, desc, asc, sql, or, isNull, inArray, like, ilike } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, asc, sql, or, isNull, inArray, like, ilike, count } from 'drizzle-orm';
 
 import { logger } from '../utils/logger.js';
+import AuditService from '../services/AuditService.js';
+
+/**
+ * Claim Status Workflow Configuration
+ * Defines valid status transitions to prevent invalid state changes
+ */
+const CLAIM_STATUS_WORKFLOW = {
+  DRAFT: ['READY_TO_SUBMIT', 'VOID'],
+  READY_TO_SUBMIT: ['DRAFT', 'SUBMITTED', 'VOID'],
+  SUBMITTED: ['ACCEPTED', 'REJECTED', 'VOID'],
+  ACCEPTED: ['PAID', 'DENIED', 'APPEALED', 'VOID'],
+  REJECTED: ['DRAFT', 'APPEALED', 'VOID'],
+  PAID: ['VOID'], // Terminal state - only void allowed
+  DENIED: ['APPEALED', 'VOID'],
+  APPEALED: ['ACCEPTED', 'DENIED', 'PAID', 'VOID'],
+  VOID: [] // Terminal state - no transitions allowed
+};
+
+/**
+ * Terminal claim statuses that cannot be modified (except for specific fields)
+ */
+const TERMINAL_STATUSES = ['PAID', 'VOID'];
+
 /**
  * Billing Controller
  * Module G - HIGH Priority
@@ -37,6 +60,83 @@ import { logger } from '../utils/logger.js';
  * - Claim status history tracking
  */
 class BillingController {
+  /**
+   * Validates if a status transition is allowed
+   * @param {string} currentStatus - Current claim status
+   * @param {string} newStatus - Target status
+   * @returns {Object} { valid: boolean, message?: string }
+   */
+  validateStatusTransition(currentStatus, newStatus) {
+    if (!currentStatus) {
+      return { valid: true }; // New claim, any initial status is fine
+    }
+
+    if (currentStatus === newStatus) {
+      return { valid: true }; // No change
+    }
+
+    const allowedTransitions = CLAIM_STATUS_WORKFLOW[currentStatus];
+    if (!allowedTransitions) {
+      return {
+        valid: false,
+        message: `Unknown current status: ${currentStatus}`
+      };
+    }
+
+    if (!allowedTransitions.includes(newStatus)) {
+      return {
+        valid: false,
+        message: `Invalid status transition from ${currentStatus} to ${newStatus}. Allowed transitions: ${allowedTransitions.join(', ') || 'none'}`
+      };
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Creates audit log entry for claim operations
+   */
+  async createClaimAuditLog(action, claimId, userId, oldData, newData, request) {
+    try {
+      await AuditService.createAuditLog({
+        user_id: userId,
+        action: action,
+        resource_type: 'claims',
+        resource_id: String(claimId),
+        ip_address: request?.ip || request?.headers?.['x-forwarded-for'],
+        user_agent: request?.headers?.['user-agent'],
+        status: 'success',
+        metadata: JSON.stringify({
+          changes: this.computeChanges(oldData, newData)
+        })
+      });
+    } catch (error) {
+      logger.error('Failed to create audit log for claim:', error);
+    }
+  }
+
+  /**
+   * Computes changes between old and new data for audit logging
+   */
+  computeChanges(oldData, newData) {
+    if (!oldData) return { action: 'CREATE' };
+    if (!newData) return { action: 'DELETE' };
+
+    const changes = {};
+    const financialFields = ['total_charges', 'total_paid', 'total_adjustments', 'balance'];
+
+    for (const key of Object.keys(newData)) {
+      if (oldData[key] !== newData[key]) {
+        changes[key] = {
+          from: oldData[key],
+          to: newData[key],
+          isFinancial: financialFields.includes(key)
+        };
+      }
+    }
+
+    return changes;
+  }
   // ============================================
   // CLAIMS MANAGEMENT
   // ============================================
@@ -44,6 +144,20 @@ class BillingController {
   /**
    * Get all claims with optional filters
    * GET /claims
+   *
+   * Query Parameters:
+   * - limit: Number of results per page (default: 50)
+   * - offset: Starting offset for pagination (default: 0)
+   * - status: Filter by claim status
+   * - patient_id: Filter by patient ID
+   * - payer_id: Filter by payer ID
+   * - start_date: Filter by service start date (>=)
+   * - end_date: Filter by service end date (<=)
+   * - min_amount: Filter by minimum total_charges (in cents)
+   * - max_amount: Filter by maximum total_charges (in cents)
+   * - created_by: Filter by user who created the claim
+   * - sort_by: Field to sort by (default: createdAt)
+   * - sort_order: Sort direction (asc/desc, default: desc)
    */
   async getAllClaims(request, reply) {
     try {
@@ -54,10 +168,57 @@ class BillingController {
         patient_id,
         payer_id,
         start_date,
-        end_date
+        end_date,
+        min_amount,
+        max_amount,
+        created_by,
+        sort_by = 'createdAt',
+        sort_order = 'desc'
       } = request.query;
 
-      let query = db
+      // Build base filter conditions
+      const filters = [isNull(claims.deleted_at)];
+
+      // Apply filters
+      if (status) {
+        // Support comma-separated statuses
+        const statuses = status.split(',').map(s => s.trim());
+        if (statuses.length > 1) {
+          filters.push(inArray(claims.claim_status, statuses));
+        } else {
+          filters.push(eq(claims.claim_status, status));
+        }
+      }
+      if (patient_id) {
+        filters.push(eq(claims.patient_id, parseInt(patient_id)));
+      }
+      if (payer_id) {
+        filters.push(eq(claims.payer_id, parseInt(payer_id)));
+      }
+      if (start_date) {
+        filters.push(gte(claims.service_start_date, start_date));
+      }
+      if (end_date) {
+        filters.push(lte(claims.service_end_date, end_date));
+      }
+      // Amount range filters
+      if (min_amount) {
+        filters.push(gte(claims.total_charges, parseInt(min_amount)));
+      }
+      if (max_amount) {
+        filters.push(lte(claims.total_charges, parseInt(max_amount)));
+      }
+      // User filter
+      if (created_by) {
+        filters.push(eq(claims.created_by_id, created_by));
+      }
+
+      // Build order by clause
+      const sortField = claims[sort_by] || claims.createdAt;
+      const orderByClause = sort_order === 'asc' ? asc(sortField) : desc(sortField);
+
+      // Execute data query
+      const results = await db
         .select({
           claim: claims,
           patient: {
@@ -75,40 +236,32 @@ class BillingController {
         .from(claims)
         .leftJoin(patients, eq(claims.patient_id, patients.id))
         .leftJoin(payers, eq(claims.payer_id, payers.id))
-        .where(isNull(claims.deleted_at));
-
-      // Apply filters
-      const filters = [];
-      if (status) {
-        filters.push(eq(claims.claim_status, status));
-      }
-      if (patient_id) {
-        filters.push(eq(claims.patient_id, parseInt(patient_id)));
-      }
-      if (payer_id) {
-        filters.push(eq(claims.payer_id, parseInt(payer_id)));
-      }
-      if (start_date) {
-        filters.push(gte(claims.service_start_date, start_date));
-      }
-      if (end_date) {
-        filters.push(lte(claims.service_end_date, end_date));
-      }
-
-      if (filters.length > 0) {
-        query = query.where(and(...filters));
-      }
-
-      const results = await query
-        .orderBy(desc(claims.createdAt))
+        .where(and(...filters))
+        .orderBy(orderByClause)
         .limit(parseInt(limit))
         .offset(parseInt(offset));
+
+      // Get total count for pagination
+      const countResult = await db
+        .select({ total: count() })
+        .from(claims)
+        .where(and(...filters));
+
+      const total = Number(countResult[0]?.total || 0);
 
       reply.code(200);
       return {
         status: 200,
         data: results,
-        count: results.length
+        count: results.length,
+        total: total,
+        pagination: {
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          total: total,
+          pages: Math.ceil(total / parseInt(limit)),
+          currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1
+        }
       };
     } catch (error) {
       logger.error('Error fetching claims:', error)
@@ -287,6 +440,9 @@ class BillingController {
         await db.insert(claim_service_lines).values(serviceLinesToInsert);
       }
 
+      // Create audit log for claim creation
+      await this.createClaimAuditLog('CREATE', result[0].id, request.user?.id, null, result[0], request);
+
       reply.code(201);
       return {
         status: 201,
@@ -299,6 +455,335 @@ class BillingController {
       return {
         status: 500,
         message: 'Error creating claim',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update claim
+   * PUT /claims/:id
+   *
+   * Updates an existing claim with validation for:
+   * - Status workflow transitions
+   * - Terminal state modifications
+   * - Amount changes with audit logging
+   * - Concurrent update handling via updatedAt check
+   */
+  async updateClaim(request, reply) {
+    try {
+      const { id } = request.params;
+      const data = request.body;
+
+      // Get existing claim
+      const existing = await db
+        .select()
+        .from(claims)
+        .where(and(
+          eq(claims.id, parseInt(id)),
+          isNull(claims.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      const currentClaim = existing[0];
+
+      // Check for terminal status - prevent modifications except specific allowed fields
+      if (TERMINAL_STATUSES.includes(currentClaim.claim_status)) {
+        // Only allow notes and metadata updates for terminal claims
+        const allowedFieldsForTerminal = ['notes', 'metadata'];
+        const attemptedFields = Object.keys(data).filter(k => !allowedFieldsForTerminal.includes(k));
+
+        if (attemptedFields.length > 0) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: `Claim is in terminal status (${currentClaim.claim_status}). Only notes and metadata can be updated.`,
+            attempted_fields: attemptedFields
+          };
+        }
+      }
+
+      // Validate status transition if status is being changed
+      if (data.claim_status && data.claim_status !== currentClaim.claim_status) {
+        const transitionResult = this.validateStatusTransition(currentClaim.claim_status, data.claim_status);
+        if (!transitionResult.valid) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: transitionResult.message,
+            current_status: currentClaim.claim_status,
+            requested_status: data.claim_status,
+            allowed_transitions: CLAIM_STATUS_WORKFLOW[currentClaim.claim_status] || []
+          };
+        }
+      }
+
+      // Concurrent update check - if client provides expected updatedAt, verify it matches
+      if (data.expected_updated_at) {
+        const expectedDate = new Date(data.expected_updated_at).getTime();
+        const actualDate = new Date(currentClaim.updatedAt).getTime();
+        if (expectedDate !== actualDate) {
+          reply.code(409);
+          return {
+            status: 409,
+            message: 'Claim was modified by another user. Please refresh and try again.',
+            current_updated_at: currentClaim.updatedAt
+          };
+        }
+      }
+
+      // Validate amount changes (prevent negative amounts for certain fields)
+      if (data.total_charges !== undefined && parseInt(data.total_charges) < 0) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Total charges cannot be negative'
+        };
+      }
+
+      // Build update object
+      const updateData = {
+        ...data,
+        updated_by_id: request.user?.id,
+        updatedAt: new Date()
+      };
+
+      // Remove fields that shouldn't be updated directly
+      delete updateData.id;
+      delete updateData.claim_number;
+      delete updateData.created_by_id;
+      delete updateData.createdAt;
+      delete updateData.expected_updated_at;
+
+      // Update claim
+      const result = await db
+        .update(claims)
+        .set(updateData)
+        .where(eq(claims.id, parseInt(id)))
+        .returning();
+
+      // Create audit log with change tracking
+      await this.createClaimAuditLog('UPDATE', parseInt(id), request.user?.id, currentClaim, result[0], request);
+
+      // If status changed, also record in status history
+      if (data.claim_status && data.claim_status !== currentClaim.claim_status) {
+        await this.recordStatusChange(
+          parseInt(id),
+          currentClaim.claim_status,
+          data.claim_status,
+          data.status_change_reason || 'USER_ACTION',
+          'MANUAL',
+          null,
+          request.user?.id,
+          data.status_change_notes
+        );
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Claim updated successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error updating claim:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating claim',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Update claim amount
+   * PUT /claims/:id/amount
+   *
+   * Specialized endpoint for updating claim financial amounts
+   * with enhanced validation and audit logging
+   */
+  async updateClaimAmount(request, reply) {
+    try {
+      const { id } = request.params;
+      const { total_charges, total_adjustments, notes } = request.body;
+
+      // Get existing claim
+      const existing = await db
+        .select()
+        .from(claims)
+        .where(and(
+          eq(claims.id, parseInt(id)),
+          isNull(claims.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      const currentClaim = existing[0];
+
+      // Prevent amount changes on terminal claims
+      if (TERMINAL_STATUSES.includes(currentClaim.claim_status)) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: `Cannot modify amounts on claim with terminal status: ${currentClaim.claim_status}`
+        };
+      }
+
+      // Validate amounts
+      if (total_charges !== undefined && parseInt(total_charges) < 0) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Total charges cannot be negative'
+        };
+      }
+
+      // Calculate new balance
+      const newCharges = total_charges !== undefined ? parseInt(total_charges) : currentClaim.total_charges;
+      const newAdjustments = total_adjustments !== undefined ? parseInt(total_adjustments) : (currentClaim.total_adjustments || 0);
+      const currentPaid = currentClaim.total_paid || 0;
+      const newBalance = newCharges - currentPaid - newAdjustments;
+
+      // Update claim
+      const result = await db
+        .update(claims)
+        .set({
+          total_charges: newCharges,
+          total_adjustments: newAdjustments,
+          balance: newBalance,
+          notes: notes || currentClaim.notes,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(claims.id, parseInt(id)))
+        .returning();
+
+      // Create audit log specifically for financial changes
+      await this.createClaimAuditLog('UPDATE_AMOUNT', parseInt(id), request.user?.id,
+        { total_charges: currentClaim.total_charges, total_adjustments: currentClaim.total_adjustments, balance: currentClaim.balance },
+        { total_charges: newCharges, total_adjustments: newAdjustments, balance: newBalance },
+        request
+      );
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Claim amount updated successfully',
+        data: result[0],
+        financial_summary: {
+          previous: {
+            total_charges: currentClaim.total_charges,
+            total_adjustments: currentClaim.total_adjustments,
+            balance: currentClaim.balance
+          },
+          current: {
+            total_charges: newCharges,
+            total_adjustments: newAdjustments,
+            balance: newBalance
+          }
+        }
+      };
+    } catch (error) {
+      logger.error('Error updating claim amount:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error updating claim amount',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Delete claim (soft delete)
+   * DELETE /claims/:id
+   *
+   * Performs soft delete by setting deleted_at timestamp.
+   * Prevents deletion of claims in certain statuses.
+   */
+  async deleteClaim(request, reply) {
+    try {
+      const { id } = request.params;
+      const { reason } = request.body || {};
+
+      // Get existing claim
+      const existing = await db
+        .select()
+        .from(claims)
+        .where(and(
+          eq(claims.id, parseInt(id)),
+          isNull(claims.deleted_at)
+        ))
+        .limit(1);
+
+      if (!existing[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      const currentClaim = existing[0];
+
+      // Prevent deletion of submitted/paid claims
+      const nonDeletableStatuses = ['SUBMITTED', 'ACCEPTED', 'PAID'];
+      if (nonDeletableStatuses.includes(currentClaim.claim_status)) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: `Cannot delete claim with status: ${currentClaim.claim_status}. Use void action instead.`,
+          suggestion: 'POST /claims/:id/void'
+        };
+      }
+
+      // Soft delete
+      const result = await db
+        .update(claims)
+        .set({
+          deleted_at: new Date(),
+          notes: reason ? `${currentClaim.notes || ''}\n[DELETED: ${reason}]` : currentClaim.notes,
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(claims.id, parseInt(id)))
+        .returning();
+
+      // Create audit log for deletion
+      await this.createClaimAuditLog('DELETE', parseInt(id), request.user?.id, currentClaim, null, request);
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Claim deleted successfully',
+        data: {
+          id: result[0].id,
+          claim_number: result[0].claim_number,
+          deleted_at: result[0].deleted_at
+        }
+      };
+    } catch (error) {
+      logger.error('Error deleting claim:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error deleting claim',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }
@@ -1416,13 +1901,24 @@ class BillingController {
   }
 
   /**
-   * Update claim status with history tracking
+   * Update claim status with history tracking and workflow validation
    * PUT /claims/:id/status
+   *
+   * Validates status transitions according to the claim workflow:
+   * - DRAFT -> READY_TO_SUBMIT, VOID
+   * - READY_TO_SUBMIT -> DRAFT, SUBMITTED, VOID
+   * - SUBMITTED -> ACCEPTED, REJECTED, VOID
+   * - ACCEPTED -> PAID, DENIED, APPEALED, VOID
+   * - REJECTED -> DRAFT, APPEALED, VOID
+   * - PAID -> VOID (terminal)
+   * - DENIED -> APPEALED, VOID
+   * - APPEALED -> ACCEPTED, DENIED, PAID, VOID
+   * - VOID -> (terminal, no transitions)
    */
   async updateClaimStatus(request, reply) {
     try {
       const { id } = request.params;
-      const { new_status, reason, notes } = request.body;
+      const { new_status, reason, notes, force } = request.body;
 
       if (!new_status) {
         reply.code(400);
@@ -1436,7 +1932,10 @@ class BillingController {
       const claim = await db
         .select()
         .from(claims)
-        .where(eq(claims.id, parseInt(id)))
+        .where(and(
+          eq(claims.id, parseInt(id)),
+          isNull(claims.deleted_at)
+        ))
         .limit(1);
 
       if (!claim[0]) {
@@ -1447,13 +1946,34 @@ class BillingController {
         };
       }
 
+      const currentStatus = claim[0].claim_status;
+
+      // Validate status transition
+      const transitionResult = this.validateStatusTransition(currentStatus, new_status);
+      if (!transitionResult.valid) {
+        // Allow force override for admins if explicitly requested
+        if (!force) {
+          reply.code(400);
+          return {
+            status: 400,
+            message: transitionResult.message,
+            current_status: currentStatus,
+            requested_status: new_status,
+            allowed_transitions: CLAIM_STATUS_WORKFLOW[currentStatus] || [],
+            hint: 'Set force=true to override workflow validation (admin only)'
+          };
+        }
+        // Log force override
+        logger.warn(`Force status transition override: ${currentStatus} -> ${new_status} by user ${request.user?.id}`);
+      }
+
       // Record status change in history
       await this.recordStatusChange(
         parseInt(id),
-        claim[0].claim_status,
+        currentStatus,
         new_status,
         reason || 'USER_ACTION',
-        'MANUAL',
+        force ? 'FORCE_OVERRIDE' : 'MANUAL',
         null,
         request.user?.id,
         notes
@@ -1470,11 +1990,23 @@ class BillingController {
         .where(eq(claims.id, parseInt(id)))
         .returning();
 
+      // Create audit log
+      await this.createClaimAuditLog('STATUS_CHANGE', parseInt(id), request.user?.id,
+        { claim_status: currentStatus },
+        { claim_status: new_status, force: !!force },
+        request
+      );
+
       reply.code(200);
       return {
         status: 200,
         message: 'Claim status updated successfully',
-        data: result[0]
+        data: result[0],
+        transition: {
+          from: currentStatus,
+          to: new_status,
+          forced: !!force
+        }
       };
     } catch (error) {
       logger.error('Error updating claim status:', error);
@@ -1482,6 +2014,57 @@ class BillingController {
       return {
         status: 500,
         message: 'Error updating claim status',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get valid status transitions for a claim
+   * GET /claims/:id/status/transitions
+   */
+  async getValidStatusTransitions(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const claim = await db
+        .select()
+        .from(claims)
+        .where(and(
+          eq(claims.id, parseInt(id)),
+          isNull(claims.deleted_at)
+        ))
+        .limit(1);
+
+      if (!claim[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Claim not found'
+        };
+      }
+
+      const currentStatus = claim[0].claim_status;
+      const allowedTransitions = CLAIM_STATUS_WORKFLOW[currentStatus] || [];
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: {
+          claim_id: claim[0].id,
+          claim_number: claim[0].claim_number,
+          current_status: currentStatus,
+          allowed_transitions: allowedTransitions,
+          is_terminal: TERMINAL_STATUSES.includes(currentStatus),
+          workflow: CLAIM_STATUS_WORKFLOW
+        }
+      };
+    } catch (error) {
+      logger.error('Error getting status transitions:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error getting status transitions',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }

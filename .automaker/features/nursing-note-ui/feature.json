@@ -2,7 +2,7 @@
   "id": "nursing-note-ui",
   "category": "UI",
   "title": "Nursing Note Entry and Display UI",
-  "description": "Create form for entering nursing notes with rich text editor and display view for note history.",
+  "description": "Create Nursing Notes Management System with Rich Text Editor and History View\n\nBuild a comprehensive nursing notes feature that allows healthcare staff to create, edit, and review patient nursing notes with formatting capabilities.\n\nRequirements:\n\nForm Component:\n- Implement rich text editor supporting common formatting (bold, italic, underline, lists, headings)\n- Include required metadata fields (patient ID, timestamp, nurse name/ID, note type/category)\n- Add auto-save functionality to prevent data loss\n- Validate required fields before submission\n- Provide character count and word count indicators\n- Support mentions/tags for other staff members if applicable\n\nHistory/Display View:\n- Show chronological list of all nursing notes for a patient\n- Display note metadata (author, timestamp, last modified date)\n- Render formatted content with proper styling\n- Implement filtering options (date range, note type, author)\n- Add search functionality within note content\n- Support pagination or infinite scroll for large note histories\n- Provide print/export capabilities for documentation\n\nTechnical Considerations:\n- Choose appropriate rich text editor library (e.g., Quill, TipTap, Draft.js)\n- Implement proper sanitization of HTML content to prevent XSS attacks\n- Ensure HIPAA compliance for storing and transmitting patient data\n- Design responsive layout for both desktop and tablet use\n- Add loading states and error handling for API calls\n- Consider edit/delete permissions and audit trail requirements",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "rich-text-editor-component"
   ],
   "createdAt": "2025-12-31T05:55:26.242Z",
-  "updatedAt": "2025-12-31T05:55:26.242Z"
+  "updatedAt": "2025-12-31T05:55:26.242Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

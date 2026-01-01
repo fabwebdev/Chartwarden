@@ -2,7 +2,7 @@
   "id": "billing-routes",
   "category": "API",
   "title": "Billing API Routes",
-  "description": "Create REST API routes for claim management and billing operations.",
+  "description": "Create REST API Endpoints for Claims Management and Billing Operations\n\nImplement a comprehensive set of RESTful API endpoints to handle claim lifecycle management and billing-related operations.\n\nRequirements:\n\nClaims Management Endpoints:\n- POST /api/claims - Create new claim with validation\n- GET /api/claims - List claims with pagination, filtering, and sorting\n- GET /api/claims/:id - Retrieve single claim details\n- PUT /api/claims/:id - Update existing claim information\n- PATCH /api/claims/:id/status - Update claim status (draft, submitted, approved, rejected, paid)\n- DELETE /api/claims/:id - Soft delete or archive claim\n\nBilling Operations Endpoints:\n- POST /api/billing/invoices - Generate invoice from approved claim(s)\n- GET /api/billing/invoices - List invoices with filters (status, date range, amount)\n- GET /api/billing/invoices/:id - Retrieve invoice details\n- POST /api/billing/payments - Record payment against invoice\n- GET /api/billing/payments - List payment history\n- GET /api/billing/statements - Generate billing statements for reporting\n\nTechnical Considerations:\n- Implement proper HTTP status codes (200, 201, 400, 401, 404, 500)\n- Add request validation and sanitization\n- Include authentication and authorization middleware\n- Implement rate limiting to prevent abuse\n- Add comprehensive error handling with meaningful messages\n- Support JSON request/response format\n- Include API versioning strategy (e.g., /api/v1/)\n\nData Validation:\n- Validate required fields for claims (claimant info, amount, date, type)\n- Ensure amount values are positive numbers with proper decimal handling\n- Validate date formats and logical date ranges\n- Check for duplicate claim submissions\n- Verify claim status transitions are valid\n\nTesting Requirements:\n- Unit tests for each endpoint\n- Integration tests for complete workflows\n- Test error scenarios and edge cases\n- Validate authorization rules are enforced\n\nDocumentation:\n- API endpoint documentation with request/response examples\n- Error code reference\n- Authentication requirements per endpoint",
   "status": "backlog",
   "priority": 1,
   "complexity": "simple",
@@ -10,5 +10,13 @@
     "billing-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.252Z",
-  "updatedAt": "2025-12-31T05:55:26.252Z"
+  "updatedAt": "2025-12-31T05:55:26.252Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

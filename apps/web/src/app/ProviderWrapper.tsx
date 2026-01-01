@@ -5,6 +5,7 @@ import { ReactElement } from 'react';
 // PROJECT IMPORT
 import ThemeCustomization from 'themes';
 import { ConfigProvider } from 'contexts/ConfigContext';
+import { AbilityProvider } from 'contexts/AbilityContext';
 import RTLLayout from 'components/RTLLayout';
 import Locales from 'components/Locales';
 import ScrollTop from 'components/ScrollTop';
@@ -17,18 +18,20 @@ import Snackbar from 'components/@extended/Snackbar';
 const ProviderWrapper = ({ children }: { children: ReactElement }) => {
   return (
     <ConfigProvider>
-      <ThemeCustomization>
-        <RTLLayout>
-          <Locales>
-            <ScrollTop>
-              <Notistack>
-                <Snackbar />
-                {children}
-              </Notistack>
-            </ScrollTop>
-          </Locales>
-        </RTLLayout>
-      </ThemeCustomization>
+      <AbilityProvider>
+        <ThemeCustomization>
+          <RTLLayout>
+            <Locales>
+              <ScrollTop>
+                <Notistack>
+                  <Snackbar />
+                  {children}
+                </Notistack>
+              </ScrollTop>
+            </Locales>
+          </RTLLayout>
+        </ThemeCustomization>
+      </AbilityProvider>
     </ConfigProvider>
   );
 };

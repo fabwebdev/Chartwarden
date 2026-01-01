@@ -35,10 +35,30 @@ export default async function billingRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createClaim);
 
+  // Get unbilled periods (ready to bill) - MUST be before :id route
+  fastify.get('/claims/unbilled', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getUnbilledPeriods);
+
+  // Get rejected/denied claims - MUST be before :id route
+  fastify.get('/claims/rejected', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getRejectedClaims);
+
   // Get claim by ID (with service lines and payments)
   fastify.get('/claims/:id', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
   }, controller.getClaimById);
+
+  // Update claim (full update)
+  fastify.put('/claims/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateClaim);
+
+  // Delete claim (soft delete)
+  fastify.delete('/claims/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.deleteClaim);
 
   // Submit claim
   fastify.post('/claims/:id/submit', {
@@ -50,20 +70,20 @@ export default async function billingRoutes(fastify, options) {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.voidClaim);
 
-  // Get unbilled periods (ready to bill)
-  fastify.get('/claims/unbilled', {
-    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
-  }, controller.getUnbilledPeriods);
+  // Update claim amount (specialized endpoint for financial updates)
+  fastify.put('/claims/:id/amount', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateClaimAmount);
 
-  // Get rejected/denied claims
-  fastify.get('/claims/rejected', {
-    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
-  }, controller.getRejectedClaims);
-
-  // Update claim status with history tracking
+  // Update claim status with history tracking and workflow validation
   fastify.put('/claims/:id/status', {
     preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
   }, controller.updateClaimStatus);
+
+  // Get valid status transitions for a claim
+  fastify.get('/claims/:id/status/transitions', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getValidStatusTransitions);
 
   // ============================================================================
   // CLAIM SUBMISSION HISTORY ROUTES

@@ -2,8 +2,8 @@
   "id": "casl-authorization",
   "category": "Authorization",
   "title": "CASL Isomorphic Authorization",
-  "description": "Implement CASL library for isomorphic authorization across frontend and backend with subject-action permission checks.",
-  "status": "backlog",
+  "description": "Implement CASL-Based Isomorphic Authorization System\n\nCreate a comprehensive authorization system using CASL (Collaborative Application Security Layer) that works consistently across both frontend and backend with granular permission checks based on subjects and actions.\n\nRequirements:\n\nBackend Implementation:\n- Install and configure @casl/ability package\n- Define ability rules based on user roles and permissions\n- Create a centralized ability factory that generates user-specific abilities\n- Implement middleware to check permissions on API routes/endpoints\n- Define subjects (entities like User, Post, Comment, etc.) and actions (create, read, update, delete, manage)\n- Store ability rules in a reusable, maintainable structure\n- Add helper functions to check permissions in business logic\n\nFrontend Implementation:\n- Install @casl/ability and framework-specific packages (e.g., @casl/react, @casl/vue)\n- Share ability definitions between frontend and backend (use shared types/constants)\n- Implement ability provider/context to make permissions available throughout the app\n- Create UI components that conditionally render based on user abilities\n- Disable/hide actions (buttons, menu items) user cannot perform\n- Add route guards to prevent unauthorized access to protected pages\n\nIsomorphic Considerations:\n- Ensure ability definitions are in a shared module accessible to both environments\n- Use identical permission checking logic on client and server\n- Validate that frontend checks match backend enforcement\n- Handle ability serialization if passing permissions from server to client\n\nTesting:\n- Write unit tests for ability rules with various user roles\n- Test permission checks for all defined subjects and actions\n- Verify backend endpoints properly enforce authorization\n- Ensure frontend correctly reflects user permissions in UI\n\nEdge Cases:\n- Handle users with no roles or permissions\n- Support dynamic permission updates without requiring re-authentication\n- Consider hierarchical permissions (e.g., admin inherits all user permissions)\n- Plan for conditional permissions based on resource ownership (e.g., user can edit own posts)",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "abac-system"
   ],
   "createdAt": "2025-12-31T05:55:26.234Z",
-  "updatedAt": "2025-12-31T05:55:26.234Z"
+  "updatedAt": "2026-01-01T00:13:59.692Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:02:48.862Z"
 }

@@ -15,7 +15,8 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  * - On-call schedule management (3 endpoints)
  * - On-call log tracking (2 endpoints)
  * - Visit compliance monitoring (3 endpoints)
- * Total: 21 endpoints
+ * - Scheduling conflict tracking (6 endpoints)
+ * Total: 27 endpoints
  */
 export default async function schedulingRoutes(fastify, options) {
   // ============================================================================
@@ -142,4 +143,38 @@ export default async function schedulingRoutes(fastify, options) {
   fastify.get('/compliance/visits/rn-overdue', {
     preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
   }, controller.getOverdueRNVisits);
+
+  // ============================================================================
+  // SCHEDULING CONFLICTS ROUTES
+  // ============================================================================
+
+  // Get scheduling conflicts
+  fastify.get('/conflicts', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getConflicts);
+
+  // Detect conflicts for staff on a date
+  fastify.get('/conflicts/detect', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.detectConflicts);
+
+  // Get unresolved conflicts count
+  fastify.get('/conflicts/unresolved-count', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getUnresolvedConflictsCount);
+
+  // Create/record a conflict
+  fastify.post('/conflicts', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createConflict);
+
+  // Resolve a conflict
+  fastify.post('/conflicts/:id/resolve', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.resolveConflict);
+
+  // Acknowledge a conflict
+  fastify.post('/conflicts/:id/acknowledge', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.acknowledgeConflict);
 }

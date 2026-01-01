@@ -503,6 +503,465 @@ class DenialManagementService {
 
     return enriched;
   }
+
+  // ============================================
+  // DATA EXPORT METHODS
+  // ============================================
+
+  /**
+   * Export denials to CSV format
+   */
+  async exportDenialsToCSV(filters = {}) {
+    const { startDate, endDate, payerId, status, priorityLevel } = filters;
+
+    let whereConditions = [];
+
+    if (startDate && endDate) {
+      whereConditions.push(
+        and(
+          gte(claim_denials.denial_date, startDate),
+          lte(claim_denials.denial_date, endDate)
+        )
+      );
+    }
+
+    if (payerId) {
+      whereConditions.push(eq(claim_denials.payer_id, payerId));
+    }
+
+    if (status) {
+      whereConditions.push(eq(claim_denials.denial_status, status));
+    }
+
+    if (priorityLevel) {
+      whereConditions.push(eq(claim_denials.priority_level, priorityLevel));
+    }
+
+    const denials = await db.select()
+      .from(claim_denials)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+      .orderBy(desc(claim_denials.denial_date))
+      .limit(10000); // Limit for performance
+
+    // CSV header
+    const headers = [
+      'Denial ID',
+      'Claim ID',
+      'Patient ID',
+      'Payer ID',
+      'Denial Date',
+      'Denial Type',
+      'Status',
+      'Billed Amount',
+      'Denied Amount',
+      'Allowed Amount',
+      'Priority Level',
+      'Priority Score',
+      'Is Appealable',
+      'Appeal Deadline',
+      'Days Until Deadline',
+      'Will Appeal',
+      'Is Preventable',
+      'Root Cause',
+      'Resolution Type',
+      'Resolution Amount',
+      'Created At'
+    ];
+
+    // Convert to CSV rows
+    const rows = denials.map(d => [
+      d.denial_id,
+      d.claim_id,
+      d.patient_id,
+      d.payer_id,
+      d.denial_date,
+      d.denial_type,
+      d.denial_status,
+      (d.billed_amount / 100).toFixed(2),
+      (d.denied_amount / 100).toFixed(2),
+      d.allowed_amount ? (d.allowed_amount / 100).toFixed(2) : '',
+      d.priority_level,
+      d.priority_score,
+      d.is_appealable ? 'Yes' : 'No',
+      d.appeal_deadline,
+      d.days_until_deadline,
+      d.will_appeal === null ? '' : (d.will_appeal ? 'Yes' : 'No'),
+      d.is_preventable ? 'Yes' : 'No',
+      d.root_cause || '',
+      d.resolution_type || '',
+      d.resolution_amount ? (d.resolution_amount / 100).toFixed(2) : '',
+      d.created_at
+    ]);
+
+    // Escape CSV values
+    const escapeCSV = (val) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    // Build CSV string
+    const csvLines = [
+      headers.join(','),
+      ...rows.map(row => row.map(escapeCSV).join(','))
+    ];
+
+    return csvLines.join('\n');
+  }
+
+  /**
+   * Export denials to PDF format
+   */
+  async exportDenialsToPDF(filters = {}) {
+    const { startDate, endDate, payerId, reportType } = filters;
+
+    // Get denial statistics
+    const stats = await this.getDenialStats({ startDate, endDate, payerId });
+
+    // Get top reasons
+    const topReasons = await this.getTopDenialReasons(10, { startDate, endDate });
+
+    // Build PDF content as a simple text report (in production, use a PDF library like PDFKit)
+    const reportContent = {
+      title: 'Denial Management Report',
+      generatedAt: new Date().toISOString(),
+      dateRange: {
+        start: startDate ? startDate.toISOString().split('T')[0] : 'All time',
+        end: endDate ? endDate.toISOString().split('T')[0] : 'Present'
+      },
+      summary: {
+        totalDenials: stats.totalDenials || 0,
+        totalDeniedAmount: (stats.totalDeniedAmount || 0) / 100,
+        fullDenials: stats.fullDenials || 0,
+        partialDenials: stats.partialDenials || 0,
+        preventableDenials: stats.preventableDenials || 0,
+        appealableDenials: stats.appealableDenials || 0,
+        criticalPriority: stats.criticalPriority || 0,
+        highPriority: stats.highPriority || 0
+      },
+      topReasons: topReasons.map(r => ({
+        code: r.carcCode,
+        description: r.description,
+        count: r.count,
+        amount: (r.totalAmount || 0) / 100
+      }))
+    };
+
+    // For now, return JSON representation (in production, use PDF generation library)
+    // This would be replaced with actual PDF generation using PDFKit or similar
+    return Buffer.from(JSON.stringify(reportContent, null, 2));
+  }
+
+  // ============================================
+  // DUPLICATE HANDLING METHODS
+  // ============================================
+
+  /**
+   * Find potential duplicate denials
+   */
+  async findDuplicateDenials(filters = {}) {
+    const { claimId, patientId, dateRange } = filters;
+
+    let query = db.select({
+      denial1: claim_denials,
+      denial2: sql`claim_denials as d2`
+    })
+      .from(claim_denials);
+
+    // Find denials with same claim_id or similar characteristics
+    if (claimId) {
+      const denials = await db.select()
+        .from(claim_denials)
+        .where(eq(claim_denials.claim_id, claimId))
+        .orderBy(desc(claim_denials.denial_date));
+
+      // Group by primary denial reason
+      const grouped = {};
+      for (const d of denials) {
+        const key = `${d.claim_id}-${d.primary_denial_reason}`;
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+        grouped[key].push(d);
+      }
+
+      // Return groups with more than one denial (potential duplicates)
+      const duplicates = Object.values(grouped)
+        .filter(group => group.length > 1)
+        .map(group => ({
+          claimId: group[0].claim_id,
+          reason: group[0].primary_denial_reason,
+          denials: group
+        }));
+
+      return duplicates;
+    }
+
+    // Find denials with same patient within date range
+    if (patientId) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - (dateRange || 30));
+
+      const denials = await db.select()
+        .from(claim_denials)
+        .where(
+          and(
+            eq(claim_denials.patient_id, patientId),
+            gte(claim_denials.denial_date, cutoffDate)
+          )
+        )
+        .orderBy(desc(claim_denials.denial_date));
+
+      // Group by primary denial reason
+      const grouped = {};
+      for (const d of denials) {
+        const key = d.primary_denial_reason;
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+        grouped[key].push(d);
+      }
+
+      const duplicates = Object.values(grouped)
+        .filter(group => group.length > 1)
+        .map(group => ({
+          patientId: group[0].patient_id,
+          reason: group[0].primary_denial_reason,
+          denials: group
+        }));
+
+      return duplicates;
+    }
+
+    // General duplicate detection - same claim_id and primary_denial_reason
+    const duplicates = await db.execute(sql`
+      SELECT
+        claim_id,
+        primary_denial_reason,
+        COUNT(*) as denial_count,
+        ARRAY_AGG(id) as denial_ids
+      FROM claim_denials
+      WHERE denial_status NOT IN ('RESOLVED', 'WRITTEN_OFF')
+      GROUP BY claim_id, primary_denial_reason
+      HAVING COUNT(*) > 1
+      ORDER BY COUNT(*) DESC
+      LIMIT 50
+    `);
+
+    return duplicates.rows || [];
+  }
+
+  /**
+   * Mark a denial as a duplicate of another
+   */
+  async markAsDuplicate(duplicateDenialId, originalDenialId, reason, userId) {
+    await db.update(claim_denials)
+      .set({
+        denial_status: 'RESOLVED',
+        resolution_type: 'DUPLICATE',
+        resolution_notes: `Marked as duplicate of denial #${originalDenialId}. Reason: ${reason || 'Not specified'}`,
+        resolved_date: new Date(),
+        resolved_by_id: userId,
+        metadata: sql`COALESCE(metadata, '{}'::jsonb) || jsonb_build_object('original_denial_id', ${originalDenialId}, 'duplicate_marked_at', ${new Date().toISOString()})`,
+        updated_at: new Date()
+      })
+      .where(eq(claim_denials.id, duplicateDenialId));
+  }
+
+  // ============================================
+  // EXPIRED DEADLINE METHODS
+  // ============================================
+
+  /**
+   * Get denials with expired appeal deadlines
+   */
+  async getExpiredDeadlines(filters = {}) {
+    const { limit, includeResolved } = filters;
+
+    let whereConditions = [
+      sql`appeal_deadline < CURRENT_DATE`,
+      eq(claim_denials.is_appealable, true),
+      eq(claim_denials.will_appeal, null) // Not yet decided
+    ];
+
+    if (!includeResolved) {
+      whereConditions.push(
+        sql`denial_status NOT IN ('RESOLVED', 'WRITTEN_OFF', 'PATIENT_BILLED')`
+      );
+    }
+
+    const expired = await db.select()
+      .from(claim_denials)
+      .where(and(...whereConditions))
+      .orderBy(claim_denials.appeal_deadline)
+      .limit(limit || 50);
+
+    return expired;
+  }
+
+  /**
+   * Request deadline extension for a denial
+   */
+  async requestDeadlineExtension(denialId, newDeadline, extensionReason, supportingDocumentation, userId) {
+    const [denial] = await db.select()
+      .from(claim_denials)
+      .where(eq(claim_denials.id, denialId))
+      .limit(1);
+
+    if (!denial) {
+      throw new Error('Denial not found');
+    }
+
+    const extensionRequest = {
+      requestedBy: userId,
+      requestedAt: new Date().toISOString(),
+      originalDeadline: denial.appeal_deadline,
+      newDeadline: newDeadline.toISOString().split('T')[0],
+      reason: extensionReason,
+      supportingDocumentation,
+      status: 'PENDING'
+    };
+
+    await db.update(claim_denials)
+      .set({
+        metadata: sql`COALESCE(metadata, '{}'::jsonb) || jsonb_build_object('deadline_extension_requests', COALESCE((metadata->'deadline_extension_requests')::jsonb, '[]'::jsonb) || ${JSON.stringify([extensionRequest])}::jsonb)`,
+        updated_at: new Date()
+      })
+      .where(eq(claim_denials.id, denialId));
+
+    return {
+      originalDeadline: denial.appeal_deadline,
+      requestedDeadline: newDeadline,
+      extensionStatus: 'PENDING'
+    };
+  }
+
+  // ============================================
+  // BULK OPERATIONS METHODS
+  // ============================================
+
+  /**
+   * Bulk assign denials to a user
+   */
+  async bulkAssignDenials(denialIds, assignedToId, assignedBy) {
+    let assigned = 0;
+    let failed = 0;
+    const errors = [];
+
+    for (const denialId of denialIds) {
+      try {
+        await this.assignDenial(denialId, assignedToId, assignedBy);
+        assigned++;
+      } catch (error) {
+        failed++;
+        errors.push({ denialId, error: error.message });
+      }
+    }
+
+    return { assigned, failed, errors };
+  }
+
+  /**
+   * Bulk resolve denials without appeal
+   */
+  async bulkResolveDenials(denialIds, resolutionType, notes, userId) {
+    let resolved = 0;
+    let failed = 0;
+    const errors = [];
+
+    for (const denialId of denialIds) {
+      try {
+        await this.resolveDenial(denialId, { resolutionType, notes }, userId);
+        resolved++;
+      } catch (error) {
+        failed++;
+        errors.push({ denialId, error: error.message });
+      }
+    }
+
+    return { resolved, failed, errors };
+  }
+
+  // ============================================
+  // AUDIT LOGGING METHODS
+  // ============================================
+
+  /**
+   * Get audit log for a denial
+   */
+  async getDenialAuditLog(denialId, limit = 100) {
+    // Query from audit_logs table if it exists
+    // For now, return status history and key events from denial record
+    const [denial] = await db.select()
+      .from(claim_denials)
+      .where(eq(claim_denials.id, denialId))
+      .limit(1);
+
+    if (!denial) {
+      return [];
+    }
+
+    const auditLog = [];
+
+    // Creation event
+    auditLog.push({
+      eventType: 'CREATED',
+      timestamp: denial.created_at,
+      userId: denial.identified_by_id,
+      details: {
+        denialId: denial.denial_id,
+        denialType: denial.denial_type,
+        deniedAmount: denial.denied_amount
+      }
+    });
+
+    // Assignment event
+    if (denial.assigned_at) {
+      auditLog.push({
+        eventType: 'ASSIGNED',
+        timestamp: denial.assigned_at,
+        userId: denial.assigned_by_id,
+        details: {
+          assignedTo: denial.assigned_to_id
+        }
+      });
+    }
+
+    // Appeal decision event
+    if (denial.appeal_decision_date) {
+      auditLog.push({
+        eventType: 'APPEAL_DECISION',
+        timestamp: denial.appeal_decision_date,
+        userId: denial.appeal_decision_by_id,
+        details: {
+          willAppeal: denial.will_appeal,
+          reason: denial.appeal_decision_reason
+        }
+      });
+    }
+
+    // Resolution event
+    if (denial.resolved_date) {
+      auditLog.push({
+        eventType: 'RESOLVED',
+        timestamp: denial.resolved_date,
+        userId: denial.resolved_by_id,
+        details: {
+          resolutionType: denial.resolution_type,
+          resolutionAmount: denial.resolution_amount,
+          notes: denial.resolution_notes
+        }
+      });
+    }
+
+    // Sort by timestamp descending
+    auditLog.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    return auditLog.slice(0, limit);
+  }
 }
 
 export default new DenialManagementService();

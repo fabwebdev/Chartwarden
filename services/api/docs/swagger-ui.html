@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hospice EHR API Documentation</title>
+  <title>Chartwarden API Documentation</title>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.5/swagger-ui.min.css">
   <style>
     body {
@@ -89,127 +89,66 @@
 </head>
 <body>
   <div class="custom-header">
-    <h1>🏥 Hospice EHR API Documentation</h1>
-    <p>Certifications & Medications Module</p>
+    <h1>Chartwarden Hospice EHR API</h1>
+    <p>HIPAA-Compliant Electronic Health Record System</p>
     <div>
-      <span class="badge">v1.0.0</span>
+      <span class="badge">v2.0.0</span>
       <span class="badge">OpenAPI 3.0.3</span>
-      <span class="badge">21 Endpoints</span>
+      <span class="badge">HIPAA Compliant</span>
+      <span class="badge">21 CFR Part 11</span>
     </div>
   </div>
 
   <div class="info-section">
-    <h3>📚 Quick Links</h3>
-    <div class="quick-links">
-      <a href="API_CERTIFICATIONS_MEDICATIONS.md" target="_blank">📖 Full API Docs</a>
-      <a href="OPENAPI_GUIDE.md" target="_blank">🔧 OpenAPI Guide</a>
-      <a href="../tests/README.md" target="_blank">🧪 Test Documentation</a>
-      <a href="openapi.yaml" download>⬇️ Download OpenAPI Spec</a>
-    </div>
-  </div>
-
-  <div class="info-section">
-    <h3>✨ Key Features</h3>
+    <h3>Key Features</h3>
     <div class="feature-grid">
       <div class="feature-item">
+        <strong>Patient Management</strong><br>
+        Complete patient demographics, contacts, and identifiers
+      </div>
+      <div class="feature-item">
+        <strong>Clinical Documentation</strong><br>
+        Encounters, nursing notes, care plans, and assessments
+      </div>
+      <div class="feature-item">
+        <strong>Medications & MAR</strong><br>
+        Medication management with administration records
+      </div>
+      <div class="feature-item">
         <strong>Medicare Compliance</strong><br>
-        Track certification periods (INITIAL_90, SUBSEQUENT_90, SUBSEQUENT_60)
+        Certifications, HOPE assessments, and F2F tracking
+      </div>
+      <div class="feature-item">
+        <strong>Billing & Revenue</strong><br>
+        Claims, denials, ERA processing, and eligibility
       </div>
       <div class="feature-item">
         <strong>Electronic Signatures</strong><br>
         21 CFR Part 11 compliant with SHA-256 hashing
       </div>
-      <div class="feature-item">
-        <strong>F2F Tracking</strong><br>
-        Face-to-Face encounters within 30 days of recertification
-      </div>
-      <div class="feature-item">
-        <strong>Controlled Substances</strong><br>
-        DEA-compliant tracking and logging
-      </div>
-      <div class="feature-item">
-        <strong>MAR System</strong><br>
-        Complete medication administration documentation
-      </div>
-      <div class="feature-item">
-        <strong>RBAC Security</strong><br>
-        Role-based access control on all endpoints
-      </div>
     </div>
   </div>
 
   <div class="info-section">
-    <h3>🔐 Authentication</h3>
+    <h3>Authentication</h3>
     <p>
-      All endpoints require Bearer token authentication. Add your JWT token in the "Authorize" button above.
+      All endpoints (except /health and public auth endpoints) require session-based authentication.
+      Use the <code>POST /api/auth/sign-in</code> endpoint to authenticate and obtain session cookies.
     </p>
-    <pre style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">Authorization: Bearer &lt;your_jwt_token&gt;</pre>
-  </div>
-
-  <div class="info-section">
-    <h3>🏷️ API Sections</h3>
-    <div class="feature-grid">
-      <div class="feature-item">
-        <strong>Certifications</strong><br>
-        5 endpoints for Medicare certification management
-      </div>
-      <div class="feature-item">
-        <strong>F2F Encounters</strong><br>
-        3 endpoints for Face-to-Face tracking
-      </div>
-      <div class="feature-item">
-        <strong>Orders</strong><br>
-        3 endpoints for physician orders
-      </div>
-      <div class="feature-item">
-        <strong>Medications</strong><br>
-        4 endpoints for medication management
-      </div>
-      <div class="feature-item">
-        <strong>MAR</strong><br>
-        2 endpoints for medication administration
-      </div>
-      <div class="feature-item">
-        <strong>Comfort Kits</strong><br>
-        3 endpoints for emergency medication kits
-      </div>
-      <div class="feature-item">
-        <strong>Reconciliation</strong><br>
-        1 endpoint for CMS-required med rec
-      </div>
-    </div>
+    <p>
+      For state-changing requests (POST, PUT, DELETE, PATCH), include the CSRF token in the
+      <code>x-csrf-token</code> header. Obtain the token from <code>GET /api/auth/csrf-token</code>.
+    </p>
   </div>
 
   <div id="swagger-ui"></div>
 
-  <div class="info-section" style="margin-top: 50px;">
-    <h3>💡 Usage Tips</h3>
-    <ul>
-      <li><strong>Try It Out:</strong> Click "Try it out" on any endpoint to test the API directly from this page</li>
-      <li><strong>Examples:</strong> Each endpoint includes realistic request/response examples</li>
-      <li><strong>Schemas:</strong> Scroll to "Schemas" section to see all data models</li>
-      <li><strong>Download:</strong> Use "Download" button in any endpoint to get code examples</li>
-      <li><strong>Generate Clients:</strong> Use the OpenAPI spec to generate client libraries in 50+ languages</li>
-    </ul>
-  </div>
-
-  <div class="info-section">
-    <h3>🚀 Getting Started</h3>
-    <ol>
-      <li>Obtain a JWT authentication token from the auth endpoint</li>
-      <li>Click the "Authorize" button above and paste your token</li>
-      <li>Select an endpoint from the list below</li>
-      <li>Click "Try it out" to test the API</li>
-      <li>Fill in the parameters and click "Execute"</li>
-    </ol>
-  </div>
-
   <footer style="text-align: center; padding: 30px; color: #888; font-size: 0.9em;">
     <p>
-      Hospice EHR API v1.0.0 |
-      <a href="mailto:api-support@hospice-ehr.com" style="color: #667eea;">api-support@hospice-ehr.com</a>
+      Chartwarden EHR API v2.0.0 |
+      <a href="mailto:api-support@chartwarden.com" style="color: #667eea;">api-support@chartwarden.com</a>
     </p>
-    <p>Last Updated: December 27, 2024</p>
+    <p>Last Updated: December 31, 2024</p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.10.5/swagger-ui-bundle.min.js"></script>
@@ -217,7 +156,7 @@
   <script>
     window.onload = function() {
       const ui = SwaggerUIBundle({
-        url: "openapi.yaml",
+        url: "/api/docs/openapi.yaml",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
@@ -257,7 +196,9 @@
           },
           defaultExpanded: true,
           languages: null
-        }
+        },
+        persistAuthorization: true,
+        withCredentials: true
       });
 
       window.ui = ui;

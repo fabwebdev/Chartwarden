@@ -2,7 +2,7 @@
   "id": "revenue-recognition-controller",
   "category": "API",
   "title": "Revenue Recognition Controller",
-  "description": "Implement controller for revenue accrual, forecasting, and cash flow projections.",
+  "description": "Financial Controller Module: Revenue Accrual, Forecasting, and Cash Flow Projections\n\nBuild a comprehensive financial controller module that manages revenue recognition, generates financial forecasts, and projects cash flow across multiple time periods.\n\nRequirements:\n\nRevenue Accrual:\n- Implement revenue recognition logic following appropriate accounting standards (GAAP/IFRS)\n- Handle deferred revenue for multi-period contracts\n- Calculate and track accrued revenue that has been earned but not yet invoiced\n- Support multiple revenue recognition methods (straight-line, milestone-based, usage-based)\n- Provide audit trail for all revenue accrual transactions\n\nForecasting:\n- Generate revenue forecasts based on historical data, pipeline, and growth assumptions\n- Support multiple forecasting models (linear regression, seasonal trends, weighted pipeline)\n- Allow manual adjustments and override capabilities\n- Calculate confidence intervals or forecast accuracy metrics\n- Enable scenario modeling (best case, worst case, most likely)\n- Forecast at various granularities (monthly, quarterly, annually)\n\nCash Flow Projections:\n- Project operating cash flow from accounts receivable and payable\n- Factor in payment terms and historical collection patterns\n- Account for planned investments and financing activities\n- Generate rolling 13-week cash flow projections\n- Identify potential cash shortfalls with advance warning\n- Support sensitivity analysis for key assumptions\n\nTechnical Considerations:\n- Design data models for financial transactions, forecasts, and projections\n- Implement calculation engine with version control for methodology changes\n- Create API endpoints for creating, updating, and retrieving financial data\n- Build administrative interface for configuration and manual adjustments\n- Ensure data accuracy through validation rules and reconciliation checks\n- Include comprehensive logging for debugging and compliance\n\nDeliverables:\n- Core controller service with business logic\n- Database schema and migrations\n- API documentation\n- Unit and integration tests achieving >80% coverage\n- Performance benchmarks for calculations with large datasets",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "cash-flow-projection-service"
   ],
   "createdAt": "2025-12-31T05:55:26.258Z",
-  "updatedAt": "2025-12-31T05:55:26.258Z"
+  "updatedAt": "2025-12-31T05:55:26.258Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

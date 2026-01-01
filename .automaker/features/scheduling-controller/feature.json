@@ -2,7 +2,7 @@
   "id": "scheduling-controller",
   "category": "API",
   "title": "Scheduling CRUD Controller",
-  "description": "Implement controller for visit scheduling with conflict detection and staff availability checking.",
+  "description": "Implement Visit Scheduling Controller with Conflict Detection and Staff Availability\n\nBuild a robust controller that handles visit scheduling requests while preventing booking conflicts and validating staff availability in real-time.\n\nRequirements:\n- Create endpoint(s) for scheduling new visits with date, time, duration, and assigned staff\n- Implement conflict detection logic to prevent double-booking of staff members\n- Check staff availability against their working hours/shifts before confirming visits\n- Validate that requested time slots don't overlap with existing visits for the same staff\n- Handle timezone considerations if staff/visits span multiple regions\n- Return clear error messages when conflicts are detected (which staff, what time, existing booking details)\n- Support querying available time slots for specific staff members\n- Ensure atomic operations to prevent race conditions when multiple bookings occur simultaneously\n- Include validation for business rules (minimum visit duration, advance booking requirements, etc.)\n- Add appropriate error handling for edge cases (staff not found, invalid time ranges, past dates)\n\nTechnical Considerations:\n- Use database transactions or locking mechanisms to ensure data consistency\n- Optimize queries to efficiently check conflicts across potentially large visit datasets\n- Consider caching staff schedules if they're frequently accessed\n- Add logging for debugging scheduling conflicts and availability issues",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.250Z",
-  "updatedAt": "2025-12-31T05:55:26.250Z"
+  "updatedAt": "2025-12-31T05:55:26.250Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

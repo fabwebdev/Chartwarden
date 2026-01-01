@@ -354,6 +354,180 @@ class EligibilityController {
       });
     }
   }
+
+  /**
+   * 7. List verification requests with filtering
+   * GET /api/eligibility/requests
+   *
+   * @query {string} status - Filter by status (PENDING, SENT, RECEIVED, ERROR, TIMEOUT)
+   * @query {string} startDate - Filter by start date (ISO format)
+   * @query {string} endDate - Filter by end date (ISO format)
+   * @query {string} providerNpi - Filter by provider NPI
+   * @query {number} page - Page number (default 1)
+   * @query {number} limit - Items per page (default 20, max 100)
+   */
+  async listRequests(request, reply) {
+    try {
+      const {
+        status,
+        startDate,
+        endDate,
+        providerNpi,
+        page = 1,
+        limit = 20
+      } = request.query;
+
+      // Validate limit
+      const itemsPerPage = Math.min(parseInt(limit) || 20, 100);
+      const pageNumber = Math.max(parseInt(page) || 1, 1);
+      const offset = (pageNumber - 1) * itemsPerPage;
+
+      // Validate date format if provided
+      if (startDate && isNaN(Date.parse(startDate))) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid startDate format. Use ISO date format (YYYY-MM-DD)'
+        });
+      }
+      if (endDate && isNaN(Date.parse(endDate))) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Invalid endDate format. Use ISO date format (YYYY-MM-DD)'
+        });
+      }
+
+      const result = await EligibilityVerifier.listRequests({
+        status,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
+        providerNpi,
+        limit: itemsPerPage,
+        offset
+      });
+
+      return reply.code(200).send({
+        success: true,
+        data: result.requests,
+        pagination: {
+          page: pageNumber,
+          limit: itemsPerPage,
+          total: result.total,
+          totalPages: Math.ceil(result.total / itemsPerPage)
+        }
+      });
+    } catch (error) {
+      logger.error('Error listing eligibility requests:', error)
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * 8. Update eligibility request
+   * PATCH /api/eligibility/request/:requestId
+   *
+   * @param {string} requestId - Request ID
+   * @body {string} status - New status (optional)
+   * @body {object} metadata - Additional metadata (optional)
+   * @body {string} errorMessage - Error message if status is ERROR (optional)
+   */
+  async updateRequest(request, reply) {
+    try {
+      const { requestId } = request.params;
+      const { status, metadata, errorMessage } = request.body;
+
+      if (!requestId) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Request ID is required'
+        });
+      }
+
+      // Validate status if provided
+      const validStatuses = ['PENDING', 'SENT', 'RECEIVED', 'ERROR', 'TIMEOUT', 'CANCELLED'];
+      if (status && !validStatuses.includes(status)) {
+        return reply.code(400).send({
+          success: false,
+          error: `Invalid status. Valid values: ${validStatuses.join(', ')}`
+        });
+      }
+
+      // Check if at least one field is being updated
+      if (!status && !metadata && !errorMessage) {
+        return reply.code(400).send({
+          success: false,
+          error: 'At least one field (status, metadata, errorMessage) must be provided for update'
+        });
+      }
+
+      const updatedRequest = await EligibilityVerifier.updateRequest(requestId, {
+        status,
+        metadata,
+        errorMessage,
+        updatedBy: request.user?.id
+      });
+
+      if (!updatedRequest) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Request not found'
+        });
+      }
+
+      return reply.code(200).send({
+        success: true,
+        message: 'Request updated successfully',
+        data: updatedRequest
+      });
+    } catch (error) {
+      logger.error('Error updating eligibility request:', error)
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * 9. Get verification status by request ID
+   * GET /api/eligibility/status/:requestId
+   *
+   * @param {string} requestId - Request ID
+   */
+  async getVerificationStatus(request, reply) {
+    try {
+      const { requestId } = request.params;
+
+      if (!requestId) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Request ID is required'
+        });
+      }
+
+      const status = await EligibilityVerifier.getVerificationStatus(requestId);
+
+      if (!status) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Verification request not found'
+        });
+      }
+
+      return reply.code(200).send({
+        success: true,
+        data: status
+      });
+    } catch (error) {
+      logger.error('Error getting verification status:', error)
+      return reply.code(500).send({
+        success: false,
+        error: error.message
+      });
+    }
+  }
 }
 
 export default new EligibilityController();

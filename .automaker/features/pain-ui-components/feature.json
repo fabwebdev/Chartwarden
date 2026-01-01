@@ -2,7 +2,7 @@
   "id": "pain-ui-components",
   "category": "UI",
   "title": "Pain Assessment UI Components",
-  "description": "Create UI components for each pain scale (NRS, Wong-Baker, PAINAD, FLACC) with visual representations.",
+  "description": "Create Pain Assessment Scale UI Components\n\nBuild interactive UI components for four standardized pain assessment scales, each with appropriate visual representations tailored to their specific measurement approach.\n\nRequirements:\n- Implement NRS (Numeric Rating Scale) component:\n  * Display 0-10 numeric scale with clickable points\n  * Include visual slider or button grid interface\n  * Show selected value prominently\n  \n- Implement Wong-Baker FACES component:\n  * Display 6 face icons representing pain levels 0-10\n  * Ensure faces are clearly distinguishable and age-appropriate\n  * Allow selection by clicking on face icons\n  \n- Implement PAINAD (Pain Assessment in Advanced Dementia) component:\n  * Create form for 5 observational categories (breathing, vocalization, facial expression, body language, consolability)\n  * Each category scored 0-2\n  * Display total score (0-10) with automatic calculation\n  \n- Implement FLACC (Face, Legs, Activity, Cry, Consolability) component:\n  * Create form for 5 behavioral categories\n  * Each category scored 0-2 with descriptive criteria\n  * Display total score (0-10) with automatic calculation\n\nGeneral specifications:\n- Each component should be self-contained and reusable\n- Include clear labels and instructions for each scale\n- Ensure accessibility (keyboard navigation, screen reader support)\n- Make components responsive for mobile and desktop\n- Validate inputs and handle edge cases (no selection, incomplete forms)\n- Follow consistent styling and interaction patterns across all scales\n- Consider adding tooltips or help text explaining when each scale is appropriate to use",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.244Z",
-  "updatedAt": "2025-12-31T05:55:26.244Z"
+  "updatedAt": "2025-12-31T05:55:26.244Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

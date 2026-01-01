@@ -124,6 +124,92 @@ class PaymentPostingService {
   }
 
   /**
+   * Process ERA file with pre-parsed data (for CSV imports)
+   * Alternative entry point when data is already parsed
+   * @param {object} params - File processing parameters
+   * @param {string} params.fileName - Original file name
+   * @param {string} params.fileContent - Raw file content
+   * @param {object} params.parsedData - Pre-parsed ERA data
+   * @param {string} params.uploadedBy - User ID who uploaded
+   * @param {string} params.format - File format (CSV, etc.)
+   * @returns {Promise<object>} Processing result
+   */
+  async processERAFileWithParsedData(params) {
+    const {
+      fileName,
+      fileContent,
+      parsedData,
+      uploadedBy,
+      format = 'CSV'
+    } = params;
+
+    try {
+      // 1. Create ERA file record with pre-parsed data
+      const eraFile = await this.createERAFileRecord({
+        fileName,
+        fileContent,
+        parsed835: parsedData, // Use pre-parsed data
+        uploadedBy
+      });
+
+      // 2. Process each claim payment
+      const processedPayments = [];
+      const exceptions = [];
+
+      for (const claimPayment of parsedData.claimPayments) {
+        try {
+          const result = await this.processClaimPayment({
+            eraFileId: eraFile.id,
+            claimPayment,
+            payer: parsedData.payer,
+            payment: parsedData.payment
+          });
+
+          if (result.exception) {
+            exceptions.push(result.exception);
+          } else {
+            processedPayments.push(result.payment);
+          }
+        } catch (error) {
+          logger.error('Error processing claim payment from CSV:', error);
+          exceptions.push({
+            type: 'PROCESSING_ERROR',
+            reason: error.message,
+            claimPayment
+          });
+        }
+      }
+
+      // 3. Update ERA file summary
+      await this.updateERAFileSummary(eraFile.id, {
+        totalPayments: parsedData.claimPayments.length,
+        autoPostedCount: processedPayments.length,
+        exceptionCount: exceptions.length,
+        totalAmount: parsedData.payment.totalPaymentAmount,
+        status: exceptions.length === 0 ? 'COMPLETED' : 'PARTIALLY_POSTED',
+        processedAt: new Date()
+      });
+
+      return {
+        success: true,
+        eraFileId: eraFile.id,
+        format,
+        summary: {
+          totalClaims: parsedData.claimPayments.length,
+          autoPosted: processedPayments.length,
+          exceptions: exceptions.length,
+          totalAmount: parsedData.payment.totalPaymentAmount
+        },
+        processedPayments,
+        exceptions
+      };
+    } catch (error) {
+      logger.error('Error processing ERA file with parsed data:', error);
+      throw new Error(`ERA file processing failed: ${error.message}`);
+    }
+  }
+
+  /**
    * Process individual claim payment
    * @private
    */
@@ -727,6 +813,364 @@ class PaymentPostingService {
       .orderBy(desc(era_payments.created_at));
 
     return payments;
+  }
+
+  /**
+   * Manual payment posting
+   * Post a payment manually with optional claim override
+   * @param {object} params - Manual posting parameters
+   * @returns {Promise<object>} Posting result
+   */
+  async manualPostPayment(params) {
+    const { paymentId, claimId, postedBy, notes } = params;
+
+    // 1. Get ERA payment
+    const [eraPayment] = await db.select()
+      .from(era_payments)
+      .where(eq(era_payments.payment_id, paymentId))
+      .limit(1);
+
+    if (!eraPayment) {
+      throw new Error(`ERA payment not found: ${paymentId}`);
+    }
+
+    // 2. Check if already posted
+    if (eraPayment.posting_status === 'AUTO_POSTED' || eraPayment.posting_status === 'MANUAL_POSTED') {
+      throw new Error(`Payment already posted with status: ${eraPayment.posting_status}`);
+    }
+
+    // 3. Get claim (either from override or from payment)
+    const targetClaimId = claimId || eraPayment.claim_id;
+
+    if (!targetClaimId) {
+      throw new Error('No claim ID specified and payment has no associated claim');
+    }
+
+    const [claim] = await db.select()
+      .from(claims)
+      .where(eq(claims.id, parseInt(targetClaimId)))
+      .limit(1);
+
+    if (!claim) {
+      throw new Error(`Claim not found: ${targetClaimId}`);
+    }
+
+    // 4. Validate claim status
+    if (claim.status === 'PAID' || claim.status === 'CLOSED') {
+      throw new Error(`Cannot post to claim with status: ${claim.status}`);
+    }
+
+    // 5. Calculate amounts
+    const paymentAmount = eraPayment.total_payment_amount;
+    const allowedAmount = eraPayment.total_allowed_amount || eraPayment.total_billed_amount;
+    const billedAmount = claim.total_charge_amount;
+    const totalAdjustments = eraPayment.total_adjustment_amount || 0;
+
+    // Calculate new claim balance
+    const previousBalance = claim.total_charge_amount - (claim.total_paid || 0);
+    const newBalance = previousBalance - paymentAmount;
+
+    // 6. Create posting record
+    const [posting] = await db.insert(payment_postings)
+      .values({
+        posting_id: nanoid(),
+        era_payment_id: eraPayment.id,
+        claim_id: claim.id,
+        posting_date: new Date(),
+        posting_type: 'MANUAL',
+        posting_level: 'CLAIM',
+        payment_amount: paymentAmount,
+        allowed_amount: allowedAmount,
+        billed_amount: billedAmount,
+        adjustment_amount: totalAdjustments,
+        contractual_adjustment: this.extractContractualAdjustment(eraPayment.adjustment_codes),
+        patient_responsibility: this.extractPatientResponsibility(eraPayment.adjustment_codes),
+        previous_balance: previousBalance,
+        new_balance: newBalance,
+        adjustment_reason_codes: eraPayment.adjustment_codes,
+        is_validated: true,
+        validation_notes: notes,
+        posted_by_id: postedBy,
+        metadata: {
+          manualOverride: claimId !== eraPayment.claim_id,
+          originalClaimId: eraPayment.claim_id
+        }
+      })
+      .returning();
+
+    // 7. Update claim
+    await db.update(claims)
+      .set({
+        total_paid: sql`${claims.total_paid} + ${paymentAmount}`,
+        balance: newBalance,
+        status: newBalance <= 0 ? 'PAID' : 'PARTIALLY_PAID',
+        last_payment_date: new Date(),
+        updated_at: new Date()
+      })
+      .where(eq(claims.id, claim.id));
+
+    // 8. Update ERA payment status
+    await db.update(era_payments)
+      .set({
+        claim_id: claim.id,
+        posting_status: 'MANUAL_POSTED',
+        posted_at: new Date(),
+        posted_by_id: postedBy,
+        is_exception: false,
+        updated_at: new Date()
+      })
+      .where(eq(era_payments.id, eraPayment.id));
+
+    // 9. Resolve any related exceptions
+    await db.update(posting_exceptions)
+      .set({
+        status: 'RESOLVED',
+        resolution_type: 'MANUAL_POSTED',
+        resolution_notes: notes || 'Payment manually posted',
+        resolved_at: new Date(),
+        resolved_by_id: postedBy,
+        updated_at: new Date()
+      })
+      .where(eq(posting_exceptions.era_payment_id, eraPayment.id));
+
+    return {
+      success: true,
+      posting,
+      claim: {
+        id: claim.id,
+        previousBalance,
+        newBalance,
+        status: newBalance <= 0 ? 'PAID' : 'PARTIALLY_PAID'
+      }
+    };
+  }
+
+  /**
+   * Extract contractual adjustment from adjustment codes (CO group)
+   * @private
+   */
+  extractContractualAdjustment(adjustmentCodes) {
+    if (!adjustmentCodes || !Array.isArray(adjustmentCodes)) return 0;
+
+    return adjustmentCodes
+      .filter(adj => adj.groupCode === 'CO')
+      .reduce((sum, adj) => sum + (adj.amount || 0), 0);
+  }
+
+  /**
+   * Extract patient responsibility from adjustment codes (PR group)
+   * @private
+   */
+  extractPatientResponsibility(adjustmentCodes) {
+    if (!adjustmentCodes || !Array.isArray(adjustmentCodes)) return 0;
+
+    return adjustmentCodes
+      .filter(adj => adj.groupCode === 'PR')
+      .reduce((sum, adj) => sum + (adj.amount || 0), 0);
+  }
+
+  /**
+   * Get ERA payment by ID
+   */
+  async getERAPaymentById(paymentId) {
+    const [payment] = await db.select()
+      .from(era_payments)
+      .where(eq(era_payments.payment_id, paymentId))
+      .limit(1);
+
+    return payment || null;
+  }
+
+  /**
+   * Get reconciliation summary statistics
+   * @param {object} filters - Date range and status filters
+   * @returns {Promise<object>} Summary statistics
+   */
+  async getReconciliationSummary(filters = {}) {
+    const { startDate, endDate, status } = filters;
+
+    // Get all reconciliation batches with filters
+    let query = db.select()
+      .from(reconciliation_batches)
+      .orderBy(desc(reconciliation_batches.batch_date));
+
+    if (startDate) {
+      query = query.where(sql`${reconciliation_batches.batch_date} >= ${startDate}`);
+    }
+
+    if (endDate) {
+      query = query.where(sql`${reconciliation_batches.batch_date} <= ${endDate}`);
+    }
+
+    if (status) {
+      query = query.where(eq(reconciliation_batches.reconciliation_status, status));
+    }
+
+    const batches = await query.limit(100);
+
+    // Calculate summary statistics
+    const summary = {
+      totalBatches: batches.length,
+      totalDeposits: batches.reduce((sum, b) => sum + (b.deposit_amount || 0), 0),
+      totalPosted: batches.reduce((sum, b) => sum + (b.total_posted_payments || 0), 0),
+      totalVariance: batches.reduce((sum, b) => sum + Math.abs(b.variance_amount || 0), 0),
+      reconciledCount: batches.filter(b => b.is_reconciled).length,
+      pendingCount: batches.filter(b => b.reconciliation_status === 'PENDING').length,
+      varianceCount: batches.filter(b => b.reconciliation_status === 'VARIANCE_IDENTIFIED').length,
+      exceptionCount: batches.filter(b => b.reconciliation_status === 'EXCEPTION').length,
+      averageVariance: batches.length > 0
+        ? Math.round(batches.reduce((sum, b) => sum + Math.abs(b.variance_amount || 0), 0) / batches.length)
+        : 0,
+      reconciliationRate: batches.length > 0
+        ? Math.round((batches.filter(b => b.is_reconciled).length / batches.length) * 100)
+        : 0
+    };
+
+    return {
+      summary,
+      batches
+    };
+  }
+
+  /**
+   * Get payment posting dashboard metrics
+   * @returns {Promise<object>} Dashboard metrics
+   */
+  async getPostingDashboardMetrics() {
+    // Get ERA file stats
+    const [eraStats] = await db.select({
+      totalFiles: sql`COUNT(*)`.as('totalFiles'),
+      completedFiles: sql`COUNT(*) FILTER (WHERE ${era_files.status} = 'COMPLETED')`.as('completedFiles'),
+      partiallyPosted: sql`COUNT(*) FILTER (WHERE ${era_files.status} = 'PARTIALLY_POSTED')`.as('partiallyPosted'),
+      errorFiles: sql`COUNT(*) FILTER (WHERE ${era_files.status} = 'ERROR')`.as('errorFiles'),
+      totalAmount: sql`COALESCE(SUM(${era_files.total_amount}), 0)`.as('totalAmount'),
+      totalAutoPosted: sql`COALESCE(SUM(${era_files.auto_posted_count}), 0)`.as('totalAutoPosted'),
+      totalExceptions: sql`COALESCE(SUM(${era_files.exception_count}), 0)`.as('totalExceptions')
+    }).from(era_files);
+
+    // Get exception stats
+    const [exceptionStats] = await db.select({
+      pendingExceptions: sql`COUNT(*) FILTER (WHERE ${posting_exceptions.status} = 'PENDING')`.as('pendingExceptions'),
+      overdueExceptions: sql`COUNT(*) FILTER (WHERE ${posting_exceptions.is_overdue} = true)`.as('overdueExceptions'),
+      criticalExceptions: sql`COUNT(*) FILTER (WHERE ${posting_exceptions.exception_severity} = 'CRITICAL' AND ${posting_exceptions.status} = 'PENDING')`.as('criticalExceptions'),
+      highExceptions: sql`COUNT(*) FILTER (WHERE ${posting_exceptions.exception_severity} = 'HIGH' AND ${posting_exceptions.status} = 'PENDING')`.as('highExceptions'),
+      resolvedToday: sql`COUNT(*) FILTER (WHERE DATE(${posting_exceptions.resolved_at}) = CURRENT_DATE)`.as('resolvedToday')
+    }).from(posting_exceptions);
+
+    // Get posting stats
+    const [postingStats] = await db.select({
+      totalPostings: sql`COUNT(*)`.as('totalPostings'),
+      autoPostings: sql`COUNT(*) FILTER (WHERE ${payment_postings.posting_type} = 'AUTO')`.as('autoPostings'),
+      manualPostings: sql`COUNT(*) FILTER (WHERE ${payment_postings.posting_type} = 'MANUAL')`.as('manualPostings'),
+      todayPostings: sql`COUNT(*) FILTER (WHERE DATE(${payment_postings.posting_date}) = CURRENT_DATE)`.as('todayPostings'),
+      totalPostedAmount: sql`COALESCE(SUM(${payment_postings.payment_amount}), 0)`.as('totalPostedAmount')
+    }).from(payment_postings);
+
+    // Calculate auto-post rate
+    const autoPostRate = eraStats.totalAutoPosted + eraStats.totalExceptions > 0
+      ? Math.round((parseInt(eraStats.totalAutoPosted) / (parseInt(eraStats.totalAutoPosted) + parseInt(eraStats.totalExceptions))) * 100)
+      : 0;
+
+    return {
+      eraFiles: {
+        total: parseInt(eraStats.totalFiles) || 0,
+        completed: parseInt(eraStats.completedFiles) || 0,
+        partiallyPosted: parseInt(eraStats.partiallyPosted) || 0,
+        errors: parseInt(eraStats.errorFiles) || 0,
+        totalAmount: parseInt(eraStats.totalAmount) || 0
+      },
+      posting: {
+        total: parseInt(postingStats.totalPostings) || 0,
+        auto: parseInt(postingStats.autoPostings) || 0,
+        manual: parseInt(postingStats.manualPostings) || 0,
+        today: parseInt(postingStats.todayPostings) || 0,
+        totalAmount: parseInt(postingStats.totalPostedAmount) || 0,
+        autoPostRate
+      },
+      exceptions: {
+        pending: parseInt(exceptionStats.pendingExceptions) || 0,
+        overdue: parseInt(exceptionStats.overdueExceptions) || 0,
+        critical: parseInt(exceptionStats.criticalExceptions) || 0,
+        high: parseInt(exceptionStats.highExceptions) || 0,
+        resolvedToday: parseInt(exceptionStats.resolvedToday) || 0
+      }
+    };
+  }
+
+  /**
+   * Reverse a payment posting
+   * @param {object} params - Reversal parameters
+   * @returns {Promise<object>} Reversal result
+   */
+  async reversePosting(params) {
+    const { postingId, reason, reversedBy } = params;
+
+    // Get posting
+    const [posting] = await db.select()
+      .from(payment_postings)
+      .where(eq(payment_postings.posting_id, postingId))
+      .limit(1);
+
+    if (!posting) {
+      throw new Error(`Posting not found: ${postingId}`);
+    }
+
+    if (posting.is_reversed) {
+      throw new Error('Posting has already been reversed');
+    }
+
+    // Get claim
+    const [claim] = await db.select()
+      .from(claims)
+      .where(eq(claims.id, posting.claim_id))
+      .limit(1);
+
+    if (!claim) {
+      throw new Error(`Claim not found: ${posting.claim_id}`);
+    }
+
+    // Reverse the posting
+    await db.update(payment_postings)
+      .set({
+        is_reversed: true,
+        reversed_at: new Date(),
+        reversed_by_id: reversedBy,
+        reversal_reason: reason,
+        updated_at: new Date()
+      })
+      .where(eq(payment_postings.id, posting.id));
+
+    // Update claim - reverse the payment amount
+    const newBalance = (claim.balance || 0) + posting.payment_amount;
+    const newTotalPaid = (claim.total_paid || 0) - posting.payment_amount;
+
+    await db.update(claims)
+      .set({
+        total_paid: newTotalPaid,
+        balance: newBalance,
+        status: newBalance > 0 ? 'SUBMITTED' : claim.status,
+        updated_at: new Date()
+      })
+      .where(eq(claims.id, claim.id));
+
+    // Update ERA payment status back to pending
+    await db.update(era_payments)
+      .set({
+        posting_status: 'PENDING',
+        posted_at: null,
+        updated_at: new Date()
+      })
+      .where(eq(era_payments.id, posting.era_payment_id));
+
+    return {
+      success: true,
+      reversedPosting: posting,
+      claim: {
+        id: claim.id,
+        newBalance,
+        newTotalPaid
+      }
+    };
   }
 }
 

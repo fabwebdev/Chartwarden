@@ -2,7 +2,7 @@
   "id": "ci-cd-pipeline",
   "category": "DevOps",
   "title": "CI/CD Pipeline Setup",
-  "description": "Configure continuous integration and deployment pipeline with GitHub Actions or similar.",
+  "description": "Configure CI/CD Pipeline with GitHub Actions\n\nSet up a complete continuous integration and deployment pipeline to automate testing, building, and deployment workflows for the repository.\n\nRequirements:\n- Create GitHub Actions workflow file(s) in .github/workflows/\n- Configure CI pipeline to run on pull requests and pushes to main branch\n- Include automated testing (unit tests, integration tests, linting)\n- Set up build process for the application\n- Configure deployment to target environment(s) (staging/production)\n- Add status badges to README for visibility\n- Implement branch protection rules requiring CI checks to pass\n- Configure secrets and environment variables securely\n- Set up notifications for failed builds\n- Define clear deployment triggers (e.g., merge to main deploys to staging, tags deploy to production)\n- Include caching strategy to speed up workflow execution\n- Document the CI/CD process and how to maintain it\n\nSuccess Criteria:\n- All tests run automatically on every PR\n- Deployments occur automatically after successful builds\n- Failed builds prevent merging/deployment\n- Pipeline completes in reasonable time (< 10 minutes for typical changes)",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -10,5 +10,13 @@
     "unit-tests-infrastructure"
   ],
   "createdAt": "2025-12-31T05:55:26.265Z",
-  "updatedAt": "2025-12-31T05:55:26.265Z"
+  "updatedAt": "2025-12-31T05:55:26.265Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

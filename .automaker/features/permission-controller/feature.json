@@ -2,7 +2,7 @@
   "id": "permission-controller",
   "category": "API",
   "title": "Permission Management Controller",
-  "description": "Implement controller for permission management and role assignments.",
+  "description": "Implement Permission Management and Role Assignment Controller\n\nCreate a comprehensive backend controller that manages permissions and role assignments within the application's authorization system, providing secure and auditable access control operations.\n\nRequirements:\n\nPermission CRUD Operations:\n- Create new permissions with name, description, and resource scope\n- Retrieve single permission by ID or list all permissions with filtering\n- Update existing permission metadata (excluding permission key/identifier)\n- Delete permissions with validation that no active roles are using them\n- Support soft delete to maintain audit trail\n\nRole Assignment Operations:\n- Assign one or multiple roles to a user with effective date tracking\n- Revoke roles from users with reason code/comment\n- Support temporary role assignments with expiration dates\n- Prevent duplicate role assignments to the same user\n- Handle role hierarchy and inheritance correctly\n\nPermission-Role Association:\n- Assign permissions to roles (individual and bulk operations)\n- Remove permissions from roles\n- Retrieve complete permission set for a given role (including inherited)\n- List all roles that grant a specific permission\n- Validate permission compatibility before assignment\n\nUser-Role Queries:\n- Retrieve all roles assigned to a user (active and expired)\n- Get effective permissions for a user (aggregate across all roles)\n- Check if user has specific permission\n- List users with a particular role\n\nAuthorization and Security:\n- Require admin role for all modification endpoints\n- Implement resource-level authorization (users can view their own roles)\n- Prevent privilege escalation (admins cannot assign roles they don't possess)\n- Rate limit sensitive endpoints to prevent abuse\n\nValidation and Error Handling:\n- Validate permission and role IDs exist before operations\n- Return 400 for invalid input with specific field-level errors\n- Return 403 for unauthorized access attempts\n- Return 404 for non-existent resources\n- Return 409 for conflict situations (duplicate assignments, circular dependencies)\n- Provide clear error messages indicating resolution steps\n\nData Integrity:\n- Ensure idempotent operations for assignments (re-assigning same role has no effect)\n- Detect and prevent circular role dependencies\n- Handle cascading deletes appropriately with confirmation\n- Maintain referential integrity across permission-role-user relationships\n\nAudit and Logging:\n- Log all permission/role modifications with timestamp, actor, and reason\n- Track permission changes over time for compliance\n- Record role assignment history per user\n- Enable audit trail retrieval for security reviews\n\nPerformance Optimization:\n- Implement pagination for list endpoints (default 50, max 100 items)\n- Add filtering, sorting, and search capabilities\n- Cache frequently accessed permission sets\n- Use efficient queries to retrieve nested permission hierarchies\n\nEdge Cases to Handle:\n- Attempting to delete permission currently assigned to roles\n- Assigning expired or disabled roles\n- Orphaned permissions after role deletion\n- Concurrent modification conflicts\n- Users with no roles (default permissions)\n- Roles with no permissions (effectively inactive)\n\nAPI Response Standards:\n- Return consistent JSON structure across all endpoints\n- Include pagination metadata (total, page, per_page, has_more)\n- Provide hypermedia links for related resources\n- Return created resource with 201 status and Location header\n- Use 204 for successful deletions",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.262Z",
-  "updatedAt": "2025-12-31T05:55:26.262Z"
+  "updatedAt": "2025-12-31T05:55:26.262Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

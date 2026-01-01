@@ -2,7 +2,7 @@
   "id": "prognosis-schema",
   "category": "Database",
   "title": "Prognosis Tracking Schema",
-  "description": "Create schema for prognosis tracking with expected length of stay, disease progression, and clinical indicators.",
+  "description": "Create Comprehensive Prognosis Tracking Schema\n\nDesign and implement a database schema to track patient prognosis information, including expected length of hospital stay, disease progression metrics, and relevant clinical indicators.\n\nRequirements:\n- Define data model for prognosis records with temporal tracking capabilities\n- Include expected length of stay field with date range (admission, expected discharge)\n- Capture disease progression status (improving, stable, deteriorating, critical)\n- Store clinical indicators relevant to prognosis (vital signs trends, lab values, functional status scores)\n- Support versioning/history to track how prognosis changes over time\n- Link prognosis data to patient records and specific diagnoses\n- Include metadata fields (created_by, updated_by, timestamp, confidence_level)\n- Define appropriate data types, constraints, and validation rules\n- Consider relationships with existing patient, diagnosis, and treatment tables\n- Ensure schema supports querying for prognosis trends and outcome analysis\n- Document the schema structure with field descriptions and usage guidelines\n\nEdge Cases to Consider:\n- Handling prognosis updates when unexpected complications arise\n- Managing multiple concurrent prognoses for patients with comorbidities\n- Storing uncertain or provisional prognoses with confidence intervals\n- Archiving historical prognosis data while maintaining query performance",
   "status": "backlog",
   "priority": 2,
   "complexity": "simple",
@@ -10,5 +10,14 @@
     "encounter-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.245Z",
-  "updatedAt": "2025-12-31T05:55:26.245Z"
+  "updatedAt": "2025-12-31T20:47:53.988Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2025-12-31T20:40:51.355Z"
 }

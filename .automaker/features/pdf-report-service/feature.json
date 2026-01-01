@@ -2,7 +2,7 @@
   "id": "pdf-report-service",
   "category": "Service",
   "title": "PDF Report Generation Service",
-  "description": "Implement PDF report generator using Puppeteer for HTML to PDF conversion.",
+  "description": "Implement PDF Report Generator with Puppeteer\n\nBuild a PDF report generation system that converts HTML templates into downloadable PDF documents using Puppeteer.\n\nRequirements:\n- Set up Puppeteer as a dependency and configure for server-side rendering\n- Create HTML report templates with proper styling that renders well in PDF format\n- Implement a service/module that accepts data and generates PDFs from templates\n- Handle page formatting (page size, margins, headers, footers, page numbers)\n- Support dynamic content injection into templates\n- Optimize PDF generation performance (consider reusing browser instances)\n- Add error handling for generation failures\n- Implement file storage or streaming response for generated PDFs\n- Ensure generated PDFs are accessible and properly formatted\n- Add configuration options (orientation, paper size, print background graphics)\n\nEdge Cases to Consider:\n- Large reports that span multiple pages\n- Special characters and Unicode in content\n- Images and assets loading in headless environment\n- Concurrent PDF generation requests\n- Memory management for long-running processes\n\nDependencies:\n- Puppeteer package installation\n- HTML/CSS template structure\n- Data source for populating reports\n- Server endpoint or API route for triggering generation",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -10,5 +10,14 @@
     "analytics-service"
   ],
   "createdAt": "2025-12-31T05:55:26.260Z",
-  "updatedAt": "2025-12-31T05:55:26.260Z"
+  "updatedAt": "2025-12-31T20:47:56.046Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2025-12-31T20:40:49.828Z"
 }

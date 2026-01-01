@@ -2,7 +2,7 @@
   "id": "cash-flow-projection-service",
   "category": "Service",
   "title": "Cash Flow Projection Service",
-  "description": "Implement cash flow projection engine with payment timing and collection forecasts.",
+  "description": "Implement Cash Flow Projection Engine with Payment Timing and Collection Forecasts\n\nBuild a financial forecasting system that projects future cash flows by analyzing payment schedules, receivables, and collection patterns to provide accurate liquidity predictions.\n\nRequirements:\n- Design data model for payment schedules, invoices, and historical collection patterns\n- Implement algorithm to calculate projected cash inflows based on:\n  * Outstanding receivables with expected collection dates\n  * Historical collection rate patterns by customer/segment\n  * Aging analysis to adjust collection probability\n  * Recurring revenue streams with payment cycles\n- Implement algorithm to calculate projected cash outflows based on:\n  * Scheduled payment obligations (payroll, rent, vendors)\n  * Accounts payable with due dates\n  * Recurring expenses and their frequencies\n  * Planned capital expenditures\n- Generate rolling cash flow projections for configurable time periods (30/60/90 days, quarterly, annual)\n- Calculate key metrics:\n  * Net cash position by period\n  * Minimum cash balance (cash runway)\n  * Peak funding requirements\n  * Days cash on hand\n- Handle edge cases:\n  * Late payments and adjustable collection assumptions\n  * Early payment discounts\n  * Seasonal variation in cash flows\n  * Currency conversion for multi-currency scenarios\n- Provide visualization of projected vs. actual cash position\n- Enable scenario modeling with adjustable assumptions (optimistic/pessimistic collection rates)\n- Export projections in standard formats (CSV, Excel, PDF reports)\n\nTechnical Considerations:\n- Ensure calculations are performant for large transaction volumes\n- Support historical data import for training collection rate models\n- Implement audit trail for assumption changes\n- Design for extensibility to add new cash flow categories",
   "status": "backlog",
   "priority": 2,
   "complexity": "complex",
@@ -10,5 +10,13 @@
     "revenue-forecasting-service"
   ],
   "createdAt": "2025-12-31T05:55:26.257Z",
-  "updatedAt": "2025-12-31T05:55:26.257Z"
+  "updatedAt": "2025-12-31T05:55:26.257Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

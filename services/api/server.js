@@ -2,7 +2,6 @@ import Fastify from "fastify";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Server } from "socket.io";
 import connectDB from "./src/database/connection.js";
 import { closeDB } from "./src/database/connection.js";
 import apiRoutes from "./src/routes/api.routes.js";
@@ -30,6 +29,7 @@ import { ROLES, ROLE_PERMISSIONS } from "./src/config/rbac.js";
 import JobScheduler from "./src/jobs/scheduler.js";
 import helmetConfig, { additionalSecurityHeaders } from "./src/config/helmet.config.js";
 import { buildGlobalRateLimitConfig, getRedisStore, RATE_LIMITS } from "./src/config/rateLimit.config.js";
+import socketIOService from "./src/services/SocketIO.service.js";
 
 // Load environment variables
 dotenv.config();
@@ -48,7 +48,7 @@ const app = Fastify({
 
 const PORT = process.env.PORT || 3000;
 
-// Initialize Socket.IO - will be attached after Fastify is ready
+// Socket.IO is initialized via socketIOService in onReady hook
 let io;
 
 async function buildUserProfile(userPayload, originalEmail) {
@@ -195,32 +195,35 @@ app.register(import("@fastify/static"), {
   prefix: "/",
 });
 
+// Multipart file upload support (for ERA file uploads, etc.)
+app.register(import("@fastify/multipart"), {
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
+    files: 10, // Max 10 files per request
+  },
+  attachFieldsToBody: false, // Use stream processing for better memory handling
+});
+
 // Initialize Socket.IO - decorate early, initialize in onReady
 app.decorate("io", null); // Placeholder - will be set in onReady hook
+app.decorate("socketIO", socketIOService); // Socket.IO service instance
 
 app.addHook("onReady", async () => {
-  io = new Server(app.server, {
-    cors: {
-      origin: process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(",")
-        : "*",
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      credentials: true,
-    },
+  // Initialize Socket.IO with comprehensive service
+  // Features: authentication, namespaces, rooms, event handlers, metrics
+  io = socketIOService.initialize(app.server, {
+    corsOrigins: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(",").map(o => o.trim())
+      : ["http://localhost:3000", "http://localhost:3001"],
+    pingInterval: 25000,  // 25 seconds
+    pingTimeout: 20000,   // 20 seconds
+    connectTimeout: 45000, // 45 seconds
   });
 
-  // Update the io instance
+  // Update the io instance on app for backward compatibility
   app.io = io;
 
-  // WebSocket connection handler
-  io.on("connection", (socket) => {
-    debug("WebSocket user connected", { socketId: socket.id });
-
-    // Handle disconnection
-    socket.on("disconnect", () => {
-      debug("WebSocket user disconnected", { socketId: socket.id });
-    });
-  });
+  info("Socket.IO service initialized with namespaces: /, /notifications, /chat, /updates");
 });
 
 // Boot service providers (async)
@@ -680,10 +683,8 @@ const gracefulShutdown = async (signal) => {
   // Stop job scheduler
   JobScheduler.stop();
 
-  // Close Socket.IO if initialized
-  if (io) {
-    io.close();
-  }
+  // Close Socket.IO via service (handles graceful shutdown with client notification)
+  await socketIOService.shutdown();
 
   // Close Redis connection
   try {

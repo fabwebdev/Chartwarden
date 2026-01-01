@@ -85,6 +85,7 @@ export const bereavement_contacts = pgTable('bereavement_contacts', {
   email: varchar('email', { length: 255 }),
   address: text('address'),
   preferred_contact_method: varchar('preferred_contact_method', { length: 50 }), // PHONE, EMAIL, MAIL, IN_PERSON
+  preferred_contact_times: text('preferred_contact_times'), // Best times to reach (morning, afternoon, evening, etc.)
 
   // Demographics
   date_of_birth: date('date_of_birth'),
@@ -95,6 +96,23 @@ export const bereavement_contacts = pgTable('bereavement_contacts', {
   is_primary_contact: boolean('is_primary_contact').default(false),
   wants_services: boolean('wants_services').default(true),
   service_preferences: text('service_preferences'),
+
+  // Grief assessment (individual tracking per contact)
+  grief_assessment_score: integer('grief_assessment_score'), // Standardized grief assessment score (e.g., 0-100)
+  grief_assessment_tool: varchar('grief_assessment_tool', { length: 100 }), // Tool used: PG-13, ICG, TRIG, etc.
+  grief_assessment_date: date('grief_assessment_date'),
+  grief_stage: varchar('grief_stage', { length: 50 }), // DENIAL, ANGER, BARGAINING, DEPRESSION, ACCEPTANCE
+  grief_notes: text('grief_notes'),
+
+  // Consent and privacy preferences
+  consent_status: varchar('consent_status', { length: 50 }).default('PENDING'), // PENDING, GRANTED, DECLINED, WITHDRAWN
+  consent_date: date('consent_date'),
+  consent_signature: jsonb('consent_signature'),
+  privacy_preferences: jsonb('privacy_preferences'), // JSON object with granular privacy settings
+  can_share_info: boolean('can_share_info').default(false), // Can share info with other family members
+  can_contact_via_phone: boolean('can_contact_via_phone').default(true),
+  can_contact_via_email: boolean('can_contact_via_email').default(true),
+  can_contact_via_mail: boolean('can_contact_via_mail').default(true),
 
   // Special needs
   has_special_needs: boolean('has_special_needs').default(false),
@@ -411,6 +429,228 @@ export const support_group_participants = pgTable('support_group_participants', 
   // Participation
   participation_level: varchar('participation_level', { length: 50 }), // ACTIVE, MODERATE, PASSIVE, OBSERVER
   notes: text('notes'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Bereavement Follow-ups Table
+ * Tracks scheduled and completed follow-up contacts at specific milestones
+ * Standard milestones: 1 week, 1 month, 3 months, 6 months, 1 year
+ */
+export const bereavement_follow_ups = pgTable('bereavement_follow_ups', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  bereavement_case_id: bigint('bereavement_case_id', { mode: 'number' }).references(() => bereavement_cases.id).notNull(),
+  bereavement_contact_id: bigint('bereavement_contact_id', { mode: 'number' }).references(() => bereavement_contacts.id),
+
+  // Follow-up milestone
+  milestone_type: varchar('milestone_type', { length: 50 }).notNull(), // 1_WEEK, 1_MONTH, 3_MONTHS, 6_MONTHS, 1_YEAR, CUSTOM
+  milestone_description: text('milestone_description'), // Description for custom milestones
+
+  // Scheduling
+  scheduled_date: date('scheduled_date').notNull(),
+  reminder_sent: boolean('reminder_sent').default(false),
+  reminder_sent_date: date('reminder_sent_date'),
+
+  // Contact details
+  contact_method: varchar('contact_method', { length: 50 }), // PHONE_CALL, HOME_VISIT, LETTER, EMAIL, SYMPATHY_CARD
+
+  // Completion
+  follow_up_status: varchar('follow_up_status', { length: 50 }).default('SCHEDULED'), // SCHEDULED, COMPLETED, MISSED, RESCHEDULED, CANCELLED, DECLINED
+  completed_date: date('completed_date'),
+  completed_by_id: text('completed_by_id').references(() => users.id),
+
+  // Outcome
+  contact_outcome: varchar('contact_outcome', { length: 50 }), // SUCCESSFUL, NO_ANSWER, LEFT_MESSAGE, DECLINED, OTHER
+  family_wellbeing_assessment: varchar('family_wellbeing_assessment', { length: 50 }), // COPING_WELL, MILD_DISTRESS, MODERATE_DISTRESS, SEVERE_DISTRESS, CRISIS
+  wellbeing_score: integer('wellbeing_score'), // 1-10 scale for tracking over time
+
+  // Issues and referrals
+  issues_identified: text('issues_identified'),
+  additional_support_needed: boolean('additional_support_needed').default(false),
+  support_type_needed: text('support_type_needed'),
+  referrals_made: text('referrals_made'),
+  external_referrals: jsonb('external_referrals'), // JSON array of external resource referrals
+
+  // Documentation
+  follow_up_notes: text('follow_up_notes'),
+  family_feedback: text('family_feedback'),
+
+  // Next steps
+  follow_up_required: boolean('follow_up_required').default(false),
+  next_follow_up_date: date('next_follow_up_date'),
+  next_follow_up_notes: text('next_follow_up_notes'),
+
+  // Signature (for compliance)
+  signature: jsonb('signature'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Bereavement Resources Table
+ * Tracks support resources provided to bereaved families
+ */
+export const bereavement_resources = pgTable('bereavement_resources', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  bereavement_case_id: bigint('bereavement_case_id', { mode: 'number' }).references(() => bereavement_cases.id).notNull(),
+  bereavement_contact_id: bigint('bereavement_contact_id', { mode: 'number' }).references(() => bereavement_contacts.id),
+
+  // Resource details
+  resource_type: varchar('resource_type', { length: 100 }).notNull(), // LITERATURE, BROCHURE, SUPPORT_GROUP, REFERRAL, MEMORIAL_SERVICE, SYMPATHY_CARD, COUNSELING_SESSION, BOOK, WEBSITE, HOTLINE
+  resource_name: varchar('resource_name', { length: 255 }).notNull(),
+  resource_description: text('resource_description'),
+
+  // Resource specifics (depending on type)
+  resource_url: text('resource_url'), // For websites, online resources
+  resource_phone: varchar('resource_phone', { length: 50 }), // For hotlines, referrals
+  resource_address: text('resource_address'), // For physical locations
+  resource_contact: varchar('resource_contact', { length: 255 }), // Contact person for referrals
+
+  // Provision details
+  date_provided: date('date_provided').notNull(),
+  provided_by_id: text('provided_by_id').references(() => users.id),
+  delivery_method: varchar('delivery_method', { length: 50 }), // IN_PERSON, MAILED, EMAILED, PHONE
+
+  // Recurring resources
+  is_recurring: boolean('is_recurring').default(false),
+  recurrence_frequency: varchar('recurrence_frequency', { length: 50 }), // WEEKLY, BIWEEKLY, MONTHLY, AS_NEEDED
+  next_occurrence_date: date('next_occurrence_date'),
+
+  // Feedback and utilization
+  resource_utilized: boolean('resource_utilized'), // Did the family use the resource?
+  utilization_date: date('utilization_date'),
+  family_feedback: text('family_feedback'),
+  feedback_rating: integer('feedback_rating'), // 1-5 star rating
+  was_helpful: boolean('was_helpful'),
+
+  // External referral tracking
+  is_external_referral: boolean('is_external_referral').default(false),
+  external_organization: varchar('external_organization', { length: 255 }),
+  referral_status: varchar('referral_status', { length: 50 }), // PENDING, ACCEPTED, COMPLETED, DECLINED
+  referral_outcome: text('referral_outcome'),
+
+  // Notes
+  notes: text('notes'),
+  follow_up_needed: boolean('follow_up_needed').default(false),
+  follow_up_notes: text('follow_up_notes'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Memorial Services Table
+ * Tracks memorial services and family attendance
+ */
+export const bereavement_memorial_services = pgTable('bereavement_memorial_services', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Service details
+  service_name: varchar('service_name', { length: 255 }).notNull(),
+  service_type: varchar('service_type', { length: 100 }), // ANNUAL_MEMORIAL, HOLIDAY_REMEMBRANCE, CANDLE_LIGHTING, BUTTERFLY_RELEASE, TREE_PLANTING, CUSTOM
+  service_description: text('service_description'),
+
+  // Date and location
+  service_date: date('service_date').notNull(),
+  service_time: varchar('service_time', { length: 20 }),
+  duration_minutes: integer('duration_minutes'),
+  location: text('location'),
+  is_virtual: boolean('is_virtual').default(false),
+  virtual_link: text('virtual_link'),
+
+  // Organizers
+  coordinator_id: text('coordinator_id').references(() => users.id),
+  coordinator_name: varchar('coordinator_name', { length: 255 }),
+
+  // Service program
+  program_details: text('program_details'),
+  speakers: jsonb('speakers'), // Array of speaker info
+  music_selections: text('music_selections'),
+  readings: text('readings'),
+
+  // Capacity and registration
+  max_attendees: integer('max_attendees'),
+  registration_required: boolean('registration_required').default(false),
+  registration_deadline: date('registration_deadline'),
+
+  // Service status
+  service_status: varchar('service_status', { length: 50 }).default('PLANNED'), // PLANNED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
+  actual_attendee_count: integer('actual_attendee_count'),
+
+  // Post-service
+  service_notes: text('service_notes'),
+  feedback_summary: text('feedback_summary'),
+
+  // Metadata
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+/**
+ * Memorial Service Attendees Table
+ * Tracks attendance at memorial services
+ */
+export const bereavement_memorial_attendees = pgTable('bereavement_memorial_attendees', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  memorial_service_id: bigint('memorial_service_id', { mode: 'number' }).references(() => bereavement_memorial_services.id).notNull(),
+  bereavement_case_id: bigint('bereavement_case_id', { mode: 'number' }).references(() => bereavement_cases.id),
+  bereavement_contact_id: bigint('bereavement_contact_id', { mode: 'number' }).references(() => bereavement_contacts.id),
+
+  // Attendee info (may not always be linked to bereavement contacts)
+  attendee_name: varchar('attendee_name', { length: 255 }),
+  attendee_email: varchar('attendee_email', { length: 255 }),
+  attendee_phone: varchar('attendee_phone', { length: 50 }),
+  relationship_to_deceased: varchar('relationship_to_deceased', { length: 100 }),
+  patient_remembered: varchar('patient_remembered', { length: 255 }), // Name of the patient being remembered
+
+  // Registration
+  registration_date: date('registration_date'),
+  guest_count: integer('guest_count').default(1), // Number of guests attending with this person
+
+  // Special requests
+  special_requests: text('special_requests'),
+  accessibility_needs: text('accessibility_needs'),
+  dietary_restrictions: text('dietary_restrictions'),
+
+  // Attendance
+  rsvp_status: varchar('rsvp_status', { length: 50 }).default('PENDING'), // PENDING, CONFIRMED, DECLINED, WAITLIST
+  attended: boolean('attended'),
+  attendance_notes: text('attendance_notes'),
+
+  // Feedback
+  provided_feedback: boolean('provided_feedback').default(false),
+  feedback: text('feedback'),
+  feedback_date: date('feedback_date'),
 
   // Metadata
   metadata: jsonb('metadata'),

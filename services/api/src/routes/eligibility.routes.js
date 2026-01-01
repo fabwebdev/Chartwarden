@@ -342,4 +342,200 @@ export default async function eligibilityRoutes(fastify, options) {
     },
     EligibilityController.markForReverification.bind(EligibilityController)
   );
+
+  /**
+   * List verification requests with filtering
+   * GET /api/eligibility/requests
+   * Permission: eligibility:view
+   */
+  fastify.get(
+    '/requests',
+    {
+      preHandler: checkPermission('eligibility:view'),
+      schema: {
+        description: 'List eligibility verification requests with filtering and pagination',
+        tags: ['Eligibility'],
+        querystring: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['PENDING', 'SENT', 'RECEIVED', 'ERROR', 'TIMEOUT', 'CANCELLED'],
+              description: 'Filter by request status'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Filter by start date (YYYY-MM-DD)'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Filter by end date (YYYY-MM-DD)'
+            },
+            providerNpi: {
+              type: 'string',
+              description: 'Filter by provider NPI'
+            },
+            page: {
+              type: 'number',
+              default: 1,
+              minimum: 1,
+              description: 'Page number'
+            },
+            limit: {
+              type: 'number',
+              default: 20,
+              minimum: 1,
+              maximum: 100,
+              description: 'Items per page (max 100)'
+            }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'array' },
+              pagination: {
+                type: 'object',
+                properties: {
+                  page: { type: 'number' },
+                  limit: { type: 'number' },
+                  total: { type: 'number' },
+                  totalPages: { type: 'number' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.listRequests.bind(EligibilityController)
+  );
+
+  /**
+   * Get verification status by request ID
+   * GET /api/eligibility/status/:requestId
+   * Permission: eligibility:view
+   */
+  fastify.get(
+    '/status/:requestId',
+    {
+      preHandler: checkPermission('eligibility:view'),
+      schema: {
+        description: 'Get verification status by request ID with detailed tracking information',
+        tags: ['Eligibility'],
+        params: {
+          type: 'object',
+          required: ['requestId'],
+          properties: {
+            requestId: { type: 'string', description: 'Unique request tracking ID' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  requestId: { type: 'string' },
+                  status: { type: 'string' },
+                  patientId: { type: 'number' },
+                  payerId: { type: 'number' },
+                  serviceType: { type: 'string' },
+                  requestDate: { type: 'string' },
+                  sentAt: { type: 'string' },
+                  createdAt: { type: 'string' },
+                  updatedAt: { type: 'string' },
+                  errorMessage: { type: 'string' },
+                  retryCount: { type: 'number' },
+                  clearinghouseTraceId: { type: 'string' },
+                  clearinghouseName: { type: 'string' },
+                  response: { type: 'object' }
+                }
+              }
+            }
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.getVerificationStatus.bind(EligibilityController)
+  );
+
+  /**
+   * Update eligibility request
+   * PATCH /api/eligibility/request/:requestId
+   * Permission: eligibility:manage
+   */
+  fastify.patch(
+    '/request/:requestId',
+    {
+      preHandler: checkPermission('eligibility:manage'),
+      schema: {
+        description: 'Update eligibility request status or metadata',
+        tags: ['Eligibility'],
+        params: {
+          type: 'object',
+          required: ['requestId'],
+          properties: {
+            requestId: { type: 'string', description: 'Unique request tracking ID' }
+          }
+        },
+        body: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'string',
+              enum: ['PENDING', 'SENT', 'RECEIVED', 'ERROR', 'TIMEOUT', 'CANCELLED'],
+              description: 'New status'
+            },
+            metadata: {
+              type: 'object',
+              description: 'Additional metadata to merge with existing'
+            },
+            errorMessage: {
+              type: 'string',
+              description: 'Error message (used when status is ERROR or TIMEOUT)'
+            }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              data: { type: 'object' }
+            }
+          },
+          400: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          },
+          404: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              error: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    EligibilityController.updateRequest.bind(EligibilityController)
+  );
 }

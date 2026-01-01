@@ -11,12 +11,15 @@ import { requireAnyPermission } from '../middleware/rbac.middleware.js';
  *
  * Endpoints:
  * - Bereavement case management (4 endpoints)
- * - Contact management (2 endpoints)
+ * - Contact management (5 endpoints - including grief assessment and consent)
  * - Care plan development (2 endpoints)
  * - Encounter documentation (2 endpoints)
  * - Risk assessments (2 endpoints)
  * - Support group management (4 endpoints)
- * Total: 16 endpoints (exceeds spec of 14)
+ * - Follow-up tracking (4 endpoints)
+ * - Resource management (3 endpoints)
+ * - Memorial services (6 endpoints)
+ * Total: 32 endpoints
  */
 export default async function bereavementRoutes(fastify, options) {
   // ============================================================================
@@ -122,4 +125,105 @@ export default async function bereavementRoutes(fastify, options) {
   fastify.post('/bereavement/support-groups/:id/sessions', {
     preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
   }, controller.createSupportGroupSession);
+
+  // ============================================================================
+  // FOLLOW-UP TRACKING ROUTES
+  // ============================================================================
+
+  // Get follow-ups for a bereavement case
+  fastify.get('/bereavement/cases/:id/follow-ups', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCaseFollowUps);
+
+  // Create follow-up for a bereavement case
+  fastify.post('/bereavement/cases/:id/follow-ups', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createFollowUp);
+
+  // Generate standard follow-ups (1 week, 1 month, 3 months, 6 months, 1 year)
+  fastify.post('/bereavement/cases/:id/follow-ups/generate', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generateStandardFollowUps);
+
+  // Update follow-up
+  fastify.patch('/bereavement/follow-ups/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateFollowUp);
+
+  // ============================================================================
+  // RESOURCE TRACKING ROUTES
+  // ============================================================================
+
+  // Get resources for a bereavement case
+  fastify.get('/bereavement/cases/:id/resources', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getCaseResources);
+
+  // Add resource to a bereavement case
+  fastify.post('/bereavement/cases/:id/resources', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.addResource);
+
+  // Update resource
+  fastify.patch('/bereavement/resources/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateResource);
+
+  // ============================================================================
+  // MEMORIAL SERVICES ROUTES
+  // ============================================================================
+
+  // Get all memorial services
+  fastify.get('/bereavement/memorial-services', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getAllMemorialServices);
+
+  // Create memorial service
+  fastify.post('/bereavement/memorial-services', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createMemorialService);
+
+  // Get memorial service by ID
+  fastify.get('/bereavement/memorial-services/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getMemorialServiceById);
+
+  // Update memorial service
+  fastify.patch('/bereavement/memorial-services/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateMemorialService);
+
+  // Get attendees for a memorial service
+  fastify.get('/bereavement/memorial-services/:id/attendees', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getMemorialServiceAttendees);
+
+  // Register attendee for a memorial service
+  fastify.post('/bereavement/memorial-services/:id/attendees', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.registerMemorialServiceAttendee);
+
+  // Update attendee registration
+  fastify.patch('/bereavement/memorial-attendees/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateMemorialServiceAttendee);
+
+  // ============================================================================
+  // CONTACT MANAGEMENT ROUTES (Enhanced)
+  // ============================================================================
+
+  // Update contact information
+  fastify.patch('/bereavement/contacts/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateContact);
+
+  // Update contact grief assessment
+  fastify.patch('/bereavement/contacts/:id/grief-assessment', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateContactGriefAssessment);
+
+  // Update contact consent
+  fastify.patch('/bereavement/contacts/:id/consent', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateContactConsent);
 }

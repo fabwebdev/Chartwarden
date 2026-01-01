@@ -2,7 +2,7 @@
   "id": "role-controller",
   "category": "API",
   "title": "Role Management Controller",
-  "description": "Implement controller for role CRUD operations and permission assignment.",
+  "description": "Implement Role Management REST API Controller with CRUD Operations and Permission Assignment\n\nCreate a fully-featured RESTful API controller for managing user roles with complete CRUD operations, permission assignment capabilities, and robust security controls.\n\nCore Endpoints:\n- POST /api/roles - Create new role with name, description, and optional initial permissions\n- GET /api/roles - List all roles with pagination, sorting, and filtering (by status, name, permission)\n- GET /api/roles/{id} - Retrieve single role details including full permission list\n- PUT /api/roles/{id} - Update role metadata (name, description, status, display order)\n- DELETE /api/roles/{id} - Soft delete or deactivate role with cascading checks\n- POST /api/roles/{id}/permissions - Assign one or multiple permissions to role\n- DELETE /api/roles/{id}/permissions/{permissionId} - Revoke specific permission from role\n\nSecurity & Authorization:\n- Require administrator-level authentication for all endpoints\n- Implement role-based access control (RBAC) checks before each operation\n- Prevent modification or deletion of system-defined roles (e.g., SuperAdmin, DefaultUser)\n- Sanitize all input parameters to prevent injection attacks\n- Rate limit endpoints to prevent abuse\n\nValidation Rules:\n- Role names must be unique (case-insensitive check)\n- Required fields: name (2-50 chars), description (max 255 chars)\n- Status must be valid enum (Active, Inactive, Archived)\n- Reject deletion if role is currently assigned to any active users\n- Verify permission IDs exist before assignment\n- Prevent duplicate permission assignments to the same role\n\nData Handling:\n- Implement pagination (default 20 items, max 100 per page)\n- Support filtering by: status, creation date, assigned user count\n- Support sorting by: name, created date, updated date\n- Return consistent JSON response structure with metadata\n\nError Handling & Responses:\n- 200 OK - Successful retrieval or update\n- 201 Created - Role successfully created\n- 204 No Content - Successful deletion\n- 400 Bad Request - Validation errors with detailed field-level messages\n- 401 Unauthorized - Missing or invalid authentication\n- 403 Forbidden - Insufficient permissions\n- 404 Not Found - Role or permission ID doesn't exist\n- 409 Conflict - Duplicate role name or role in use by active users\n- 422 Unprocessable Entity - Business logic violations\n\nAudit & Logging:\n- Log all role creation, modification, and deletion events\n- Capture: timestamp, admin user ID, action type, affected role ID, changed fields\n- Log permission assignment and revocation with before/after states\n- Include request metadata (IP address, user agent) for security auditing\n\nEdge Cases to Handle:\n- Attempting to delete a role assigned to users (prevent with clear error)\n- Duplicate role name during creation or update (return 409 Conflict)\n- Non-existent role or permission IDs (return 404 with helpful message)\n- Bulk permission assignment with partial failures (transaction rollback or partial success report)\n- Concurrent updates to the same role (implement optimistic locking)\n- Attempting to modify system-protected roles (return 403 with explanation)\n- Empty or whitespace-only role names (validation error)\n- Assigning already-assigned permissions (idempotent operation or skip silently)\n\nTesting Considerations:\n- Unit tests for each endpoint with valid and invalid inputs\n- Integration tests for permission assignment workflows\n- Test role deletion safeguards with active user assignments\n- Verify audit logs are created for all operations\n- Test pagination and filtering combinations\n- Load testing for bulk permission operations",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.262Z",
-  "updatedAt": "2025-12-31T05:55:26.262Z"
+  "updatedAt": "2025-12-31T05:55:26.262Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

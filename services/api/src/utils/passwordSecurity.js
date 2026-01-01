@@ -3,13 +3,16 @@
  *
  * SECURITY: TICKET #006 - Strengthen password policy
  * HIPAA: §164.308(a)(5)(ii)(D) - Password management
+ * OWASP Password Storage Cheat Sheet compliance
  *
  * Features:
- * - Minimum 12 characters
+ * - Minimum 12 characters, maximum 128 characters (DoS prevention)
  * - Complexity requirements (3 of 4 character types)
  * - Breached password checking (HaveIBeenPwned)
  * - Common password blocking
  * - Password strength estimation (zxcvbn)
+ * - Unicode character support with NFC normalization
+ * - Password history checking integration
  */
 
 import zxcvbn from 'zxcvbn';
@@ -44,10 +47,12 @@ const COMMON_PASSWORDS = [
  */
 export const PASSWORD_REQUIREMENTS = {
   minLength: 12,
+  maxLength: 128, // DoS prevention - prevents extremely long password hashing attacks
   requireComplexity: true, // Must have 3 of 4 character types
   minStrengthScore: 3, // zxcvbn score 0-4 (3 = strong, 4 = very strong)
   checkBreached: true, // Check against HaveIBeenPwned
-  blockCommon: true // Block common passwords
+  blockCommon: true, // Block common passwords
+  historyCount: 12, // Number of previous passwords to check
 };
 
 /**
@@ -176,16 +181,36 @@ export async function checkBreached(password) {
 }
 
 /**
+ * Normalize password for consistent handling
+ * Uses NFC normalization for Unicode characters
+ *
+ * @param {string} password
+ * @returns {string} Normalized password
+ */
+export function normalizePassword(password) {
+  if (!password || typeof password !== 'string') {
+    return '';
+  }
+  try {
+    return password.normalize('NFC');
+  } catch {
+    return password;
+  }
+}
+
+/**
  * Validate password against all security requirements
  *
  * @param {string} password
- * @param {Object} options - { userInputs: [], skipBreachCheck: false }
+ * @param {Object} options - { userInputs: [], skipBreachCheck: false, userId: null }
  * @returns {Promise<Object>} Validation result
  */
 export async function validatePassword(password, options = {}) {
   const {
     userInputs = [],
-    skipBreachCheck = false
+    skipBreachCheck = false,
+    userId = null,
+    skipHistoryCheck = false
   } = options;
 
   const errors = [];
@@ -198,14 +223,29 @@ export async function validatePassword(password, options = {}) {
     strength: null
   };
 
-  // 1. Check minimum length
-  if (password.length < PASSWORD_REQUIREMENTS.minLength) {
+  // 0. Basic validation
+  if (!password || typeof password !== 'string') {
+    errors.push('Password is required');
+    feedback.errors = errors;
+    return feedback;
+  }
+
+  // Normalize Unicode (NFC form)
+  const normalizedPassword = normalizePassword(password);
+
+  // 1. Check maximum length (DoS prevention)
+  if (normalizedPassword.length > PASSWORD_REQUIREMENTS.maxLength) {
+    errors.push(`Password must not exceed ${PASSWORD_REQUIREMENTS.maxLength} characters`);
+  }
+
+  // 2. Check minimum length
+  if (normalizedPassword.length < PASSWORD_REQUIREMENTS.minLength) {
     errors.push(`Password must be at least ${PASSWORD_REQUIREMENTS.minLength} characters`);
   }
 
-  // 2. Check complexity (3 of 4 character types)
+  // 3. Check complexity (3 of 4 character types)
   if (PASSWORD_REQUIREMENTS.requireComplexity) {
-    const complexity = checkComplexity(password);
+    const complexity = checkComplexity(normalizedPassword);
 
     if (!complexity.valid) {
       const typeNames = {
@@ -229,13 +269,13 @@ export async function validatePassword(password, options = {}) {
     }
   }
 
-  // 3. Check common passwords
-  if (PASSWORD_REQUIREMENTS.blockCommon && isCommonPassword(password)) {
+  // 4. Check common passwords
+  if (PASSWORD_REQUIREMENTS.blockCommon && isCommonPassword(normalizedPassword)) {
     errors.push('This password is too common. Please choose a more unique password.');
   }
 
-  // 4. Check password strength with zxcvbn
-  const strength = checkStrength(password, userInputs);
+  // 5. Check password strength with zxcvbn
+  const strength = checkStrength(normalizedPassword, userInputs);
   feedback.strength = strength;
 
   if (!strength.valid) {
@@ -254,10 +294,10 @@ export async function validatePassword(password, options = {}) {
     feedback.suggestions.push(...strength.suggestions);
   }
 
-  // 5. Check against breached passwords (HaveIBeenPwned)
+  // 6. Check against breached passwords (HaveIBeenPwned)
   let breachCheck = null;
   if (PASSWORD_REQUIREMENTS.checkBreached && !skipBreachCheck) {
-    breachCheck = await checkBreached(password);
+    breachCheck = await checkBreached(normalizedPassword);
 
     if (breachCheck.breached) {
       errors.push(
@@ -269,11 +309,30 @@ export async function validatePassword(password, options = {}) {
     }
   }
 
+  // 7. Check password history (prevent reuse)
+  let historyCheck = null;
+  if (userId && !skipHistoryCheck) {
+    try {
+      const { passwordHashingService } = await import('../services/PasswordHashing.service.js');
+      historyCheck = await passwordHashingService.checkPasswordHistory(userId, normalizedPassword);
+
+      if (historyCheck.isReused) {
+        errors.push(historyCheck.message);
+      } else if (historyCheck.error) {
+        warnings.push('Could not verify password history');
+      }
+    } catch (historyError) {
+      logger.warn('Password history check unavailable:', historyError.message);
+      warnings.push('Could not verify password history');
+    }
+  }
+
   // Build final result
   feedback.valid = errors.length === 0;
   feedback.errors = errors;
   feedback.warnings = warnings;
   feedback.breachCheck = breachCheck;
+  feedback.historyCheck = historyCheck;
 
   return feedback;
 }
@@ -315,5 +374,6 @@ export default {
   checkBreached,
   isCommonPassword,
   generateStrongPassword,
+  normalizePassword,
   PASSWORD_REQUIREMENTS
 };

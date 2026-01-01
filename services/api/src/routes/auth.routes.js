@@ -14,10 +14,12 @@ import {
   requirePermission,
 } from "../middleware/rbac.middleware.js";
 import { ROLES, PERMISSIONS } from "../config/rbac.js";
+import { defineUserAbilities, serializeAbilities, ACTIONS, SUBJECTS } from "../config/casl.js";
 import { db } from "../config/db.drizzle.js";
 import { users, roles, user_has_roles, sessions } from "../db/schemas/index.js";
 import { eq, and, gt, desc } from "drizzle-orm";
-import { validatePassword } from "../utils/passwordSecurity.js";
+import { validatePassword, PASSWORD_REQUIREMENTS } from "../utils/passwordSecurity.js";
+import { passwordHashingService } from "../services/PasswordHashing.service.js";
 
 import { logger } from '../utils/logger.js';
 // Rate limit key generator (IP + email combination for better security)
@@ -615,15 +617,106 @@ async function authRoutes(fastify, options) {
     }
   );
 
-  // Special endpoint to create admin users (TEMPORARILY without secret key for testing)
-  fastify.post("/create-admin", async (request, reply) => {
-    try {
-      // Note: This endpoint should have authentication in production!
-      console.warn(
-        "WARNING: Admin creation endpoint is temporarily unprotected!"
-      );
+  // Get user's CASL abilities for frontend isomorphic authorization
+  fastify.get(
+    "/abilities",
+    {
+      preHandler: [authenticate],
+    },
+    async (request, reply) => {
+      try {
+        const user = request.user;
 
-      const { email, password, name, firstName, lastName } = request.body;
+        // Build user abilities
+        const ability = defineUserAbilities(user);
+
+        // Serialize for frontend consumption
+        const serialized = serializeAbilities(ability, user);
+
+        return {
+          status: 200,
+          message: "User abilities retrieved successfully",
+          data: {
+            abilities: serialized,
+            // Include static definitions for frontend reference
+            actions: ACTIONS,
+            subjects: SUBJECTS,
+          },
+        };
+      } catch (error) {
+        logger.error("Error fetching user abilities:", error);
+        reply.code(500);
+        return {
+          status: 500,
+          message: "Server error while fetching user abilities",
+        };
+      }
+    }
+  );
+
+  // Special endpoint to create admin users
+  // SECURITY FIX: Require ADMIN_SECRET environment variable for admin creation
+  // This prevents unauthorized admin creation in production
+  fastify.post("/create-admin", {
+    config: {
+      rateLimit: {
+        max: 3, // 3 admin creation attempts
+        timeWindow: '1 hour', // per hour
+        keyGenerator: (request) => request.ip,
+        errorResponseBuilder: function(request, context) {
+          return {
+            status: 429,
+            error: 'Too Many Admin Creation Attempts',
+            message: 'Too many admin creation attempts. Please try again later.',
+            retryAfter: context.after
+          };
+        }
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const { email, password, name, firstName, lastName, adminSecret } = request.body;
+
+      // SECURITY: Require ADMIN_SECRET for admin creation
+      const requiredSecret = process.env.ADMIN_SECRET;
+
+      // In production, ADMIN_SECRET must be set
+      if (process.env.NODE_ENV === 'production' && !requiredSecret) {
+        logger.error("ADMIN_SECRET not configured in production - admin creation disabled");
+        return reply.code(503).send({
+          status: 503,
+          message: "Admin creation is not configured. Please contact system administrator.",
+        });
+      }
+
+      // Validate admin secret if configured
+      if (requiredSecret) {
+        if (!adminSecret) {
+          logger.warn("Admin creation attempt without secret", { ip: request.ip });
+          return reply.code(403).send({
+            status: 403,
+            message: "Admin secret is required for admin creation.",
+          });
+        }
+
+        // Use timing-safe comparison to prevent timing attacks
+        const secretBuffer = Buffer.from(requiredSecret);
+        const providedBuffer = Buffer.from(adminSecret);
+
+        if (secretBuffer.length !== providedBuffer.length ||
+            !crypto.timingSafeEqual(secretBuffer, providedBuffer)) {
+          logger.warn("Invalid admin secret provided", { ip: request.ip });
+          return reply.code(403).send({
+            status: 403,
+            message: "Invalid admin secret.",
+          });
+        }
+      } else {
+        // Development mode warning
+        logger.warn(
+          "SECURITY WARNING: Admin creation endpoint running without ADMIN_SECRET protection. Set ADMIN_SECRET environment variable."
+        );
+      }
 
       // Import the createAdminUser function
       const createAdminUser = (await import("../utils/createAdminUser.js"))
@@ -638,13 +731,31 @@ async function authRoutes(fastify, options) {
         lastName
       );
 
+      logger.info("Admin user created successfully", { email: result.email });
+
       return {
         status: 200,
         message: "Admin user created successfully",
         data: result,
       };
     } catch (error) {
-      logger.error("Error creating admin user:", error)
+      logger.error("Error creating admin user:", error);
+
+      // Return specific error messages for known issues
+      if (error.message?.includes('already exists')) {
+        return reply.code(409).send({
+          status: 409,
+          message: "A user with this email already exists.",
+        });
+      }
+
+      if (error.message?.includes('12 characters')) {
+        return reply.code(422).send({
+          status: 422,
+          message: error.message,
+        });
+      }
+
       reply.code(500);
       return {
         status: 500,
@@ -663,6 +774,215 @@ async function authRoutes(fastify, options) {
       status: 200,
       csrfToken: token
     };
+  });
+
+  // ============================================================================
+  // PASSWORD MANAGEMENT ENDPOINTS
+  // ============================================================================
+
+  // Change password endpoint (requires authentication)
+  fastify.post("/change-password", {
+    preHandler: [authenticate],
+    config: {
+      rateLimit: {
+        max: 3, // 3 password change attempts
+        timeWindow: '15 minutes', // per 15 minutes
+        keyGenerator: (request) => request.user?.id || request.ip,
+        errorResponseBuilder: function(request, context) {
+          return {
+            status: 429,
+            error: 'Too Many Password Change Attempts',
+            message: 'Too many password change attempts. Please try again in 15 minutes.',
+            retryAfter: context.after
+          };
+        }
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const { currentPassword, newPassword } = request.body;
+      const userId = request.user.id;
+
+      // Validate input
+      if (!currentPassword || !newPassword) {
+        return reply.code(400).send({
+          status: 400,
+          message: 'Current password and new password are required',
+        });
+      }
+
+      // Validate new password against security requirements
+      const passwordValidation = await validatePassword(newPassword, {
+        userInputs: [request.user.email, request.user.firstName, request.user.lastName].filter(Boolean),
+        userId: userId, // Enable password history check
+      });
+
+      if (!passwordValidation.valid) {
+        return reply.code(422).send({
+          status: 422,
+          message: 'New password does not meet security requirements',
+          errors: passwordValidation.errors.map(error => ({
+            type: 'field',
+            msg: error,
+            path: 'newPassword',
+            location: 'body'
+          })),
+          suggestions: passwordValidation.suggestions,
+          strength: passwordValidation.strength ? {
+            score: passwordValidation.strength.score,
+            crackTime: passwordValidation.strength.crackTime
+          } : null
+        });
+      }
+
+      // Use password hashing service to update password
+      const result = await passwordHashingService.updatePassword(userId, currentPassword, newPassword);
+
+      if (!result.success) {
+        return reply.code(400).send({
+          status: 400,
+          message: result.message,
+        });
+      }
+
+      // Log password change for audit
+      logger.info(`Password changed successfully for user ${userId}`);
+
+      return {
+        status: 200,
+        message: 'Password changed successfully',
+      };
+    } catch (error) {
+      logger.error("Password change error:", error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: "Server error during password change",
+      };
+    }
+  });
+
+  // Password strength check endpoint (public - for real-time feedback)
+  fastify.post("/check-password-strength", {
+    config: {
+      rateLimit: {
+        max: 30, // Allow frequent checks for UX
+        timeWindow: '1 minute',
+        keyGenerator: (request) => request.ip,
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const { password, userInputs = [] } = request.body;
+
+      if (!password) {
+        return reply.code(400).send({
+          status: 400,
+          message: 'Password is required',
+        });
+      }
+
+      // Don't check breached passwords or history for strength-only check
+      const validation = await validatePassword(password, {
+        userInputs,
+        skipBreachCheck: true, // Skip for real-time feedback
+        skipHistoryCheck: true, // Skip for real-time feedback
+      });
+
+      return {
+        status: 200,
+        data: {
+          valid: validation.valid,
+          strength: validation.strength,
+          errors: validation.errors,
+          suggestions: validation.suggestions,
+        }
+      };
+    } catch (error) {
+      logger.error("Password strength check error:", error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: "Server error during password strength check",
+      };
+    }
+  });
+
+  // Get password policy endpoint (public - for UI display)
+  fastify.get("/password-policy", async (request, reply) => {
+    try {
+      const policy = passwordHashingService.getPasswordPolicy();
+
+      return {
+        status: 200,
+        data: {
+          policy: {
+            ...policy,
+            minLength: PASSWORD_REQUIREMENTS.minLength,
+            maxLength: PASSWORD_REQUIREMENTS.maxLength,
+          }
+        }
+      };
+    } catch (error) {
+      logger.error("Password policy fetch error:", error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: "Server error fetching password policy",
+      };
+    }
+  });
+
+  // Validate password endpoint (full validation including breach check)
+  fastify.post("/validate-password", {
+    config: {
+      rateLimit: {
+        max: 10, // Limit due to external API calls
+        timeWindow: '1 minute',
+        keyGenerator: (request) => request.ip,
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const { password, userInputs = [], userId = null } = request.body;
+
+      if (!password) {
+        return reply.code(400).send({
+          status: 400,
+          message: 'Password is required',
+        });
+      }
+
+      // Full validation including breach check
+      const validation = await validatePassword(password, {
+        userInputs,
+        skipBreachCheck: false,
+        userId: userId, // Optional: include for history check
+        skipHistoryCheck: !userId,
+      });
+
+      return {
+        status: 200,
+        data: {
+          valid: validation.valid,
+          errors: validation.errors,
+          warnings: validation.warnings,
+          suggestions: validation.suggestions,
+          strength: validation.strength,
+          breachCheck: validation.breachCheck ? {
+            breached: validation.breachCheck.breached,
+            message: validation.breachCheck.message,
+          } : null,
+        }
+      };
+    } catch (error) {
+      logger.error("Password validation error:", error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: "Server error during password validation",
+      };
+    }
   });
 }
 

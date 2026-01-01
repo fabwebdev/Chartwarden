@@ -316,3 +316,58 @@ export const visit_compliance = pgTable('visit_compliance', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
+
+/**
+ * Scheduling Conflicts Table
+ * Track and manage scheduling conflicts (double-bookings, time overlaps, etc.)
+ */
+export const scheduling_conflicts = pgTable('scheduling_conflicts', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+
+  // Conflicting visits
+  visit_id_1: bigint('visit_id_1', { mode: 'number' }).references(() => scheduled_visits.id).notNull(),
+  visit_id_2: bigint('visit_id_2', { mode: 'number' }).references(() => scheduled_visits.id).notNull(),
+
+  // Staff involved (may be same or different)
+  staff_id: bigint('staff_id', { mode: 'number' }).references(() => staff_profiles.id),
+  patient_id: bigint('patient_id', { mode: 'number' }).references(() => patients.id),
+
+  // Conflict details
+  conflict_type: varchar('conflict_type', { length: 50 }).notNull(), // DOUBLE_BOOKING, TIME_OVERLAP, STAFF_UNAVAILABLE, TRAVEL_TIME, SKILL_MISMATCH
+  conflict_severity: varchar('conflict_severity', { length: 50 }).default('MEDIUM').notNull(), // CRITICAL, HIGH, MEDIUM, LOW
+  conflict_status: varchar('conflict_status', { length: 50 }).default('DETECTED').notNull(), // DETECTED, FLAGGED, ACKNOWLEDGED, RESOLVED, IGNORED
+
+  // Conflict time window
+  conflict_date: date('conflict_date').notNull(),
+  conflict_start_time: time('conflict_start_time'),
+  conflict_end_time: time('conflict_end_time'),
+  overlap_minutes: integer('overlap_minutes'),
+
+  // Description of the conflict
+  conflict_description: text('conflict_description'),
+
+  // Resolution
+  resolution_type: varchar('resolution_type', { length: 100 }), // RESCHEDULE_VISIT_1, RESCHEDULE_VISIT_2, REASSIGN_STAFF, CANCEL_VISIT, COMBINE_VISITS, MANUAL
+  resolution_notes: text('resolution_notes'),
+  resolved_by_id: text('resolved_by_id').references(() => users.id),
+  resolved_at: timestamp('resolved_at'),
+
+  // Auto-detection metadata
+  detected_by: varchar('detected_by', { length: 100 }).default('SYSTEM'), // SYSTEM, MANUAL
+  detection_rule: varchar('detection_rule', { length: 100 }), // Rule that triggered detection
+
+  // Notification tracking
+  notification_sent: boolean('notification_sent').default(false),
+  notification_sent_at: timestamp('notification_sent_at'),
+  notification_recipients: jsonb('notification_recipients'), // Array of user IDs
+
+  // Additional data
+  metadata: jsonb('metadata'),
+
+  // Audit fields
+  created_by_id: text('created_by_id').references(() => users.id),
+  updated_by_id: text('updated_by_id').references(() => users.id),
+  deleted_at: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});

@@ -2,7 +2,7 @@
   "id": "reports-routes",
   "category": "API",
   "title": "Reports API Routes",
-  "description": "Create REST API routes for report generation and retrieval.",
+  "description": "Create REST API Endpoints for Report Generation and Retrieval\n\nImplement a complete REST API for generating, retrieving, and managing reports with proper error handling and validation.\n\nRequirements:\n- Design and implement the following endpoints:\n  * POST /api/reports - Generate a new report (accept parameters like report type, date range, filters)\n  * GET /api/reports/:id - Retrieve a specific report by ID\n  * GET /api/reports - List all reports with pagination and filtering options\n  * DELETE /api/reports/:id - Delete a specific report (if applicable)\n  \n- Request/Response handling:\n  * Validate all incoming request parameters\n  * Return appropriate HTTP status codes (200, 201, 400, 404, 500)\n  * Structure consistent JSON response format\n  * Handle malformed requests gracefully\n\n- Report generation:\n  * Support asynchronous generation for large reports\n  * Return job/task ID immediately if processing takes time\n  * Store generated reports with metadata (created date, type, parameters used)\n  \n- Data considerations:\n  * Implement proper authentication and authorization\n  * Add rate limiting to prevent abuse\n  * Support multiple report formats (JSON, CSV, PDF) via query parameter or Accept header\n  * Handle timezone considerations for date-based reports\n\n- Testing:\n  * Write unit tests for all endpoints\n  * Test error scenarios (invalid IDs, missing parameters, unauthorized access)\n  * Verify pagination and filtering logic",
   "status": "backlog",
   "priority": 2,
   "complexity": "simple",
@@ -10,5 +10,13 @@
     "reports-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.260Z",
-  "updatedAt": "2025-12-31T05:55:26.260Z"
+  "updatedAt": "2025-12-31T05:55:26.260Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

@@ -2,7 +2,7 @@
   "id": "socketio-client-setup",
   "category": "Real-time",
   "title": "Socket.IO Client Setup",
-  "description": "Configure Socket.IO client in Next.js frontend for real-time connection and event handling.",
+  "description": "Configure Socket.IO Client Integration in Next.js Frontend\n\nSet up Socket.IO client connection in the Next.js application to enable real-time bidirectional communication with the backend server.\n\nRequirements:\n- Install and configure Socket.IO client library compatible with Next.js\n- Create a Socket.IO client instance with proper connection configuration (URL, auth, reconnection settings)\n- Implement connection lifecycle management (connect, disconnect, reconnect handling)\n- Set up event listeners for incoming server events\n- Create utility functions or hooks for emitting events to the server\n- Handle connection errors and display appropriate user feedback\n- Ensure compatibility with Next.js rendering patterns (CSR/SSR considerations)\n- Implement cleanup on component unmount to prevent memory leaks\n- Add connection state management (connected, disconnected, reconnecting)\n- Consider implementing a context provider or custom hook for reusable socket access across components\n\nEdge Cases to Consider:\n- Handle socket initialization in server-side rendered components\n- Manage reconnection attempts when server is unavailable\n- Handle authentication token refresh if socket connection requires auth\n- Prevent multiple socket instances from being created\n- Handle page navigation without breaking active connections",
   "status": "backlog",
   "priority": 2,
   "complexity": "simple",
@@ -11,5 +11,13 @@
     "socketio-integration"
   ],
   "createdAt": "2025-12-31T05:55:26.263Z",
-  "updatedAt": "2025-12-31T05:55:26.263Z"
+  "updatedAt": "2025-12-31T05:55:26.263Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

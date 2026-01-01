@@ -2,13 +2,22 @@
   "id": "revenue-recognition-schema",
   "category": "Database",
   "title": "Revenue Recognition Schema",
-  "description": "Create schema for revenue accrual tracking with daily calculations and ASC 606 compliance.",
-  "status": "backlog",
-  "priority": 2,
+  "description": "Revenue Accrual Tracking System with ASC 606 Compliance\n\nDesign and implement a comprehensive database schema to track revenue accruals with automated daily calculations that comply with ASC 606 accounting standards.\n\nRequirements:\n- Create database schema with appropriate tables and relationships for:\n  - Contract/subscription tracking (start date, end date, total value)\n  - Daily revenue accrual calculations\n  - Performance obligations and their allocation\n  - Revenue recognition patterns (straight-line, usage-based, milestone-based)\n  - Adjustment and deferral tracking\n  \n- Implement ASC 606 five-step model compliance:\n  - Contract identification and validation\n  - Performance obligation definition and separation\n  - Transaction price determination\n  - Allocation of transaction price to performance obligations\n  - Revenue recognition as obligations are satisfied\n\n- Daily calculation logic:\n  - Automated daily accrual computation based on recognition pattern\n  - Handle pro-rated calculations for partial periods\n  - Support for mid-period contract changes and modifications\n  - Maintain audit trail of all calculations\n\n- Data integrity features:\n  - Appropriate constraints and indexes for performance\n  - Historical tracking (temporal tables or versioning)\n  - Support for adjustments and reversals\n  - Reconciliation fields to match with billing/invoicing\n\n- Edge cases to consider:\n  - Contract amendments and variable consideration\n  - Multi-element arrangements\n  - Refunds and contract cancellations\n  - Leap years and calendar variations\n  - Time zone handling for global contracts\n\nDeliverables:\n- Schema definition (DDL scripts or ORM models)\n- Documentation of table relationships and business rules\n- Example queries for common reporting needs\n- Data validation rules and constraints",
+  "status": "verified",
+  "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "billing-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.257Z",
-  "updatedAt": "2025-12-31T05:55:26.257Z"
+  "updatedAt": "2026-01-01T00:11:20.389Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:02:34.304Z"
 }

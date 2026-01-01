@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAuthStore } from 'store/authStore';
 import axiosInstance from './useCookie';
+import { useAbility } from 'contexts/AbilityContext';
 
 // ==============================|| HOOKS - AUTH ||============================== //
 
@@ -25,6 +26,22 @@ const useAuth = () => {
   const hasPermissionStore = useAuthStore((state) => state.hasPermission);
   const hasAnyPermissionStore = useAuthStore((state) => state.hasAnyPermission);
   const hasAllPermissionsStore = useAuthStore((state) => state.hasAllPermissions);
+
+  // Get CASL ability functions
+  let updateAbilityFromRole: ((role: string) => void) | null = null;
+  try {
+    const abilityContext = useAbility();
+    updateAbilityFromRole = abilityContext.updateAbilityFromRole;
+  } catch {
+    // AbilityProvider may not be mounted yet during initial render
+  }
+
+  // Sync CASL abilities when user role changes
+  useEffect(() => {
+    if (user?.role && updateAbilityFromRole) {
+      updateAbilityFromRole(user.role);
+    }
+  }, [user?.role, updateAbilityFromRole]);
 
   // Fetch user profile and sync with store
   const fetchUserProfile = useCallback(async () => {

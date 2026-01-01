@@ -2,7 +2,7 @@
   "id": "role-routes",
   "category": "API",
   "title": "Role Management API Routes",
-  "description": "Create REST API routes for role management and permission configuration.",
+  "description": "Create REST API Endpoints for Role-Based Access Control (RBAC)\n\nImplement a complete set of RESTful API endpoints to manage user roles and permissions within the application's access control system.\n\nRequirements:\n\nRole Management Endpoints:\n- GET /api/roles - List all roles with pagination support\n- GET /api/roles/:id - Retrieve details of a specific role including associated permissions\n- POST /api/roles - Create a new role with name, description, and initial permissions\n- PUT /api/roles/:id - Update role details and permissions\n- DELETE /api/roles/:id - Remove a role (with validation to prevent deletion of roles currently assigned to users)\n\nPermission Configuration Endpoints:\n- GET /api/permissions - List all available permissions in the system\n- GET /api/roles/:id/permissions - Get all permissions assigned to a specific role\n- POST /api/roles/:id/permissions - Assign one or more permissions to a role\n- DELETE /api/roles/:id/permissions/:permissionId - Remove a specific permission from a role\n\nTechnical Requirements:\n- Implement proper authentication and authorization middleware (only admins should access these endpoints)\n- Validate request payloads with appropriate error messages\n- Return consistent JSON response format with proper HTTP status codes\n- Add request validation for role name uniqueness\n- Include proper error handling for not found resources (404), unauthorized access (403), and validation errors (400)\n\nData Considerations:\n- Handle hierarchical permissions if applicable\n- Prevent deletion of system-default roles\n- Check for circular dependencies in role assignments\n- Include audit logging for all role and permission changes\n\nTesting:\n- Write integration tests covering all CRUD operations\n- Test edge cases (duplicate names, invalid IDs, missing required fields)\n- Verify authorization rules are enforced correctly",
   "status": "backlog",
   "priority": 1,
   "complexity": "simple",
@@ -10,5 +10,13 @@
     "role-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.262Z",
-  "updatedAt": "2025-12-31T05:55:26.262Z"
+  "updatedAt": "2025-12-31T05:55:26.262Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

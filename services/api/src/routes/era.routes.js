@@ -7,29 +7,50 @@ import { checkPermission } from '../middleware/permission.middleware.js';
  * Phase 3B - ERA Processing & Auto-Posting
  *
  * All routes require authentication and specific permissions
+ *
+ * Endpoints:
+ * - POST /upload           - Upload ERA file (JSON body, supports 835 EDI & CSV)
+ * - POST /upload-file      - Upload ERA file (multipart form-data)
+ * - POST /validate         - Validate ERA file without processing
+ * - POST /batch-process    - Batch process multiple ERA files
+ * - POST /process/:fileId  - Process uploaded ERA file
+ * - GET  /payments/:fileId - Get payments for ERA file
+ * - POST /auto-post/:paymentId - Post individual payment
+ * - GET  /exceptions       - Get posting exceptions
+ * - POST /resolve-exception/:id - Resolve exception
+ * - GET  /reconciliation   - Get reconciliation status
+ * - POST /reconcile-batch  - Run reconciliation
+ * - GET  /processing-report/:fileId - Get processing summary report
+ * - GET  /files            - List ERA files
+ * - GET  /file/:fileId     - Get ERA file details
+ * - GET  /payment/:paymentId - Get ERA payment details
+ * - GET  /dashboard        - Get dashboard metrics
+ * - GET  /reconciliation/summary - Get reconciliation summary
+ * - POST /reverse-posting/:postingId - Reverse a posting
  */
 export default async function eraRoutes(fastify, options) {
   // Apply authentication middleware to all routes
   fastify.addHook('onRequest', authenticate);
 
   /**
-   * 1. Upload 835 ERA file
+   * 1. Upload 835 ERA file (JSON body)
    * POST /api/era/upload
    * Permission: era:upload
+   * Supports both 835 EDI and CSV formats
    */
   fastify.post(
     '/upload',
     {
       preHandler: checkPermission('era:upload'),
       schema: {
-        description: 'Upload and process 835 ERA file',
+        description: 'Upload and process ERA file (835 EDI or CSV format)',
         tags: ['ERA'],
         body: {
           type: 'object',
           required: ['fileName', 'fileContent'],
           properties: {
-            fileName: { type: 'string', description: 'ERA file name' },
-            fileContent: { type: 'string', description: 'Raw 835 EDI content' }
+            fileName: { type: 'string', description: 'ERA file name (with extension)' },
+            fileContent: { type: 'string', description: 'Raw file content (835 EDI or CSV)' }
           }
         },
         response: {
@@ -45,6 +66,128 @@ export default async function eraRoutes(fastify, options) {
       }
     },
     ERAController.uploadERAFile.bind(ERAController)
+  );
+
+  /**
+   * 1b. Upload ERA file via multipart form
+   * POST /api/era/upload-file
+   * Permission: era:upload
+   * Accepts multipart/form-data with file field
+   */
+  fastify.post(
+    '/upload-file',
+    {
+      preHandler: checkPermission('era:upload'),
+      schema: {
+        description: 'Upload ERA file via multipart form (835 EDI or CSV)',
+        tags: ['ERA'],
+        consumes: ['multipart/form-data'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    ERAController.uploadERAFileMultipart.bind(ERAController)
+  );
+
+  /**
+   * 1c. Validate ERA file without processing
+   * POST /api/era/validate
+   * Permission: era:upload
+   */
+  fastify.post(
+    '/validate',
+    {
+      preHandler: checkPermission('era:upload'),
+      schema: {
+        description: 'Validate ERA file format and structure without processing',
+        tags: ['ERA'],
+        body: {
+          type: 'object',
+          required: ['fileName', 'fileContent'],
+          properties: {
+            fileName: { type: 'string', description: 'ERA file name' },
+            fileContent: { type: 'string', description: 'Raw file content' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  valid: { type: 'boolean' },
+                  format: { type: 'string' },
+                  errors: { type: 'array', items: { type: 'string' } },
+                  warnings: { type: 'array', items: { type: 'string' } },
+                  summary: { type: 'object' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    ERAController.validateERAFile.bind(ERAController)
+  );
+
+  /**
+   * 1d. Batch process multiple ERA files
+   * POST /api/era/batch-process
+   * Permission: era:process
+   */
+  fastify.post(
+    '/batch-process',
+    {
+      preHandler: checkPermission('era:process'),
+      schema: {
+        description: 'Batch process multiple ERA files with transaction support',
+        tags: ['ERA'],
+        body: {
+          type: 'object',
+          required: ['files'],
+          properties: {
+            files: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['fileName', 'fileContent'],
+                properties: {
+                  fileName: { type: 'string' },
+                  fileContent: { type: 'string' }
+                }
+              },
+              maxItems: 50
+            },
+            stopOnError: { type: 'boolean', default: false }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              totalFiles: { type: 'number' },
+              processed: { type: 'number' },
+              failed: { type: 'number' },
+              files: { type: 'array' },
+              errors: { type: 'array' },
+              summary: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    ERAController.batchProcessERAFiles.bind(ERAController)
   );
 
   /**
@@ -383,5 +526,198 @@ export default async function eraRoutes(fastify, options) {
       }
     },
     ERAController.getERAFileDetails.bind(ERAController)
+  );
+
+  /**
+   * Get ERA payment details
+   * GET /api/era/payment/:paymentId
+   * Permission: era:view
+   */
+  fastify.get(
+    '/payment/:paymentId',
+    {
+      preHandler: checkPermission('era:view'),
+      schema: {
+        description: 'Get ERA payment details',
+        tags: ['ERA'],
+        params: {
+          type: 'object',
+          required: ['paymentId'],
+          properties: {
+            paymentId: { type: 'string', description: 'ERA payment ID' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    ERAController.getERAPaymentDetails.bind(ERAController)
+  );
+
+  /**
+   * Get processing summary report for ERA file
+   * GET /api/era/processing-report/:fileId
+   * Permission: era:view
+   */
+  fastify.get(
+    '/processing-report/:fileId',
+    {
+      preHandler: checkPermission('era:view'),
+      schema: {
+        description: 'Get comprehensive processing summary report for an ERA file',
+        tags: ['ERA'],
+        params: {
+          type: 'object',
+          required: ['fileId'],
+          properties: {
+            fileId: { type: 'string', description: 'ERA file ID' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  file: { type: 'object' },
+                  totals: { type: 'object' },
+                  payments: { type: 'object' },
+                  exceptions: { type: 'object' },
+                  detailedExceptions: { type: 'array' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    ERAController.getProcessingReport.bind(ERAController)
+  );
+
+  /**
+   * Get payment posting dashboard metrics
+   * GET /api/era/dashboard
+   * Permission: era:view
+   */
+  fastify.get(
+    '/dashboard',
+    {
+      preHandler: checkPermission('era:view'),
+      schema: {
+        description: 'Get payment posting dashboard metrics',
+        tags: ['ERA'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  eraFiles: { type: 'object' },
+                  posting: { type: 'object' },
+                  exceptions: { type: 'object' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    ERAController.getDashboardMetrics.bind(ERAController)
+  );
+
+  /**
+   * Get reconciliation summary
+   * GET /api/era/reconciliation/summary
+   * Permission: era:view
+   */
+  fastify.get(
+    '/reconciliation/summary',
+    {
+      preHandler: checkPermission('era:view'),
+      schema: {
+        description: 'Get reconciliation summary with statistics',
+        tags: ['ERA'],
+        querystring: {
+          type: 'object',
+          properties: {
+            startDate: { type: 'string', format: 'date', description: 'Start date filter' },
+            endDate: { type: 'string', format: 'date', description: 'End date filter' },
+            status: {
+              type: 'string',
+              enum: ['PENDING', 'IN_PROGRESS', 'RECONCILED', 'VARIANCE_IDENTIFIED', 'EXCEPTION'],
+              description: 'Reconciliation status filter'
+            }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  summary: { type: 'object' },
+                  batches: { type: 'array' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    ERAController.getReconciliationSummary.bind(ERAController)
+  );
+
+  /**
+   * Reverse a payment posting
+   * POST /api/era/reverse-posting/:postingId
+   * Permission: era:post
+   */
+  fastify.post(
+    '/reverse-posting/:postingId',
+    {
+      preHandler: checkPermission('era:post'),
+      schema: {
+        description: 'Reverse a payment posting',
+        tags: ['ERA'],
+        params: {
+          type: 'object',
+          required: ['postingId'],
+          properties: {
+            postingId: { type: 'string', description: 'Posting ID to reverse' }
+          }
+        },
+        body: {
+          type: 'object',
+          required: ['reason'],
+          properties: {
+            reason: { type: 'string', description: 'Reason for reversal' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    ERAController.reversePosting.bind(ERAController)
   );
 }

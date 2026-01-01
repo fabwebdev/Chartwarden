@@ -51,3 +51,36 @@ export interface AuthResponse {
   user: { id: string; email: string; name: string; role: string; };
   session: { id: string; expiresAt: string; };
 }
+
+// =============================================================================
+// MAR API Types
+// =============================================================================
+
+export interface CreateMAREntryRequest {
+  medication_id: number;
+  scheduled_time: string;
+  actual_time?: string;
+  mar_status: 'GIVEN' | 'NOT_GIVEN' | 'REFUSED' | 'HELD' | 'LATE' | 'MISSED';
+  dosage_given?: string;
+  route_used?: string;
+  administered_by_id?: string;
+  administered_by_name?: string;
+  reason_not_given?: string;
+  patient_response?: string;
+}
+
+export interface UpdateMAREntryRequest {
+  actual_time?: string;
+  mar_status?: 'GIVEN' | 'NOT_GIVEN' | 'REFUSED' | 'HELD' | 'LATE' | 'MISSED';
+  dosage_given?: string;
+  route_used?: string;
+  reason_not_given?: string;
+  patient_response?: string;
+}
+
+export interface MARQueryParams {
+  start_date?: string;
+  end_date?: string;
+  medication_id?: number;
+  mar_status?: string;
+}

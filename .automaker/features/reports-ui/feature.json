@@ -2,7 +2,7 @@
   "id": "reports-ui",
   "category": "UI",
   "title": "Reports Generation and Download UI",
-  "description": "Create reports interface with report type selection, filters, format selection, and download.",
+  "description": "Create Comprehensive Reports Interface\n\nBuild a full-featured reports interface that enables users to generate, customize, and download reports in multiple formats.\n\nRequirements:\n- Implement report type selector with clear categorization of available report types\n- Design filter panel supporting common filter types (date range, categories, status, search)\n- Add format selection dropdown (PDF, Excel/CSV, JSON) with appropriate icons\n- Create download button that generates and retrieves the report file\n- Display loading state during report generation\n- Show preview of report data before download (optional but recommended)\n- Handle error cases (invalid filters, generation failures, timeout)\n- Validate that selected filters are compatible with chosen report type\n- Persist user's last-used filter preferences for convenience\n- Ensure generated reports include metadata (generation date, applied filters, user info)\n\nEdge Cases to Consider:\n- Large datasets that may require pagination or chunked downloads\n- Empty result sets based on filter criteria\n- Expired or stale data in cached reports\n- Concurrent report generation limits\n- File size limits for different formats\n\nDependencies:\n- Backend API endpoints for report generation\n- File download mechanism compatible with target browsers\n- Report generation library/service for different formats",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.261Z",
-  "updatedAt": "2025-12-31T05:55:26.261Z"
+  "updatedAt": "2025-12-31T05:55:26.261Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

@@ -1,13 +1,18 @@
 import AnalyticsService from '../services/Analytics.service.js';
+import CacheService from '../services/CacheService.js';
 
 import { logger } from '../utils/logger.js';
+
 /**
  * Analytics Controller
- * Phase 2D - Enhanced Reporting
+ * Phase 2D - Enhanced Reporting & Dashboard Data Retrieval
  *
- * Revenue cycle analytics and KPI dashboards
+ * Revenue cycle analytics, KPI dashboards, and comprehensive dashboard data
  * Features:
  *   - Comprehensive KPI dashboard
+ *   - Dashboard summary with aggregated metrics
+ *   - User activity metrics
+ *   - Activity trends (daily, weekly, monthly)
  *   - Clean claim rate tracking
  *   - Days to payment analysis
  *   - Denial rate by payer
@@ -15,8 +20,14 @@ import { logger } from '../utils/logger.js';
  *   - Revenue forecasting
  *   - AR aging trends
  *   - Report export (CSV/Excel)
+ *   - Caching for frequently requested data
+ *   - Pagination for large datasets
  *
  * Endpoints:
+ * - GET /api/analytics/dashboard-summary - Aggregated dashboard metrics
+ * - GET /api/analytics/user-metrics - User activity and engagement metrics
+ * - GET /api/analytics/activity-trends - Activity trends over time
+ * - GET /api/analytics/performance-stats - System performance statistics
  * - GET /api/analytics/kpi-dashboard - Comprehensive KPI dashboard
  * - GET /api/analytics/clean-claim-rate - Clean claim rate time-series
  * - GET /api/analytics/days-to-payment - Days to payment trend
@@ -27,6 +38,345 @@ import { logger } from '../utils/logger.js';
  * - POST /api/analytics/export-report - Export report to CSV/Excel
  */
 class AnalyticsController {
+  constructor() {
+    this.cachePrefix = 'analytics:';
+    this.defaultCacheTTL = 300; // 5 minutes
+  }
+
+  /**
+   * Build cache key from request parameters
+   * @private
+   */
+  buildCacheKey(endpoint, params = {}) {
+    const sortedParams = Object.keys(params)
+      .sort()
+      .map(key => `${key}=${params[key]}`)
+      .join('&');
+    return `${this.cachePrefix}${endpoint}:${sortedParams || 'default'}`;
+  }
+
+  /**
+   * Get cached data or fetch fresh
+   * @private
+   */
+  async getCachedOrFetch(cacheKey, fetchFn, ttl = this.defaultCacheTTL) {
+    try {
+      const cached = await CacheService.get(cacheKey);
+      if (cached) {
+        const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached;
+        return { data: parsed, fromCache: true };
+      }
+    } catch (error) {
+      // Cache miss or parse error - continue to fetch
+    }
+
+    const data = await fetchFn();
+
+    try {
+      await CacheService.set(cacheKey, JSON.stringify(data), ttl);
+    } catch (error) {
+      // Cache set failed - continue without caching
+    }
+
+    return { data, fromCache: false };
+  }
+
+  /**
+   * Parse and validate date range from request
+   * @private
+   */
+  parseDateRange(query) {
+    const { start_date, end_date, range } = query;
+
+    // Handle predefined ranges
+    if (range) {
+      const now = new Date();
+      const startDate = new Date();
+
+      switch (range) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'yesterday':
+          startDate.setDate(now.getDate() - 1);
+          startDate.setHours(0, 0, 0, 0);
+          now.setDate(now.getDate() - 1);
+          now.setHours(23, 59, 59, 999);
+          break;
+        case 'last_7_days':
+          startDate.setDate(now.getDate() - 7);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'last_30_days':
+          startDate.setDate(now.getDate() - 30);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'last_90_days':
+          startDate.setDate(now.getDate() - 90);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'current_month':
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'last_month':
+          startDate.setMonth(now.getMonth() - 1);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          now.setDate(0); // Last day of previous month
+          now.setHours(23, 59, 59, 999);
+          break;
+        case 'ytd':
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        default:
+          return { valid: false, error: `Invalid range: ${range}` };
+      }
+
+      return { valid: true, startDate, endDate: now, range };
+    }
+
+    // Handle custom date range
+    if (start_date && end_date) {
+      const startDate = new Date(start_date);
+      const endDate = new Date(end_date);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return { valid: false, error: 'Invalid date format. Use YYYY-MM-DD' };
+      }
+
+      if (startDate > endDate) {
+        return { valid: false, error: 'start_date must be before end_date' };
+      }
+
+      // Limit date range to prevent expensive queries (max 1 year)
+      const maxRange = 365 * 24 * 60 * 60 * 1000;
+      if (endDate - startDate > maxRange) {
+        return { valid: false, error: 'Date range cannot exceed 1 year' };
+      }
+
+      return { valid: true, startDate, endDate };
+    }
+
+    // Default to last 30 days
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    startDate.setHours(0, 0, 0, 0);
+
+    return { valid: true, startDate, endDate, range: 'last_30_days' };
+  }
+
+  /**
+   * Parse pagination parameters
+   * @private
+   */
+  parsePagination(query, defaults = { page: 1, limit: 50, maxLimit: 500 }) {
+    const page = Math.max(1, parseInt(query.page) || defaults.page);
+    const limit = Math.min(
+      defaults.maxLimit,
+      Math.max(1, parseInt(query.limit) || defaults.limit)
+    );
+    const offset = (page - 1) * limit;
+
+    return { page, limit, offset };
+  }
+
+  /**
+   * Get comprehensive dashboard summary
+   * GET /api/analytics/dashboard-summary?range=last_30_days
+   *
+   * Query: range (today, yesterday, last_7_days, last_30_days, last_90_days, current_month, last_month, ytd)
+   *        OR start_date + end_date for custom range
+   * Response: { status, data: { period, summary, kpis, trends } }
+   */
+  async getDashboardSummary(request, reply) {
+    try {
+      const dateRange = this.parseDateRange(request.query);
+      if (!dateRange.valid) {
+        reply.code(400);
+        return { status: 'error', message: dateRange.error };
+      }
+
+      const cacheKey = this.buildCacheKey('dashboard-summary', {
+        start: dateRange.startDate.toISOString().split('T')[0],
+        end: dateRange.endDate.toISOString().split('T')[0]
+      });
+
+      const { data, fromCache } = await this.getCachedOrFetch(cacheKey, async () => {
+        return await AnalyticsService.getDashboardSummary(
+          dateRange.startDate,
+          dateRange.endDate
+        );
+      });
+
+      reply.code(200);
+      reply.header('X-Cache-Status', fromCache ? 'HIT' : 'MISS');
+      return {
+        status: 'success',
+        data
+      };
+    } catch (error) {
+      logger.error('Error in getDashboardSummary:', error);
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to get dashboard summary',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
+
+  /**
+   * Get user activity and engagement metrics
+   * GET /api/analytics/user-metrics?range=last_30_days&page=1&limit=50
+   *
+   * Query: range, start_date, end_date, page, limit
+   * Response: { status, data: { period, metrics, top_users, pagination } }
+   */
+  async getUserMetrics(request, reply) {
+    try {
+      const dateRange = this.parseDateRange(request.query);
+      if (!dateRange.valid) {
+        reply.code(400);
+        return { status: 'error', message: dateRange.error };
+      }
+
+      const pagination = this.parsePagination(request.query);
+
+      const cacheKey = this.buildCacheKey('user-metrics', {
+        start: dateRange.startDate.toISOString().split('T')[0],
+        end: dateRange.endDate.toISOString().split('T')[0],
+        page: pagination.page,
+        limit: pagination.limit
+      });
+
+      const { data, fromCache } = await this.getCachedOrFetch(cacheKey, async () => {
+        return await AnalyticsService.getUserMetrics(
+          dateRange.startDate,
+          dateRange.endDate,
+          pagination
+        );
+      });
+
+      reply.code(200);
+      reply.header('X-Cache-Status', fromCache ? 'HIT' : 'MISS');
+      return {
+        status: 'success',
+        data
+      };
+    } catch (error) {
+      logger.error('Error in getUserMetrics:', error);
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to get user metrics',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
+
+  /**
+   * Get activity trends over time
+   * GET /api/analytics/activity-trends?range=last_30_days&group_by=day
+   *
+   * Query: range, start_date, end_date, group_by (day, week, month)
+   * Response: { status, data: { period, trends, summary } }
+   */
+  async getActivityTrends(request, reply) {
+    try {
+      const dateRange = this.parseDateRange(request.query);
+      if (!dateRange.valid) {
+        reply.code(400);
+        return { status: 'error', message: dateRange.error };
+      }
+
+      const groupBy = request.query.group_by || 'day';
+      const validGroupBy = ['day', 'week', 'month'];
+      if (!validGroupBy.includes(groupBy)) {
+        reply.code(400);
+        return {
+          status: 'error',
+          message: `Invalid group_by. Must be one of: ${validGroupBy.join(', ')}`
+        };
+      }
+
+      const cacheKey = this.buildCacheKey('activity-trends', {
+        start: dateRange.startDate.toISOString().split('T')[0],
+        end: dateRange.endDate.toISOString().split('T')[0],
+        group_by: groupBy
+      });
+
+      const { data, fromCache } = await this.getCachedOrFetch(cacheKey, async () => {
+        return await AnalyticsService.getActivityTrends(
+          dateRange.startDate,
+          dateRange.endDate,
+          groupBy
+        );
+      });
+
+      reply.code(200);
+      reply.header('X-Cache-Status', fromCache ? 'HIT' : 'MISS');
+      return {
+        status: 'success',
+        data
+      };
+    } catch (error) {
+      logger.error('Error in getActivityTrends:', error);
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to get activity trends',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
+
+  /**
+   * Get performance statistics
+   * GET /api/analytics/performance-stats?range=last_7_days
+   *
+   * Query: range, start_date, end_date
+   * Response: { status, data: { period, response_times, throughput, errors } }
+   */
+  async getPerformanceStats(request, reply) {
+    try {
+      const dateRange = this.parseDateRange(request.query);
+      if (!dateRange.valid) {
+        reply.code(400);
+        return { status: 'error', message: dateRange.error };
+      }
+
+      const cacheKey = this.buildCacheKey('performance-stats', {
+        start: dateRange.startDate.toISOString().split('T')[0],
+        end: dateRange.endDate.toISOString().split('T')[0]
+      });
+
+      const { data, fromCache } = await this.getCachedOrFetch(cacheKey, async () => {
+        return await AnalyticsService.getPerformanceStats(
+          dateRange.startDate,
+          dateRange.endDate
+        );
+      }, 60); // Shorter cache TTL for performance stats
+
+      reply.code(200);
+      reply.header('X-Cache-Status', fromCache ? 'HIT' : 'MISS');
+      return {
+        status: 'success',
+        data
+      };
+    } catch (error) {
+      logger.error('Error in getPerformanceStats:', error);
+      reply.code(500);
+      return {
+        status: 'error',
+        message: error.message || 'Failed to get performance stats',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      };
+    }
+  }
 
   /**
    * Get comprehensive KPI dashboard

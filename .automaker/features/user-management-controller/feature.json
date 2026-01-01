@@ -2,7 +2,7 @@
   "id": "user-management-controller",
   "category": "API",
   "title": "User Management Controller",
-  "description": "Implement controller for user CRUD operations, password management, and status management.",
+  "description": "Implement User Management Controller with CRUD, Password, and Status Operations\n\nCreate a comprehensive user management controller that handles complete user lifecycle operations including creation, retrieval, updates, deletion, password management, and account status changes.\n\nRequirements:\n\nUser CRUD Operations:\n- Create new user accounts with proper validation (email format, required fields, uniqueness constraints)\n- Retrieve user information (single user by ID, list users with pagination/filtering)\n- Update user profile data (name, email, preferences) with validation\n- Delete user accounts (consider soft vs hard delete strategy)\n\nPassword Management:\n- Implement secure password creation with strength requirements (minimum length, complexity rules)\n- Hash passwords using industry-standard algorithms (bcrypt, argon2)\n- Provide password reset functionality with secure token generation\n- Support password change for authenticated users (verify old password first)\n- Never expose passwords in responses or logs\n\nStatus Management:\n- Enable/disable user accounts (active, suspended, banned states)\n- Track status change history with timestamps and reasons\n- Prevent operations on inactive accounts with appropriate error messages\n- Support bulk status updates if needed\n\nSecurity & Validation:\n- Validate all inputs to prevent injection attacks\n- Implement proper authorization checks (users can only modify their own data unless admin)\n- Rate limit sensitive operations (password reset, account creation)\n- Return appropriate HTTP status codes and error messages\n\nError Handling:\n- Handle duplicate email/username attempts\n- Handle invalid user IDs gracefully\n- Provide clear, user-friendly error messages without exposing system details\n- Log errors appropriately for debugging\n\nTesting Considerations:\n- Unit tests for each endpoint\n- Test edge cases (invalid data, missing fields, unauthorized access)\n- Test password hashing and verification\n- Test status transitions and access control",
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,13 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.261Z",
-  "updatedAt": "2025-12-31T05:55:26.261Z"
+  "updatedAt": "2025-12-31T05:55:26.261Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

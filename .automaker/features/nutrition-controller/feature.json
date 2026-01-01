@@ -2,7 +2,7 @@
   "id": "nutrition-controller",
   "category": "API",
   "title": "Nutrition Assessment Controller",
-  "description": "Implement controller for nutrition assessment management with dietary tracking.",
+  "description": "Implement Nutrition Assessment Controller with Dietary Tracking System\n\nCreate a backend controller that manages nutrition assessments and tracks dietary intake for users, enabling comprehensive nutritional monitoring and analysis.\n\nRequirements:\n- Design and implement a RESTful API controller for nutrition assessment operations\n- Support CRUD operations for nutrition assessments (create, read, update, delete)\n- Implement dietary tracking endpoints to log food intake with nutritional values\n- Calculate and return nutritional metrics (calories, macronutrients, micronutrients)\n- Enable querying dietary history by date range, meal type, or food category\n- Validate input data for nutritional values and portion sizes\n- Implement user-specific dietary goals and compare actual intake vs. targets\n- Add pagination and filtering for assessment history retrieval\n- Include proper error handling for invalid nutritional data\n- Ensure data persistence with appropriate database models and relationships\n- Add authentication/authorization to restrict access to user's own nutrition data\n- Document API endpoints with request/response schemas\n\nEdge cases to consider:\n- Handling incomplete nutritional information for foods\n- Managing multiple assessments for the same date\n- Dealing with custom/user-created food entries vs. standard database entries\n- Timezone considerations for dietary logging\n\nDependencies:\n- User authentication system must be in place\n- Database schema for nutrition data should be defined\n- Nutritional database or API for food information",
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
@@ -10,5 +10,13 @@
     "nutrition-assessment-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.245Z",
-  "updatedAt": "2025-12-31T05:55:26.245Z"
+  "updatedAt": "2025-12-31T05:55:26.245Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

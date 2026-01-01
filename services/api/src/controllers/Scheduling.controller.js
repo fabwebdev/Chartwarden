@@ -5,6 +5,7 @@ import {
   on_call_schedule,
   on_call_logs,
   visit_compliance,
+  scheduling_conflicts,
   patients,
   staff_profiles
 } from '../db/schemas/index.js';
@@ -1128,6 +1129,436 @@ class SchedulingController {
         error: process.env.NODE_ENV === 'development' ? error.message : undefined
       };
     }
+  }
+
+  // ============================================
+  // SCHEDULING CONFLICTS
+  // ============================================
+
+  /**
+   * Get scheduling conflicts
+   * GET /conflicts
+   */
+  async getConflicts(request, reply) {
+    try {
+      const {
+        limit = 50,
+        offset = 0,
+        staff_id,
+        conflict_status,
+        conflict_type,
+        conflict_severity,
+        start_date,
+        end_date
+      } = request.query;
+
+      let query = db
+        .select({
+          conflict: scheduling_conflicts,
+          visit1: {
+            id: scheduled_visits.id,
+            scheduled_date: scheduled_visits.scheduled_date,
+            scheduled_start_time: scheduled_visits.scheduled_start_time,
+            scheduled_end_time: scheduled_visits.scheduled_end_time,
+            visit_type: scheduled_visits.visit_type
+          },
+          staff: {
+            id: staff_profiles.id,
+            first_name: staff_profiles.first_name,
+            last_name: staff_profiles.last_name,
+            job_title: staff_profiles.job_title
+          },
+          patient: {
+            id: patients.id,
+            first_name: patients.first_name,
+            last_name: patients.last_name
+          }
+        })
+        .from(scheduling_conflicts)
+        .leftJoin(scheduled_visits, eq(scheduling_conflicts.visit_id_1, scheduled_visits.id))
+        .leftJoin(staff_profiles, eq(scheduling_conflicts.staff_id, staff_profiles.id))
+        .leftJoin(patients, eq(scheduling_conflicts.patient_id, patients.id))
+        .where(isNull(scheduling_conflicts.deleted_at));
+
+      const filters = [];
+      if (staff_id) {
+        filters.push(eq(scheduling_conflicts.staff_id, parseInt(staff_id)));
+      }
+      if (conflict_status) {
+        filters.push(eq(scheduling_conflicts.conflict_status, conflict_status));
+      }
+      if (conflict_type) {
+        filters.push(eq(scheduling_conflicts.conflict_type, conflict_type));
+      }
+      if (conflict_severity) {
+        filters.push(eq(scheduling_conflicts.conflict_severity, conflict_severity));
+      }
+      if (start_date) {
+        filters.push(gte(scheduling_conflicts.conflict_date, start_date));
+      }
+      if (end_date) {
+        filters.push(lte(scheduling_conflicts.conflict_date, end_date));
+      }
+
+      if (filters.length > 0) {
+        query = query.where(and(...filters));
+      }
+
+      const results = await query
+        .orderBy(desc(scheduling_conflicts.createdAt))
+        .limit(parseInt(limit))
+        .offset(parseInt(offset));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: results,
+        count: results.length
+      };
+    } catch (error) {
+      logger.error('Error fetching conflicts:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching conflicts',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Detect conflicts for a staff member on a given date
+   * GET /conflicts/detect
+   */
+  async detectConflicts(request, reply) {
+    try {
+      const { staff_id, date } = request.query;
+
+      if (!staff_id || !date) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required fields: staff_id, date'
+        };
+      }
+
+      // Get all visits for the staff member on this date
+      const visits = await db
+        .select()
+        .from(scheduled_visits)
+        .where(and(
+          eq(scheduled_visits.staff_id, parseInt(staff_id)),
+          eq(scheduled_visits.scheduled_date, date),
+          isNull(scheduled_visits.deleted_at),
+          or(
+            eq(scheduled_visits.visit_status, 'SCHEDULED'),
+            eq(scheduled_visits.visit_status, 'CONFIRMED')
+          )
+        ))
+        .orderBy(scheduled_visits.scheduled_start_time);
+
+      const conflicts = [];
+
+      // Check for overlapping visits
+      for (let i = 0; i < visits.length; i++) {
+        for (let j = i + 1; j < visits.length; j++) {
+          const visit1 = visits[i];
+          const visit2 = visits[j];
+
+          // Convert times to comparable format
+          const start1 = visit1.scheduled_start_time;
+          const end1 = visit1.scheduled_end_time || this._addMinutesToTime(start1, visit1.estimated_duration_minutes || 60);
+          const start2 = visit2.scheduled_start_time;
+          const end2 = visit2.scheduled_end_time || this._addMinutesToTime(start2, visit2.estimated_duration_minutes || 60);
+
+          // Check for time overlap
+          if (start1 < end2 && start2 < end1) {
+            // Calculate overlap duration
+            const overlapStart = start1 > start2 ? start1 : start2;
+            const overlapEnd = end1 < end2 ? end1 : end2;
+            const overlapMinutes = this._calculateMinutesBetweenTimes(overlapStart, overlapEnd);
+
+            conflicts.push({
+              visit_id_1: visit1.id,
+              visit_id_2: visit2.id,
+              staff_id: parseInt(staff_id),
+              patient_id: visit1.patient_id,
+              conflict_type: 'TIME_OVERLAP',
+              conflict_severity: overlapMinutes > 30 ? 'HIGH' : 'MEDIUM',
+              conflict_date: date,
+              conflict_start_time: overlapStart,
+              conflict_end_time: overlapEnd,
+              overlap_minutes: overlapMinutes,
+              conflict_description: `Visits ${visit1.id} and ${visit2.id} overlap by ${overlapMinutes} minutes`,
+              detected_by: 'SYSTEM',
+              detection_rule: 'TIME_OVERLAP_CHECK'
+            });
+          }
+        }
+      }
+
+      // Check for same patient double-booking (same patient, same date, different staff)
+      const patientIds = [...new Set(visits.map(v => v.patient_id))];
+      for (const patientId of patientIds) {
+        const otherStaffVisits = await db
+          .select()
+          .from(scheduled_visits)
+          .where(and(
+            eq(scheduled_visits.patient_id, patientId),
+            eq(scheduled_visits.scheduled_date, date),
+            sql`${scheduled_visits.staff_id} != ${parseInt(staff_id)}`,
+            isNull(scheduled_visits.deleted_at),
+            or(
+              eq(scheduled_visits.visit_status, 'SCHEDULED'),
+              eq(scheduled_visits.visit_status, 'CONFIRMED')
+            )
+          ));
+
+        if (otherStaffVisits.length > 0) {
+          const patientVisit = visits.find(v => v.patient_id === patientId);
+          for (const otherVisit of otherStaffVisits) {
+            conflicts.push({
+              visit_id_1: patientVisit.id,
+              visit_id_2: otherVisit.id,
+              staff_id: parseInt(staff_id),
+              patient_id: patientId,
+              conflict_type: 'DOUBLE_BOOKING',
+              conflict_severity: 'MEDIUM',
+              conflict_date: date,
+              conflict_description: `Patient has multiple visits scheduled on ${date}`,
+              detected_by: 'SYSTEM',
+              detection_rule: 'PATIENT_DOUBLE_BOOKING_CHECK'
+            });
+          }
+        }
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: conflicts,
+        count: conflicts.length,
+        message: conflicts.length > 0 ? `Found ${conflicts.length} potential conflict(s)` : 'No conflicts detected'
+      };
+    } catch (error) {
+      logger.error('Error detecting conflicts:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error detecting conflicts',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Create/record a scheduling conflict
+   * POST /conflicts
+   */
+  async createConflict(request, reply) {
+    try {
+      const data = request.body;
+
+      // Validate required fields
+      if (!data.visit_id_1 || !data.visit_id_2 || !data.conflict_type || !data.conflict_date) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required fields: visit_id_1, visit_id_2, conflict_type, conflict_date'
+        };
+      }
+
+      const result = await db
+        .insert(scheduling_conflicts)
+        .values({
+          ...data,
+          created_by_id: request.user?.id,
+          updated_by_id: request.user?.id
+        })
+        .returning();
+
+      reply.code(201);
+      return {
+        status: 201,
+        message: 'Conflict recorded successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error creating conflict:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error creating conflict',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Resolve a scheduling conflict
+   * POST /conflicts/:id/resolve
+   */
+  async resolveConflict(request, reply) {
+    try {
+      const { id } = request.params;
+      const { resolution_type, resolution_notes } = request.body;
+
+      if (!resolution_type) {
+        reply.code(400);
+        return {
+          status: 400,
+          message: 'Missing required field: resolution_type'
+        };
+      }
+
+      const result = await db
+        .update(scheduling_conflicts)
+        .set({
+          conflict_status: 'RESOLVED',
+          resolution_type,
+          resolution_notes,
+          resolved_by_id: request.user?.id,
+          resolved_at: new Date(),
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(scheduling_conflicts.id, parseInt(id)))
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Conflict not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Conflict resolved successfully',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error resolving conflict:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error resolving conflict',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Acknowledge a scheduling conflict
+   * POST /conflicts/:id/acknowledge
+   */
+  async acknowledgeConflict(request, reply) {
+    try {
+      const { id } = request.params;
+
+      const result = await db
+        .update(scheduling_conflicts)
+        .set({
+          conflict_status: 'ACKNOWLEDGED',
+          updated_by_id: request.user?.id,
+          updatedAt: new Date()
+        })
+        .where(eq(scheduling_conflicts.id, parseInt(id)))
+        .returning();
+
+      if (!result[0]) {
+        reply.code(404);
+        return {
+          status: 404,
+          message: 'Conflict not found'
+        };
+      }
+
+      reply.code(200);
+      return {
+        status: 200,
+        message: 'Conflict acknowledged',
+        data: result[0]
+      };
+    } catch (error) {
+      logger.error('Error acknowledging conflict:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error acknowledging conflict',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  /**
+   * Get unresolved conflicts count (for dashboard/alerts)
+   * GET /conflicts/unresolved-count
+   */
+  async getUnresolvedConflictsCount(request, reply) {
+    try {
+      const { staff_id } = request.query;
+
+      const filters = [
+        isNull(scheduling_conflicts.deleted_at),
+        or(
+          eq(scheduling_conflicts.conflict_status, 'DETECTED'),
+          eq(scheduling_conflicts.conflict_status, 'FLAGGED'),
+          eq(scheduling_conflicts.conflict_status, 'ACKNOWLEDGED')
+        )
+      ];
+
+      if (staff_id) {
+        filters.push(eq(scheduling_conflicts.staff_id, parseInt(staff_id)));
+      }
+
+      const result = await db
+        .select({ count: sql`count(*)::int` })
+        .from(scheduling_conflicts)
+        .where(and(...filters));
+
+      reply.code(200);
+      return {
+        status: 200,
+        data: {
+          unresolved_count: result[0]?.count || 0
+        }
+      };
+    } catch (error) {
+      logger.error('Error fetching unresolved conflicts count:', error);
+      reply.code(500);
+      return {
+        status: 500,
+        message: 'Error fetching unresolved conflicts count',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      };
+    }
+  }
+
+  // ============================================
+  // HELPER METHODS
+  // ============================================
+
+  /**
+   * Add minutes to a time string (HH:MM:SS)
+   */
+  _addMinutesToTime(timeStr, minutes) {
+    const [hours, mins] = timeStr.split(':').map(Number);
+    const totalMinutes = hours * 60 + mins + minutes;
+    const newHours = Math.floor(totalMinutes / 60) % 24;
+    const newMins = totalMinutes % 60;
+    return `${String(newHours).padStart(2, '0')}:${String(newMins).padStart(2, '0')}:00`;
+  }
+
+  /**
+   * Calculate minutes between two time strings
+   */
+  _calculateMinutesBetweenTimes(time1, time2) {
+    const [h1, m1] = time1.split(':').map(Number);
+    const [h2, m2] = time2.split(':').map(Number);
+    return Math.abs((h2 * 60 + m2) - (h1 * 60 + m1));
   }
 }
 

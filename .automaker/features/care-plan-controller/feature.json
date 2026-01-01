@@ -2,8 +2,8 @@
   "id": "care-plan-controller",
   "category": "API",
   "title": "Care Plan CRUD Controller",
-  "description": "Implement controller for care plan management with goal tracking and intervention monitoring.",
-  "status": "backlog",
+  "description": "Implement Care Plan Management Controller with Goal Tracking and Intervention Monitoring\n\nBuild a comprehensive controller to manage patient care plans, including the ability to define goals, track progress, and monitor interventions.\n\nRequirements:\n- Create RESTful API endpoints for care plan CRUD operations (create, read, update, delete)\n- Implement goal management functionality within care plans:\n  * Add/remove/update individual goals\n  * Set measurable targets and timelines for each goal\n  * Track goal status (not started, in progress, achieved, discontinued)\n  * Record progress notes and milestone updates\n- Implement intervention monitoring capabilities:\n  * Associate interventions with specific goals\n  * Track intervention frequency and adherence\n  * Record outcomes and effectiveness metrics\n  * Support multiple intervention types (medication, therapy, lifestyle, etc.)\n- Add proper authorization checks to ensure users can only access/modify appropriate care plans\n- Implement data validation for all inputs (goal metrics, dates, status transitions)\n- Support filtering and querying care plans by patient, status, date range, or assigned provider\n- Include pagination for list endpoints\n- Add comprehensive error handling with meaningful error messages\n- Write unit tests for business logic and integration tests for API endpoints\n- Document API endpoints with request/response examples\n\nEdge cases to consider:\n- Handling care plan transitions when goals are modified or removed\n- Managing historical data when interventions are updated\n- Preventing deletion of care plans with active interventions\n- Handling concurrent updates to the same care plan\n- Supporting care plan templates for common conditions",
+  "status": "in_progress",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,14 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.246Z",
-  "updatedAt": "2025-12-31T05:55:26.246Z"
+  "updatedAt": "2026-01-01T00:23:09.463Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T00:23:08.915Z"
 }

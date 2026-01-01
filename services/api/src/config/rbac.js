@@ -45,6 +45,7 @@ export const PERMISSIONS = {
   MANAGE_ROLES: "manage:roles",
   MANAGE_PERMISSIONS: "manage:permissions",
   VIEW_AUDIT_LOGS: "view:audit_logs",
+  MANAGE_SETTINGS: "manage:settings",
 };
 
 // Define role-permission mappings
@@ -72,6 +73,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.MANAGE_ROLES,
     PERMISSIONS.MANAGE_PERMISSIONS,
     PERMISSIONS.VIEW_AUDIT_LOGS,
+    PERMISSIONS.MANAGE_SETTINGS,
   ],
 
   [ROLES.DOCTOR]: [

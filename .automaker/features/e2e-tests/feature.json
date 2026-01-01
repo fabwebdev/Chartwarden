@@ -2,7 +2,7 @@
   "id": "e2e-tests",
   "category": "Testing",
   "title": "End-to-End Tests",
-  "description": "Implement E2E tests for critical user workflows using testing framework.",
+  "description": "Implement End-to-End Tests for Critical User Workflows\n\nCreate comprehensive E2E test coverage for the application's most critical user journeys to ensure functionality and prevent regressions.\n\nRequirements:\n- Identify and prioritize critical user workflows (e.g., authentication, checkout, core feature flows)\n- Select and configure appropriate E2E testing framework (Playwright, Cypress, or existing framework if already in use)\n- Write test scenarios covering happy paths and common error cases for each workflow\n- Implement test data setup and teardown procedures\n- Configure tests to run in CI/CD pipeline\n- Add page object models or component selectors for maintainable test structure\n- Include visual regression testing for key UI states where applicable\n- Document test coverage and how to run tests locally\n- Set up test reporting and failure notifications\n- Ensure tests are isolated, deterministic, and can run in parallel\n\nSuccess Criteria:\n- At least 3-5 critical workflows have complete E2E test coverage\n- Tests pass consistently in CI environment\n- Test execution time is reasonable (< 10 minutes for full suite)\n- Clear documentation exists for adding new E2E tests",
   "status": "backlog",
   "priority": 3,
   "complexity": "complex",
@@ -10,5 +10,13 @@
     "integration-tests"
   ],
   "createdAt": "2025-12-31T05:55:26.265Z",
-  "updatedAt": "2025-12-31T05:55:26.265Z"
+  "updatedAt": "2025-12-31T05:55:26.265Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

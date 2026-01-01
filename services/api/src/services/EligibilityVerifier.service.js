@@ -7,7 +7,7 @@ import {
 } from '../db/schemas/index.js';
 import { patients } from '../db/schemas/patient.schema.js';
 import { payers } from '../db/schemas/billing.schema.js';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, gte, lte, sql, count } from 'drizzle-orm';
 import EDI270Generator from './EDI270Generator.service.js';
 import EDI271Parser from './EDI271Parser.service.js';
 import { nanoid } from 'nanoid';
@@ -617,6 +617,190 @@ class EligibilityVerifier {
       .where(eq(benefit_details.response_id, responseId));
 
     return benefits;
+  }
+
+  /**
+   * List eligibility requests with filtering and pagination
+   * @param {object} params - Filter and pagination parameters
+   * @returns {Promise<object>} Requests and total count
+   */
+  async listRequests(params = {}) {
+    const {
+      status,
+      startDate,
+      endDate,
+      providerNpi,
+      limit = 20,
+      offset = 0
+    } = params;
+
+    // Build filter conditions
+    const conditions = [];
+
+    if (status) {
+      conditions.push(eq(eligibility_requests.status, status));
+    }
+
+    if (startDate) {
+      conditions.push(gte(eligibility_requests.request_date, startDate));
+    }
+
+    if (endDate) {
+      // Add a day to include the end date fully
+      const endOfDay = new Date(endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      conditions.push(lte(eligibility_requests.request_date, endOfDay));
+    }
+
+    if (providerNpi) {
+      conditions.push(eq(eligibility_requests.provider_npi, providerNpi));
+    }
+
+    // Build the where clause
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Get total count
+    const [countResult] = await db.select({ count: count() })
+      .from(eligibility_requests)
+      .where(whereClause);
+
+    const total = countResult?.count || 0;
+
+    // Get requests with pagination
+    let query = db.select()
+      .from(eligibility_requests)
+      .orderBy(desc(eligibility_requests.request_date))
+      .limit(limit)
+      .offset(offset);
+
+    if (whereClause) {
+      query = query.where(whereClause);
+    }
+
+    const requests = await query;
+
+    return {
+      requests,
+      total
+    };
+  }
+
+  /**
+   * Update eligibility request
+   * @param {string} requestId - Request ID (unique tracking ID)
+   * @param {object} updates - Fields to update
+   * @returns {Promise<object|null>} Updated request or null if not found
+   */
+  async updateRequest(requestId, updates) {
+    const { status, metadata, errorMessage, updatedBy } = updates;
+
+    // First find the request
+    const [existingRequest] = await db.select()
+      .from(eligibility_requests)
+      .where(eq(eligibility_requests.request_id, requestId))
+      .limit(1);
+
+    if (!existingRequest) {
+      return null;
+    }
+
+    // Build update object
+    const updateData = {
+      updated_at: new Date()
+    };
+
+    if (status) {
+      updateData.status = status;
+    }
+
+    if (errorMessage) {
+      updateData.error_message = errorMessage;
+    }
+
+    if (metadata) {
+      // Merge with existing metadata
+      updateData.metadata = {
+        ...existingRequest.metadata,
+        ...metadata,
+        lastUpdatedBy: updatedBy,
+        lastUpdatedAt: new Date().toISOString()
+      };
+    }
+
+    // Perform update
+    const [updatedRequest] = await db.update(eligibility_requests)
+      .set(updateData)
+      .where(eq(eligibility_requests.id, existingRequest.id))
+      .returning();
+
+    return updatedRequest;
+  }
+
+  /**
+   * Get verification status by request ID
+   * @param {string} requestId - Request ID (unique tracking ID)
+   * @returns {Promise<object|null>} Verification status or null if not found
+   */
+  async getVerificationStatus(requestId) {
+    // Get the request
+    const [request] = await db.select()
+      .from(eligibility_requests)
+      .where(eq(eligibility_requests.request_id, requestId))
+      .limit(1);
+
+    if (!request) {
+      return null;
+    }
+
+    // Try to get the response if status is RECEIVED
+    let response = null;
+    if (request.status === 'RECEIVED') {
+      [response] = await db.select()
+        .from(eligibility_responses)
+        .where(eq(eligibility_responses.request_id, request.id))
+        .limit(1);
+    }
+
+    // Build status object
+    const statusResult = {
+      requestId: request.request_id,
+      status: request.status,
+      patientId: request.patient_id,
+      payerId: request.payer_id,
+      serviceType: request.service_type,
+      requestDate: request.request_date,
+      sentAt: request.sent_at,
+      createdAt: request.created_at,
+      updatedAt: request.updated_at
+    };
+
+    // Add error info if applicable
+    if (request.status === 'ERROR' || request.status === 'TIMEOUT') {
+      statusResult.errorMessage = request.error_message;
+      statusResult.retryCount = request.retry_count;
+    }
+
+    // Add tracking info
+    if (request.clearinghouse_trace_id) {
+      statusResult.clearinghouseTraceId = request.clearinghouse_trace_id;
+      statusResult.clearinghouseName = request.clearinghouse_name;
+    }
+
+    // Add response info if available
+    if (response) {
+      statusResult.response = {
+        responseId: response.response_id,
+        receivedAt: response.received_at,
+        eligibilityStatus: response.eligibility_status,
+        isEligible: response.is_eligible,
+        coverageEffectiveDate: response.coverage_effective_date,
+        coverageTerminationDate: response.coverage_termination_date,
+        planName: response.plan_name,
+        validUntil: response.valid_until
+      };
+    }
+
+    return statusResult;
   }
 }
 
