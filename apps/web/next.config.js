@@ -2,6 +2,17 @@
 const nextConfig = {
   // Enable standalone output for Docker optimization
   output: 'standalone',
+
+  // Transpile MUI packages for Next.js 15 compatibility
+  transpilePackages: [
+    '@mui/material',
+    '@mui/system',
+    '@mui/icons-material',
+    '@mui/lab',
+    '@mui/base',
+    '@mui/x-date-pickers'
+  ],
+
   modularizeImports: {
     '@mui/material': {
       transform: '@mui/material/{{member}}'
@@ -10,6 +21,7 @@ const nextConfig = {
       transform: '@mui/lab/{{member}}'
     }
   },
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -22,6 +34,16 @@ const nextConfig = {
         pathname: '**'
       }
     ]
+  },
+
+  webpack: (config) => {
+    // Fix MUI/emotion module resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@emotion/react': require.resolve('@emotion/react'),
+      '@emotion/styled': require.resolve('@emotion/styled'),
+    };
+    return config;
   }
 };
 
