@@ -1,0 +1,290 @@
+974a6d13ed0c253d128033304cd9c3af
+/* istanbul ignore next */
+function cov_2lm29shz8t() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/auditLog.schema.js";
+  var hash = "d3c0b8c212b017cc20835987caf297e673c28a47";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/auditLog.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 9,
+          column: 34
+        },
+        end: {
+          line: 9,
+          column: 95
+        }
+      },
+      "1": {
+        start: {
+          line: 25,
+          column: 26
+        },
+        end: {
+          line: 100,
+          column: 3
+        }
+      },
+      "2": {
+        start: {
+          line: 30,
+          column: 44
+        },
+        end: {
+          line: 30,
+          column: 52
+        }
+      },
+      "3": {
+        start: {
+          line: 33,
+          column: 50
+        },
+        end: {
+          line: 33,
+          column: 61
+        }
+      },
+      "4": {
+        start: {
+          line: 62,
+          column: 15
+        },
+        end: {
+          line: 100,
+          column: 1
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 30,
+            column: 38
+          },
+          end: {
+            line: 30,
+            column: 39
+          }
+        },
+        loc: {
+          start: {
+            line: 30,
+            column: 44
+          },
+          end: {
+            line: 30,
+            column: 52
+          }
+        },
+        line: 30
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 33,
+            column: 44
+          },
+          end: {
+            line: 33,
+            column: 45
+          }
+        },
+        loc: {
+          start: {
+            line: 33,
+            column: 50
+          },
+          end: {
+            line: 33,
+            column: 61
+          }
+        },
+        line: 33
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 62,
+            column: 3
+          },
+          end: {
+            line: 62,
+            column: 4
+          }
+        },
+        loc: {
+          start: {
+            line: 62,
+            column: 15
+          },
+          end: {
+            line: 100,
+            column: 1
+          }
+        },
+        line: 62
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "d3c0b8c212b017cc20835987caf297e673c28a47"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2lm29shz8t = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2lm29shz8t();
+import { pgTable, bigint, varchar, text, timestamp, index, pgEnum } from 'drizzle-orm/pg-core';
+import { users } from './user.schema.js';
+import { sessions } from './session.schema.js';
+
+/**
+ * Audit Log Status Enum
+ * Tracks the outcome of audited operations for HIPAA compliance
+ */
+export const auditLogStatusEnum =
+/* istanbul ignore next */
+(cov_2lm29shz8t().s[0]++, pgEnum('audit_log_status', ['success', 'failure', 'pending']));
+
+/**
+ * Immutable Audit Log Schema
+ *
+ * HIPAA Compliance Requirements:
+ * - All access to PHI must be logged
+ * - Logs must be tamper-evident (immutable - no updates allowed)
+ * - Logs must be retained for minimum 6 years
+ * - Must track who, what, when, where, and outcome
+ *
+ * 21 CFR Part 11 Compliance:
+ * - Electronic records must have audit trails
+ * - Must capture user ID, timestamp, and action
+ * - Must be linked to electronic signatures where applicable
+ */
+export const audit_logs =
+/* istanbul ignore next */
+(cov_2lm29shz8t().s[1]++, pgTable('audit_logs', {
+  // Primary key - auto-incrementing for sequential ordering
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  // User identification - who performed the action
+  user_id: text('user_id').references(() => {
+    /* istanbul ignore next */
+    cov_2lm29shz8t().f[0]++;
+    cov_2lm29shz8t().s[2]++;
+    return users.id;
+  }, {
+    onDelete: 'set null',
+    onUpdate: 'cascade'
+  }),
+  // Session tracking - links to user session for traceability
+  session_id: text('session_id').references(() => {
+    /* istanbul ignore next */
+    cov_2lm29shz8t().f[1]++;
+    cov_2lm29shz8t().s[3]++;
+    return sessions.id;
+  }, {
+    onDelete: 'set null',
+    onUpdate: 'cascade'
+  }),
+  // Request correlation - unique identifier for distributed tracing
+  request_id: varchar('request_id', {
+    length: 36
+  }),
+  // Action type - what operation was performed (CREATE, READ, UPDATE, DELETE, LOGIN, LOGOUT, etc.)
+  action: varchar('action', {
+    length: 255
+  }).notNull(),
+  // Resource identification - what was accessed/modified
+  resource_type: varchar('resource_type', {
+    length: 255
+  }).notNull(),
+  // renamed from table_name for clarity
+  resource_id: text('resource_id'),
+  // changed to text to support various ID formats (UUIDs, nanoids, etc.)
+
+  // Change tracking - before and after states (JSON stringified)
+  old_value: text('old_value'),
+  // Previous state of the resource
+  new_value: text('new_value'),
+  // New state of the resource
+
+  // Operation status - outcome of the action
+  status: auditLogStatusEnum('status').notNull().default('success'),
+  // Network context - where the request originated
+  ip_address: varchar('ip_address', {
+    length: 45
+  }),
+  // IPv6 max length is 45 chars
+  user_agent: text('user_agent'),
+  // Changed to text - user agents can be long
+
+  // Additional context (JSON) - flexible field for extra metadata
+  metadata: text('metadata'),
+  // Immutable timestamp - when the action occurred
+  // NOTE: No updated_at column - audit logs are immutable and should never be modified
+  created_at: timestamp('created_at').defaultNow().notNull()
+}, table => {
+  /* istanbul ignore next */
+  cov_2lm29shz8t().f[2]++;
+  cov_2lm29shz8t().s[4]++;
+  return {
+    // Performance indexes for audit_logs table (HIPAA-compliant audit queries)
+
+    // Single column indexes for frequently queried columns
+    userIdx: index('idx_audit_logs_user_id').on(table.user_id),
+    sessionIdx: index('idx_audit_logs_session_id').on(table.session_id),
+    requestIdx: index('idx_audit_logs_request_id').on(table.request_id),
+    actionIdx: index('idx_audit_logs_action').on(table.action),
+    resourceTypeIdx: index('idx_audit_logs_resource_type').on(table.resource_type),
+    resourceIdx: index('idx_audit_logs_resource_id').on(table.resource_id),
+    statusIdx: index('idx_audit_logs_status').on(table.status),
+    createdAtIdx: index('idx_audit_logs_created_at').on(table.created_at),
+    // Composite indexes for common audit query patterns
+
+    // User activity queries - "show all actions by user X in time range"
+    userTimeIdx: index('idx_audit_logs_user_time').on(table.user_id, table.created_at),
+    // Resource history queries - "show all changes to patient #123"
+    resourceHistoryIdx: index('idx_audit_logs_resource_history').on(table.resource_type, table.resource_id, table.created_at),
+    // Action analysis queries - "show all DELETE actions on patients table"
+    actionResourceIdx: index('idx_audit_logs_action_resource').on(table.action, table.resource_type),
+    // Time-based audit queries - "show all actions in last 24 hours"
+    timeActionIdx: index('idx_audit_logs_time_action').on(table.created_at, table.action),
+    // Status-based queries - "show all failed operations"
+    statusTimeIdx: index('idx_audit_logs_status_time').on(table.status, table.created_at),
+    // Session-based queries - "show all actions in session X"
+    sessionTimeIdx: index('idx_audit_logs_session_time').on(table.session_id, table.created_at)
+  };
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmxtMjlzaHo4dCIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsInZhcmNoYXIiLCJ0ZXh0IiwidGltZXN0YW1wIiwiaW5kZXgiLCJwZ0VudW0iLCJ1c2VycyIsInNlc3Npb25zIiwiYXVkaXRMb2dTdGF0dXNFbnVtIiwicyIsImF1ZGl0X2xvZ3MiLCJpZCIsIm1vZGUiLCJwcmltYXJ5S2V5IiwiZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSIsInVzZXJfaWQiLCJyZWZlcmVuY2VzIiwiZiIsIm9uRGVsZXRlIiwib25VcGRhdGUiLCJzZXNzaW9uX2lkIiwicmVxdWVzdF9pZCIsImxlbmd0aCIsImFjdGlvbiIsIm5vdE51bGwiLCJyZXNvdXJjZV90eXBlIiwicmVzb3VyY2VfaWQiLCJvbGRfdmFsdWUiLCJuZXdfdmFsdWUiLCJzdGF0dXMiLCJkZWZhdWx0IiwiaXBfYWRkcmVzcyIsInVzZXJfYWdlbnQiLCJtZXRhZGF0YSIsImNyZWF0ZWRfYXQiLCJkZWZhdWx0Tm93IiwidGFibGUiLCJ1c2VySWR4Iiwib24iLCJzZXNzaW9uSWR4IiwicmVxdWVzdElkeCIsImFjdGlvbklkeCIsInJlc291cmNlVHlwZUlkeCIsInJlc291cmNlSWR4Iiwic3RhdHVzSWR4IiwiY3JlYXRlZEF0SWR4IiwidXNlclRpbWVJZHgiLCJyZXNvdXJjZUhpc3RvcnlJZHgiLCJhY3Rpb25SZXNvdXJjZUlkeCIsInRpbWVBY3Rpb25JZHgiLCJzdGF0dXNUaW1lSWR4Iiwic2Vzc2lvblRpbWVJZHgiXSwic291cmNlcyI6WyJhdWRpdExvZy5zY2hlbWEuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGdUYWJsZSwgYmlnaW50LCB2YXJjaGFyLCB0ZXh0LCB0aW1lc3RhbXAsIGluZGV4LCBwZ0VudW0gfSBmcm9tICdkcml6emxlLW9ybS9wZy1jb3JlJztcbmltcG9ydCB7IHVzZXJzIH0gZnJvbSAnLi91c2VyLnNjaGVtYS5qcyc7XG5pbXBvcnQgeyBzZXNzaW9ucyB9IGZyb20gJy4vc2Vzc2lvbi5zY2hlbWEuanMnO1xuXG4vKipcbiAqIEF1ZGl0IExvZyBTdGF0dXMgRW51bVxuICogVHJhY2tzIHRoZSBvdXRjb21lIG9mIGF1ZGl0ZWQgb3BlcmF0aW9ucyBmb3IgSElQQUEgY29tcGxpYW5jZVxuICovXG5leHBvcnQgY29uc3QgYXVkaXRMb2dTdGF0dXNFbnVtID0gcGdFbnVtKCdhdWRpdF9sb2dfc3RhdHVzJywgWydzdWNjZXNzJywgJ2ZhaWx1cmUnLCAncGVuZGluZyddKTtcblxuLyoqXG4gKiBJbW11dGFibGUgQXVkaXQgTG9nIFNjaGVtYVxuICpcbiAqIEhJUEFBIENvbXBsaWFuY2UgUmVxdWlyZW1lbnRzOlxuICogLSBBbGwgYWNjZXNzIHRvIFBISSBtdXN0IGJlIGxvZ2dlZFxuICogLSBMb2dzIG11c3QgYmUgdGFtcGVyLWV2aWRlbnQgKGltbXV0YWJsZSAtIG5vIHVwZGF0ZXMgYWxsb3dlZClcbiAqIC0gTG9ncyBtdXN0IGJlIHJldGFpbmVkIGZvciBtaW5pbXVtIDYgeWVhcnNcbiAqIC0gTXVzdCB0cmFjayB3aG8sIHdoYXQsIHdoZW4sIHdoZXJlLCBhbmQgb3V0Y29tZVxuICpcbiAqIDIxIENGUiBQYXJ0IDExIENvbXBsaWFuY2U6XG4gKiAtIEVsZWN0cm9uaWMgcmVjb3JkcyBtdXN0IGhhdmUgYXVkaXQgdHJhaWxzXG4gKiAtIE11c3QgY2FwdHVyZSB1c2VyIElELCB0aW1lc3RhbXAsIGFuZCBhY3Rpb25cbiAqIC0gTXVzdCBiZSBsaW5rZWQgdG8gZWxlY3Ryb25pYyBzaWduYXR1cmVzIHdoZXJlIGFwcGxpY2FibGVcbiAqL1xuZXhwb3J0IGNvbnN0IGF1ZGl0X2xvZ3MgPSBwZ1RhYmxlKCdhdWRpdF9sb2dzJywge1xuICAvLyBQcmltYXJ5IGtleSAtIGF1dG8taW5jcmVtZW50aW5nIGZvciBzZXF1ZW50aWFsIG9yZGVyaW5nXG4gIGlkOiBiaWdpbnQoJ2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5wcmltYXJ5S2V5KCkuZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSgpLFxuXG4gIC8vIFVzZXIgaWRlbnRpZmljYXRpb24gLSB3aG8gcGVyZm9ybWVkIHRoZSBhY3Rpb25cbiAgdXNlcl9pZDogdGV4dCgndXNlcl9pZCcpLnJlZmVyZW5jZXMoKCkgPT4gdXNlcnMuaWQsIHsgb25EZWxldGU6ICdzZXQgbnVsbCcsIG9uVXBkYXRlOiAnY2FzY2FkZScgfSksXG5cbiAgLy8gU2Vzc2lvbiB0cmFja2luZyAtIGxpbmtzIHRvIHVzZXIgc2Vzc2lvbiBmb3IgdHJhY2VhYmlsaXR5XG4gIHNlc3Npb25faWQ6IHRleHQoJ3Nlc3Npb25faWQnKS5yZWZlcmVuY2VzKCgpID0+IHNlc3Npb25zLmlkLCB7IG9uRGVsZXRlOiAnc2V0IG51bGwnLCBvblVwZGF0ZTogJ2Nhc2NhZGUnIH0pLFxuXG4gIC8vIFJlcXVlc3QgY29ycmVsYXRpb24gLSB1bmlxdWUgaWRlbnRpZmllciBmb3IgZGlzdHJpYnV0ZWQgdHJhY2luZ1xuICByZXF1ZXN0X2lkOiB2YXJjaGFyKCdyZXF1ZXN0X2lkJywgeyBsZW5ndGg6IDM2IH0pLFxuXG4gIC8vIEFjdGlvbiB0eXBlIC0gd2hhdCBvcGVyYXRpb24gd2FzIHBlcmZvcm1lZCAoQ1JFQVRFLCBSRUFELCBVUERBVEUsIERFTEVURSwgTE9HSU4sIExPR09VVCwgZXRjLilcbiAgYWN0aW9uOiB2YXJjaGFyKCdhY3Rpb24nLCB7IGxlbmd0aDogMjU1IH0pLm5vdE51bGwoKSxcblxuICAvLyBSZXNvdXJjZSBpZGVudGlmaWNhdGlvbiAtIHdoYXQgd2FzIGFjY2Vzc2VkL21vZGlmaWVkXG4gIHJlc291cmNlX3R5cGU6IHZhcmNoYXIoJ3Jlc291cmNlX3R5cGUnLCB7IGxlbmd0aDogMjU1IH0pLm5vdE51bGwoKSwgLy8gcmVuYW1lZCBmcm9tIHRhYmxlX25hbWUgZm9yIGNsYXJpdHlcbiAgcmVzb3VyY2VfaWQ6IHRleHQoJ3Jlc291cmNlX2lkJyksIC8vIGNoYW5nZWQgdG8gdGV4dCB0byBzdXBwb3J0IHZhcmlvdXMgSUQgZm9ybWF0cyAoVVVJRHMsIG5hbm9pZHMsIGV0Yy4pXG5cbiAgLy8gQ2hhbmdlIHRyYWNraW5nIC0gYmVmb3JlIGFuZCBhZnRlciBzdGF0ZXMgKEpTT04gc3RyaW5naWZpZWQpXG4gIG9sZF92YWx1ZTogdGV4dCgnb2xkX3ZhbHVlJyksIC8vIFByZXZpb3VzIHN0YXRlIG9mIHRoZSByZXNvdXJjZVxuICBuZXdfdmFsdWU6IHRleHQoJ25ld192YWx1ZScpLCAvLyBOZXcgc3RhdGUgb2YgdGhlIHJlc291cmNlXG5cbiAgLy8gT3BlcmF0aW9uIHN0YXR1cyAtIG91dGNvbWUgb2YgdGhlIGFjdGlvblxuICBzdGF0dXM6IGF1ZGl0TG9nU3RhdHVzRW51bSgnc3RhdHVzJykubm90TnVsbCgpLmRlZmF1bHQoJ3N1Y2Nlc3MnKSxcblxuICAvLyBOZXR3b3JrIGNvbnRleHQgLSB3aGVyZSB0aGUgcmVxdWVzdCBvcmlnaW5hdGVkXG4gIGlwX2FkZHJlc3M6IHZhcmNoYXIoJ2lwX2FkZHJlc3MnLCB7IGxlbmd0aDogNDUgfSksIC8vIElQdjYgbWF4IGxlbmd0aCBpcyA0NSBjaGFyc1xuICB1c2VyX2FnZW50OiB0ZXh0KCd1c2VyX2FnZW50JyksIC8vIENoYW5nZWQgdG8gdGV4dCAtIHVzZXIgYWdlbnRzIGNhbiBiZSBsb25nXG5cbiAgLy8gQWRkaXRpb25hbCBjb250ZXh0IChKU09OKSAtIGZsZXhpYmxlIGZpZWxkIGZvciBleHRyYSBtZXRhZGF0YVxuICBtZXRhZGF0YTogdGV4dCgnbWV0YWRhdGEnKSxcblxuICAvLyBJbW11dGFibGUgdGltZXN0YW1wIC0gd2hlbiB0aGUgYWN0aW9uIG9jY3VycmVkXG4gIC8vIE5PVEU6IE5vIHVwZGF0ZWRfYXQgY29sdW1uIC0gYXVkaXQgbG9ncyBhcmUgaW1tdXRhYmxlIGFuZCBzaG91bGQgbmV2ZXIgYmUgbW9kaWZpZWRcbiAgY3JlYXRlZF9hdDogdGltZXN0YW1wKCdjcmVhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbn0sICh0YWJsZSkgPT4gKHtcbiAgLy8gUGVyZm9ybWFuY2UgaW5kZXhlcyBmb3IgYXVkaXRfbG9ncyB0YWJsZSAoSElQQUEtY29tcGxpYW50IGF1ZGl0IHF1ZXJpZXMpXG5cbiAgLy8gU2luZ2xlIGNvbHVtbiBpbmRleGVzIGZvciBmcmVxdWVudGx5IHF1ZXJpZWQgY29sdW1uc1xuICB1c2VySWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3NfdXNlcl9pZCcpLm9uKHRhYmxlLnVzZXJfaWQpLFxuICBzZXNzaW9uSWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3Nfc2Vzc2lvbl9pZCcpLm9uKHRhYmxlLnNlc3Npb25faWQpLFxuICByZXF1ZXN0SWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3NfcmVxdWVzdF9pZCcpLm9uKHRhYmxlLnJlcXVlc3RfaWQpLFxuICBhY3Rpb25JZHg6IGluZGV4KCdpZHhfYXVkaXRfbG9nc19hY3Rpb24nKS5vbih0YWJsZS5hY3Rpb24pLFxuICByZXNvdXJjZVR5cGVJZHg6IGluZGV4KCdpZHhfYXVkaXRfbG9nc19yZXNvdXJjZV90eXBlJykub24odGFibGUucmVzb3VyY2VfdHlwZSksXG4gIHJlc291cmNlSWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3NfcmVzb3VyY2VfaWQnKS5vbih0YWJsZS5yZXNvdXJjZV9pZCksXG4gIHN0YXR1c0lkeDogaW5kZXgoJ2lkeF9hdWRpdF9sb2dzX3N0YXR1cycpLm9uKHRhYmxlLnN0YXR1cyksXG4gIGNyZWF0ZWRBdElkeDogaW5kZXgoJ2lkeF9hdWRpdF9sb2dzX2NyZWF0ZWRfYXQnKS5vbih0YWJsZS5jcmVhdGVkX2F0KSxcblxuICAvLyBDb21wb3NpdGUgaW5kZXhlcyBmb3IgY29tbW9uIGF1ZGl0IHF1ZXJ5IHBhdHRlcm5zXG5cbiAgLy8gVXNlciBhY3Rpdml0eSBxdWVyaWVzIC0gXCJzaG93IGFsbCBhY3Rpb25zIGJ5IHVzZXIgWCBpbiB0aW1lIHJhbmdlXCJcbiAgdXNlclRpbWVJZHg6IGluZGV4KCdpZHhfYXVkaXRfbG9nc191c2VyX3RpbWUnKVxuICAgIC5vbih0YWJsZS51c2VyX2lkLCB0YWJsZS5jcmVhdGVkX2F0KSxcblxuICAvLyBSZXNvdXJjZSBoaXN0b3J5IHF1ZXJpZXMgLSBcInNob3cgYWxsIGNoYW5nZXMgdG8gcGF0aWVudCAjMTIzXCJcbiAgcmVzb3VyY2VIaXN0b3J5SWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3NfcmVzb3VyY2VfaGlzdG9yeScpXG4gICAgLm9uKHRhYmxlLnJlc291cmNlX3R5cGUsIHRhYmxlLnJlc291cmNlX2lkLCB0YWJsZS5jcmVhdGVkX2F0KSxcblxuICAvLyBBY3Rpb24gYW5hbHlzaXMgcXVlcmllcyAtIFwic2hvdyBhbGwgREVMRVRFIGFjdGlvbnMgb24gcGF0aWVudHMgdGFibGVcIlxuICBhY3Rpb25SZXNvdXJjZUlkeDogaW5kZXgoJ2lkeF9hdWRpdF9sb2dzX2FjdGlvbl9yZXNvdXJjZScpXG4gICAgLm9uKHRhYmxlLmFjdGlvbiwgdGFibGUucmVzb3VyY2VfdHlwZSksXG5cbiAgLy8gVGltZS1iYXNlZCBhdWRpdCBxdWVyaWVzIC0gXCJzaG93IGFsbCBhY3Rpb25zIGluIGxhc3QgMjQgaG91cnNcIlxuICB0aW1lQWN0aW9uSWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3NfdGltZV9hY3Rpb24nKVxuICAgIC5vbih0YWJsZS5jcmVhdGVkX2F0LCB0YWJsZS5hY3Rpb24pLFxuXG4gIC8vIFN0YXR1cy1iYXNlZCBxdWVyaWVzIC0gXCJzaG93IGFsbCBmYWlsZWQgb3BlcmF0aW9uc1wiXG4gIHN0YXR1c1RpbWVJZHg6IGluZGV4KCdpZHhfYXVkaXRfbG9nc19zdGF0dXNfdGltZScpXG4gICAgLm9uKHRhYmxlLnN0YXR1cywgdGFibGUuY3JlYXRlZF9hdCksXG5cbiAgLy8gU2Vzc2lvbi1iYXNlZCBxdWVyaWVzIC0gXCJzaG93IGFsbCBhY3Rpb25zIGluIHNlc3Npb24gWFwiXG4gIHNlc3Npb25UaW1lSWR4OiBpbmRleCgnaWR4X2F1ZGl0X2xvZ3Nfc2Vzc2lvbl90aW1lJylcbiAgICAub24odGFibGUuc2Vzc2lvbl9pZCwgdGFibGUuY3JlYXRl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

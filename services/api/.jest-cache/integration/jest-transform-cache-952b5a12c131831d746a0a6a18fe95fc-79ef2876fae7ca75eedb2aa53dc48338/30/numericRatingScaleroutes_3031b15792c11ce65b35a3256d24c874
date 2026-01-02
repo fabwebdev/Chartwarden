@@ -1,0 +1,284 @@
+25ee2faec54a06001362a8b224145cb3
+/* istanbul ignore next */
+function cov_1wx1pgx9bj() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/numericRatingScale.routes.js";
+  var hash = "88aec6e054e7c24d998a53e0563fd8cfbfb94172";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/numericRatingScale.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 18,
+          column: 56
+        }
+      },
+      "1": {
+        start: {
+          line: 21,
+          column: 2
+        },
+        end: {
+          line: 23,
+          column: 41
+        }
+      },
+      "2": {
+        start: {
+          line: 26,
+          column: 2
+        },
+        end: {
+          line: 28,
+          column: 50
+        }
+      },
+      "3": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 33,
+          column: 50
+        }
+      },
+      "4": {
+        start: {
+          line: 40,
+          column: 2
+        },
+        end: {
+          line: 42,
+          column: 47
+        }
+      },
+      "5": {
+        start: {
+          line: 45,
+          column: 2
+        },
+        end: {
+          line: 47,
+          column: 40
+        }
+      },
+      "6": {
+        start: {
+          line: 50,
+          column: 2
+        },
+        end: {
+          line: 52,
+          column: 39
+        }
+      },
+      "7": {
+        start: {
+          line: 55,
+          column: 2
+        },
+        end: {
+          line: 57,
+          column: 41
+        }
+      },
+      "8": {
+        start: {
+          line: 60,
+          column: 2
+        },
+        end: {
+          line: 62,
+          column: 41
+        }
+      },
+      "9": {
+        start: {
+          line: 69,
+          column: 2
+        },
+        end: {
+          line: 71,
+          column: 39
+        }
+      },
+      "10": {
+        start: {
+          line: 74,
+          column: 2
+        },
+        end: {
+          line: 76,
+          column: 40
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "numericRatingScaleRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 30
+          },
+          end: {
+            line: 10,
+            column: 54
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 73
+          },
+          end: {
+            line: 77,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "88aec6e054e7c24d998a53e0563fd8cfbfb94172"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1wx1pgx9bj = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1wx1pgx9bj();
+import controller from '../controllers/NumericRatingScale.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Numeric Rating Scale (NRS) Routes
+ * Self-reported pain assessment using 0-10 numeric scale
+ * Gold standard for pain assessment in cognitively intact patients
+ */
+export default async function numericRatingScaleRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().f[0]++;
+  cov_1wx1pgx9bj().s[0]++;
+  // =========================================
+  // Patient-specific assessment routes
+  // =========================================
+
+  // Get all NRS assessments for a patient
+  fastify.get('/patients/:patientId/numeric-rating-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientAssessments.bind(controller));
+
+  // Create a new NRS assessment for a patient
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[1]++;
+  fastify.post('/patients/:patientId/numeric-rating-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.create.bind(controller));
+
+  // Get NRS assessment statistics for a patient
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[2]++;
+  fastify.get('/patients/:patientId/numeric-rating-scales/stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientStats.bind(controller));
+
+  // Get NRS score trend for a patient
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[3]++;
+  fastify.get('/patients/:patientId/numeric-rating-scales/trend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientTrend.bind(controller));
+
+  // =========================================
+  // Assessment management routes
+  // =========================================
+
+  // Get NRS scoring reference (public within authenticated routes)
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[4]++;
+  fastify.get('/numeric-rating-scales/reference', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getReference.bind(controller));
+
+  // Get all NRS assessments (with filters)
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[5]++;
+  fastify.get('/numeric-rating-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.index.bind(controller));
+
+  // Get a single NRS assessment by ID
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[6]++;
+  fastify.get('/numeric-rating-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.show.bind(controller));
+
+  // Update an NRS assessment
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[7]++;
+  fastify.patch('/numeric-rating-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.update.bind(controller));
+
+  // Delete an NRS assessment
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[8]++;
+  fastify.delete('/numeric-rating-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.delete.bind(controller));
+
+  // =========================================
+  // Signature and compliance routes (21 CFR Part 11)
+  // =========================================
+
+  // Sign an NRS assessment
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[9]++;
+  fastify.post('/numeric-rating-scales/:id/sign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.sign.bind(controller));
+
+  // Amend a signed NRS assessment
+  /* istanbul ignore next */
+  cov_1wx1pgx9bj().s[10]++;
+  fastify.post('/numeric-rating-scales/:id/amend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.amend.bind(controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXd4MXBneDliaiIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJudW1lcmljUmF0aW5nU2NhbGVSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsIlZJRVdfUEFUSUVOVCIsIlZJRVdfQ0xJTklDQUxfTk9URVMiLCJnZXRQYXRpZW50QXNzZXNzbWVudHMiLCJiaW5kIiwicG9zdCIsIkNSRUFURV9DTElOSUNBTF9OT1RFUyIsImNyZWF0ZSIsImdldFBhdGllbnRTdGF0cyIsImdldFBhdGllbnRUcmVuZCIsImdldFJlZmVyZW5jZSIsImluZGV4Iiwic2hvdyIsInBhdGNoIiwiVVBEQVRFX0NMSU5JQ0FMX05PVEVTIiwidXBkYXRlIiwiZGVsZXRlIiwiREVMRVRFX0NMSU5JQ0FMX05PVEVTIiwic2lnbiIsImFtZW5kIl0sInNvdXJjZXMiOlsibnVtZXJpY1JhdGluZ1NjYWxlLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29udHJvbGxlciBmcm9tICcuLi9jb250cm9sbGVycy9OdW1lcmljUmF0aW5nU2NhbGUuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBQRVJNSVNTSU9OUyB9IGZyb20gJy4uL2NvbmZpZy9yYmFjLmpzJztcbmltcG9ydCB7IHJlcXVpcmVBbnlQZXJtaXNzaW9uIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIE51bWVyaWMgUmF0aW5nIFNjYWxlIChOUlMpIFJvdXRlc1xuICogU2VsZi1yZXBvcnRlZCBwYWluIGFzc2Vzc21lbnQgdXNpbmcgMC0xMCBudW1lcmljIHNjYWxlXG4gKiBHb2xkIHN0YW5kYXJkIGZvciBwYWluIGFzc2Vzc21lbnQgaW4gY29nbml0aXZlbHkgaW50YWN0IHBhdGllbnRzXG4gKi9cbmV4cG9ydCBkZWZhdWx0IGFzeW5jIGZ1bmN0aW9uIG51bWVyaWNSYXRpbmdTY2FsZVJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFBhdGllbnQtc3BlY2lmaWMgYXNzZXNzbWVudCByb3V0ZXNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBHZXQgYWxsIE5SUyBhc3Nlc3NtZW50cyBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkuZ2V0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9udW1lcmljLXJhdGluZy1zY2FsZXMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUEFUSUVOVCwgUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGF0aWVudEFzc2Vzc21lbnRzLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIENyZWF0ZSBhIG5ldyBOUlMgYXNzZXNzbWVudCBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkucG9zdCgnL3BhdGllbnRzLzpwYXRpZW50SWQvbnVtZXJpYy1yYXRpbmctc2NhbGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmNyZWF0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgTlJTIGFzc2Vzc21lbnQgc3RhdGlzdGljcyBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkuZ2V0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9udW1lcmljLXJhdGluZy1zY2FsZXMvc3RhdHMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUEFUSUVOVCwgUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGF0aWVudFN0YXRzLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBOUlMgc2NvcmUgdHJlbmQgZm9yIGEgcGF0aWVudFxuICBmYXN0aWZ5LmdldCgnL3BhdGllbnRzLzpwYXRpZW50SWQvbnVtZXJpYy1yYXRpbmctc2NhbGVzL3RyZW5kJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1BBVElFTlQsIFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFBhdGllbnRUcmVuZC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBBc3Nlc3NtZW50IG1hbmFnZW1lbnQgcm91dGVzXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLy8gR2V0IE5SUyBzY29yaW5nIHJlZmVyZW5jZSAocHVibGljIHdpdGhpbiBhdXRoZW50aWNhdGVkIHJvdXRlcylcbiAgZmFzdGlmeS5nZXQoJy9udW1lcmljLXJhdGluZy1zY2FsZXMvcmVmZXJlbmNlJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRSZWZlcmVuY2UuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGFsbCBOUlMgYXNzZXNzbWVudHMgKHdpdGggZmlsdGVycylcbiAgZmFzdGlmeS5nZXQoJy9udW1lcmljLXJhdGluZy1zY2FsZXMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmluZGV4LmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBhIHNpbmdsZSBOUlMgYXNzZXNzbWVudCBieSBJRFxuICBmYXN0aWZ5LmdldCgnL251bWVyaWMtcmF0aW5nLXNjYWxlcy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnNob3cuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gVXBkYXRlIGFuIE5SUyBhc3Nlc3NtZW50XG4gIGZhc3RpZnkucGF0Y2goJy9udW1lcmljLXJhdGluZy1zY2FsZXMvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnVwZGF0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBEZWxldGUgYW4gTlJTIGFzc2Vzc21lbnRcbiAgZmFzdGlmeS5kZWxldGUoJy9udW1lcmljLXJhdGluZy1zY2FsZXMvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5ERUxFVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmRlbGV0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBTaWduYXR1cmUgYW5kIGNvbXBsaWFuY2Ugcm91dGVzICgyMSBDRlIgUGFydCAxMSlcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBTaWduIGFuIE5SUyBhc3Nlc3NtZW50XG4gIGZhc3RpZnkucG9zdCgnL251bWVyaWMtcmF0aW5nLXNjYWxlcy86aWQvc2lnbicsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5zaWduLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEFtZW5kIGEgc2lnbmVkIE5SUyBhc3Nlc3NtZW50XG4gIGZhc3RpZnkucG9zdCgnL251bWVyaWMtcmF0aW5nLXNjYWxlcy86aWQvYW1lbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuYW1lbmQuYmluZChjb250cm9sbGVyKSk7XG59XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxVQUFVLE1BQU0saURBQWlEO0FBQ3hFLFNBQVNDLFdBQVcsUUFBUSxtQkFBbUI7QUFDL0MsU0FBU0Msb0JBQW9CLFFBQVEsa0NBQWtDOztBQUV2RTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsZUFBZSxlQUFlQyx3QkFBd0JBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVAsY0FBQSxHQUFBUSxDQUFBO0VBQUFSLGNBQUEsR0FBQVMsQ0FBQTtFQUN2RTtFQUNBO0VBQ0E7O0VBRUE7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsNENBQTRDLEVBQUU7SUFDeERDLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDUyxZQUFZLEVBQUVULFdBQVcsQ0FBQ1Us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

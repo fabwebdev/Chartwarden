@@ -1,0 +1,61 @@
+121364b7c7b279ef27b01d6599b24543
+/* istanbul ignore next */
+function cov_zzz0elew9() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/painFrequency.schema.js";
+  var hash = "91ecaa8df32036c864208a24f32bf8e5cf48b7a7";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/painFrequency.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 30
+        },
+        end: {
+          line: 9,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "91ecaa8df32036c864208a24f32bf8e5cf48b7a7"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_zzz0elew9 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_zzz0elew9();
+import { pgTable, bigint, text, timestamp } from 'drizzle-orm/pg-core';
+export const pain_frequency =
+/* istanbul ignore next */
+(cov_zzz0elew9().s[0]++, pgTable('pain_frequency', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).notNull(),
+  pain_frequency_id: text('pain_frequency_id'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfenp6MGVsZXc5IiwiYWN0dWFsQ292ZXJhZ2UiLCJwZ1RhYmxlIiwiYmlnaW50IiwidGV4dCIsInRpbWVzdGFtcCIsInBhaW5fZnJlcXVlbmN5IiwicyIsImlkIiwibW9kZSIsInByaW1hcnlLZXkiLCJnZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5IiwicGF0aWVudF9pZCIsIm5vdE51bGwiLCJwYWluX2ZyZXF1ZW5jeV9pZCIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJwYWluRnJlcXVlbmN5LnNjaGVtYS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwZ1RhYmxlLCBiaWdpbnQsIHRleHQsIHRpbWVzdGFtcCB9IGZyb20gJ2RyaXp6bGUtb3JtL3BnLWNvcmUnO1xuXG5leHBvcnQgY29uc3QgcGFpbl9mcmVxdWVuY3kgPSBwZ1RhYmxlKCdwYWluX2ZyZXF1ZW5jeScsIHtcbiAgaWQ6IGJpZ2ludCgnaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLnByaW1hcnlLZXkoKS5nZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5KCksXG4gIHBhdGllbnRfaWQ6IGJpZ2ludCgncGF0aWVudF9pZCcsIHsgbW9kZTogJ251bWJlcicgfSkubm90TnVsbCgpLFxuICBwYWluX2ZyZXF1ZW5jeV9pZDogdGV4dCgncGFpbl9mcmVxdWVuY3lfaWQnKSxcbiAgY3JlYXRlZEF0OiB0aW1lc3RhbXAoJ2NyZWF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxuICB1cGRhdGVkQXQ6IHRpbWVzdGFtcCgndXBkYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG59KTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosU0FBU0UsT0FBTyxFQUFFQyxNQUFNLEVBQUVDLElBQUksRUFBRUMsU0FBUyxRQUFRLHFCQUFxQjtBQUV0RSxPQUFPLE1BQU1DLGNBQWM7QUFBQTtBQUFBLENBQUFOLGFBQUEsR0FBQU8sQ0FBQSxPQUFHTCxPQUFPLENBQUMsZ0JBQWdCLEVBQUU7RUFDdERNLEVBQUUsRUFBRUwsTUFBTSxDQUFDLElBQUksRUFBRTtJQUFFTSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0MsVUFBVSxDQUFDLENBQUMsQ0FBQ0MsNEJBQTRCLENBQUMsQ0FBQztFQUNoRkMsVUFBVSxFQUFFVCxNQUFNLENBQUMsWUFBWSxFQUFFO0lBQUVNLElBQUksRUFBRTtFQUFTLENBQUMsQ0FBQyxDQUFDSSxPQUFPLENBQUMsQ0FBQztFQUM5REMsaUJBQWlCLEVBQUVWLElBQUksQ0FBQyxtQkFBbUIsQ0FBQztFQUM1Q1csU0FBUyxFQUFFVixTQUFTLENBQUMsWUFBWSxDQUFDLENBQUNXLFVBQVUsQ0FBQyxDQUFDLENBQUNILE9BQU8sQ0FBQyxDQUFDO0VBQ3pESSxTQUFTLEVBQUVaLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ1csVUFBVSxDQUFDLENBQUMsQ0FBQ0gsT0FBTyxDQUFDO0FBQzFELENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

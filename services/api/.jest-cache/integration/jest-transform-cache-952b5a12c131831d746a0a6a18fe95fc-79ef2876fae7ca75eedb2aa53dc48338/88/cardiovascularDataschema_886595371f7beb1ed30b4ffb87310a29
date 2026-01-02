@@ -1,0 +1,84 @@
+751b6669d448947df77529f8d07265b7
+/* istanbul ignore next */
+function cov_ok6sckaet() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/cardiovascularData.schema.js";
+  var hash = "5708da98d28c04b5fa8be8de4c6f54947abbb2bf";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/cardiovascularData.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 35
+        },
+        end: {
+          line: 16,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "5708da98d28c04b5fa8be8de4c6f54947abbb2bf"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_ok6sckaet = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_ok6sckaet();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+export const cardiovascular_data =
+/* istanbul ignore next */
+(cov_ok6sckaet().s[0]++, pgTable('cardiovascular_data', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  note_id: bigint('note_id', {
+    mode: 'number'
+  }).notNull(),
+  cardiovascular_normal: varchar('cardiovascular_normal', {
+    length: 255
+  }),
+  cardiovascular_abnormal: varchar('cardiovascular_abnormal', {
+    length: 255
+  }),
+  cardiovascular_pedal_edema: varchar('cardiovascular_pedal_edema', {
+    length: 255
+  }),
+  cardiovascular_jugular_distention: varchar('cardiovascular_jugular_distention', {
+    length: 255
+  }),
+  cardiovascular_heart_sounds: varchar('cardiovascular_heart_sounds', {
+    length: 255
+  }),
+  cardiovascular_peripheral_pulses: varchar('cardiovascular_peripheral_pulses', {
+    length: 255
+  }),
+  cardiovascular_capillary_refill: varchar('cardiovascular_capillary_refill', {
+    length: 255
+  }),
+  cardiovascular_other: varchar('cardiovascular_other', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfb2s2c2NrYWV0IiwiYWN0dWFsQ292ZXJhZ2UiLCJwZ1RhYmxlIiwiYmlnaW50IiwidmFyY2hhciIsInRpbWVzdGFtcCIsImNhcmRpb3Zhc2N1bGFyX2RhdGEiLCJzIiwiaWQiLCJtb2RlIiwicHJpbWFyeUtleSIsImdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkiLCJub3RlX2lkIiwibm90TnVsbCIsImNhcmRpb3Zhc2N1bGFyX25vcm1hbCIsImxlbmd0aCIsImNhcmRpb3Zhc2N1bGFyX2Fibm9ybWFsIiwiY2FyZGlvdmFzY3VsYXJfcGVkYWxfZWRlbWEiLCJjYXJkaW92YXNjdWxhcl9qdWd1bGFyX2Rpc3RlbnRpb24iLCJjYXJkaW92YXNjdWxhcl9oZWFydF9zb3VuZHMiLCJjYXJkaW92YXNjdWxhcl9wZXJpcGhlcmFsX3B1bHNlcyIsImNhcmRpb3Zhc2N1bGFyX2NhcGlsbGFyeV9yZWZpbGwiLCJjYXJkaW92YXNjdWxhcl9vdGhlciIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJjYXJkaW92YXNjdWxhckRhdGEuc2NoZW1hLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHBnVGFibGUsIGJpZ2ludCwgdmFyY2hhciwgdGltZXN0YW1wIH0gZnJvbSAnZHJpenpsZS1vcm0vcGctY29yZSc7XG5cbmV4cG9ydCBjb25zdCBjYXJkaW92YXNjdWxhcl9kYXRhID0gcGdUYWJsZSgnY2FyZGlvdmFzY3VsYXJfZGF0YScsIHtcbiAgaWQ6IGJpZ2ludCgnaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLnByaW1hcnlLZXkoKS5nZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5KCksXG4gIG5vdGVfaWQ6IGJpZ2ludCgnbm90ZV9pZCcsIHsgbW9kZTogJ251bWJlcicgfSkubm90TnVsbCgpLFxuICBjYXJkaW92YXNjdWxhcl9ub3JtYWw6IHZhcmNoYXIoJ2NhcmRpb3Zhc2N1bGFyX25vcm1hbCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNhcmRpb3Zhc2N1bGFyX2Fibm9ybWFsOiB2YXJjaGFyKCdjYXJkaW92YXNjdWxhcl9hYm5vcm1hbCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNhcmRpb3Zhc2N1bGFyX3BlZGFsX2VkZW1hOiB2YXJjaGFyKCdjYXJkaW92YXNjdWxhcl9wZWRhbF9lZGVtYScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNhcmRpb3Zhc2N1bGFyX2p1Z3VsYXJfZGlzdGVudGlvbjogdmFyY2hhcignY2FyZGlvdmFzY3VsYXJfanVndWxhcl9kaXN0ZW50aW9uJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY2FyZGlvdmFzY3VsYXJfaGVhcnRfc291bmRzOiB2YXJjaGFyKCdjYXJkaW92YXNjdWxhcl9oZWFydF9zb3VuZHMnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBjYXJkaW92YXNjdWxhcl9wZXJpcGhlcmFsX3B1bHNlczogdmFyY2hhcignY2FyZGlvdmFzY3VsYXJfcGVyaXBoZXJhbF9wdWxzZXMnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBjYXJkaW92YXNjdWxhcl9jYXBpbGxhcnlfcmVmaWxsOiB2YXJjaGFyKCdjYXJkaW92YXNjdWxhcl9jYXBpbGxhcnlfcmVmaWxsJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY2FyZGlvdmFzY3VsYXJfb3RoZXI6IHZhcmNoYXIoJ2NhcmRpb3Zhc2N1bGFyX290aGVyJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY3JlYXRlZEF0OiB0aW1lc3RhbXAoJ2NyZWF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxuICB1cGRhdGVkQXQ6IHRpbWVzdGFtcCgndXBkYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG59KTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosU0FBU0UsT0FBTyxFQUFFQyxNQUFNLEVBQUVDLE9BQU8sRUFBRUMsU0FBUyxRQUFRLHFCQUFxQjtBQUV6RSxPQUFPLE1BQU1DLG1CQUFtQjtBQUFBO0FBQUEsQ0FBQU4sYUFBQSxHQUFBTyxDQUFBLE9BQUdMLE9BQU8sQ0FBQyxxQkFBcUIsRUFBRTtFQUNoRU0sRUFBRSxFQUFFTCxNQUFNLENBQUMsSUFBSSxFQUFFO0lBQUVNLElBQUksRUFBRTtFQUFTLENBQUMsQ0FBQyxDQUFDQyxVQUFVLENBQUMsQ0FBQyxDQUFDQyw0QkFBNEIsQ0FBQyxDQUFDO0VBQ2hGQyxPQUFPLEVBQUVULE1BQU0sQ0FBQyxTQUFTLEVBQUU7SUFBRU0sSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNJLE9BQU8sQ0FBQyxDQUFDO0VBQ3hEQyxxQkFBcUIsRUFBRVYsT0FBTyxDQUFDLHVCQUF1QixFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUN4RUMsdUJBQXVCLEVBQUVaLE9BQU8sQ0FBQyx5QkFBeUIsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDNUVFLDBCQUEwQixFQUFFYixPQUFPLENBQUMsNEJBQTRCLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ2xGRyxpQ0FBaUMsRUFBRWQsT0FBTyxDQUFDLG1DQUFtQyxFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUNoR0ksMkJBQTJCLEVBQUVmLE9BQU8sQ0FBQyw2QkFBNkIsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDcEZLLGdDQUFnQyxFQUFFaEIsT0FBTyxDQUFDLGtDQUFrQyxFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUM5Rk0sK0JBQStCLEVBQUVqQixPQUFPLENBQUMsaUNBQWlDLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzVGTyxvQkFBb0IsRUFBRWxCLE9BQU8sQ0FBQyxzQkFBc0IsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDdEVRLFNBQVMsRUFBRWxCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ21CLFVBQVUsQ0FBQyxDQUFDLENBQUNYLE9BQU8sQ0FBQyxDQUFDO0VBQ3pEWSxTQUFTLEVBQUVwQixTQUFTLENBQUMsWUFBWSxDQUFDLENBQUNtQixVQUFVLENBQUMsQ0FBQyxDQUFDWCxPQUFPLENBQUM7QUFDMUQsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

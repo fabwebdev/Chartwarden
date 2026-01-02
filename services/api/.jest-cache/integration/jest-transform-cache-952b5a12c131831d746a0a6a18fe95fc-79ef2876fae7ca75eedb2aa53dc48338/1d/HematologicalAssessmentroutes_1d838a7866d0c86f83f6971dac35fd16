@@ -1,0 +1,183 @@
+4ba5a73afedf19803beff1ceb8428c04
+/* istanbul ignore next */
+function cov_2htysbdio7() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/HematologicalAssessment.routes.js";
+  var hash = "2cd2d529a92d12c240301ea4d811997cce418844";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/HematologicalAssessment.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 4
+        }
+      },
+      "1": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 21,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 23,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 48,
+          column: 4
+        }
+      },
+      "4": {
+        start: {
+          line: 36,
+          column: 10
+        },
+        end: {
+          line: 42,
+          column: 13
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "hematologicalAssessmentRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 44
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 63
+          },
+          end: {
+            line: 49,
+            column: 1
+          }
+        },
+        line: 5
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 35,
+            column: 8
+          },
+          end: {
+            line: 35,
+            column: 9
+          }
+        },
+        loc: {
+          start: {
+            line: 35,
+            column: 34
+          },
+          end: {
+            line: 43,
+            column: 9
+          }
+        },
+        line: 35
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "2cd2d529a92d12c240301ea4d811997cce418844"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2htysbdio7 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2htysbdio7();
+import HematologicalAssessmentController from "../../controllers/patient/HematologicalAssessment.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for hematological assessment routes
+async function hematologicalAssessmentRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_2htysbdio7().f[0]++;
+  cov_2htysbdio7().s[0]++;
+  // Hematological Assessment Routes
+  fastify.get("/hematological-assessment", {
+    preHandler: [verifyToken]
+  }, HematologicalAssessmentController.index);
+  /* istanbul ignore next */
+  cov_2htysbdio7().s[1]++;
+  fastify.get("/hematological-list", {
+    preHandler: [verifyToken]
+  }, HematologicalAssessmentController.hematologicalList);
+  /* istanbul ignore next */
+  cov_2htysbdio7().s[2]++;
+  fastify.post("/hematological-assessment/store", {
+    preHandler: [verifyToken]
+  }, HematologicalAssessmentController.store);
+  /* istanbul ignore next */
+  cov_2htysbdio7().s[3]++;
+  fastify.get("/hematological-assessment/:id", {
+    preHandler: [async (request, reply) => {
+      /* istanbul ignore next */
+      cov_2htysbdio7().f[1]++;
+      cov_2htysbdio7().s[4]++;
+      console.log("🔍 Hematological assessment show route hit:", {
+        url: request.url,
+        method: request.method,
+        params: request.params,
+        id: request.params.id,
+        fullUrl: request.url
+      });
+    }, verifyToken]
+  }, HematologicalAssessmentController.show);
+}
+export default hematologicalAssessmentRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmh0eXNiZGlvNyIsImFjdHVhbENvdmVyYWdlIiwiSGVtYXRvbG9naWNhbEFzc2Vzc21lbnRDb250cm9sbGVyIiwidmVyaWZ5VG9rZW4iLCJoZW1hdG9sb2dpY2FsQXNzZXNzbWVudFJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiaW5kZXgiLCJoZW1hdG9sb2dpY2FsTGlzdCIsInBvc3QiLCJzdG9yZSIsInJlcXVlc3QiLCJyZXBseSIsImNvbnNvbGUiLCJsb2ciLCJ1cmwiLCJtZXRob2QiLCJwYXJhbXMiLCJpZCIsImZ1bGxVcmwiLCJzaG93Il0sInNvdXJjZXMiOlsiSGVtYXRvbG9naWNhbEFzc2Vzc21lbnQucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIZW1hdG9sb2dpY2FsQXNzZXNzbWVudENvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvSGVtYXRvbG9naWNhbEFzc2Vzc21lbnQuY29udHJvbGxlci5qc1wiO1xuaW1wb3J0IHsgdmVyaWZ5VG9rZW4gfSBmcm9tIFwiLi4vLi4vbWlkZGxld2FyZS9iZXR0ZXJBdXRoLm1pZGRsZXdhcmUuanNcIjtcblxuLy8gRmFzdGlmeSBwbHVnaW4gZm9yIGhlbWF0b2xvZ2ljYWwgYXNzZXNzbWVudCByb3V0ZXNcbmFzeW5jIGZ1bmN0aW9uIGhlbWF0b2xvZ2ljYWxBc3Nlc3NtZW50Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gSGVtYXRvbG9naWNhbCBBc3Nlc3NtZW50IFJvdXRlc1xuICBmYXN0aWZ5LmdldChcbiAgICBcIi9oZW1hdG9sb2dpY2FsLWFzc2Vzc21lbnRcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICAgIH0sXG4gICAgSGVtYXRvbG9naWNhbEFzc2Vzc21lbnRDb250cm9sbGVyLmluZGV4XG4gICk7XG4gIFxuICBmYXN0aWZ5LmdldChcbiAgICBcIi9oZW1hdG9sb2dpY2FsLWxpc3RcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICAgIH0sXG4gICAgSGVtYXRvbG9naWNhbEFzc2Vzc21lbnRDb250cm9sbGVyLmhlbWF0b2xvZ2ljYWxMaXN0XG4gICk7XG4gIFxuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvaGVtYXRvbG9naWNhbC1hc3Nlc3NtZW50L3N0b3JlXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgICB9LFxuICAgIEhlbWF0b2xvZ2ljYWxBc3Nlc3NtZW50Q29udHJvbGxlci5zdG9yZVxuICApO1xuICBcbiAgZmFzdGlmeS5nZXQoXG4gICAgXCIvaGVtYXRvbG9naWNhbC1hc3Nlc3NtZW50LzppZFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFtcbiAgICAgICAgYXN5bmMgKHJlcXVlc3QsIHJlcGx5KSA9PiB7XG4gICAgICAgICAgY29uc29sZS5sb2coXCLwn5SNIEhlbWF0b2xvZ2ljYWwgYXNzZXNzbWVudCBzaG93IHJvdXRlIGhpdDpcIiwge1xuICAgICAgICAgICAgdXJsOiByZXF1ZXN0LnVybCxcbiAgICAgICAgICAgIG1ldGhvZDogcmVxdWVzdC5tZXRob2QsXG4gICAgICAgICAgICBwYXJhbXM6IHJlcXVlc3QucGFyYW1zLFxuICAgICAgICAgICAgaWQ6IHJlcXVlc3QucGFyYW1zLmlkLFxuICAgICAgICAgICAgZnVsbFVybDogcmVxdWVzdC51cmxcbiAgICAgICAgICB9KTtcbiAgICAgICAgfSxcbiAgICAgICAgdmVyaWZ5VG9rZW5cbiAgICAgIF0sXG4gICAgfSxcbiAgICBIZW1hdG9sb2dpY2FsQXNzZXNzbWVudENvbnRyb2xsZXIuc2hvd1xuICApO1xufVxuXG5leHBvcnQgZGVmYXVsdCBoZW1hdG9sb2dpY2FsQXNzZXNzbWVudFJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxpQ0FBaUMsTUFBTSxpRUFBaUU7QUFDL0csU0FBU0MsV0FBVyxRQUFRLDJDQUEyQzs7QUFFdkU7QUFDQSxlQUFlQyw2QkFBNkJBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQU4sY0FBQSxHQUFBTyxDQUFBO0VBQUFQLGNBQUEsR0FBQVEsQ0FBQTtFQUM3RDtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FDVCwyQkFBMkIsRUFDM0I7SUFDRUMsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUNERCxpQ0FBaUMsQ0FBQ1MsS0FDcEMsQ0FBQztFQUFDO0VBQUFYLGNBQUEsR0FBQVEsQ0FBQTtFQUVGSCxPQUFPLENBQUNJLEdBQUcsQ0FDVCxxQkFBcUIsRUFDckI7SUFDRUMsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUNERCxpQ0FBaUMsQ0FBQ1UsaUJBQ3BDLENBQUM7RUFBQztFQUFBWixjQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDUSxJQUFJLENBQ1YsaUNBQWlDLEVBQ2pDO0lBQ0VILFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsaUNBQWlDLENBQUNZLEtBQ3BDLENBQUM7RUFBQztFQUFBZCxjQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDSSxHQUFHLENBQ1QsK0JBQStCLEVBQy9CO0lBQ0VDLFVBQVUsRUFBRSxDQUNWLE9BQU9LLE9BQU8sRUFBRUMsS0FBSyxLQUFLO01BQUE7TUFBQWhCLGNBQUEsR0FBQU8sQ0FBQTtNQUFBUCxjQUFBLEdBQUFRLENBQUE7TUFDeEJTLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDLDZDQUE2QyxFQUFFO1FBQ3pEQyxHQUFHLEVBQUVKLE9BQU8sQ0FBQ0ksR0FBRztRQUNoQkMsTUFBTSxFQUFFTCxPQUFPLENBQUNLLE1BQU07UUFDdEJDLE1BQU0sRUFBRU4sT0FBTyxDQUFDTSxNQUFNO1FBQ3RCQyxFQUFFLEVBQUVQLE9BQU8sQ0FBQ00sTUFBTSxDQUFDQyxFQUFFO1FBQ3JCQyxPQUFPLEVBQUVSLE9BQU8sQ0FBQ0k7TUFDbkIsQ0FBQyxDQUFDO0lBQ0osQ0FBQyxFQUNEaEIsV0FBVztFQUVmLENBQUMsRUFDREQsaUNBQWlDLENBQUNzQixJQUNwQyxDQUFDO0FBQ0g7QUFFQSxlQUFlcEIsNkJBQTZCIiwiaWdub3JlTGlzdCI6W119

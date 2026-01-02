@@ -1,0 +1,284 @@
+81cb020f29aa816a703f47a6652c80a6
+/* istanbul ignore next */
+function cov_2pv7usscn6() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/painadScale.routes.js";
+  var hash = "1afeb61810e0a8a1893f5054cd01c4b3a60cc3d8";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/painadScale.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 18,
+          column: 56
+        }
+      },
+      "1": {
+        start: {
+          line: 21,
+          column: 2
+        },
+        end: {
+          line: 23,
+          column: 41
+        }
+      },
+      "2": {
+        start: {
+          line: 26,
+          column: 2
+        },
+        end: {
+          line: 28,
+          column: 50
+        }
+      },
+      "3": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 33,
+          column: 50
+        }
+      },
+      "4": {
+        start: {
+          line: 40,
+          column: 2
+        },
+        end: {
+          line: 42,
+          column: 47
+        }
+      },
+      "5": {
+        start: {
+          line: 45,
+          column: 2
+        },
+        end: {
+          line: 47,
+          column: 40
+        }
+      },
+      "6": {
+        start: {
+          line: 50,
+          column: 2
+        },
+        end: {
+          line: 52,
+          column: 39
+        }
+      },
+      "7": {
+        start: {
+          line: 55,
+          column: 2
+        },
+        end: {
+          line: 57,
+          column: 41
+        }
+      },
+      "8": {
+        start: {
+          line: 60,
+          column: 2
+        },
+        end: {
+          line: 62,
+          column: 41
+        }
+      },
+      "9": {
+        start: {
+          line: 69,
+          column: 2
+        },
+        end: {
+          line: 71,
+          column: 39
+        }
+      },
+      "10": {
+        start: {
+          line: 74,
+          column: 2
+        },
+        end: {
+          line: 76,
+          column: 40
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "painadScaleRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 30
+          },
+          end: {
+            line: 10,
+            column: 47
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 66
+          },
+          end: {
+            line: 77,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "1afeb61810e0a8a1893f5054cd01c4b3a60cc3d8"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2pv7usscn6 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2pv7usscn6();
+import controller from '../controllers/PainadScale.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * PAINAD Scale Routes
+ * Pain Assessment in Advanced Dementia - Behavioral Pain Assessment Tool
+ * For dementia patients who cannot self-report pain
+ */
+export default async function painadScaleRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_2pv7usscn6().f[0]++;
+  cov_2pv7usscn6().s[0]++;
+  // =========================================
+  // Patient-specific assessment routes
+  // =========================================
+
+  // Get all PAINAD assessments for a patient
+  fastify.get('/patients/:patientId/painad-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientAssessments.bind(controller));
+
+  // Create a new PAINAD assessment for a patient
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[1]++;
+  fastify.post('/patients/:patientId/painad-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.create.bind(controller));
+
+  // Get PAINAD assessment statistics for a patient
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[2]++;
+  fastify.get('/patients/:patientId/painad-scales/stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientStats.bind(controller));
+
+  // Get PAINAD score trend for a patient
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[3]++;
+  fastify.get('/patients/:patientId/painad-scales/trend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientTrend.bind(controller));
+
+  // =========================================
+  // Assessment management routes
+  // =========================================
+
+  // Get PAINAD scoring reference (public within authenticated routes)
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[4]++;
+  fastify.get('/painad-scales/reference', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getReference.bind(controller));
+
+  // Get all PAINAD assessments (with filters)
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[5]++;
+  fastify.get('/painad-scales', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.index.bind(controller));
+
+  // Get a single PAINAD assessment by ID
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[6]++;
+  fastify.get('/painad-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.show.bind(controller));
+
+  // Update a PAINAD assessment
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[7]++;
+  fastify.patch('/painad-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.update.bind(controller));
+
+  // Delete a PAINAD assessment
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[8]++;
+  fastify.delete('/painad-scales/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.delete.bind(controller));
+
+  // =========================================
+  // Signature and compliance routes (21 CFR Part 11)
+  // =========================================
+
+  // Sign a PAINAD assessment
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[9]++;
+  fastify.post('/painad-scales/:id/sign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.sign.bind(controller));
+
+  // Amend a signed PAINAD assessment
+  /* istanbul ignore next */
+  cov_2pv7usscn6().s[10]++;
+  fastify.post('/painad-scales/:id/amend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.amend.bind(controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMnB2N3Vzc2NuNiIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJwYWluYWRTY2FsZVJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiVklFV19QQVRJRU5UIiwiVklFV19DTElOSUNBTF9OT1RFUyIsImdldFBhdGllbnRBc3Nlc3NtZW50cyIsImJpbmQiLCJwb3N0IiwiQ1JFQVRFX0NMSU5JQ0FMX05PVEVTIiwiY3JlYXRlIiwiZ2V0UGF0aWVudFN0YXRzIiwiZ2V0UGF0aWVudFRyZW5kIiwiZ2V0UmVmZXJlbmNlIiwiaW5kZXgiLCJzaG93IiwicGF0Y2giLCJVUERBVEVfQ0xJTklDQUxfTk9URVMiLCJ1cGRhdGUiLCJkZWxldGUiLCJERUxFVEVfQ0xJTklDQUxfTk9URVMiLCJzaWduIiwiYW1lbmQiXSwic291cmNlcyI6WyJwYWluYWRTY2FsZS5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNvbnRyb2xsZXIgZnJvbSAnLi4vY29udHJvbGxlcnMvUGFpbmFkU2NhbGUuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBQRVJNSVNTSU9OUyB9IGZyb20gJy4uL2NvbmZpZy9yYmFjLmpzJztcbmltcG9ydCB7IHJlcXVpcmVBbnlQZXJtaXNzaW9uIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIFBBSU5BRCBTY2FsZSBSb3V0ZXNcbiAqIFBhaW4gQXNzZXNzbWVudCBpbiBBZHZhbmNlZCBEZW1lbnRpYSAtIEJlaGF2aW9yYWwgUGFpbiBBc3Nlc3NtZW50IFRvb2xcbiAqIEZvciBkZW1lbnRpYSBwYXRpZW50cyB3aG8gY2Fubm90IHNlbGYtcmVwb3J0IHBhaW5cbiAqL1xuZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24gcGFpbmFkU2NhbGVSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBQYXRpZW50LXNwZWNpZmljIGFzc2Vzc21lbnQgcm91dGVzXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLy8gR2V0IGFsbCBQQUlOQUQgYXNzZXNzbWVudHMgZm9yIGEgcGF0aWVudFxuICBmYXN0aWZ5LmdldCgnL3BhdGllbnRzLzpwYXRpZW50SWQvcGFpbmFkLXNjYWxlcycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19QQVRJRU5ULCBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRQYXRpZW50QXNzZXNzbWVudHMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gQ3JlYXRlIGEgbmV3IFBBSU5BRCBhc3Nlc3NtZW50IGZvciBhIHBhdGllbnRcbiAgZmFzdGlmeS5wb3N0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9wYWluYWQtc2NhbGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmNyZWF0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgUEFJTkFEIGFzc2Vzc21lbnQgc3RhdGlzdGljcyBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkuZ2V0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9wYWluYWQtc2NhbGVzL3N0YXRzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1BBVElFTlQsIFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFBhdGllbnRTdGF0cy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgUEFJTkFEIHNjb3JlIHRyZW5kIGZvciBhIHBhdGllbnRcbiAgZmFzdGlmeS5nZXQoJy9wYXRpZW50cy86cGF0aWVudElkL3BhaW5hZC1zY2FsZXMvdHJlbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUEFUSUVOVCwgUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGF0aWVudFRyZW5kLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIEFzc2Vzc21lbnQgbWFuYWdlbWVudCByb3V0ZXNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBHZXQgUEFJTkFEIHNjb3JpbmcgcmVmZXJlbmNlIChwdWJsaWMgd2l0aGluIGF1dGhlbnRpY2F0ZWQgcm91dGVzKVxuICBmYXN0aWZ5LmdldCgnL3BhaW5hZC1zY2FsZXMvcmVmZXJlbmNlJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRSZWZlcmVuY2UuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGFsbCBQQUlOQUQgYXNzZXNzbWVudHMgKHdpdGggZmlsdGVycylcbiAgZmFzdGlmeS5nZXQoJy9wYWluYWQtc2NhbGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5pbmRleC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgYSBzaW5nbGUgUEFJTkFEIGFzc2Vzc21lbnQgYnkgSURcbiAgZmFzdGlmeS5nZXQoJy9wYWluYWQtc2NhbGVzLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuc2hvdy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBVcGRhdGUgYSBQQUlOQUQgYXNzZXNzbWVudFxuICBmYXN0aWZ5LnBhdGNoKCcvcGFpbmFkLXNjYWxlcy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIudXBkYXRlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIERlbGV0ZSBhIFBBSU5BRCBhc3Nlc3NtZW50XG4gIGZhc3RpZnkuZGVsZXRlKCcvcGFpbmFkLXNjYWxlcy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLkRFTEVURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZGVsZXRlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNpZ25hdHVyZSBhbmQgY29tcGxpYW5jZSByb3V0ZXMgKDIxIENGUiBQYXJ0IDExKVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIFNpZ24gYSBQQUlOQUQgYXNzZXNzbWVudFxuICBmYXN0aWZ5LnBvc3QoJy9wYWluYWQtc2NhbGVzLzppZC9zaWduJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnNpZ24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gQW1lbmQgYSBzaWduZWQgUEFJTkFEIGFzc2Vzc21lbnRcbiAgZmFzdGlmeS5wb3N0KCcvcGFpbmFkLXNjYWxlcy86aWQvYW1lbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuYW1lbmQuYmluZChjb250cm9sbGVyKSk7XG59XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxVQUFVLE1BQU0sMENBQTBDO0FBQ2pFLFNBQVNDLFdBQVcsUUFBUSxtQkFBbUI7QUFDL0MsU0FBU0Msb0JBQW9CLFFBQVEsa0NBQWtDOztBQUV2RTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsZUFBZSxlQUFlQyxpQkFBaUJBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVAsY0FBQSxHQUFBUSxDQUFBO0VBQUFSLGNBQUEsR0FBQVMsQ0FBQTtFQUNoRTtFQUNBO0VBQ0E7O0VBRUE7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsb0NBQW9DLEVBQUU7SUFDaERDLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDUyxZQUFZLEVBQUVULFdBQVcsQ0FBQ1UsbUJBQW1CLENBQUM7RUFDOUYsQ0FBQyxFQUFFWCxVQUFVLENBQUNZLHFCQUFxQixDQUFDQyxJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUVyRDtFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNVLElBQUksQ0FBQyxvQ0FBb0MsRUFBRTtJQUNqREwsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNjLHFCQUFxQixDQUFDO0VBQ3RFLENBQUMsRUFBRWYsVUFBVSxDQUFDZ0IsTUFBTSxDQUFDSCxJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUV0QztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQywwQ0FBMEMsRUFBRTtJQUN0REMsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNTLFlBQVksRUFBRVQsV0FBVyxDQUFDVSxtQkFBbUIsQ0FBQztFQUM5RixDQUFDLEVBQUVYLFVBQVUsQ0FBQ2lCLGVBQWUsQ0FBQ0osSUFBSSxDQUFDYixVQUFVLENBQUMsQ0FBQzs7RUFFL0M7RUFBQTtFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsMENBQTBDLEVBQUU7SUFDdERDLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDUyxZQUFZLEVBQUVULFdBQVcsQ0FBQ1UsbUJBQW1CLENBQUM7RUFDOUYsQ0FBQyxFQUFFWCxVQUFVLENBQUNrQixlQUFlLENBQUNMLElBQUksQ0FBQ2IsVUFBVSxDQUFDLENBQUM7O0VBRS9DO0VBQ0E7RUFDQTs7RUFFQTtFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQywwQkFBMEIsRUFBRTtJQUN0Q0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNVLG1CQUFtQixDQUFDO0VBQ3BFLENBQUMsRUFBRVgsVUFBVSxDQUFDbUIsWUFBWSxDQUFDTixJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUU1QztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxnQkFBZ0IsRUFBRTtJQUM1QkMsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNVLG1CQUFtQixDQUFDO0VBQ3BFLENBQUMsRUFBRVgsVUFBVSxDQUFDb0IsS0FBSyxDQUFDUCxJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUVyQztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxvQkFBb0IsRUFBRTtJQUNoQ0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNVLG1CQUFtQixDQUFDO0VBQ3BFLENBQUMsRUFBRVgsVUFBVSxDQUFDcUIsSUFBSSxDQUFDUixJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUVwQztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNrQixLQUFLLENBQUMsb0JBQW9CLEVBQUU7SUFDbENiLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDc0IscUJBQXFCLENBQUM7RUFDdEUsQ0FBQyxFQUFFdkIsVUFBVSxDQUFDd0IsTUFBTSxDQUFDWCxJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDOztFQUV0QztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNxQixNQUFNLENBQUMsb0JBQW9CLEVBQUU7SUFDbkNoQixVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ3lCLHFCQUFxQixDQUFDO0VBQ3RFLENBQUMsRUFBRTFCLFVBQVUsQ0FBQ3lCLE1BQU0sQ0FBQ1osSUFBSSxDQUFDYixVQUFVLENBQUMsQ0FBQzs7RUFFdEM7RUFDQTtFQUNBOztFQUVBO0VBQUE7RUFBQUYsY0FBQSxHQUFBUyxDQUFBO0VBQ0FILE9BQU8sQ0FBQ1UsSUFBSSxDQUFDLHlCQUF5QixFQUFFO0lBQ3RDTCxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ3NCLHFCQUFxQixDQUFDO0VBQ3RFLENBQUMsRUFBRXZCLFVBQVUsQ0FBQzJCLElBQUksQ0FBQ2QsSUFBSSxDQUFDYixVQUFVLENBQUMsQ0FBQzs7RUFFcEM7RUFBQTtFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDQUgsT0FBTyxDQUFDVSxJQUFJLENBQUMsMEJBQTBCLEVBQUU7SUFDdkNMLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDc0IscUJBQXFCLENBQUM7RUFDdEUsQ0FBQyxFQUFFdkIsVUFBVSxDQUFDNEIsS0FBSyxDQUFDZixJQUFJLENBQUNiLFVBQVUsQ0FBQyxDQUFDO0FBQ3ZDIiwiaWdub3JlTGlzdCI6W119

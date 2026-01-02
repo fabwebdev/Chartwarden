@@ -1,0 +1,85 @@
+06818b27b897ca9074eb710ffa8ca548
+/* istanbul ignore next */
+function cov_16yzjdy6wv() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/HisPdf.routes.js";
+  var hash = "8ec3dde700361d552764f70e513a343a2777e299";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/HisPdf.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 6,
+          column: 2
+        },
+        end: {
+          line: 6,
+          column: 48
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "hisPdfRoutes",
+        decl: {
+          start: {
+            line: 4,
+            column: 15
+          },
+          end: {
+            line: 4,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 4,
+            column: 46
+          },
+          end: {
+            line: 7,
+            column: 1
+          }
+        },
+        line: 4
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "8ec3dde700361d552764f70e513a343a2777e299"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_16yzjdy6wv = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_16yzjdy6wv();
+import { generatePdf } from "../../controllers/patient/HisPdf.controller.js";
+
+// Fastify plugin for HisPdf routes
+async function hisPdfRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_16yzjdy6wv().f[0]++;
+  cov_16yzjdy6wv().s[0]++;
+  // HisPdf Routes
+  fastify.get("/generate-his-pdf", generatePdf);
+}
+export default hisPdfRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTZ5empkeTZ3diIsImFjdHVhbENvdmVyYWdlIiwiZ2VuZXJhdGVQZGYiLCJoaXNQZGZSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0Il0sInNvdXJjZXMiOlsiSGlzUGRmLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBnZW5lcmF0ZVBkZiB9IGZyb20gXCIuLi8uLi9jb250cm9sbGVycy9wYXRpZW50L0hpc1BkZi5jb250cm9sbGVyLmpzXCI7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBIaXNQZGYgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBoaXNQZGZSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyBIaXNQZGYgUm91dGVzXG4gIGZhc3RpZnkuZ2V0KFwiL2dlbmVyYXRlLWhpcy1wZGZcIiwgZ2VuZXJhdGVQZGYpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBoaXNQZGZSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosU0FBU0UsV0FBVyxRQUFRLGdEQUFnRDs7QUFFNUU7QUFDQSxlQUFlQyxZQUFZQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFMLGNBQUEsR0FBQU0sQ0FBQTtFQUFBTixjQUFBLEdBQUFPLENBQUE7RUFDNUM7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsbUJBQW1CLEVBQUVOLFdBQVcsQ0FBQztBQUMvQztBQUVBLGVBQWVDLFlBQVkiLCJpZ25vcmVMaXN0IjpbXX0=

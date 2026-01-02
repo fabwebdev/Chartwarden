@@ -2,15 +2,22 @@
   "id": "user-roles-schema",
   "category": "Database",
   "title": "User Roles Database Schema",
-  "description": "Create database schemas for users, roles, permissions, and role-user relationships with Drizzle ORM.",
-  "status": "verified",
+  "description": "Create Database Schema for Role-Based Access Control (RBAC) System\n\nDesign and implement a complete database schema using Drizzle ORM to support user authentication and role-based authorization.\n\nRequirements:\n- Define a `users` table with essential fields (id, email, username, password hash, created_at, updated_at, is_active)\n- Create a `roles` table to store role definitions (id, name, description, created_at)\n- Define a `permissions` table for granular access control (id, name, resource, action, description)\n- Implement a many-to-many `user_roles` junction table linking users to their assigned roles\n- Implement a many-to-many `role_permissions` junction table linking roles to their permissions\n- Add appropriate indexes on foreign keys and frequently queried columns\n- Define proper relationships and foreign key constraints between tables\n- Include timestamps (created_at, updated_at) where relevant for audit trails\n- Use appropriate data types and constraints (NOT NULL, UNIQUE where applicable)\n- Add example seed data or migration files to demonstrate the schema structure\n\nEdge cases to consider:\n- Support for users with multiple roles\n- Roles with overlapping permissions\n- Soft delete capabilities (is_active flags) vs hard deletes\n- Case sensitivity for usernames/emails",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "postgresql-connection"
   ],
   "createdAt": "2025-12-31T05:55:26.233Z",
-  "updatedAt": "2025-12-31T07:56:22.512Z",
+  "updatedAt": "2026-01-02T15:16:30.122Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T07:47:17.738Z"
+  "startedAt": "2026-01-02T15:12:30.990Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

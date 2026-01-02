@@ -1,0 +1,263 @@
+d185c433376bbb3403929d2528c35ca4
+/* istanbul ignore next */
+function cov_115nazxquq() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/helpers/config.helpers.js";
+  var hash = "abde4ff1a473d65fa0071ea1417edc4e558c26f8";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/helpers/config.helpers.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 4
+        },
+        end: {
+          line: 10,
+          column: 41
+        }
+      },
+      "1": {
+        start: {
+          line: 19,
+          column: 4
+        },
+        end: {
+          line: 19,
+          column: 27
+        }
+      },
+      "2": {
+        start: {
+          line: 28,
+          column: 4
+        },
+        end: {
+          line: 28,
+          column: 27
+        }
+      },
+      "3": {
+        start: {
+          line: 36,
+          column: 4
+        },
+        end: {
+          line: 36,
+          column: 24
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "getConfig",
+        decl: {
+          start: {
+            line: 9,
+            column: 16
+          },
+          end: {
+            line: 9,
+            column: 25
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 52
+          },
+          end: {
+            line: 11,
+            column: 1
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "setConfig",
+        decl: {
+          start: {
+            line: 18,
+            column: 16
+          },
+          end: {
+            line: 18,
+            column: 25
+          }
+        },
+        loc: {
+          start: {
+            line: 18,
+            column: 38
+          },
+          end: {
+            line: 20,
+            column: 1
+          }
+        },
+        line: 18
+      },
+      "2": {
+        name: "hasConfig",
+        decl: {
+          start: {
+            line: 27,
+            column: 16
+          },
+          end: {
+            line: 27,
+            column: 25
+          }
+        },
+        loc: {
+          start: {
+            line: 27,
+            column: 31
+          },
+          end: {
+            line: 29,
+            column: 1
+          }
+        },
+        line: 27
+      },
+      "3": {
+        name: "getAllConfig",
+        decl: {
+          start: {
+            line: 35,
+            column: 16
+          },
+          end: {
+            line: 35,
+            column: 28
+          }
+        },
+        loc: {
+          start: {
+            line: 35,
+            column: 31
+          },
+          end: {
+            line: 37,
+            column: 1
+          }
+        },
+        line: 35
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 9,
+            column: 31
+          },
+          end: {
+            line: 9,
+            column: 50
+          }
+        },
+        type: "default-arg",
+        locations: [{
+          start: {
+            line: 9,
+            column: 46
+          },
+          end: {
+            line: 9,
+            column: 50
+          }
+        }],
+        line: 9
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {
+      "0": [0]
+    },
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "abde4ff1a473d65fa0071ea1417edc4e558c26f8"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_115nazxquq = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_115nazxquq();
+import config from '../config/config.js';
+
+/**
+ * Get a configuration value
+ * @param {String} key - Configuration key
+ * @param {any} defaultValue - Default value if key not found
+ * @return {any} - Configuration value
+ */
+export function getConfig(key, defaultValue =
+/* istanbul ignore next */
+(cov_115nazxquq().b[0][0]++, null)) {
+  /* istanbul ignore next */
+  cov_115nazxquq().f[0]++;
+  cov_115nazxquq().s[0]++;
+  return config.get(key, defaultValue);
+}
+
+/**
+ * Set a configuration value
+ * @param {String} key - Configuration key
+ * @param {any} value - Configuration value
+ */
+export function setConfig(key, value) {
+  /* istanbul ignore next */
+  cov_115nazxquq().f[1]++;
+  cov_115nazxquq().s[1]++;
+  config.set(key, value);
+}
+
+/**
+ * Check if a configuration key exists
+ * @param {String} key - Configuration key
+ * @return {Boolean}
+ */
+export function hasConfig(key) {
+  /* istanbul ignore next */
+  cov_115nazxquq().f[2]++;
+  cov_115nazxquq().s[2]++;
+  return config.has(key);
+}
+
+/**
+ * Get all configuration items
+ * @return {Object}
+ */
+export function getAllConfig() {
+  /* istanbul ignore next */
+  cov_115nazxquq().f[3]++;
+  cov_115nazxquq().s[3]++;
+  return config.all();
+}
+
+// Export config helpers
+export default config;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTE1bmF6eHF1cSIsImFjdHVhbENvdmVyYWdlIiwiY29uZmlnIiwiZ2V0Q29uZmlnIiwia2V5IiwiZGVmYXVsdFZhbHVlIiwiYiIsImYiLCJzIiwiZ2V0Iiwic2V0Q29uZmlnIiwidmFsdWUiLCJzZXQiLCJoYXNDb25maWciLCJoYXMiLCJnZXRBbGxDb25maWciLCJhbGwiXSwic291cmNlcyI6WyJjb25maWcuaGVscGVycy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29uZmlnIGZyb20gJy4uL2NvbmZpZy9jb25maWcuanMnO1xuXG4vKipcbiAqIEdldCBhIGNvbmZpZ3VyYXRpb24gdmFsdWVcbiAqIEBwYXJhbSB7U3RyaW5nfSBrZXkgLSBDb25maWd1cmF0aW9uIGtleVxuICogQHBhcmFtIHthbnl9IGRlZmF1bHRWYWx1ZSAtIERlZmF1bHQgdmFsdWUgaWYga2V5IG5vdCBmb3VuZFxuICogQHJldHVybiB7YW55fSAtIENvbmZpZ3VyYXRpb24gdmFsdWVcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIGdldENvbmZpZyhrZXksIGRlZmF1bHRWYWx1ZSA9IG51bGwpIHtcbiAgICByZXR1cm4gY29uZmlnLmdldChrZXksIGRlZmF1bHRWYWx1ZSk7XG59XG5cbi8qKlxuICogU2V0IGEgY29uZmlndXJhdGlvbiB2YWx1ZVxuICogQHBhcmFtIHtTdHJpbmd9IGtleSAtIENvbmZpZ3VyYXRpb24ga2V5XG4gKiBAcGFyYW0ge2FueX0gdmFsdWUgLSBDb25maWd1cmF0aW9uIHZhbHVlXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBzZXRDb25maWcoa2V5LCB2YWx1ZSkge1xuICAgIGNvbmZpZy5zZXQoa2V5LCB2YWx1ZSk7XG59XG5cbi8qKlxuICogQ2hlY2sgaWYgYSBjb25maWd1cmF0aW9uIGtleSBleGlzdHNcbiAqIEBwYXJhbSB7U3RyaW5nfSBrZXkgLSBDb25maWd1cmF0aW9uIGtleVxuICogQHJldHVybiB7Qm9vbGVhbn1cbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIGhhc0NvbmZpZyhrZXkpIHtcbiAgICByZXR1cm4gY29uZmlnLmhhcyhrZXkpO1xufVxuXG4vKipcbiAqIEdldCBhbGwgY29uZmlndXJhdGlvbiBpdGVtc1xuICogQHJldHVybiB7T2JqZWN0fVxuICovXG5leHBvcnQgZnVuY3Rpb24gZ2V0QWxsQ29uZmlnKCkge1xuICAgIHJldHVybiBjb25maWcuYWxsKCk7XG59XG5cbi8vIEV4cG9ydCBjb25maWcgaGVscGVyc1xuZXhwb3J0IGRlZmF1bHQgY29uZmlnOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxNQUFNLE1BQU0scUJBQXFCOztBQUV4QztBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxPQUFPLFNBQVNDLFNBQVNBLENBQUNDLEdBQUcsRUFBRUMsWUFBWTtBQUFBO0FBQUEsQ0FBQUwsY0FBQSxHQUFBTSxDQUFBLFVBQUcsSUFBSSxHQUFFO0VBQUE7RUFBQU4sY0FBQSxHQUFBTyxDQUFBO0VBQUFQLGNBQUEsR0FBQVEsQ0FBQTtFQUNoRCxPQUFPTixNQUFNLENBQUNPLEdBQUcsQ0FBQ0wsR0FBRyxFQUFFQyxZQUFZLENBQUM7QUFDeEM7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLE9BQU8sU0FBU0ssU0FBU0EsQ0FBQ04sR0FBRyxFQUFFTyxLQUFLLEVBQUU7RUFBQTtFQUFBWCxjQUFBLEdBQUFPLENBQUE7RUFBQVAsY0FBQSxHQUFBUSxDQUFBO0VBQ2xDTixNQUFNLENBQUNVLEdBQUcsQ0FBQ1IsR0FBRyxFQUFFTyxLQUFLLENBQUM7QUFDMUI7O0FBRUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLE9BQU8sU0FBU0UsU0FBU0EsQ0FBQ1QsR0FBRyxFQUFFO0VBQUE7RUFBQUosY0FBQSxHQUFBTyxDQUFBO0VBQUFQLGNBQUEsR0FBQVEsQ0FBQTtFQUMzQixPQUFPTixNQUFNLENBQUNZLEdBQUcsQ0FBQ1YsR0FBRyxDQUFDO0FBQzFCOztBQUVBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsT0FBTyxTQUFTVyxZQUFZQSxDQUFBLEVBQUc7RUFBQTtFQUFBZixjQUFBLEdBQUFPLENBQUE7RUFBQVAsY0FBQSxHQUFBUSxDQUFBO0VBQzNCLE9BQU9OLE1BQU0sQ0FBQ2MsR0FBRyxDQUFDLENBQUM7QUFDdkI7O0FBRUE7QUFDQSxlQUFlZCxNQUFNIiwiaWdub3JlTGlzdCI6W119

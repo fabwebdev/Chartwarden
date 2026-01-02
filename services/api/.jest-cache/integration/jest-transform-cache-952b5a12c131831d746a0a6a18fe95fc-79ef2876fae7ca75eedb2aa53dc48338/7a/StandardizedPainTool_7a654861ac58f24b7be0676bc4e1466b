@@ -1,0 +1,161 @@
+5ef254c3b084c90a4d073b790fce8323
+/* istanbul ignore next */
+function cov_2mm4u146t0() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/PainScreening/StandardizedPainTool.js";
+  var hash = "241e6e6ea89ef5c86552b6bd6af47e81ff92a9ec";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/PainScreening/StandardizedPainTool.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 29
+        },
+        end: {
+          line: 23,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 10,
+          column: 23
+        },
+        end: {
+          line: 16,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 18,
+          column: 8
+        },
+        end: {
+          line: 21,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 18,
+          column: 45
+        },
+        end: {
+          line: 21,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 13
+          },
+          end: {
+            line: 9,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 25
+          },
+          end: {
+            line: 22,
+            column: 5
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 18,
+            column: 26
+          },
+          end: {
+            line: 18,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 18,
+            column: 45
+          },
+          end: {
+            line: 21,
+            column: 9
+          }
+        },
+        line: 18
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "241e6e6ea89ef5c86552b6bd6af47e81ff92a9ec"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2mm4u146t0 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2mm4u146t0();
+// StandardizedPainTool enum equivalent
+const StandardizedPainTool =
+/* istanbul ignore next */
+(cov_2mm4u146t0().s[0]++, {
+  NUMERIC: "1. Numeric",
+  VERBAL_DESCRIPTOR: "2. Verbal descriptor",
+  PATIENT_VISUAL: "3. Patient visual",
+  STAFF_OBSERVATION: "4. Staff observation",
+  NO_STANDARDIZED_TOOL: "9. No standardized tool used",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_2mm4u146t0().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_2mm4u146t0().s[1]++, [this.NUMERIC, this.VERBAL_DESCRIPTOR, this.PATIENT_VISUAL, this.STAFF_OBSERVATION, this.NO_STANDARDIZED_TOOL]);
+    /* istanbul ignore next */
+    cov_2mm4u146t0().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_2mm4u146t0().f[1]++;
+      cov_2mm4u146t0().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default StandardizedPainTool;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMm1tNHUxNDZ0MCIsImFjdHVhbENvdmVyYWdlIiwiU3RhbmRhcmRpemVkUGFpblRvb2wiLCJzIiwiTlVNRVJJQyIsIlZFUkJBTF9ERVNDUklQVE9SIiwiUEFUSUVOVF9WSVNVQUwiLCJTVEFGRl9PQlNFUlZBVElPTiIsIk5PX1NUQU5EQVJESVpFRF9UT09MIiwidG9BcnJheSIsImYiLCJ2YWx1ZXMiLCJtYXAiLCJ2YWx1ZSIsImluZGV4IiwiaWQiXSwic291cmNlcyI6WyJTdGFuZGFyZGl6ZWRQYWluVG9vbC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBTdGFuZGFyZGl6ZWRQYWluVG9vbCBlbnVtIGVxdWl2YWxlbnRcbmNvbnN0IFN0YW5kYXJkaXplZFBhaW5Ub29sID0ge1xuICAgIE5VTUVSSUM6IFwiMS4gTnVtZXJpY1wiLFxuICAgIFZFUkJBTF9ERVNDUklQVE9SOiBcIjIuIFZlcmJhbCBkZXNjcmlwdG9yXCIsXG4gICAgUEFUSUVOVF9WSVNVQUw6IFwiMy4gUGF0aWVudCB2aXN1YWxcIixcbiAgICBTVEFGRl9PQlNFUlZBVElPTjogXCI0LiBTdGFmZiBvYnNlcnZhdGlvblwiLFxuICAgIE5PX1NUQU5EQVJESVpFRF9UT09MOiBcIjkuIE5vIHN0YW5kYXJkaXplZCB0b29sIHVzZWRcIixcblxuICAgIHRvQXJyYXk6IGZ1bmN0aW9uICgpIHtcbiAgICAgICAgY29uc3QgdmFsdWVzID0gW1xuICAgICAgICAgICAgdGhpcy5OVU1FUklDLFxuICAgICAgICAgICAgdGhpcy5WRVJCQUxfREVTQ1JJUFRPUixcbiAgICAgICAgICAgIHRoaXMuUEFUSUVOVF9WSVNVQUwsXG4gICAgICAgICAgICB0aGlzLlNUQUZGX09CU0VSVkFUSU9OLFxuICAgICAgICAgICAgdGhpcy5OT19TVEFOREFSRElaRURfVE9PTCxcbiAgICAgICAgXTtcblxuICAgICAgICByZXR1cm4gdmFsdWVzLm1hcCgodmFsdWUsIGluZGV4KSA9PiAoe1xuICAgICAgICAgICAgaWQ6IGluZGV4LFxuICAgICAgICAgICAgdmFsdWU6IHZhbHVlLFxuICAgICAgICB9KSk7XG4gICAgfSxcbn07XG5cbmV4cG9ydCBkZWZhdWx0IFN0YW5kYXJkaXplZFBhaW5Ub29sO1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWjtBQUNBLE1BQU1FLG9CQUFvQjtBQUFBO0FBQUEsQ0FBQUYsY0FBQSxHQUFBRyxDQUFBLE9BQUc7RUFDekJDLE9BQU8sRUFBRSxZQUFZO0VBQ3JCQyxpQkFBaUIsRUFBRSxzQkFBc0I7RUFDekNDLGNBQWMsRUFBRSxtQkFBbUI7RUFDbkNDLGlCQUFpQixFQUFFLHNCQUFzQjtFQUN6Q0Msb0JBQW9CLEVBQUUsOEJBQThCO0VBRXBEQyxPQUFPLEVBQUUsU0FBQUEsQ0FBQSxFQUFZO0lBQUE7SUFBQVQsY0FBQSxHQUFBVSxDQUFBO0lBQ2pCLE1BQU1DLE1BQU07SUFBQTtJQUFBLENBQUFYLGNBQUEsR0FBQUcsQ0FBQSxPQUFHLENBQ1gsSUFBSSxDQUFDQyxPQUFPLEVBQ1osSUFBSSxDQUFDQyxpQkFBaUIsRUFDdEIsSUFBSSxDQUFDQyxjQUFjLEVBQ25CLElBQUksQ0FBQ0MsaUJBQWlCLEVBQ3RCLElBQUksQ0FBQ0Msb0JBQW9CLENBQzVCO0lBQUM7SUFBQVIsY0FBQSxHQUFBRyxDQUFBO0lBRUYsT0FBT1EsTUFBTSxDQUFDQyxHQUFHLENBQUMsQ0FBQ0MsS0FBSyxFQUFFQyxLQUFLLEtBQU07TUFBQTtNQUFBZCxjQUFBLEdBQUFVLENBQUE7TUFBQVYsY0FBQSxHQUFBRyxDQUFBO01BQUE7UUFDakNZLEVBQUUsRUFBRUQsS0FBSztRQUNURCxLQUFLLEVBQUVBO01BQ1gsQ0FBQztJQUFELENBQUUsQ0FBQztFQUNQO0FBQ0osQ0FBQztBQUVELGVBQWVYLG9CQUFvQiIsImlnbm9yZUxpc3QiOltdfQ==

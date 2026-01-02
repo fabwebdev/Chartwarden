@@ -2,8 +2,8 @@
   "id": "denial-management-ui",
   "category": "UI",
   "title": "Denial Management Dashboard UI",
-  "description": "Create denial tracking dashboard with analytics, appeal management, and trend reporting.",
-  "status": "verified",
+  "description": "Create Denial Tracking Dashboard with Analytics, Appeal Management, and Trend Reporting\n\nBuild a comprehensive dashboard for monitoring claim denials, managing appeals, and analyzing denial trends across time periods and categories.\n\nTechnical Implementation:\n\n**Backend Architecture:**\n- REST API Endpoints:\n  - GET /api/denials?status={status}&dateRange={range}&page={page} - List denials with filtering\n  - GET /api/denials/:id - Denial details\n  - POST /api/denials/:id/appeal - Submit appeal with supporting documents\n  - PUT /api/denials/:id/status - Update denial/appeal status\n  - GET /api/analytics/denials - Aggregate metrics and trends\n  - GET /api/analytics/trends?groupBy={dimension}&period={period} - Trend analysis\n\n**Data Model:**\n- Denial entity: id, claimId, denialCode, denialReason, denialDate, amount, status, appealDeadline, payerId\n- Appeal entity: id, denialId, submittedDate, documents, notes, status, resolution, resolvedDate\n- DenialCode lookup: code, category, description, appealSuccess rate\n\n**Database:**\n- Indexed queries on denialDate, status, denialCode for fast filtering\n- Materialized views for analytics aggregations (daily denial counts, category rollups)\n- Partitioning on denialDate for large historical datasets\n\n**Frontend Components:**\n- DashboardOverview: KPI cards (total denials, appeal rate, recovery amount, avg resolution time)\n- DenialsList: Sortable/filterable table with pagination, export to CSV\n- DenialDetails: Modal/page with full claim context and appeal history\n- AppealForm: Multi-step form with document upload and validation\n- AnalyticsCharts: \n  - Time series chart (denial volume over time)\n  - Category breakdown (pie/bar chart by denial reason)\n  - Trend analysis (week-over-week, month-over-month comparisons)\n  - Top denial codes table\n- FilterPanel: Date range picker, status filters, payer filters, denial code filters\n\n**State Management:**\n- React Query/SWR for server state caching and invalidation\n- Local filters state with URL sync for shareable dashboard views\n- Optimistic updates for status changes\n\n**Analytics Engine:**\n- Time-based aggregations: daily, weekly, monthly groupings\n- Dimensional analysis: by denial code, payer, claim type, provider\n- Calculated metrics: appeal success rate, average days to resolution, recovery percentage\n- Comparative analysis: current period vs previous period\n\n**File Handling:**\n- Appeal document upload: Support PDF, images (max 10MB per file)\n- Cloud storage integration (S3/Azure Blob) with signed URLs\n- Document preview capability\n\n**Performance:**\n- Redis caching for analytics queries (15-minute TTL)\n- Lazy loading for large denial lists (virtual scrolling)\n- Background jobs for metrics recalculation\n- Database query optimization with proper indexes\n\n**Security:**\n- Role-based access: View denials, Submit appeals, Manage appeals\n- Audit logging for all appeal actions\n- PHI/PII data encryption at rest and in transit\n\n**Edge Cases:**\n- Handle missing denial codes gracefully\n- Display appeal deadline warnings (< 7 days)\n- Empty states for new users/date ranges with no data\n- Handle concurrent appeal submissions\n- Timeout handling for long-running analytics queries",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
@@ -11,6 +11,14 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.257Z",
-  "updatedAt": "2025-12-31T20:11:06.063Z",
-  "startedAt": "2025-12-31T19:58:51.204Z"
+  "updatedAt": "2026-01-02T15:58:18.537Z",
+  "startedAt": "2026-01-02T15:55:32.265Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

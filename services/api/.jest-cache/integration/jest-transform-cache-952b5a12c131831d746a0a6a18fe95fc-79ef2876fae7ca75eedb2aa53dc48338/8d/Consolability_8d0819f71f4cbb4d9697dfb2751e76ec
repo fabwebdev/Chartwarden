@@ -1,0 +1,158 @@
+9a1d1c345f50a7fecdc990f8e7277776
+/* istanbul ignore next */
+function cov_2mbgnevsot() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/Consolability.js";
+  var hash = "70973da5dbc89e223d0f777a114d3c6b01a092db";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/Consolability.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 1,
+          column: 22
+        },
+        end: {
+          line: 18,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 7,
+          column: 23
+        },
+        end: {
+          line: 11,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 13,
+          column: 8
+        },
+        end: {
+          line: 16,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 13,
+          column: 45
+        },
+        end: {
+          line: 16,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 13
+          },
+          end: {
+            line: 6,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 25
+          },
+          end: {
+            line: 17,
+            column: 5
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 13,
+            column: 26
+          },
+          end: {
+            line: 13,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 13,
+            column: 45
+          },
+          end: {
+            line: 16,
+            column: 9
+          }
+        },
+        line: 13
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "70973da5dbc89e223d0f777a114d3c6b01a092db"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2mbgnevsot = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2mbgnevsot();
+const Consolability =
+/* istanbul ignore next */
+(cov_2mbgnevsot().s[0]++, {
+  NO_NEED_TO_CONSOLE: "No need to console (0)",
+  DISTRACTED_OR_REASSURED: "Distracted or reassured by voice or touch (1)",
+  UNABLE_TO_CONSOLE: "Unable to console, distract, reassure (2)",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_2mbgnevsot().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_2mbgnevsot().s[1]++, [this.NO_NEED_TO_CONSOLE, this.DISTRACTED_OR_REASSURED, this.UNABLE_TO_CONSOLE]);
+    /* istanbul ignore next */
+    cov_2mbgnevsot().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_2mbgnevsot().f[1]++;
+      cov_2mbgnevsot().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default Consolability;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMm1iZ25ldnNvdCIsImFjdHVhbENvdmVyYWdlIiwiQ29uc29sYWJpbGl0eSIsInMiLCJOT19ORUVEX1RPX0NPTlNPTEUiLCJESVNUUkFDVEVEX09SX1JFQVNTVVJFRCIsIlVOQUJMRV9UT19DT05TT0xFIiwidG9BcnJheSIsImYiLCJ2YWx1ZXMiLCJtYXAiLCJ2YWx1ZSIsImluZGV4IiwiaWQiXSwic291cmNlcyI6WyJDb25zb2xhYmlsaXR5LmpzIl0sInNvdXJjZXNDb250ZW50IjpbImNvbnN0IENvbnNvbGFiaWxpdHkgPSB7XG4gICAgTk9fTkVFRF9UT19DT05TT0xFOiBcIk5vIG5lZWQgdG8gY29uc29sZSAoMClcIixcbiAgICBESVNUUkFDVEVEX09SX1JFQVNTVVJFRDogXCJEaXN0cmFjdGVkIG9yIHJlYXNzdXJlZCBieSB2b2ljZSBvciB0b3VjaCAoMSlcIixcbiAgICBVTkFCTEVfVE9fQ09OU09MRTogXCJVbmFibGUgdG8gY29uc29sZSwgZGlzdHJhY3QsIHJlYXNzdXJlICgyKVwiLFxuXG4gICAgdG9BcnJheTogZnVuY3Rpb24gKCkge1xuICAgICAgICBjb25zdCB2YWx1ZXMgPSBbXG4gICAgICAgICAgICB0aGlzLk5PX05FRURfVE9fQ09OU09MRSxcbiAgICAgICAgICAgIHRoaXMuRElTVFJBQ1RFRF9PUl9SRUFTU1VSRUQsXG4gICAgICAgICAgICB0aGlzLlVOQUJMRV9UT19DT05TT0xFLFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXgsXG4gICAgICAgICAgICB2YWx1ZTogdmFsdWUsXG4gICAgICAgIH0pKTtcbiAgICB9LFxufTtcblxuZXhwb3J0IGRlZmF1bHQgQ29uc29sYWJpbGl0eTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosTUFBTUUsYUFBYTtBQUFBO0FBQUEsQ0FBQUYsY0FBQSxHQUFBRyxDQUFBLE9BQUc7RUFDbEJDLGtCQUFrQixFQUFFLHdCQUF3QjtFQUM1Q0MsdUJBQXVCLEVBQUUsK0NBQStDO0VBQ3hFQyxpQkFBaUIsRUFBRSwyQ0FBMkM7RUFFOURDLE9BQU8sRUFBRSxTQUFBQSxDQUFBLEVBQVk7SUFBQTtJQUFBUCxjQUFBLEdBQUFRLENBQUE7SUFDakIsTUFBTUMsTUFBTTtJQUFBO0lBQUEsQ0FBQVQsY0FBQSxHQUFBRyxDQUFBLE9BQUcsQ0FDWCxJQUFJLENBQUNDLGtCQUFrQixFQUN2QixJQUFJLENBQUNDLHVCQUF1QixFQUM1QixJQUFJLENBQUNDLGlCQUFpQixDQUN6QjtJQUFDO0lBQUFOLGNBQUEsR0FBQUcsQ0FBQTtJQUVGLE9BQU9NLE1BQU0sQ0FBQ0MsR0FBRyxDQUFDLENBQUNDLEtBQUssRUFBRUMsS0FBSyxLQUFNO01BQUE7TUFBQVosY0FBQSxHQUFBUSxDQUFBO01BQUFSLGNBQUEsR0FBQUcsQ0FBQTtNQUFBO1FBQ2pDVSxFQUFFLEVBQUVELEtBQUs7UUFDVEQsS0FBSyxFQUFFQTtNQUNYLENBQUM7SUFBRCxDQUFFLENBQUM7RUFDUDtBQUNKLENBQUM7QUFFRCxlQUFlVCxhQUFhIiwiaWdub3JlTGlzdCI6W119

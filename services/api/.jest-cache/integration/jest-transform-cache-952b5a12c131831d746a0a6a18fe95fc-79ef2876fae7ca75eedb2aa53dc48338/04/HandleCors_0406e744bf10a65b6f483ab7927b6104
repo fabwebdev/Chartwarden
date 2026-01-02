@@ -1,0 +1,129 @@
+e9409ad0b7dd44f650e179204ab3fc4d
+/* istanbul ignore next */
+function cov_yls8sbek2() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/HandleCors.js";
+  var hash = "44c5f1c48b0f3d36306cee5038b984e344846726";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/HandleCors.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 19
+        },
+        end: {
+          line: 10,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 9,
+          column: 2
+        },
+        end: {
+          line: 9,
+          column: 50
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 7,
+            column: 19
+          },
+          end: {
+            line: 7,
+            column: 20
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 45
+          },
+          end: {
+            line: 10,
+            column: 1
+          }
+        },
+        line: 7
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 9,
+            column: 40
+          },
+          end: {
+            line: 9,
+            column: 41
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 46
+          },
+          end: {
+            line: 9,
+            column: 48
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "44c5f1c48b0f3d36306cee5038b984e344846726"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_yls8sbek2 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_yls8sbek2();
+import corsMiddleware from "../../middleware/cors.middleware.js";
+
+/**
+ * Handle CORS middleware (Fastify compatible)
+ * This is a wrapper to make the custom corsMiddleware compatible with the HTTP Kernel
+ */
+/* istanbul ignore next */
+cov_yls8sbek2().s[0]++;
+const HandleCors = async (request, reply) => {
+  /* istanbul ignore next */
+  cov_yls8sbek2().f[0]++;
+  cov_yls8sbek2().s[1]++;
+  // corsMiddleware is already a Fastify hook, so we can call it directly
+  return corsMiddleware(request, reply, () => {
+    /* istanbul ignore next */
+    cov_yls8sbek2().f[1]++;
+  });
+};
+export default HandleCors;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfeWxzOHNiZWsyIiwiYWN0dWFsQ292ZXJhZ2UiLCJjb3JzTWlkZGxld2FyZSIsInMiLCJIYW5kbGVDb3JzIiwicmVxdWVzdCIsInJlcGx5IiwiZiJdLCJzb3VyY2VzIjpbIkhhbmRsZUNvcnMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNvcnNNaWRkbGV3YXJlIGZyb20gXCIuLi8uLi9taWRkbGV3YXJlL2NvcnMubWlkZGxld2FyZS5qc1wiO1xuXG4vKipcbiAqIEhhbmRsZSBDT1JTIG1pZGRsZXdhcmUgKEZhc3RpZnkgY29tcGF0aWJsZSlcbiAqIFRoaXMgaXMgYSB3cmFwcGVyIHRvIG1ha2UgdGhlIGN1c3RvbSBjb3JzTWlkZGxld2FyZSBjb21wYXRpYmxlIHdpdGggdGhlIEhUVFAgS2VybmVsXG4gKi9cbmNvbnN0IEhhbmRsZUNvcnMgPSBhc3luYyAocmVxdWVzdCwgcmVwbHkpID0+IHtcbiAgLy8gY29yc01pZGRsZXdhcmUgaXMgYWxyZWFkeSBhIEZhc3RpZnkgaG9vaywgc28gd2UgY2FuIGNhbGwgaXQgZGlyZWN0bHlcbiAgcmV0dXJuIGNvcnNNaWRkbGV3YXJlKHJlcXVlc3QsIHJlcGx5LCAoKSA9PiB7fSk7XG59O1xuXG5leHBvcnQgZGVmYXVsdCBIYW5kbGVDb3JzOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWixPQUFPRSxjQUFjLE1BQU0scUNBQXFDOztBQUVoRTtBQUNBO0FBQ0E7QUFDQTtBQUhBO0FBQUFGLGFBQUEsR0FBQUcsQ0FBQTtBQUlBLE1BQU1DLFVBQVUsR0FBRyxNQUFBQSxDQUFPQyxPQUFPLEVBQUVDLEtBQUssS0FBSztFQUFBO0VBQUFOLGFBQUEsR0FBQU8sQ0FBQTtFQUFBUCxhQUFBLEdBQUFHLENBQUE7RUFDM0M7RUFDQSxPQUFPRCxjQUFjLENBQUNHLE9BQU8sRUFBRUMsS0FBSyxFQUFFLE1BQU07SUFBQTtJQUFBTixhQUFBLEdBQUFPLENBQUE7RUFBQyxDQUFDLENBQUM7QUFDakQsQ0FBQztBQUVELGVBQWVILFVBQVUiLCJpZ25vcmVMaXN0IjpbXX0=

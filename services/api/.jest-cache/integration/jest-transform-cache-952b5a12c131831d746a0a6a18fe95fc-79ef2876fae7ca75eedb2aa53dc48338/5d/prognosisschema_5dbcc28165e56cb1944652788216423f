@@ -1,0 +1,114 @@
+1d9a041a3886a5f19c2950e45fc3f1e2
+/* istanbul ignore next */
+function cov_1myjb6zfum() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/prognosis.schema.js";
+  var hash = "2ba3e44c12625e9b794dced8503c487de4c21d77";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/prognosis.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 4,
+          column: 25
+        },
+        end: {
+          line: 13,
+          column: 2
+        }
+      },
+      "1": {
+        start: {
+          line: 6,
+          column: 82
+        },
+        end: {
+          line: 6,
+          column: 93
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 76
+          },
+          end: {
+            line: 6,
+            column: 77
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 82
+          },
+          end: {
+            line: 6,
+            column: 93
+          }
+        },
+        line: 6
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "2ba3e44c12625e9b794dced8503c487de4c21d77"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1myjb6zfum = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1myjb6zfum();
+import { pgTable, bigint, boolean, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { patients } from './patient.schema.js';
+export const prognosis =
+/* istanbul ignore next */
+(cov_1myjb6zfum().s[0]++, pgTable('prognosis', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).notNull().references(() => {
+    /* istanbul ignore next */
+    cov_1myjb6zfum().f[0]++;
+    cov_1myjb6zfum().s[1]++;
+    return patients.id;
+  }),
+  prognosis_patient_is_imminent: boolean('prognosis_patient_is_imminent'),
+  prognosis_patient_id: varchar('prognosis_patient_id', {
+    length: 255
+  }),
+  prognosis_caregiver_id: varchar('prognosis_caregiver_id', {
+    length: 255
+  }),
+  prognosis_imminence_id: varchar('prognosis_imminence_id', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMW15amI2emZ1bSIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsImJvb2xlYW4iLCJ2YXJjaGFyIiwidGltZXN0YW1wIiwicGF0aWVudHMiLCJwcm9nbm9zaXMiLCJzIiwiaWQiLCJtb2RlIiwicHJpbWFyeUtleSIsImdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkiLCJwYXRpZW50X2lkIiwibm90TnVsbCIsInJlZmVyZW5jZXMiLCJmIiwicHJvZ25vc2lzX3BhdGllbnRfaXNfaW1taW5lbnQiLCJwcm9nbm9zaXNfcGF0aWVudF9pZCIsImxlbmd0aCIsInByb2dub3Npc19jYXJlZ2l2ZXJfaWQiLCJwcm9nbm9zaXNfaW1taW5lbmNlX2lkIiwiY3JlYXRlZEF0IiwiZGVmYXVsdE5vdyIsInVwZGF0ZWRBdCJdLCJzb3VyY2VzIjpbInByb2dub3Npcy5zY2hlbWEuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGdUYWJsZSwgYmlnaW50LCBib29sZWFuLCB2YXJjaGFyLCB0aW1lc3RhbXAgfSBmcm9tICdkcml6emxlLW9ybS9wZy1jb3JlJztcbmltcG9ydCB7IHBhdGllbnRzIH0gZnJvbSAnLi9wYXRpZW50LnNjaGVtYS5qcyc7XG5cbmV4cG9ydCBjb25zdCBwcm9nbm9zaXMgPSBwZ1RhYmxlKCdwcm9nbm9zaXMnLCB7XG4gIGlkOiBiaWdpbnQoJ2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5wcmltYXJ5S2V5KCkuZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSgpLFxuICBwYXRpZW50X2lkOiBiaWdpbnQoJ3BhdGllbnRfaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLm5vdE51bGwoKS5yZWZlcmVuY2VzKCgpID0+IHBhdGllbnRzLmlkKSxcbiAgcHJvZ25vc2lzX3BhdGllbnRfaXNfaW1taW5lbnQ6IGJvb2xlYW4oJ3Byb2dub3Npc19wYXRpZW50X2lzX2ltbWluZW50JyksXG4gIHByb2dub3Npc19wYXRpZW50X2lkOiB2YXJjaGFyKCdwcm9nbm9zaXNfcGF0aWVudF9pZCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIHByb2dub3Npc19jYXJlZ2l2ZXJfaWQ6IHZhcmNoYXIoJ3Byb2dub3Npc19jYXJlZ2l2ZXJfaWQnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBwcm9nbm9zaXNfaW1taW5lbmNlX2lkOiB2YXJjaGFyKCdwcm9nbm9zaXNfaW1taW5lbmNlX2lkJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY3JlYXRlZEF0OiB0aW1lc3RhbXAoJ2NyZWF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxuICB1cGRhdGVkQXQ6IHRpbWVzdGFtcCgndXBkYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG59KTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxPQUFPLEVBQUVDLE1BQU0sRUFBRUMsT0FBTyxFQUFFQyxPQUFPLEVBQUVDLFNBQVMsUUFBUSxxQkFBcUI7QUFDbEYsU0FBU0MsUUFBUSxRQUFRLHFCQUFxQjtBQUU5QyxPQUFPLE1BQU1DLFNBQVM7QUFBQTtBQUFBLENBQUFSLGNBQUEsR0FBQVMsQ0FBQSxPQUFHUCxPQUFPLENBQUMsV0FBVyxFQUFFO0VBQzVDUSxFQUFFLEVBQUVQLE1BQU0sQ0FBQyxJQUFJLEVBQUU7SUFBRVEsSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNDLFVBQVUsQ0FBQyxDQUFDLENBQUNDLDRCQUE0QixDQUFDLENBQUM7RUFDaEZDLFVBQVUsRUFBRVgsTUFBTSxDQUFDLFlBQVksRUFBRTtJQUFFUSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0ksT0FBTyxDQUFDLENBQUMsQ0FBQ0MsVUFBVSxDQUFDLE1BQU07SUFBQTtJQUFBaEIsY0FBQSxHQUFBaUIsQ0FBQTtJQUFBakIsY0FBQSxHQUFBUyxDQUFBO0lBQUEsT0FBQUYsUUFBUSxDQUFDRyxFQUFFO0VBQUQsQ0FBQyxDQUFDO0VBQzVGUSw2QkFBNkIsRUFBRWQsT0FBTyxDQUFDLCtCQUErQixDQUFDO0VBQ3ZFZSxvQkFBb0IsRUFBRWQsT0FBTyxDQUFDLHNCQUFzQixFQUFFO0lBQUVlLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUN0RUMsc0JBQXNCLEVBQUVoQixPQUFPLENBQUMsd0JBQXdCLEVBQUU7SUFBRWUsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzFFRSxzQkFBc0IsRUFBRWpCLE9BQU8sQ0FBQyx3QkFBd0IsRUFBRTtJQUFFZSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDMUVHLFNBQVMsRUFBRWpCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ2tCLFVBQVUsQ0FBQyxDQUFDLENBQUNULE9BQU8sQ0FBQyxDQUFDO0VBQ3pEVSxTQUFTLEVBQUVuQixTQUFTLENBQUMsWUFBWSxDQUFDLENBQUNrQixVQUFVLENBQUMsQ0FBQyxDQUFDVCxPQUFPLENBQUM7QUFDMUQsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

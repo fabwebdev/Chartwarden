@@ -21,8 +21,7 @@ import {
   Chip,
   Card,
   CardContent,
-  Alert,
-  SelectChangeEvent
+  Alert
 } from '@mui/material';
 import { ArrowDown2, Add, Trash, Warning2 } from 'iconsax-react';
 import { HOPEAssessmentFormData } from '../../../../api/hopeAssessment';

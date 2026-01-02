@@ -1,0 +1,141 @@
+d837cdcf5b0cb030d98bfbef3c9ec349
+/* istanbul ignore next */
+function cov_9f0zpando() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/LiaisonSecondary.routes.js";
+  var hash = "a1e69a1206d5b6cdd692ae32c5af5563e0715649";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/LiaisonSecondary.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 2
+        },
+        end: {
+          line: 12,
+          column: 42
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 49
+        }
+      },
+      "2": {
+        start: {
+          line: 14,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 45
+        }
+      },
+      "3": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 15,
+          column: 47
+        }
+      },
+      "4": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 16,
+          column: 51
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "liaisonSecondaryRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 15
+          },
+          end: {
+            line: 10,
+            column: 37
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 56
+          },
+          end: {
+            line: 17,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "a1e69a1206d5b6cdd692ae32c5af5563e0715649"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_9f0zpando = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_9f0zpando();
+import { index, store, show, update, destroy } from "../../controllers/patient/LiaisonSecondary.controller.js";
+
+// Fastify plugin for liaison secondary routes
+async function liaisonSecondaryRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_9f0zpando().f[0]++;
+  cov_9f0zpando().s[0]++;
+  // Liaison Secondary Routes
+  fastify.get("/liaisonSecondary", index);
+  /* istanbul ignore next */
+  cov_9f0zpando().s[1]++;
+  fastify.post("/liaisonSecondary/store", store);
+  /* istanbul ignore next */
+  cov_9f0zpando().s[2]++;
+  fastify.get("/liaisonSecondary/:id", show);
+  /* istanbul ignore next */
+  cov_9f0zpando().s[3]++;
+  fastify.put("/liaisonSecondary/:id", update);
+  /* istanbul ignore next */
+  cov_9f0zpando().s[4]++;
+  fastify.delete("/liaisonSecondary/:id", destroy);
+}
+export default liaisonSecondaryRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfOWYwenBhbmRvIiwiYWN0dWFsQ292ZXJhZ2UiLCJpbmRleCIsInN0b3JlIiwic2hvdyIsInVwZGF0ZSIsImRlc3Ryb3kiLCJsaWFpc29uU2Vjb25kYXJ5Um91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsImdldCIsInBvc3QiLCJwdXQiLCJkZWxldGUiXSwic291cmNlcyI6WyJMaWFpc29uU2Vjb25kYXJ5LnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQge1xuICAgIGluZGV4LFxuICAgIHN0b3JlLFxuICAgIHNob3csXG4gICAgdXBkYXRlLFxuICAgIGRlc3Ryb3ksXG59IGZyb20gXCIuLi8uLi9jb250cm9sbGVycy9wYXRpZW50L0xpYWlzb25TZWNvbmRhcnkuY29udHJvbGxlci5qc1wiO1xuXG4vLyBGYXN0aWZ5IHBsdWdpbiBmb3IgbGlhaXNvbiBzZWNvbmRhcnkgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBsaWFpc29uU2Vjb25kYXJ5Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gTGlhaXNvbiBTZWNvbmRhcnkgUm91dGVzXG4gIGZhc3RpZnkuZ2V0KFwiL2xpYWlzb25TZWNvbmRhcnlcIiwgaW5kZXgpO1xuICBmYXN0aWZ5LnBvc3QoXCIvbGlhaXNvblNlY29uZGFyeS9zdG9yZVwiLCBzdG9yZSk7XG4gIGZhc3RpZnkuZ2V0KFwiL2xpYWlzb25TZWNvbmRhcnkvOmlkXCIsIHNob3cpO1xuICBmYXN0aWZ5LnB1dChcIi9saWFpc29uU2Vjb25kYXJ5LzppZFwiLCB1cGRhdGUpO1xuICBmYXN0aWZ5LmRlbGV0ZShcIi9saWFpc29uU2Vjb25kYXJ5LzppZFwiLCBkZXN0cm95KTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgbGlhaXNvblNlY29uZGFyeVJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLFNBQ0lFLEtBQUssRUFDTEMsS0FBSyxFQUNMQyxJQUFJLEVBQ0pDLE1BQU0sRUFDTkMsT0FBTyxRQUNKLDBEQUEwRDs7QUFFakU7QUFDQSxlQUFlQyxzQkFBc0JBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVQsYUFBQSxHQUFBVSxDQUFBO0VBQUFWLGFBQUEsR0FBQVcsQ0FBQTtFQUN0RDtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxtQkFBbUIsRUFBRVYsS0FBSyxDQUFDO0VBQUM7RUFBQUYsYUFBQSxHQUFBVyxDQUFBO0VBQ3hDSCxPQUFPLENBQUNLLElBQUksQ0FBQyx5QkFBeUIsRUFBRVYsS0FBSyxDQUFDO0VBQUM7RUFBQUgsYUFBQSxHQUFBVyxDQUFBO0VBQy9DSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyx1QkFBdUIsRUFBRVIsSUFBSSxDQUFDO0VBQUM7RUFBQUosYUFBQSxHQUFBVyxDQUFBO0VBQzNDSCxPQUFPLENBQUNNLEdBQUcsQ0FBQyx1QkFBdUIsRUFBRVQsTUFBTSxDQUFDO0VBQUM7RUFBQUwsYUFBQSxHQUFBVyxDQUFBO0VBQzdDSCxPQUFPLENBQUNPLE1BQU0sQ0FBQyx1QkFBdUIsRUFBRVQsT0FBTyxDQUFDO0FBQ2xEO0FBRUEsZUFBZUMsc0JBQXNCIiwiaWdub3JlTGlzdCI6W119

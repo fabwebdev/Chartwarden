@@ -2,8 +2,8 @@
   "id": "certification-alerts-job",
   "category": "Jobs",
   "title": "Certification Alerts Job",
-  "description": "Implement scheduled job for certification expiration alerts using node-cron.",
-  "status": "verified",
+  "description": "Implement Scheduled Job for Certification Expiration Alerts\n\nCreate an automated system to monitor certification expiration dates and send timely alerts using node-cron.\n\nTechnical Implementation:\n- Scheduler: node-cron with cron expression (e.g., '0 9 * * *' for daily 9 AM checks)\n- Database Query: Fetch certifications expiring within configurable thresholds (30/14/7/1 days)\n- Alert Channels: Email notifications (nodemailer) and/or in-app notifications\n- Configuration: Environment variables for cron schedule, alert thresholds, and email settings\n\nArchitecture:\n- jobs/certificationAlerts.js: Main cron job handler\n- services/CertificationService.js: Query logic for expiring certifications\n- services/NotificationService.js: Alert delivery abstraction layer\n- models/Certification.js: Add indexed expirationDate field\n- utils/cronScheduler.js: Centralized cron job registry and management\n\nData Flow:\n1. Cron triggers scheduled job\n2. Query certifications WHERE expirationDate BETWEEN NOW() AND NOW() + interval\n3. Group by urgency level (critical/warning/notice)\n4. Batch notification sending with rate limiting\n5. Log notification attempts and failures\n\nEdge Cases:\n- Handle timezone considerations for expiration dates\n- Prevent duplicate notifications (track last_notified_at timestamp)\n- Graceful handling when email service is down (retry queue)\n- Skip weekends/holidays option for business context\n- Process in batches to avoid memory issues with large datasets\n\nMonitoring:\n- Log successful runs and notification counts\n- Alert on job failures or skipped executions\n- Track notification delivery rates and bounces\n\nScalability:\n- Use distributed lock (Redis) if running multiple server instances\n- Consider moving to dedicated job queue (Bull/BullMQ) for production reliability\n- Implement job timeout and cleanup for hung processes",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,6 +11,14 @@
     "nodemailer-configuration"
   ],
   "createdAt": "2025-12-31T05:55:26.263Z",
-  "updatedAt": "2025-12-31T15:34:18.344Z",
-  "startedAt": "2025-12-31T15:25:45.222Z"
+  "updatedAt": "2026-01-02T16:21:55.667Z",
+  "startedAt": "2026-01-02T16:18:26.798Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

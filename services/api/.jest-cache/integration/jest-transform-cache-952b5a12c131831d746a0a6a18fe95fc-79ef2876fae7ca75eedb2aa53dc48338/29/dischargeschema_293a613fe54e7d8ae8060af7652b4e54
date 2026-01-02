@@ -1,0 +1,134 @@
+ac31b239ff76486cfaa006ffd9fec9d7
+/* istanbul ignore next */
+function cov_17g3y297u2() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/discharge.schema.js";
+  var hash = "00d2b36fd1a8f865376cd4c76d1572f0497749ed";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/discharge.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 4,
+          column: 25
+        },
+        end: {
+          line: 19,
+          column: 2
+        }
+      },
+      "1": {
+        start: {
+          line: 6,
+          column: 72
+        },
+        end: {
+          line: 6,
+          column: 83
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 66
+          },
+          end: {
+            line: 6,
+            column: 67
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 72
+          },
+          end: {
+            line: 6,
+            column: 83
+          }
+        },
+        line: 6
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "00d2b36fd1a8f865376cd4c76d1572f0497749ed"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_17g3y297u2 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_17g3y297u2();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { patients } from './patient.schema.js';
+export const discharge =
+/* istanbul ignore next */
+(cov_17g3y297u2().s[0]++, pgTable('discharge', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).references(() => {
+    /* istanbul ignore next */
+    cov_17g3y297u2().f[0]++;
+    cov_17g3y297u2().s[1]++;
+    return patients.id;
+  }),
+  type_of_record: varchar('type_of_record', {
+    length: 255
+  }),
+  national_provider_identifier: varchar('national_provider_identifier', {
+    length: 255
+  }),
+  certification_number: varchar('certification_number', {
+    length: 255
+  }),
+  admission_date: varchar('admission_date', {
+    length: 255
+  }),
+  reason_for_record: varchar('reason_for_record', {
+    length: 255
+  }),
+  discharge_date: varchar('discharge_date', {
+    length: 255
+  }),
+  social_security_number: varchar('social_security_number', {
+    length: 255
+  }),
+  medicare_number: varchar('medicare_number', {
+    length: 255
+  }),
+  medicaid_recipient: varchar('medicaid_recipient', {
+    length: 255
+  }),
+  reason_for_discharge: varchar('reason_for_discharge', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTdnM3kyOTd1MiIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsInZhcmNoYXIiLCJ0aW1lc3RhbXAiLCJwYXRpZW50cyIsImRpc2NoYXJnZSIsInMiLCJpZCIsIm1vZGUiLCJwcmltYXJ5S2V5IiwiZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSIsInBhdGllbnRfaWQiLCJyZWZlcmVuY2VzIiwiZiIsInR5cGVfb2ZfcmVjb3JkIiwibGVuZ3RoIiwibmF0aW9uYWxfcHJvdmlkZXJfaWRlbnRpZmllciIsImNlcnRpZmljYXRpb25fbnVtYmVyIiwiYWRtaXNzaW9uX2RhdGUiLCJyZWFzb25fZm9yX3JlY29yZCIsImRpc2NoYXJnZV9kYXRlIiwic29jaWFsX3NlY3VyaXR5X251bWJlciIsIm1lZGljYXJlX251bWJlciIsIm1lZGljYWlkX3JlY2lwaWVudCIsInJlYXNvbl9mb3JfZGlzY2hhcmdlIiwiY3JlYXRlZEF0IiwiZGVmYXVsdE5vdyIsIm5vdE51bGwiLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJkaXNjaGFyZ2Uuc2NoZW1hLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHBnVGFibGUsIGJpZ2ludCwgdmFyY2hhciwgdGltZXN0YW1wIH0gZnJvbSAnZHJpenpsZS1vcm0vcGctY29yZSc7XG5pbXBvcnQgeyBwYXRpZW50cyB9IGZyb20gJy4vcGF0aWVudC5zY2hlbWEuanMnO1xuXG5leHBvcnQgY29uc3QgZGlzY2hhcmdlID0gcGdUYWJsZSgnZGlzY2hhcmdlJywge1xuICBpZDogYmlnaW50KCdpZCcsIHsgbW9kZTogJ251bWJlcicgfSkucHJpbWFyeUtleSgpLmdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkoKSxcbiAgcGF0aWVudF9pZDogYmlnaW50KCdwYXRpZW50X2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5yZWZlcmVuY2VzKCgpID0+IHBhdGllbnRzLmlkKSxcbiAgdHlwZV9vZl9yZWNvcmQ6IHZhcmNoYXIoJ3R5cGVfb2ZfcmVjb3JkJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgbmF0aW9uYWxfcHJvdmlkZXJfaWRlbnRpZmllcjogdmFyY2hhcignbmF0aW9uYWxfcHJvdmlkZXJfaWRlbnRpZmllcicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNlcnRpZmljYXRpb25fbnVtYmVyOiB2YXJjaGFyKCdjZXJ0aWZpY2F0aW9uX251bWJlcicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGFkbWlzc2lvbl9kYXRlOiB2YXJjaGFyKCdhZG1pc3Npb25fZGF0ZScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIHJlYXNvbl9mb3JfcmVjb3JkOiB2YXJjaGFyKCdyZWFzb25fZm9yX3JlY29yZCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGRpc2NoYXJnZV9kYXRlOiB2YXJjaGFyKCdkaXNjaGFyZ2VfZGF0ZScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIHNvY2lhbF9zZWN1cml0eV9udW1iZXI6IHZhcmNoYXIoJ3NvY2lhbF9zZWN1cml0eV9udW1iZXInLCB7IGxlbmd0aDogMjU1IH0pLFxuICBtZWRpY2FyZV9udW1iZXI6IHZhcmNoYXIoJ21lZGljYXJlX251bWJlcicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIG1lZGljYWlkX3JlY2lwaWVudDogdmFyY2hhcignbWVkaWNhaWRfcmVjaXBpZW50JywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgcmVhc29uX2Zvcl9kaXNjaGFyZ2U6IHZhcmNoYXIoJ3JlYXNvbl9mb3JfZGlzY2hhcmdlJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY3JlYXRlZEF0OiB0aW1lc3RhbXAoJ2NyZWF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxuICB1cGRhdGVkQXQ6IHRpbWVzdGFtcCgndXBkYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG59KTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxPQUFPLEVBQUVDLE1BQU0sRUFBRUMsT0FBTyxFQUFFQyxTQUFTLFFBQVEscUJBQXFCO0FBQ3pFLFNBQVNDLFFBQVEsUUFBUSxxQkFBcUI7QUFFOUMsT0FBTyxNQUFNQyxTQUFTO0FBQUE7QUFBQSxDQUFBUCxjQUFBLEdBQUFRLENBQUEsT0FBR04sT0FBTyxDQUFDLFdBQVcsRUFBRTtFQUM1Q08sRUFBRSxFQUFFTixNQUFNLENBQUMsSUFBSSxFQUFFO0lBQUVPLElBQUksRUFBRTtFQUFTLENBQUMsQ0FBQyxDQUFDQyxVQUFVLENBQUMsQ0FBQyxDQUFDQyw0QkFBNEIsQ0FBQyxDQUFDO0VBQ2hGQyxVQUFVLEVBQUVWLE1BQU0sQ0FBQyxZQUFZLEVBQUU7SUFBRU8sSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNJLFVBQVUsQ0FBQyxNQUFNO0lBQUE7SUFBQWQsY0FBQSxHQUFBZSxDQUFBO0lBQUFmLGNBQUEsR0FBQVEsQ0FBQTtJQUFBLE9BQUFGLFFBQVEsQ0FBQ0csRUFBRTtFQUFELENBQUMsQ0FBQztFQUNsRk8sY0FBYyxFQUFFWixPQUFPLENBQUMsZ0JBQWdCLEVBQUU7SUFBRWEsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzFEQyw0QkFBNEIsRUFBRWQsT0FBTyxDQUFDLDhCQUE4QixFQUFFO0lBQUVhLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUN0RkUsb0JBQW9CLEVBQUVmLE9BQU8sQ0FBQyxzQkFBc0IsRUFBRTtJQUFFYSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDdEVHLGNBQWMsRUFBRWhCLE9BQU8sQ0FBQyxnQkFBZ0IsRUFBRTtJQUFFYSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDMURJLGlCQUFpQixFQUFFakIsT0FBTyxDQUFDLG1CQUFtQixFQUFFO0lBQUVhLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUNoRUssY0FBYyxFQUFFbEIsT0FBTyxDQUFDLGdCQUFnQixFQUFFO0lBQUVhLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUMxRE0sc0JBQXNCLEVBQUVuQixPQUFPLENBQUMsd0JBQXdCLEVBQUU7SUFBRWEsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzFFTyxlQUFlLEVBQUVwQixPQUFPLENBQUMsaUJBQWlCLEVBQUU7SUFBRWEsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzVEUSxrQkFBa0IsRUFBRXJCLE9BQU8sQ0FBQyxvQkFBb0IsRUFBRTtJQUFFYSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDbEVTLG9CQUFvQixFQUFFdEIsT0FBTyxDQUFDLHNCQUFzQixFQUFFO0lBQUVhLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUN0RVUsU0FBUyxFQUFFdEIsU0FBUyxDQUFDLFlBQVksQ0FBQyxDQUFDdUIsVUFBVSxDQUFDLENBQUMsQ0FBQ0MsT0FBTyxDQUFDLENBQUM7RUFDekRDLFNBQVMsRUFBRXpCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ3VCLFVBQVUsQ0FBQyxDQUFDLENBQUNDLE9BQU8sQ0FBQztBQUMxRCxDQUFDLENBQUMiLCJpZ25vcmVMaXN0IjpbXX0=

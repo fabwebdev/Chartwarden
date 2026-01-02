@@ -441,6 +441,19 @@ export const createUser = async (request, reply) => {
 export const getUserById = async (request, reply) => {
   try {
     const { id } = request.params;
+    const requestingUserId = request.user?.id;
+
+    // Authorization: Users can view their own profile, otherwise requires admin role
+    const isAdmin = request.user?.role === 'admin';
+    const isOwnProfile = requestingUserId === id;
+
+    if (!isOwnProfile && !isAdmin) {
+      reply.code(403);
+      return {
+        status: 403,
+        message: "You can only view your own profile",
+      };
+    }
 
     // Find user by ID (excluding password and remember_token)
     const userResult = await db.select({
@@ -517,6 +530,28 @@ export const updateUser = async (request, reply) => {
     const { id } = request.params;
     const { name, firstName, lastName, email, password, role, contact } =
       request.body;
+    const requestingUserId = request.user?.id;
+
+    // Authorization: Users can update their own profile (excluding roles), otherwise requires admin
+    const isAdmin = request.user?.role === 'admin';
+    const isOwnProfile = requestingUserId === id;
+
+    if (!isOwnProfile && !isAdmin) {
+      reply.code(403);
+      return {
+        status: 403,
+        message: "You can only update your own profile",
+      };
+    }
+
+    // Prevent non-admins from changing roles
+    if (!isAdmin && role !== undefined) {
+      reply.code(403);
+      return {
+        status: 403,
+        message: "Only administrators can change user roles",
+      };
+    }
 
     // Find user
     const userResult = await db.select({

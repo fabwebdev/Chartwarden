@@ -22,6 +22,12 @@
     "test:web": "npm run test -w @chartwarden/web",
     "test:web:coverage": "npm run test:coverage -w @chartwarden/web",
     "test:web:e2e": "npm run test:e2e -w @chartwarden/web",
+    "test:e2e": "npm run test:e2e -w @chartwarden/web",
+    "test:e2e:ui": "npm run test:e2e:ui -w @chartwarden/web",
+    "test:e2e:headed": "npm run test:e2e:headed -w @chartwarden/web",
+    "test:e2e:debug": "npm run test:e2e:debug -w @chartwarden/web",
+    "test:e2e:report": "npm run test:e2e:report -w @chartwarden/web",
+    "test:e2e:ci": "npm run test:e2e:ci -w @chartwarden/web",
     "test:api": "npm run test -w @chartwarden/api",
     "test:api:coverage": "npm run test:coverage -w @chartwarden/api",
     "lint": "turbo run lint",
@@ -44,6 +50,7 @@
     "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
     "docker:tools": "docker-compose --profile tools up -d",
     "docker:clean": "docker-compose down -v --remove-orphans",
+    "docker:verify": "bash scripts/verify-docker-setup.sh",
     "sync:frontend": "git fetch frontend-upstream && git subtree pull --prefix=apps/web frontend-upstream main --squash",
     "sync:backend": "git fetch backend-upstream && git subtree pull --prefix=services/api backend-upstream main --squash",
     "push:frontend": "git subtree push --prefix=apps/web frontend-upstream main",
@@ -63,5 +70,8 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "npm@10.0.0"
+  "packageManager": "npm@10.0.0",
+  "dependencies": {
+    "socket.io-client": "^4.8.3"
+  }
 }

@@ -1,0 +1,158 @@
+edeb6a00b7476e8bd6f873847f84d72b
+/* istanbul ignore next */
+function cov_1sdjmd28sg() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/flaaccBehavioral/Cry.js";
+  var hash = "065ad42b87ab3a896e4c71e9e51b268badba7039";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/flaaccBehavioral/Cry.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 1,
+          column: 12
+        },
+        end: {
+          line: 14,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 7,
+          column: 23
+        },
+        end: {
+          line: 7,
+          column: 61
+        }
+      },
+      "2": {
+        start: {
+          line: 9,
+          column: 8
+        },
+        end: {
+          line: 12,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 9,
+          column: 45
+        },
+        end: {
+          line: 12,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 13
+          },
+          end: {
+            line: 6,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 25
+          },
+          end: {
+            line: 13,
+            column: 5
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 9,
+            column: 26
+          },
+          end: {
+            line: 9,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 45
+          },
+          end: {
+            line: 12,
+            column: 9
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "065ad42b87ab3a896e4c71e9e51b268badba7039"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1sdjmd28sg = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1sdjmd28sg();
+const Cry =
+/* istanbul ignore next */
+(cov_1sdjmd28sg().s[0]++, {
+  NO_CRY: "No cry (awake or asleep) (0)",
+  MOANS: "Moans or whimpers, occasional complaint (1)",
+  CRYING: "Crying steadily, screams or sobs, frequent complaints (2)",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_1sdjmd28sg().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_1sdjmd28sg().s[1]++, [this.NO_CRY, this.MOANS, this.CRYING]);
+    /* istanbul ignore next */
+    cov_1sdjmd28sg().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_1sdjmd28sg().f[1]++;
+      cov_1sdjmd28sg().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default Cry;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXNkam1kMjhzZyIsImFjdHVhbENvdmVyYWdlIiwiQ3J5IiwicyIsIk5PX0NSWSIsIk1PQU5TIiwiQ1JZSU5HIiwidG9BcnJheSIsImYiLCJ2YWx1ZXMiLCJtYXAiLCJ2YWx1ZSIsImluZGV4IiwiaWQiXSwic291cmNlcyI6WyJDcnkuanMiXSwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgQ3J5ID0ge1xuICAgIE5PX0NSWTogXCJObyBjcnkgKGF3YWtlIG9yIGFzbGVlcCkgKDApXCIsXG4gICAgTU9BTlM6IFwiTW9hbnMgb3Igd2hpbXBlcnMsIG9jY2FzaW9uYWwgY29tcGxhaW50ICgxKVwiLFxuICAgIENSWUlORzogXCJDcnlpbmcgc3RlYWRpbHksIHNjcmVhbXMgb3Igc29icywgZnJlcXVlbnQgY29tcGxhaW50cyAoMilcIixcblxuICAgIHRvQXJyYXk6IGZ1bmN0aW9uICgpIHtcbiAgICAgICAgY29uc3QgdmFsdWVzID0gW3RoaXMuTk9fQ1JZLCB0aGlzLk1PQU5TLCB0aGlzLkNSWUlOR107XG5cbiAgICAgICAgcmV0dXJuIHZhbHVlcy5tYXAoKHZhbHVlLCBpbmRleCkgPT4gKHtcbiAgICAgICAgICAgIGlkOiBpbmRleCxcbiAgICAgICAgICAgIHZhbHVlOiB2YWx1ZSxcbiAgICAgICAgfSkpO1xuICAgIH0sXG59O1xuXG5leHBvcnQgZGVmYXVsdCBDcnk7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE1BQU1FLEdBQUc7QUFBQTtBQUFBLENBQUFGLGNBQUEsR0FBQUcsQ0FBQSxPQUFHO0VBQ1JDLE1BQU0sRUFBRSw4QkFBOEI7RUFDdENDLEtBQUssRUFBRSw2Q0FBNkM7RUFDcERDLE1BQU0sRUFBRSwyREFBMkQ7RUFFbkVDLE9BQU8sRUFBRSxTQUFBQSxDQUFBLEVBQVk7SUFBQTtJQUFBUCxjQUFBLEdBQUFRLENBQUE7SUFDakIsTUFBTUMsTUFBTTtJQUFBO0lBQUEsQ0FBQVQsY0FBQSxHQUFBRyxDQUFBLE9BQUcsQ0FBQyxJQUFJLENBQUNDLE1BQU0sRUFBRSxJQUFJLENBQUNDLEtBQUssRUFBRSxJQUFJLENBQUNDLE1BQU0sQ0FBQztJQUFDO0lBQUFOLGNBQUEsR0FBQUcsQ0FBQTtJQUV0RCxPQUFPTSxNQUFNLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxLQUFLLEVBQUVDLEtBQUssS0FBTTtNQUFBO01BQUFaLGNBQUEsR0FBQVEsQ0FBQTtNQUFBUixjQUFBLEdBQUFHLENBQUE7TUFBQTtRQUNqQ1UsRUFBRSxFQUFFRCxLQUFLO1FBQ1RELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVQsR0FBRyIsImlnbm9yZUxpc3QiOltdfQ==

@@ -1,0 +1,853 @@
+56cbe9b11878c4811a12d4bead8be655
+/* istanbul ignore next */
+function cov_17ixpa6ye9() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/icd10.routes.js";
+  var hash = "503bc729a49cd573dc5caffefcf9f81af8a70b50";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/icd10.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 18,
+          column: 2
+        },
+        end: {
+          line: 18,
+          column: 45
+        }
+      },
+      "1": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 63,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 73,
+          column: 2
+        },
+        end: {
+          line: 115,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 121,
+          column: 2
+        },
+        end: {
+          line: 157,
+          column: 4
+        }
+      },
+      "4": {
+        start: {
+          line: 167,
+          column: 2
+        },
+        end: {
+          line: 202,
+          column: 4
+        }
+      },
+      "5": {
+        start: {
+          line: 212,
+          column: 2
+        },
+        end: {
+          line: 232,
+          column: 4
+        }
+      },
+      "6": {
+        start: {
+          line: 238,
+          column: 2
+        },
+        end: {
+          line: 274,
+          column: 4
+        }
+      },
+      "7": {
+        start: {
+          line: 280,
+          column: 2
+        },
+        end: {
+          line: 309,
+          column: 4
+        }
+      },
+      "8": {
+        start: {
+          line: 319,
+          column: 2
+        },
+        end: {
+          line: 346,
+          column: 4
+        }
+      },
+      "9": {
+        start: {
+          line: 352,
+          column: 2
+        },
+        end: {
+          line: 384,
+          column: 4
+        }
+      },
+      "10": {
+        start: {
+          line: 394,
+          column: 2
+        },
+        end: {
+          line: 419,
+          column: 4
+        }
+      },
+      "11": {
+        start: {
+          line: 425,
+          column: 2
+        },
+        end: {
+          line: 444,
+          column: 4
+        }
+      },
+      "12": {
+        start: {
+          line: 454,
+          column: 2
+        },
+        end: {
+          line: 477,
+          column: 4
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "icd10Routes",
+        decl: {
+          start: {
+            line: 16,
+            column: 30
+          },
+          end: {
+            line: 16,
+            column: 41
+          }
+        },
+        loc: {
+          start: {
+            line: 16,
+            column: 60
+          },
+          end: {
+            line: 478,
+            column: 1
+          }
+        },
+        line: 16
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "503bc729a49cd573dc5caffefcf9f81af8a70b50"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_17ixpa6ye9 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_17ixpa6ye9();
+import ICD10Controller from '../controllers/ICD10.controller.js';
+import { authenticate } from '../middleware/betterAuth.middleware.js';
+import { checkPermission } from '../middleware/permission.middleware.js';
+
+/**
+ * ICD-10 Diagnosis Code Routes
+ *
+ * Provides endpoints for:
+ * - Fast autocomplete lookups (<200ms target)
+ * - Exact code lookups with validation
+ * - Full-text search with filters
+ * - Chapter and category navigation
+ * - Hospice-relevant code filtering
+ * - Cache management and statistics
+ */
+export default async function icd10Routes(fastify, options) {
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().f[0]++;
+  cov_17ixpa6ye9().s[0]++;
+  // Apply authentication middleware to all routes
+  fastify.addHook('onRequest', authenticate);
+
+  // ============================================
+  // AUTOCOMPLETE ENDPOINTS (Optimized for speed)
+  // ============================================
+
+  /**
+   * Autocomplete ICD-10 codes
+   * GET /api/icd10/autocomplete
+   *
+   * Fast autocomplete for diagnosis code selection in forms.
+   * Optimized for sub-200ms response time.
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[1]++;
+  fastify.get('/autocomplete', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Fast autocomplete for ICD-10 codes by code prefix or description text',
+      tags: ['ICD-10 Codes'],
+      querystring: {
+        type: 'object',
+        required: ['q'],
+        properties: {
+          q: {
+            type: 'string',
+            minLength: 2,
+            description: 'Search query (code prefix or description text)'
+          },
+          limit: {
+            type: 'number',
+            default: 20,
+            minimum: 1,
+            maximum: 50,
+            description: 'Max results to return'
+          },
+          billableOnly: {
+            type: 'string',
+            default: 'true',
+            enum: ['true', 'false'],
+            description: 'Only return billable codes'
+          },
+          hospiceRelevant: {
+            type: 'string',
+            default: 'false',
+            enum: ['true', 'false'],
+            description: 'Prioritize hospice-relevant codes'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            results: {
+              type: 'array'
+            },
+            count: {
+              type: 'number'
+            },
+            responseTimeMs: {
+              type: 'number'
+            },
+            cached: {
+              type: 'boolean'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.autocomplete.bind(ICD10Controller));
+
+  // ============================================
+  // LOOKUP ENDPOINTS
+  // ============================================
+
+  /**
+   * Get ICD-10 code by exact code
+   * GET /api/icd10/codes/:code
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[2]++;
+  fastify.get('/codes/:code', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Get ICD-10 code details by exact code',
+      tags: ['ICD-10 Codes'],
+      params: {
+        type: 'object',
+        required: ['code'],
+        properties: {
+          code: {
+            type: 'string',
+            description: 'ICD-10 code (e.g., "E11.9", "C34.90")'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            code: {
+              type: 'object'
+            }
+          }
+        },
+        400: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            error: {
+              type: 'string'
+            },
+            message: {
+              type: 'string'
+            }
+          }
+        },
+        404: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            error: {
+              type: 'string'
+            },
+            message: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.getByCode.bind(ICD10Controller));
+
+  /**
+   * Validate ICD-10 code(s)
+   * POST /api/icd10/validate
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[3]++;
+  fastify.post('/validate', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Validate ICD-10 code format and existence',
+      tags: ['ICD-10 Codes'],
+      body: {
+        type: 'object',
+        properties: {
+          code: {
+            type: 'string',
+            description: 'Single ICD-10 code to validate'
+          },
+          codes: {
+            type: 'array',
+            items: {
+              type: 'string'
+            },
+            description: 'Array of ICD-10 codes to validate'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            code: {
+              type: 'string'
+            },
+            isValidFormat: {
+              type: 'boolean'
+            },
+            existsInDatabase: {
+              type: 'boolean'
+            },
+            normalizedCode: {
+              type: 'string'
+            },
+            categoryInfo: {
+              type: 'object'
+            },
+            validCodes: {
+              type: 'array'
+            },
+            invalidCodes: {
+              type: 'array'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.validateCode.bind(ICD10Controller));
+
+  // ============================================
+  // SEARCH ENDPOINTS
+  // ============================================
+
+  /**
+   * Full-text search for ICD-10 codes
+   * GET /api/icd10/search
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[4]++;
+  fastify.get('/search', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Full-text search for ICD-10 codes with filters',
+      tags: ['ICD-10 Codes'],
+      querystring: {
+        type: 'object',
+        required: ['q'],
+        properties: {
+          q: {
+            type: 'string',
+            description: 'Search query'
+          },
+          limit: {
+            type: 'number',
+            default: 50,
+            minimum: 1,
+            maximum: 200
+          },
+          offset: {
+            type: 'number',
+            default: 0
+          },
+          billableOnly: {
+            type: 'string',
+            default: 'false',
+            enum: ['true', 'false']
+          },
+          chapter: {
+            type: 'string',
+            description: 'Filter by chapter number'
+          },
+          category: {
+            type: 'string',
+            description: 'Filter by category code prefix'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            results: {
+              type: 'array'
+            },
+            count: {
+              type: 'number'
+            },
+            total: {
+              type: 'number'
+            },
+            query: {
+              type: 'string'
+            },
+            filters: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.search.bind(ICD10Controller));
+
+  // ============================================
+  // CHAPTER & CATEGORY ENDPOINTS
+  // ============================================
+
+  /**
+   * List all ICD-10 chapters
+   * GET /api/icd10/chapters
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[5]++;
+  fastify.get('/chapters', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'List all ICD-10-CM chapters',
+      tags: ['ICD-10 Codes'],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            chapters: {
+              type: 'array'
+            },
+            count: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.listChapters.bind(ICD10Controller));
+
+  /**
+   * Get codes in a specific chapter
+   * GET /api/icd10/chapters/:chapter/codes
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[6]++;
+  fastify.get('/chapters/:chapter/codes', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Get ICD-10 codes in a specific chapter',
+      tags: ['ICD-10 Codes'],
+      params: {
+        type: 'object',
+        required: ['chapter'],
+        properties: {
+          chapter: {
+            type: 'string',
+            description: 'Chapter number (e.g., "4", "9")'
+          }
+        }
+      },
+      querystring: {
+        type: 'object',
+        properties: {
+          limit: {
+            type: 'number',
+            default: 100,
+            minimum: 1,
+            maximum: 500
+          },
+          offset: {
+            type: 'number',
+            default: 0
+          },
+          billableOnly: {
+            type: 'string',
+            default: 'true',
+            enum: ['true', 'false']
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            chapter: {
+              type: 'string'
+            },
+            codes: {
+              type: 'array'
+            },
+            count: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.getCodesByChapter.bind(ICD10Controller));
+
+  /**
+   * Get category information for a code
+   * GET /api/icd10/category/:code
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[7]++;
+  fastify.get('/category/:code', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Get ICD-10 category and chapter information for a code',
+      tags: ['ICD-10 Codes'],
+      params: {
+        type: 'object',
+        required: ['code'],
+        properties: {
+          code: {
+            type: 'string',
+            description: 'ICD-10 code'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            code: {
+              type: 'string'
+            },
+            normalizedCode: {
+              type: 'string'
+            },
+            categoryCode: {
+              type: 'string'
+            },
+            categoryInfo: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.getCategory.bind(ICD10Controller));
+
+  // ============================================
+  // HOSPICE-SPECIFIC ENDPOINTS
+  // ============================================
+
+  /**
+   * Get hospice-relevant diagnosis codes
+   * GET /api/icd10/hospice
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[8]++;
+  fastify.get('/hospice', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Get commonly used hospice-relevant diagnosis codes',
+      tags: ['ICD-10 Codes'],
+      querystring: {
+        type: 'object',
+        properties: {
+          limit: {
+            type: 'number',
+            default: 50,
+            minimum: 1,
+            maximum: 200
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            codes: {
+              type: 'array'
+            },
+            count: {
+              type: 'number'
+            },
+            description: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.getHospiceCodes.bind(ICD10Controller));
+
+  /**
+   * Mark codes as hospice-relevant
+   * POST /api/icd10/hospice/mark
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[9]++;
+  fastify.post('/hospice/mark', {
+    preHandler: checkPermission('icd10:manage'),
+    schema: {
+      description: 'Mark ICD-10 codes as hospice-relevant (admin)',
+      tags: ['ICD-10 Codes Admin'],
+      body: {
+        type: 'object',
+        required: ['codes'],
+        properties: {
+          codes: {
+            type: 'array',
+            items: {
+              type: 'string'
+            },
+            description: 'Array of ICD-10 codes to mark as hospice-relevant'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            updatedCount: {
+              type: 'number'
+            },
+            requestedCount: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.markHospiceRelevant.bind(ICD10Controller));
+
+  // ============================================
+  // STATISTICS & CACHE ENDPOINTS
+  // ============================================
+
+  /**
+   * Get ICD-10 service statistics
+   * GET /api/icd10/stats
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[10]++;
+  fastify.get('/stats', {
+    preHandler: checkPermission('icd10:view'),
+    schema: {
+      description: 'Get ICD-10 service statistics including cache metrics',
+      tags: ['ICD-10 Codes'],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            stats: {
+              type: 'object',
+              properties: {
+                totalCodes: {
+                  type: 'number'
+                },
+                cache: {
+                  type: 'object'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.getStats.bind(ICD10Controller));
+
+  /**
+   * Clear ICD-10 cache
+   * POST /api/icd10/cache/clear
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[11]++;
+  fastify.post('/cache/clear', {
+    preHandler: checkPermission('icd10:manage'),
+    schema: {
+      description: 'Clear ICD-10 cache (admin)',
+      tags: ['ICD-10 Codes Admin'],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.clearCache.bind(ICD10Controller));
+
+  // ============================================
+  // SEEDING ENDPOINTS (Admin only)
+  // ============================================
+
+  /**
+   * Seed ICD-10 codes
+   * POST /api/icd10/seed
+   */
+  /* istanbul ignore next */
+  cov_17ixpa6ye9().s[12]++;
+  fastify.post('/seed', {
+    preHandler: checkPermission('icd10:manage'),
+    schema: {
+      description: 'Seed ICD-10 codes with hospice-relevant codes (admin)',
+      tags: ['ICD-10 Codes Admin'],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            inserted: {
+              type: 'number'
+            },
+            updated: {
+              type: 'number'
+            },
+            errors: {
+              type: 'number'
+            },
+            totalSeeded: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }, ICD10Controller.seedCodes.bind(ICD10Controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTdpeHBhNnllOSIsImFjdHVhbENvdmVyYWdlIiwiSUNEMTBDb250cm9sbGVyIiwiYXV0aGVudGljYXRlIiwiY2hlY2tQZXJtaXNzaW9uIiwiaWNkMTBSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiYWRkSG9vayIsImdldCIsInByZUhhbmRsZXIiLCJzY2hlbWEiLCJkZXNjcmlwdGlvbiIsInRhZ3MiLCJxdWVyeXN0cmluZyIsInR5cGUiLCJyZXF1aXJlZCIsInByb3BlcnRpZXMiLCJxIiwibWluTGVuZ3RoIiwibGltaXQiLCJkZWZhdWx0IiwibWluaW11bSIsIm1heGltdW0iLCJiaWxsYWJsZU9ubHkiLCJlbnVtIiwiaG9zcGljZVJlbGV2YW50IiwicmVzcG9uc2UiLCJzdWNjZXNzIiwicmVzdWx0cyIsImNvdW50IiwicmVzcG9uc2VUaW1lTXMiLCJjYWNoZWQiLCJhdXRvY29tcGxldGUiLCJiaW5kIiwicGFyYW1zIiwiY29kZSIsImVycm9yIiwibWVzc2FnZSIsImdldEJ5Q29kZSIsInBvc3QiLCJib2R5IiwiY29kZXMiLCJpdGVtcyIsImlzVmFsaWRGb3JtYXQiLCJleGlzdHNJbkRhdGFiYXNlIiwibm9ybWFsaXplZENvZGUiLCJjYXRlZ29yeUluZm8iLCJ2YWxpZENvZGVzIiwiaW52YWxpZENvZGVzIiwidmFsaWRhdGVDb2RlIiwib2Zmc2V0IiwiY2hhcHRlciIsImNhdGVnb3J5IiwidG90YWwiLCJxdWVyeSIsImZpbHRlcnMiLCJzZWFyY2giLCJjaGFwdGVycyIsImxpc3RDaGFwdGVycyIsImdldENvZGVzQnlDaGFwdGVyIiwiY2F0ZWdvcnlDb2RlIiwiZ2V0Q2F0ZWdvcnkiLCJnZXRIb3NwaWNlQ29kZXMiLCJ1cGRhdGVkQ291bnQiLCJyZXF1ZXN0ZWRDb3VudCIsIm1hcmtIb3NwaWNlUmVsZXZhbnQiLCJzdGF0cyIsInRvdGFsQ29kZXMiLCJjYWNoZSIsImdldFN0YXRzIiwiY2xlYXJDYWNoZSIsImluc2VydGVkIiwidXBkYXRlZCIsImVycm9ycyIsInRvdGFsU2VlZGVkIiwic2VlZENvZGVzIl0sInNvdXJjZXMiOlsiaWNkMTAucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBJQ0QxMENvbnRyb2xsZXIgZnJvbSAnLi4vY29udHJvbGxlcnMvSUNEMTAuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBhdXRoZW50aWNhdGUgfSBmcm9tICcuLi9taWRkbGV3YXJlL2JldHRlckF1dGgubWlkZGxld2FyZS5qcyc7XG5pbXBvcnQgeyBjaGVja1Blcm1pc3Npb24gfSBmcm9tICcuLi9taWRkbGV3YXJlL3Blcm1pc3Npb24ubWlkZGxld2FyZS5qcyc7XG5cbi8qKlxuICogSUNELTEwIERpYWdub3NpcyBDb2RlIFJvdXRlc1xuICpcbiAqIFByb3ZpZGVzIGVuZHBvaW50cyBmb3I6XG4gKiAtIEZhc3QgYXV0b2NvbXBsZXRlIGxvb2t1cHMgKDwyMDBtcyB0YXJnZXQpXG4gKiAtIEV4YWN0IGNvZGUgbG9va3VwcyB3aXRoIHZhbGlkYXRpb25cbiAqIC0gRnVsbC10ZXh0IHNlYXJjaCB3aXRoIGZpbHRlcnNcbiAqIC0gQ2hhcHRlciBhbmQgY2F0ZWdvcnkgbmF2aWdhdGlvblxuICogLSBIb3NwaWNlLXJlbGV2YW50IGNvZGUgZmlsdGVyaW5nXG4gKiAtIENhY2hlIG1hbmFnZW1lbnQgYW5kIHN0YXRpc3RpY3NcbiAqL1xuZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24gaWNkMTBSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyBBcHBseSBhdXRoZW50aWNhdGlvbiBtaWRkbGV3YXJlIHRvIGFsbCByb3V0ZXNcbiAgZmFzdGlmeS5hZGRIb29rKCdvblJlcXVlc3QnLCBhdXRoZW50aWNhdGUpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIEFVVE9DT01QTEVURSBFTkRQT0lOVFMgKE9wdGltaXplZCBmb3Igc3BlZWQpXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIEF1dG9jb21wbGV0ZSBJQ0QtMTAgY29kZXNcbiAgICogR0VUIC9hcGkvaWNkMTAvYXV0b2NvbXBsZXRlXG4gICAqXG4gICAqIEZhc3QgYXV0b2NvbXBsZXRlIGZvciBkaWFnbm9zaXMgY29kZSBzZWxlY3Rpb24gaW4gZm9ybXMuXG4gICAqIE9wdGltaXplZCBmb3Igc3ViLTIwMG1zIHJlc3BvbnNlIHRpbWUuXG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICAnL2F1dG9jb21wbGV0ZScsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogY2hlY2tQZXJtaXNzaW9uKCdpY2QxMDp2aWV3JyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdGYXN0IGF1dG9jb21wbGV0ZSBmb3IgSUNELTEwIGNvZGVzIGJ5IGNvZGUgcHJlZml4IG9yIGRlc2NyaXB0aW9uIHRleHQnLFxuICAgICAgICB0YWdzOiBbJ0lDRC0xMCBDb2RlcyddLFxuICAgICAgICBxdWVyeXN0cmluZzoge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHJlcXVpcmVkOiBbJ3EnXSxcbiAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICBxOiB7IHR5cGU6ICdzdHJpbmcnLCBtaW5MZW5ndGg6IDIsIGRlc2NyaXB0aW9uOiAnU2VhcmNoIHF1ZXJ5IChjb2RlIHByZWZpeCBvciBkZXNjcmlwdGlvbiB0ZXh0KScgfSxcbiAgICAgICAgICAgIGxpbWl0OiB7IHR5cGU6ICdudW1iZXInLCBkZWZhdWx0OiAyMCwgbWluaW11bTogMSwgbWF4aW11bTogNTAsIGRlc2NyaXB0aW9uOiAnTWF4IHJlc3VsdHMgdG8gcmV0dXJuJyB9LFxuICAgICAgICAgICAgYmlsbGFibGVPbmx5OiB7IHR5cGU6ICdzdHJpbmcnLCBkZWZhdWx0OiAndHJ1ZScsIGVudW06IFsndHJ1ZScsICdmYWxzZSddLCBkZXNjcmlwdGlvbjogJ09ubHkgcmV0dXJuIGJpbGxhYmxlIGNvZGVzJyB9LFxuICAgICAgICAgICAgaG9zcGljZVJlbGV2YW50OiB7IHR5cGU6ICdzdHJpbmcnLCBkZWZhdWx0OiAnZmFsc2UnLCBlbnVtOiBbJ3RydWUnLCAnZmFsc2UnXSwgZGVzY3JpcHRpb246ICdQcmlvcml0aXplIGhvc3BpY2UtcmVsZXZhbnQgY29kZXMnIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAwOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgcmVzdWx0czogeyB0eXBlOiAnYXJyYXknIH0sXG4gICAgICAgICAgICAgIGNvdW50OiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIHJlc3BvbnNlVGltZU1zOiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIGNhY2hlZDogeyB0eXBlOiAnYm9vbGVhbicgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgSUNEMTBDb250cm9sbGVyLmF1dG9jb21wbGV0ZS5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBMT09LVVAgRU5EUE9JTlRTXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIEdldCBJQ0QtMTAgY29kZSBieSBleGFjdCBjb2RlXG4gICAqIEdFVCAvYXBpL2ljZDEwL2NvZGVzLzpjb2RlXG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICAnL2NvZGVzLzpjb2RlJyxcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBjaGVja1Blcm1pc3Npb24oJ2ljZDEwOnZpZXcnKSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0dldCBJQ0QtMTAgY29kZSBkZXRhaWxzIGJ5IGV4YWN0IGNvZGUnLFxuICAgICAgICB0YWdzOiBbJ0lDRC0xMCBDb2RlcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydjb2RlJ10sXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgY29kZTogeyB0eXBlOiAnc3RyaW5nJywgZGVzY3JpcHRpb246ICdJQ0QtMTAgY29kZSAoZS5nLiwgXCJFMTEuOVwiLCBcIkMzNC45MFwiKScgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBjb2RlOiB7IHR5cGU6ICdvYmplY3QnIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9LFxuICAgICAgICAgIDQwMDoge1xuICAgICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICAgIHN1Y2Nlc3M6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICAgIGVycm9yOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIG1lc3NhZ2U6IHsgdHlwZTogJ3N0cmluZycgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH0sXG4gICAgICAgICAgNDA0OiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgZXJyb3I6IHsgdHlwZTogJ3N0cmluZycgfSxcbiAgICAgICAgICAgICAgbWVzc2FnZTogeyB0eXBlOiAnc3RyaW5nJyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIuZ2V0QnlDb2RlLmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xuXG4gIC8qKlxuICAgKiBWYWxpZGF0ZSBJQ0QtMTAgY29kZShzKVxuICAgKiBQT1NUIC9hcGkvaWNkMTAvdmFsaWRhdGVcbiAgICovXG4gIGZhc3RpZnkucG9zdChcbiAgICAnL3ZhbGlkYXRlJyxcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBjaGVja1Blcm1pc3Npb24oJ2ljZDEwOnZpZXcnKSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ1ZhbGlkYXRlIElDRC0xMCBjb2RlIGZvcm1hdCBhbmQgZXhpc3RlbmNlJyxcbiAgICAgICAgdGFnczogWydJQ0QtMTAgQ29kZXMnXSxcbiAgICAgICAgYm9keToge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGNvZGU6IHsgdHlwZTogJ3N0cmluZycsIGRlc2NyaXB0aW9uOiAnU2luZ2xlIElDRC0xMCBjb2RlIHRvIHZhbGlkYXRlJyB9LFxuICAgICAgICAgICAgY29kZXM6IHtcbiAgICAgICAgICAgICAgdHlwZTogJ2FycmF5JyxcbiAgICAgICAgICAgICAgaXRlbXM6IHsgdHlwZTogJ3N0cmluZycgfSxcbiAgICAgICAgICAgICAgZGVzY3JpcHRpb246ICdBcnJheSBvZiBJQ0QtMTAgY29kZXMgdG8gdmFsaWRhdGUnXG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICByZXNwb25zZToge1xuICAgICAgICAgIDIwMDoge1xuICAgICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICAgIHN1Y2Nlc3M6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICAgIGNvZGU6IHsgdHlwZTogJ3N0cmluZycgfSxcbiAgICAgICAgICAgICAgaXNWYWxpZEZvcm1hdDogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgZXhpc3RzSW5EYXRhYmFzZTogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgbm9ybWFsaXplZENvZGU6IHsgdHlwZTogJ3N0cmluZycgfSxcbiAgICAgICAgICAgICAgY2F0ZWdvcnlJbmZvOiB7IHR5cGU6ICdvYmplY3QnIH0sXG4gICAgICAgICAgICAgIHZhbGlkQ29kZXM6IHsgdHlwZTogJ2FycmF5JyB9LFxuICAgICAgICAgICAgICBpbnZhbGlkQ29kZXM6IHsgdHlwZTogJ2FycmF5JyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIudmFsaWRhdGVDb2RlLmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNFQVJDSCBFTkRQT0lOVFNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvKipcbiAgICogRnVsbC10ZXh0IHNlYXJjaCBmb3IgSUNELTEwIGNvZGVzXG4gICAqIEdFVCAvYXBpL2ljZDEwL3NlYXJjaFxuICAgKi9cbiAgZmFzdGlmeS5nZXQoXG4gICAgJy9zZWFyY2gnLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IGNoZWNrUGVybWlzc2lvbignaWNkMTA6dmlldycpLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnRnVsbC10ZXh0IHNlYXJjaCBmb3IgSUNELTEwIGNvZGVzIHdpdGggZmlsdGVycycsXG4gICAgICAgIHRhZ3M6IFsnSUNELTEwIENvZGVzJ10sXG4gICAgICAgIHF1ZXJ5c3RyaW5nOiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcmVxdWlyZWQ6IFsncSddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIHE6IHsgdHlwZTogJ3N0cmluZycsIGRlc2NyaXB0aW9uOiAnU2VhcmNoIHF1ZXJ5JyB9LFxuICAgICAgICAgICAgbGltaXQ6IHsgdHlwZTogJ251bWJlcicsIGRlZmF1bHQ6IDUwLCBtaW5pbXVtOiAxLCBtYXhpbXVtOiAyMDAgfSxcbiAgICAgICAgICAgIG9mZnNldDogeyB0eXBlOiAnbnVtYmVyJywgZGVmYXVsdDogMCB9LFxuICAgICAgICAgICAgYmlsbGFibGVPbmx5OiB7IHR5cGU6ICdzdHJpbmcnLCBkZWZhdWx0OiAnZmFsc2UnLCBlbnVtOiBbJ3RydWUnLCAnZmFsc2UnXSB9LFxuICAgICAgICAgICAgY2hhcHRlcjogeyB0eXBlOiAnc3RyaW5nJywgZGVzY3JpcHRpb246ICdGaWx0ZXIgYnkgY2hhcHRlciBudW1iZXInIH0sXG4gICAgICAgICAgICBjYXRlZ29yeTogeyB0eXBlOiAnc3RyaW5nJywgZGVzY3JpcHRpb246ICdGaWx0ZXIgYnkgY2F0ZWdvcnkgY29kZSBwcmVmaXgnIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAwOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgcmVzdWx0czogeyB0eXBlOiAnYXJyYXknIH0sXG4gICAgICAgICAgICAgIGNvdW50OiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIHRvdGFsOiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIHF1ZXJ5OiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIGZpbHRlcnM6IHsgdHlwZTogJ29iamVjdCcgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgSUNEMTBDb250cm9sbGVyLnNlYXJjaC5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBDSEFQVEVSICYgQ0FURUdPUlkgRU5EUE9JTlRTXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIExpc3QgYWxsIElDRC0xMCBjaGFwdGVyc1xuICAgKiBHRVQgL2FwaS9pY2QxMC9jaGFwdGVyc1xuICAgKi9cbiAgZmFzdGlmeS5nZXQoXG4gICAgJy9jaGFwdGVycycsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogY2hlY2tQZXJtaXNzaW9uKCdpY2QxMDp2aWV3JyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdMaXN0IGFsbCBJQ0QtMTAtQ00gY2hhcHRlcnMnLFxuICAgICAgICB0YWdzOiBbJ0lDRC0xMCBDb2RlcyddLFxuICAgICAgICByZXNwb25zZToge1xuICAgICAgICAgIDIwMDoge1xuICAgICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICAgIHN1Y2Nlc3M6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICAgIGNoYXB0ZXJzOiB7IHR5cGU6ICdhcnJheScgfSxcbiAgICAgICAgICAgICAgY291bnQ6IHsgdHlwZTogJ251bWJlcicgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgSUNEMTBDb250cm9sbGVyLmxpc3RDaGFwdGVycy5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvKipcbiAgICogR2V0IGNvZGVzIGluIGEgc3BlY2lmaWMgY2hhcHRlclxuICAgKiBHRVQgL2FwaS9pY2QxMC9jaGFwdGVycy86Y2hhcHRlci9jb2Rlc1xuICAgKi9cbiAgZmFzdGlmeS5nZXQoXG4gICAgJy9jaGFwdGVycy86Y2hhcHRlci9jb2RlcycsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogY2hlY2tQZXJtaXNzaW9uKCdpY2QxMDp2aWV3JyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdHZXQgSUNELTEwIGNvZGVzIGluIGEgc3BlY2lmaWMgY2hhcHRlcicsXG4gICAgICAgIHRhZ3M6IFsnSUNELTEwIENvZGVzJ10sXG4gICAgICAgIHBhcmFtczoge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHJlcXVpcmVkOiBbJ2NoYXB0ZXInXSxcbiAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICBjaGFwdGVyOiB7IHR5cGU6ICdzdHJpbmcnLCBkZXNjcmlwdGlvbjogJ0NoYXB0ZXIgbnVtYmVyIChlLmcuLCBcIjRcIiwgXCI5XCIpJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICBxdWVyeXN0cmluZzoge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGxpbWl0OiB7IHR5cGU6ICdudW1iZXInLCBkZWZhdWx0OiAxMDAsIG1pbmltdW06IDEsIG1heGltdW06IDUwMCB9LFxuICAgICAgICAgICAgb2Zmc2V0OiB7IHR5cGU6ICdudW1iZXInLCBkZWZhdWx0OiAwIH0sXG4gICAgICAgICAgICBiaWxsYWJsZU9ubHk6IHsgdHlwZTogJ3N0cmluZycsIGRlZmF1bHQ6ICd0cnVlJywgZW51bTogWyd0cnVlJywgJ2ZhbHNlJ10gfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBjaGFwdGVyOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIGNvZGVzOiB7IHR5cGU6ICdhcnJheScgfSxcbiAgICAgICAgICAgICAgY291bnQ6IHsgdHlwZTogJ251bWJlcicgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgSUNEMTBDb250cm9sbGVyLmdldENvZGVzQnlDaGFwdGVyLmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xuXG4gIC8qKlxuICAgKiBHZXQgY2F0ZWdvcnkgaW5mb3JtYXRpb24gZm9yIGEgY29kZVxuICAgKiBHRVQgL2FwaS9pY2QxMC9jYXRlZ29yeS86Y29kZVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoXG4gICAgJy9jYXRlZ29yeS86Y29kZScsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogY2hlY2tQZXJtaXNzaW9uKCdpY2QxMDp2aWV3JyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdHZXQgSUNELTEwIGNhdGVnb3J5IGFuZCBjaGFwdGVyIGluZm9ybWF0aW9uIGZvciBhIGNvZGUnLFxuICAgICAgICB0YWdzOiBbJ0lDRC0xMCBDb2RlcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydjb2RlJ10sXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgY29kZTogeyB0eXBlOiAnc3RyaW5nJywgZGVzY3JpcHRpb246ICdJQ0QtMTAgY29kZScgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBjb2RlOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIG5vcm1hbGl6ZWRDb2RlOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIGNhdGVnb3J5Q29kZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgICBjYXRlZ29yeUluZm86IHsgdHlwZTogJ29iamVjdCcgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgSUNEMTBDb250cm9sbGVyLmdldENhdGVnb3J5LmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIEhPU1BJQ0UtU1BFQ0lGSUMgRU5EUE9JTlRTXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIEdldCBob3NwaWNlLXJlbGV2YW50IGRpYWdub3NpcyBjb2Rlc1xuICAgKiBHRVQgL2FwaS9pY2QxMC9ob3NwaWNlXG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICAnL2hvc3BpY2UnLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IGNoZWNrUGVybWlzc2lvbignaWNkMTA6dmlldycpLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnR2V0IGNvbW1vbmx5IHVzZWQgaG9zcGljZS1yZWxldmFudCBkaWFnbm9zaXMgY29kZXMnLFxuICAgICAgICB0YWdzOiBbJ0lDRC0xMCBDb2RlcyddLFxuICAgICAgICBxdWVyeXN0cmluZzoge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGxpbWl0OiB7IHR5cGU6ICdudW1iZXInLCBkZWZhdWx0OiA1MCwgbWluaW11bTogMSwgbWF4aW11bTogMjAwIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAwOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgY29kZXM6IHsgdHlwZTogJ2FycmF5JyB9LFxuICAgICAgICAgICAgICBjb3VudDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICBkZXNjcmlwdGlvbjogeyB0eXBlOiAnc3RyaW5nJyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIuZ2V0SG9zcGljZUNvZGVzLmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xuXG4gIC8qKlxuICAgKiBNYXJrIGNvZGVzIGFzIGhvc3BpY2UtcmVsZXZhbnRcbiAgICogUE9TVCAvYXBpL2ljZDEwL2hvc3BpY2UvbWFya1xuICAgKi9cbiAgZmFzdGlmeS5wb3N0KFxuICAgICcvaG9zcGljZS9tYXJrJyxcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBjaGVja1Blcm1pc3Npb24oJ2ljZDEwOm1hbmFnZScpLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnTWFyayBJQ0QtMTAgY29kZXMgYXMgaG9zcGljZS1yZWxldmFudCAoYWRtaW4pJyxcbiAgICAgICAgdGFnczogWydJQ0QtMTAgQ29kZXMgQWRtaW4nXSxcbiAgICAgICAgYm9keToge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHJlcXVpcmVkOiBbJ2NvZGVzJ10sXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgY29kZXM6IHtcbiAgICAgICAgICAgICAgdHlwZTogJ2FycmF5JyxcbiAgICAgICAgICAgICAgaXRlbXM6IHsgdHlwZTogJ3N0cmluZycgfSxcbiAgICAgICAgICAgICAgZGVzY3JpcHRpb246ICdBcnJheSBvZiBJQ0QtMTAgY29kZXMgdG8gbWFyayBhcyBob3NwaWNlLXJlbGV2YW50J1xuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBtZXNzYWdlOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIHVwZGF0ZWRDb3VudDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICByZXF1ZXN0ZWRDb3VudDogeyB0eXBlOiAnbnVtYmVyJyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIubWFya0hvc3BpY2VSZWxldmFudC5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBTVEFUSVNUSUNTICYgQ0FDSEUgRU5EUE9JTlRTXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIEdldCBJQ0QtMTAgc2VydmljZSBzdGF0aXN0aWNzXG4gICAqIEdFVCAvYXBpL2ljZDEwL3N0YXRzXG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICAnL3N0YXRzJyxcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBjaGVja1Blcm1pc3Npb24oJ2ljZDEwOnZpZXcnKSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0dldCBJQ0QtMTAgc2VydmljZSBzdGF0aXN0aWNzIGluY2x1ZGluZyBjYWNoZSBtZXRyaWNzJyxcbiAgICAgICAgdGFnczogWydJQ0QtMTAgQ29kZXMnXSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBzdGF0czoge1xuICAgICAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgICAgIHRvdGFsQ29kZXM6IHsgdHlwZTogJ251bWJlcicgfSxcbiAgICAgICAgICAgICAgICAgIGNhY2hlOiB7IHR5cGU6ICdvYmplY3QnIH1cbiAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9LFxuICAgIElDRDEwQ29udHJvbGxlci5nZXRTdGF0cy5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvKipcbiAgICogQ2xlYXIgSUNELTEwIGNhY2hlXG4gICAqIFBPU1QgL2FwaS9pY2QxMC9jYWNoZS9jbGVhclxuICAgKi9cbiAgZmFzdGlmeS5wb3N0KFxuICAgICcvY2FjaGUvY2xlYXInLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IGNoZWNrUGVybWlzc2lvbignaWNkMTA6bWFuYWdlJyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdDbGVhciBJQ0QtMTAgY2FjaGUgKGFkbWluKScsXG4gICAgICAgIHRhZ3M6IFsnSUNELTEwIENvZGVzIEFkbWluJ10sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAwOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgbWVzc2FnZTogeyB0eXBlOiAnc3RyaW5nJyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIuY2xlYXJDYWNoZS5iaW5kKElDRDEwQ29udHJvbGxlcilcbiAgKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBTRUVESU5HIEVORFBPSU5UUyAoQWRtaW4gb25seSlcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvKipcbiAgICogU2VlZCBJQ0QtMTAgY29kZXNcbiAgICogUE9TVCAvYXBpL2ljZDEwL3NlZWRcbiAgICovXG4gIGZhc3RpZnkucG9zdChcbiAgICAnL3NlZWQnLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IGNoZWNrUGVybWlzc2lvbignaWNkMTA6bWFuYWdlJyksXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdTZWVkIElDRC0xMCBjb2RlcyB3aXRoIGhvc3BpY2UtcmVsZXZhbnQgY29kZXMgKGFkbWluKScsXG4gICAgICAgIHRhZ3M6IFsnSUNELTEwIENvZGVzIEFkbWluJ10sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAwOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgbWVzc2FnZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgICBpbnNlcnRlZDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICB1cGRhdGVkOiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIGVycm9yczogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICB0b3RhbFNlZWRlZDogeyB0eXBlOiAnbnVtYmVyJyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBJQ0QxMENvbnRyb2xsZXIuc2VlZENvZGVzLmJpbmQoSUNEMTBDb250cm9sbGVyKVxuICApO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE9BQU9FLGVBQWUsTUFBTSxvQ0FBb0M7QUFDaEUsU0FBU0MsWUFBWSxRQUFRLHdDQUF3QztBQUNyRSxTQUFTQyxlQUFlLFFBQVEsd0NBQXdDOztBQUV4RTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7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

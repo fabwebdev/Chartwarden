@@ -1,0 +1,105 @@
+f2630dbc123b0ab8d71bf868b107119e
+/* istanbul ignore next */
+function cov_1jliy7pwi() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/gastrointestinalData.schema.js";
+  var hash = "2baa1498597777025b639103215b8fe808ce3ed9";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/gastrointestinalData.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 37
+        },
+        end: {
+          line: 23,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "2baa1498597777025b639103215b8fe808ce3ed9"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1jliy7pwi = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1jliy7pwi();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+export const gastrointestinal_data =
+/* istanbul ignore next */
+(cov_1jliy7pwi().s[0]++, pgTable('gastrointestinal_data', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  note_id: bigint('note_id', {
+    mode: 'number'
+  }).notNull(),
+  gastrointestinal_normal: varchar('gastrointestinal_normal', {
+    length: 255
+  }),
+  gastrointestinal_abnormal: varchar('gastrointestinal_abnormal', {
+    length: 255
+  }),
+  gastrointestinal_appetite: varchar('gastrointestinal_appetite', {
+    length: 255
+  }),
+  gastrointestinal_dysphagia: varchar('gastrointestinal_dysphagia', {
+    length: 255
+  }),
+  gastrointestinal_nausea: varchar('gastrointestinal_nausea', {
+    length: 255
+  }),
+  gastrointestinal_vomiting: varchar('gastrointestinal_vomiting', {
+    length: 255
+  }),
+  gastrointestinal_diarrhea: varchar('gastrointestinal_diarrhea', {
+    length: 255
+  }),
+  gastrointestinal_constipation: varchar('gastrointestinal_constipation', {
+    length: 255
+  }),
+  gastrointestinal_bowel_sounds: varchar('gastrointestinal_bowel_sounds', {
+    length: 255
+  }),
+  gastrointestinal_bowel_movement: varchar('gastrointestinal_bowel_movement', {
+    length: 255
+  }),
+  gastrointestinal_abdominal_distention: varchar('gastrointestinal_abdominal_distention', {
+    length: 255
+  }),
+  gastrointestinal_abdominal_pain: varchar('gastrointestinal_abdominal_pain', {
+    length: 255
+  }),
+  gastrointestinal_tube_feeding: varchar('gastrointestinal_tube_feeding', {
+    length: 255
+  }),
+  gastrointestinal_parenteral_feeding: varchar('gastrointestinal_parenteral_feeding', {
+    length: 255
+  }),
+  gastrointestinal_other: varchar('gastrointestinal_other', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWpsaXk3cHdpIiwiYWN0dWFsQ292ZXJhZ2UiLCJwZ1RhYmxlIiwiYmlnaW50IiwidmFyY2hhciIsInRpbWVzdGFtcCIsImdhc3Ryb2ludGVzdGluYWxfZGF0YSIsInMiLCJpZCIsIm1vZGUiLCJwcmltYXJ5S2V5IiwiZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSIsIm5vdGVfaWQiLCJub3ROdWxsIiwiZ2FzdHJvaW50ZXN0aW5hbF9ub3JtYWwiLCJsZW5ndGgiLCJnYXN0cm9pbnRlc3RpbmFsX2Fibm9ybWFsIiwiZ2FzdHJvaW50ZXN0aW5hbF9hcHBldGl0ZSIsImdhc3Ryb2ludGVzdGluYWxfZHlzcGhhZ2lhIiwiZ2FzdHJvaW50ZXN0aW5hbF9uYXVzZWEiLCJnYXN0cm9pbnRlc3RpbmFsX3ZvbWl0aW5nIiwiZ2FzdHJvaW50ZXN0aW5hbF9kaWFycmhlYSIsImdhc3Ryb2ludGVzdGluYWxfY29uc3RpcGF0aW9uIiwiZ2FzdHJvaW50ZXN0aW5hbF9ib3dlbF9zb3VuZHMiLCJnYXN0cm9pbnRlc3RpbmFsX2Jvd2VsX21vdmVtZW50IiwiZ2FzdHJvaW50ZXN0aW5hbF9hYmRvbWluYWxfZGlzdGVudGlvbiIsImdhc3Ryb2ludGVzdGluYWxfYWJkb21pbmFsX3BhaW4iLCJnYXN0cm9pbnRlc3RpbmFsX3R1YmVfZmVlZGluZyIsImdhc3Ryb2ludGVzdGluYWxfcGFyZW50ZXJhbF9mZWVkaW5nIiwiZ2FzdHJvaW50ZXN0aW5hbF9vdGhlciIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJnYXN0cm9pbnRlc3RpbmFsRGF0YS5zY2hlbWEuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGdUYWJsZSwgYmlnaW50LCB2YXJjaGFyLCB0aW1lc3RhbXAgfSBmcm9tICdkcml6emxlLW9ybS9wZy1jb3JlJztcblxuZXhwb3J0IGNvbnN0IGdhc3Ryb2ludGVzdGluYWxfZGF0YSA9IHBnVGFibGUoJ2dhc3Ryb2ludGVzdGluYWxfZGF0YScsIHtcbiAgaWQ6IGJpZ2ludCgnaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLnByaW1hcnlLZXkoKS5nZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5KCksXG4gIG5vdGVfaWQ6IGJpZ2ludCgnbm90ZV9pZCcsIHsgbW9kZTogJ251bWJlcicgfSkubm90TnVsbCgpLFxuICBnYXN0cm9pbnRlc3RpbmFsX25vcm1hbDogdmFyY2hhcignZ2FzdHJvaW50ZXN0aW5hbF9ub3JtYWwnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnYXN0cm9pbnRlc3RpbmFsX2Fibm9ybWFsOiB2YXJjaGFyKCdnYXN0cm9pbnRlc3RpbmFsX2Fibm9ybWFsJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9hcHBldGl0ZTogdmFyY2hhcignZ2FzdHJvaW50ZXN0aW5hbF9hcHBldGl0ZScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdhc3Ryb2ludGVzdGluYWxfZHlzcGhhZ2lhOiB2YXJjaGFyKCdnYXN0cm9pbnRlc3RpbmFsX2R5c3BoYWdpYScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdhc3Ryb2ludGVzdGluYWxfbmF1c2VhOiB2YXJjaGFyKCdnYXN0cm9pbnRlc3RpbmFsX25hdXNlYScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdhc3Ryb2ludGVzdGluYWxfdm9taXRpbmc6IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfdm9taXRpbmcnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnYXN0cm9pbnRlc3RpbmFsX2RpYXJyaGVhOiB2YXJjaGFyKCdnYXN0cm9pbnRlc3RpbmFsX2RpYXJyaGVhJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9jb25zdGlwYXRpb246IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfY29uc3RpcGF0aW9uJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9ib3dlbF9zb3VuZHM6IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfYm93ZWxfc291bmRzJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9ib3dlbF9tb3ZlbWVudDogdmFyY2hhcignZ2FzdHJvaW50ZXN0aW5hbF9ib3dlbF9tb3ZlbWVudCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdhc3Ryb2ludGVzdGluYWxfYWJkb21pbmFsX2Rpc3RlbnRpb246IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfYWJkb21pbmFsX2Rpc3RlbnRpb24nLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnYXN0cm9pbnRlc3RpbmFsX2FiZG9taW5hbF9wYWluOiB2YXJjaGFyKCdnYXN0cm9pbnRlc3RpbmFsX2FiZG9taW5hbF9wYWluJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF90dWJlX2ZlZWRpbmc6IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfdHViZV9mZWVkaW5nJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9wYXJlbnRlcmFsX2ZlZWRpbmc6IHZhcmNoYXIoJ2dhc3Ryb2ludGVzdGluYWxfcGFyZW50ZXJhbF9mZWVkaW5nJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2FzdHJvaW50ZXN0aW5hbF9vdGhlcjogdmFyY2hhcignZ2FzdHJvaW50ZXN0aW5hbF9vdGhlcicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNyZWF0ZWRBdDogdGltZXN0YW1wKCdjcmVhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbiAgdXBkYXRlZEF0OiB0aW1lc3RhbXAoJ3VwZGF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxufSk7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLFNBQVNFLE9B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

@@ -2,8 +2,8 @@
   "id": "eligibility-verifier-service",
   "category": "Service",
   "title": "Eligibility Verification Service",
-  "description": "Implement service that orchestrates eligibility verification workflow using EDI 270/271.",
-  "status": "verified",
+  "description": "**Implement EDI 270/271 Eligibility Verification Service**\n\nBuild a service that orchestrates the complete workflow for verifying patient insurance eligibility using EDI 270 (eligibility inquiry) and 271 (eligibility response) transaction sets.\n\n**Requirements:**\n\n**Core Functionality:**\n- Accept eligibility verification requests with patient and insurance information\n- Generate properly formatted EDI 270 transactions according to HIPAA standards\n- Send 270 requests to appropriate payer/clearinghouse endpoints\n- Receive and parse EDI 271 response transactions\n- Extract and normalize eligibility data from 271 responses\n- Return structured eligibility results to requesting systems\n\n**Data Handling:**\n- Validate required patient demographics (name, DOB, member ID)\n- Validate insurance payer information and routing\n- Map internal data models to EDI segment requirements\n- Handle multiple insurance types (primary, secondary, tertiary)\n- Parse complex 271 response loops (subscriber, dependent, benefit information)\n\n**Error Handling & Edge Cases:**\n- Handle malformed or rejected 271 responses\n- Manage timeout scenarios for delayed payer responses\n- Process partial eligibility responses\n- Handle \"subscriber not found\" or \"invalid member ID\" scenarios\n- Log transaction pairs (270 request + 271 response) for audit trail\n\n**Integration:**\n- Support multiple transmission methods (direct payer, clearinghouse)\n- Implement retry logic for failed transmissions\n- Store transaction history with correlation IDs\n- Provide status tracking for asynchronous verification requests\n\n**Compliance & Standards:**\n- Adhere to HIPAA 5010 version specifications\n- Implement proper segment delimiters and control numbers\n- Generate valid ISA/GS/ST headers and trailers\n- Handle trading partner-specific requirements if needed\n\n**Success Criteria:**\n- Successfully submit 270 transactions to payer systems\n- Correctly parse and extract all eligibility data from 271 responses\n- Maintain audit trail of all transactions\n- Return results in consistent, usable format for downstream systems",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,6 +11,14 @@
     "edi271-parser-service"
   ],
   "createdAt": "2025-12-31T05:55:26.254Z",
-  "updatedAt": "2025-12-31T15:03:57.960Z",
-  "startedAt": "2025-12-31T14:58:04.323Z"
+  "updatedAt": "2026-01-02T15:39:08.918Z",
+  "startedAt": "2026-01-02T15:35:13.245Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

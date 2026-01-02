@@ -1,0 +1,164 @@
+51dfac16acb4ba98b44fce7b987c5fdc
+/* istanbul ignore next */
+function cov_q5du6s79c() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainObservation.js";
+  var hash = "446f9035b766d745c0451928b272e49e3ee51f82";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainObservation.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 24
+        },
+        end: {
+          line: 29,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 23
+        },
+        end: {
+          line: 22,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 24,
+          column: 8
+        },
+        end: {
+          line: 27,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 24,
+          column: 45
+        },
+        end: {
+          line: 27,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 12,
+            column: 13
+          },
+          end: {
+            line: 12,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 12,
+            column: 25
+          },
+          end: {
+            line: 28,
+            column: 5
+          }
+        },
+        line: 12
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 24,
+            column: 26
+          },
+          end: {
+            line: 24,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 24,
+            column: 45
+          },
+          end: {
+            line: 27,
+            column: 9
+          }
+        },
+        line: 24
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "446f9035b766d745c0451928b272e49e3ee51f82"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_q5du6s79c = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_q5du6s79c();
+// PainObservation enum equivalent
+const PainObservation =
+/* istanbul ignore next */
+(cov_q5du6s79c().s[0]++, {
+  CRYING: "crying",
+  FACIAL_GRIMACING: "facial grimacing",
+  GRABBING_HOLDING_BODY_PART: "grabbing holding body part",
+  GUARDED_MOVEMENTS: "guarded movements",
+  SPLINTING: "splinting",
+  THRASHING: "thrashing",
+  WINCING_UPON_MOVEMENT: "wincing upon movement",
+  OTHER: "other",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_q5du6s79c().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_q5du6s79c().s[1]++, [this.CRYING, this.FACIAL_GRIMACING, this.GRABBING_HOLDING_BODY_PART, this.GUARDED_MOVEMENTS, this.SPLINTING, this.THRASHING, this.WINCING_UPON_MOVEMENT, this.OTHER]);
+    /* istanbul ignore next */
+    cov_q5du6s79c().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_q5du6s79c().f[1]++;
+      cov_q5du6s79c().s[3]++;
+      return {
+        id: index + 1,
+        value: value
+      };
+    });
+  }
+});
+export default PainObservation;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfcTVkdTZzNzljIiwiYWN0dWFsQ292ZXJhZ2UiLCJQYWluT2JzZXJ2YXRpb24iLCJzIiwiQ1JZSU5HIiwiRkFDSUFMX0dSSU1BQ0lORyIsIkdSQUJCSU5HX0hPTERJTkdfQk9EWV9QQVJUIiwiR1VBUkRFRF9NT1ZFTUVOVFMiLCJTUExJTlRJTkciLCJUSFJBU0hJTkciLCJXSU5DSU5HX1VQT05fTU9WRU1FTlQiLCJPVEhFUiIsInRvQXJyYXkiLCJmIiwidmFsdWVzIiwibWFwIiwidmFsdWUiLCJpbmRleCIsImlkIl0sInNvdXJjZXMiOlsiUGFpbk9ic2VydmF0aW9uLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIFBhaW5PYnNlcnZhdGlvbiBlbnVtIGVxdWl2YWxlbnRcbmNvbnN0IFBhaW5PYnNlcnZhdGlvbiA9IHtcbiAgICBDUllJTkc6IFwiY3J5aW5nXCIsXG4gICAgRkFDSUFMX0dSSU1BQ0lORzogXCJmYWNpYWwgZ3JpbWFjaW5nXCIsXG4gICAgR1JBQkJJTkdfSE9MRElOR19CT0RZX1BBUlQ6IFwiZ3JhYmJpbmcgaG9sZGluZyBib2R5IHBhcnRcIixcbiAgICBHVUFSREVEX01PVkVNRU5UUzogXCJndWFyZGVkIG1vdmVtZW50c1wiLFxuICAgIFNQTElOVElORzogXCJzcGxpbnRpbmdcIixcbiAgICBUSFJBU0hJTkc6IFwidGhyYXNoaW5nXCIsXG4gICAgV0lOQ0lOR19VUE9OX01PVkVNRU5UOiBcIndpbmNpbmcgdXBvbiBtb3ZlbWVudFwiLFxuICAgIE9USEVSOiBcIm90aGVyXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuQ1JZSU5HLFxuICAgICAgICAgICAgdGhpcy5GQUNJQUxfR1JJTUFDSU5HLFxuICAgICAgICAgICAgdGhpcy5HUkFCQklOR19IT0xESU5HX0JPRFlfUEFSVCxcbiAgICAgICAgICAgIHRoaXMuR1VBUkRFRF9NT1ZFTUVOVFMsXG4gICAgICAgICAgICB0aGlzLlNQTElOVElORyxcbiAgICAgICAgICAgIHRoaXMuVEhSQVNISU5HLFxuICAgICAgICAgICAgdGhpcy5XSU5DSU5HX1VQT05fTU9WRU1FTlQsXG4gICAgICAgICAgICB0aGlzLk9USEVSLFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXggKyAxLFxuICAgICAgICAgICAgdmFsdWU6IHZhbHVlLFxuICAgICAgICB9KSk7XG4gICAgfSxcbn07XG5cbmV4cG9ydCBkZWZhdWx0IFBhaW5PYnNlcnZhdGlvbjtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlo7QUFDQSxNQUFNRSxlQUFlO0FBQUE7QUFBQSxDQUFBRixhQUFBLEdBQUFHLENBQUEsT0FBRztFQUNwQkMsTUFBTSxFQUFFLFFBQVE7RUFDaEJDLGdCQUFnQixFQUFFLGtCQUFrQjtFQUNwQ0MsMEJBQTBCLEVBQUUsNEJBQTRCO0VBQ3hEQyxpQkFBaUIsRUFBRSxtQkFBbUI7RUFDdENDLFNBQVMsRUFBRSxXQUFXO0VBQ3RCQyxTQUFTLEVBQUUsV0FBVztFQUN0QkMscUJBQXFCLEVBQUUsdUJBQXVCO0VBQzlDQyxLQUFLLEVBQUUsT0FBTztFQUVkQyxPQUFPLEVBQUUsU0FBQUEsQ0FBQSxFQUFZO0lBQUE7SUFBQVosYUFBQSxHQUFBYSxDQUFBO0lBQ2pCLE1BQU1DLE1BQU07SUFBQTtJQUFBLENBQUFkLGFBQUEsR0FBQUcsQ0FBQSxPQUFHLENBQ1gsSUFBSSxDQUFDQyxNQUFNLEVBQ1gsSUFBSSxDQUFDQyxnQkFBZ0IsRUFDckIsSUFBSSxDQUFDQywwQkFBMEIsRUFDL0IsSUFBSSxDQUFDQyxpQkFBaUIsRUFDdEIsSUFBSSxDQUFDQyxTQUFTLEVBQ2QsSUFBSSxDQUFDQyxTQUFTLEVBQ2QsSUFBSSxDQUFDQyxxQkFBcUIsRUFDMUIsSUFBSSxDQUFDQyxLQUFLLENBQ2I7SUFBQztJQUFBWCxhQUFBLEdBQUFHLENBQUE7SUFFRixPQUFPVyxNQUFNLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxLQUFLLEVBQUVDLEtBQUssS0FBTTtNQUFBO01BQUFqQixhQUFBLEdBQUFhLENBQUE7TUFBQWIsYUFBQSxHQUFBRyxDQUFBO01BQUE7UUFDakNlLEVBQUUsRUFBRUQsS0FBSyxHQUFHLENBQUM7UUFDYkQsS0FBSyxFQUFFQTtNQUNYLENBQUM7SUFBRCxDQUFFLENBQUM7RUFDUDtBQUNKLENBQUM7QUFFRCxlQUFlZCxlQUFlIiwiaWdub3JlTGlzdCI6W119

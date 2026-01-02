@@ -2,14 +2,22 @@
   "id": "staff-schema",
   "category": "Database",
   "title": "Staff Profile Database Schema",
-  "description": "Create schema for staff with credentials, specialties, facility assignments, contact, and status.",
-  "status": "verified",
+  "description": "Create Staff Management Database Schema\n\nDesign and implement a comprehensive database schema for managing healthcare staff members with their credentials, specialties, facility assignments, contact information, and employment status.\n\nRequirements:\n- Define staff entity with core fields (ID, name, role, hire date, employment type)\n- Add credentials tracking (licenses, certifications, expiration dates, issuing authorities)\n- Implement specialties/skills mapping (support multiple specialties per staff member)\n- Create facility assignment structure (support multi-facility assignments, primary/secondary designations, effective dates)\n- Include comprehensive contact information (email, phone numbers, emergency contact, preferred contact method)\n- Add employment status tracking (active, on leave, terminated, suspended, with effective dates and reasons)\n- Ensure proper indexing for common query patterns (search by facility, specialty, status)\n- Define relationships and foreign key constraints\n- Consider audit trail for credential expirations and status changes\n- Include validation rules for required fields and data integrity",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "user-roles-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.249Z",
-  "updatedAt": "2025-12-31T15:58:22.498Z",
-  "startedAt": "2025-12-31T15:51:59.298Z"
+  "updatedAt": "2026-01-02T15:20:27.375Z",
+  "startedAt": "2026-01-02T15:17:07.391Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

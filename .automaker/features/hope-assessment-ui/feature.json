@@ -2,8 +2,8 @@
   "id": "hope-assessment-ui",
   "category": "UI",
   "title": "HOPE Assessment Entry UI",
-  "description": "Create comprehensive form for HOPE assessment data entry with section organization and validation.",
-  "status": "verified",
+  "description": "Create HOPE Assessment Data Entry Form with Structured Sections and Validation\n\nBuild a comprehensive form interface for entering HOPE (Health Outcomes and Patient Experience) assessment data, organized into logical sections with robust validation and error handling.\n\nRequirements:\n- Design multi-section form layout with clear visual separation between sections\n- Implement section-based organization (e.g., Patient Information, Clinical Metrics, Outcome Measures, etc.)\n- Add appropriate input fields for each data point with correct input types (text, number, date, radio, checkbox, dropdown)\n- Implement field-level validation rules:\n  * Required field validation\n  * Format validation (dates, numeric ranges, pattern matching)\n  * Cross-field validation where dependencies exist\n  * Real-time validation feedback with clear error messages\n- Add section completion indicators or progress tracking\n- Enable save/draft functionality to prevent data loss\n- Implement form submission with server-side validation\n- Provide clear success/error feedback after submission\n- Ensure keyboard navigation and accessibility standards (ARIA labels, focus management)\n- Make form responsive across device sizes\n\nConsider:\n- Whether form should support multi-page/wizard format vs single scrollable page\n- Data persistence strategy (auto-save, manual save, session storage)\n- Required vs optional fields based on assessment requirements\n- Integration with existing patient/assessment data systems\n- User permissions and data security requirements",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
@@ -11,7 +11,14 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.244Z",
-  "updatedAt": "2026-01-01T06:27:18.105Z",
+  "updatedAt": "2026-01-02T15:32:12.155Z",
   "branchName": "main",
-  "startedAt": "2026-01-01T06:21:23.587Z"
+  "startedAt": "2026-01-02T15:27:19.631Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

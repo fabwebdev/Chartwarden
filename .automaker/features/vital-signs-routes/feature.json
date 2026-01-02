@@ -2,15 +2,22 @@
   "id": "vital-signs-routes",
   "category": "API",
   "title": "Vital Signs API Routes",
-  "description": "Create REST API routes for vital signs with validation of normal ranges and clinical thresholds.",
-  "status": "verified",
+  "description": "Create REST API Routes for Vital Signs Monitoring with Clinical Validation\n\nImplement a comprehensive set of RESTful API endpoints for managing patient vital signs data with built-in validation against medically-accepted normal ranges and configurable clinical alert thresholds.\n\nRequirements:\n\nAPI Endpoints:\n- POST /api/vital-signs - Record new vital signs measurement\n- GET /api/vital-signs/:patientId - Retrieve vital signs history for a patient\n- GET /api/vital-signs/:patientId/latest - Get most recent vital signs\n- GET /api/vital-signs/:id - Retrieve specific measurement by ID\n- PUT /api/vital-signs/:id - Update existing measurement (with audit trail)\n- DELETE /api/vital-signs/:id - Soft delete measurement\n\nVital Signs to Support:\n- Heart rate (BPM)\n- Blood pressure (systolic/diastolic in mmHg)\n- Respiratory rate (breaths per minute)\n- Temperature (Celsius/Fahrenheit)\n- Oxygen saturation (SpO2 percentage)\n- Blood glucose level (mg/dL or mmol/L)\n\nValidation Layer:\n- Define normal range boundaries for each vital sign (age-specific if applicable)\n- Implement warning thresholds for abnormal but non-critical values\n- Implement critical thresholds for values requiring immediate attention\n- Reject measurements that fall outside physically possible ranges\n- Return validation status with each measurement (normal/warning/critical)\n\nResponse Structure:\n- Include measurement values with units\n- Return validation status and applicable thresholds\n- Provide timestamp and patient identifier\n- Include any triggered alerts or flags\n\nEdge Cases to Consider:\n- Missing or incomplete vital sign data\n- Out-of-range values that may indicate measurement errors\n- Concurrent updates to the same patient's data\n- Different unit systems (metric vs imperial)\n- Pediatric vs adult normal ranges\n\nSecurity & Compliance:\n- Implement authentication and authorization\n- Ensure HIPAA compliance for patient data handling\n- Log all access and modifications with user attribution\n- Validate input data types and sanitize against injection attacks\n\nTesting Requirements:\n- Unit tests for validation logic covering all threshold scenarios\n- Integration tests for each API endpoint\n- Test with boundary values for each vital sign\n- Verify appropriate HTTP status codes and error messages",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "vital-signs-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.242Z",
-  "updatedAt": "2026-01-01T06:56:29.097Z",
+  "updatedAt": "2026-01-02T15:13:56.379Z",
   "branchName": "main",
-  "startedAt": "2026-01-01T06:53:27.039Z"
+  "startedAt": "2026-01-02T15:11:07.365Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

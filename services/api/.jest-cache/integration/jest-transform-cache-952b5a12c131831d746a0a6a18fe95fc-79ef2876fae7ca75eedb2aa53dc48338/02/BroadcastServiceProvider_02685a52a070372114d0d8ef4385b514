@@ -1,0 +1,128 @@
+794ca3254eeeb74afc37e5b987cbafc9
+/* istanbul ignore next */
+function cov_1wlihv639u() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/BroadcastServiceProvider.js";
+  var hash = "3c58f22096b55f082becc7d9bb244f0145a29cfb";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/BroadcastServiceProvider.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 8
+        },
+        end: {
+          line: 10,
+          column: 22
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 4
+          },
+          end: {
+            line: 8,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 14
+          },
+          end: {
+            line: 15,
+            column: 5
+          }
+        },
+        line: 8
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 20,
+            column: 4
+          },
+          end: {
+            line: 20,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 20,
+            column: 13
+          },
+          end: {
+            line: 23,
+            column: 5
+          }
+        },
+        line: 20
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "3c58f22096b55f082becc7d9bb244f0145a29cfb"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1wlihv639u = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1wlihv639u();
+// In Express.js, we don't have a direct equivalent to Laravel's broadcast routes
+// This is a placeholder to match Laravel's structure
+
+class BroadcastServiceProvider {
+  /**
+   * Bootstrap any application services.
+   */
+  boot(app) {
+    /* istanbul ignore next */
+    cov_1wlihv639u().f[0]++;
+    cov_1wlihv639u().s[0]++;
+    // Register broadcast routes
+    this.routes();
+
+    // Require the channels file
+    // In Express.js, this would typically be handled differently
+    // This is a placeholder to match Laravel's structure
+  }
+
+  /**
+   * Register broadcast routes.
+   */
+  routes() {
+    /* istanbul ignore next */
+    cov_1wlihv639u().f[1]++;
+  } // In Express.js, this would typically be handled by Socket.IO configuration
+  // This is a placeholder to match Laravel's structure
+}
+export default new BroadcastServiceProvider();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXdsaWh2NjM5dSIsImFjdHVhbENvdmVyYWdlIiwiQnJvYWRjYXN0U2VydmljZVByb3ZpZGVyIiwiYm9vdCIsImFwcCIsImYiLCJzIiwicm91dGVzIl0sInNvdXJjZXMiOlsiQnJvYWRjYXN0U2VydmljZVByb3ZpZGVyLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIEluIEV4cHJlc3MuanMsIHdlIGRvbid0IGhhdmUgYSBkaXJlY3QgZXF1aXZhbGVudCB0byBMYXJhdmVsJ3MgYnJvYWRjYXN0IHJvdXRlc1xuLy8gVGhpcyBpcyBhIHBsYWNlaG9sZGVyIHRvIG1hdGNoIExhcmF2ZWwncyBzdHJ1Y3R1cmVcblxuY2xhc3MgQnJvYWRjYXN0U2VydmljZVByb3ZpZGVyIHtcbiAgICAvKipcbiAgICAgKiBCb290c3RyYXAgYW55IGFwcGxpY2F0aW9uIHNlcnZpY2VzLlxuICAgICAqL1xuICAgIGJvb3QoYXBwKSB7XG4gICAgICAgIC8vIFJlZ2lzdGVyIGJyb2FkY2FzdCByb3V0ZXNcbiAgICAgICAgdGhpcy5yb3V0ZXMoKTtcbiAgICAgICAgXG4gICAgICAgIC8vIFJlcXVpcmUgdGhlIGNoYW5uZWxzIGZpbGVcbiAgICAgICAgLy8gSW4gRXhwcmVzcy5qcywgdGhpcyB3b3VsZCB0eXBpY2FsbHkgYmUgaGFuZGxlZCBkaWZmZXJlbnRseVxuICAgICAgICAvLyBUaGlzIGlzIGEgcGxhY2Vob2xkZXIgdG8gbWF0Y2ggTGFyYXZlbCdzIHN0cnVjdHVyZVxuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBSZWdpc3RlciBicm9hZGNhc3Qgcm91dGVzLlxuICAgICAqL1xuICAgIHJvdXRlcygpIHtcbiAgICAgICAgLy8gSW4gRXhwcmVzcy5qcywgdGhpcyB3b3VsZCB0eXBpY2FsbHkgYmUgaGFuZGxlZCBieSBTb2NrZXQuSU8gY29uZmlndXJhdGlvblxuICAgICAgICAvLyBUaGlzIGlzIGEgcGxhY2Vob2xkZXIgdG8gbWF0Y2ggTGFyYXZlbCdzIHN0cnVjdHVyZVxuICAgIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgbmV3IEJyb2FkY2FzdFNlcnZpY2VQcm92aWRlcigpOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlo7QUFDQTs7QUFFQSxNQUFNRSx3QkFBd0IsQ0FBQztFQUMzQjtBQUNKO0FBQ0E7RUFDSUMsSUFBSUEsQ0FBQ0MsR0FBRyxFQUFFO0lBQUE7SUFBQUosY0FBQSxHQUFBSyxDQUFBO0lBQUFMLGNBQUEsR0FBQU0sQ0FBQTtJQUNOO0lBQ0EsSUFBSSxDQUFDQyxNQUFNLENBQUMsQ0FBQzs7SUFFYjtJQUNBO0lBQ0E7RUFDSjs7RUFFQTtBQUNKO0FBQ0E7RUFDSUEsTUFBTUEsQ0FBQSxFQUFHO0lBQUE7SUFBQVAsY0FBQSxHQUFBSyxDQUFBO0VBR1QsQ0FBQyxDQUZHO0VBQ0E7QUFFUjtBQUVBLGVBQWUsSUFBSUgsd0JBQXdCLENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

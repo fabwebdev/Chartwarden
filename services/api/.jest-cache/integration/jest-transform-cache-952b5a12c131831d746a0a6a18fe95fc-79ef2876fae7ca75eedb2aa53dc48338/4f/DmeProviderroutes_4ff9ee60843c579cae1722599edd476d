@@ -1,0 +1,86 @@
+12f41413095ea09f04e6ae378676ee02
+/* istanbul ignore next */
+function cov_275xa7pi88() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/DmeProvider.routes.js";
+  var hash = "63edadae3befb4cbb65b37484c852d342de1cd77";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/DmeProvider.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 7,
+          column: 35
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "dmeProviderRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 32
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 51
+          },
+          end: {
+            line: 8,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "63edadae3befb4cbb65b37484c852d342de1cd77"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_275xa7pi88 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_275xa7pi88();
+import { index } from "../../controllers/patient/DmeProvider.controller.js";
+
+// Fastify plugin for DME provider routes
+// DME provider is now a simple dropdown with predefined options
+async function dmeProviderRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_275xa7pi88().f[0]++;
+  cov_275xa7pi88().s[0]++;
+  // Get DME provider options (predefined list)
+  fastify.get("/providers", index);
+}
+export default dmeProviderRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMjc1eGE3cGk4OCIsImFjdHVhbENvdmVyYWdlIiwiaW5kZXgiLCJkbWVQcm92aWRlclJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiXSwic291cmNlcyI6WyJEbWVQcm92aWRlci5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgaW5kZXggfSBmcm9tIFwiLi4vLi4vY29udHJvbGxlcnMvcGF0aWVudC9EbWVQcm92aWRlci5jb250cm9sbGVyLmpzXCI7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBETUUgcHJvdmlkZXIgcm91dGVzXG4vLyBETUUgcHJvdmlkZXIgaXMgbm93IGEgc2ltcGxlIGRyb3Bkb3duIHdpdGggcHJlZGVmaW5lZCBvcHRpb25zXG5hc3luYyBmdW5jdGlvbiBkbWVQcm92aWRlclJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIEdldCBETUUgcHJvdmlkZXIgb3B0aW9ucyAocHJlZGVmaW5lZCBsaXN0KVxuICBmYXN0aWZ5LmdldChcIi9wcm92aWRlcnNcIiwgaW5kZXgpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBkbWVQcm92aWRlclJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxLQUFLLFFBQVEscURBQXFEOztBQUUzRTtBQUNBO0FBQ0EsZUFBZUMsaUJBQWlCQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFMLGNBQUEsR0FBQU0sQ0FBQTtFQUFBTixjQUFBLEdBQUFPLENBQUE7RUFDakQ7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsWUFBWSxFQUFFTixLQUFLLENBQUM7QUFDbEM7QUFFQSxlQUFlQyxpQkFBaUIiLCJpZ25vcmVMaXN0IjpbXX0=

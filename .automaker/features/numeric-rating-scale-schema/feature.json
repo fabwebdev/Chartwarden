@@ -2,14 +2,22 @@
   "id": "numeric-rating-scale-schema",
   "category": "Database",
   "title": "Numeric Rating Scale (0-10) Schema",
-  "description": "Create schema for numeric pain rating scale (0-10) assessments with timestamp and assessor.",
-  "status": "verified",
+  "description": "Create Database Schema for Numeric Pain Rating Scale (NPRS) Assessments\n\nDesign and implement a database schema to store patient pain assessments using the Numeric Pain Rating Scale (0-10), including metadata about when and by whom each assessment was conducted.\n\nRequirements:\n- Create a table/model for pain assessment records with the following fields:\n  - Pain score (integer, 0-10 range validation)\n  - Timestamp of assessment (datetime, required)\n  - Assessor information (staff/clinician identifier)\n  - Patient identifier (foreign key/reference)\n  - Optional notes/comments field for additional context\n- Add constraints to ensure pain score is within valid range (0-10)\n- Index timestamp field for efficient querying of historical data\n- Include created_at and updated_at audit fields\n- Consider adding assessment method field (patient-reported vs clinician-observed)\n- Define relationships to existing patient and user/staff tables\n- Add unique constraint or logic to prevent duplicate assessments at exact same timestamp for same patient\n\nEdge cases to consider:\n- Handle nullable assessor for patient self-reported scores\n- Support multiple pain locations if needed (consider separate related table)\n- Plan for assessment history/versioning if scores are correctable",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "pain-assessment-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.243Z",
-  "updatedAt": "2025-12-31T16:04:25.525Z",
-  "startedAt": "2025-12-31T15:52:07.019Z"
+  "updatedAt": "2026-01-02T15:24:53.700Z",
+  "startedAt": "2026-01-02T15:22:14.563Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

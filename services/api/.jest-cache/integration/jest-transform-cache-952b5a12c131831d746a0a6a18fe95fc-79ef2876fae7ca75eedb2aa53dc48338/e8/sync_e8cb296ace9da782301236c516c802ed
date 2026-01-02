@@ -1,0 +1,248 @@
+68f9ce4dbecd3b521f46a15c4e4121b5
+/* istanbul ignore next */
+function cov_mginfkbn6() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/sync.js";
+  var hash = "9e5665d4070a6b8de9e424077514e8027b019304";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/sync.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 8,
+          column: 21
+        },
+        end: {
+          line: 21,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 9,
+          column: 4
+        },
+        end: {
+          line: 20,
+          column: 5
+        }
+      },
+      "2": {
+        start: {
+          line: 11,
+          column: 8
+        },
+        end: {
+          line: 11,
+          column: 37
+        }
+      },
+      "3": {
+        start: {
+          line: 12,
+          column: 8
+        },
+        end: {
+          line: 12,
+          column: 77
+        }
+      },
+      "4": {
+        start: {
+          line: 16,
+          column: 8
+        },
+        end: {
+          line: 16,
+          column: 67
+        }
+      },
+      "5": {
+        start: {
+          line: 17,
+          column: 8
+        },
+        end: {
+          line: 17,
+          column: 108
+        }
+      },
+      "6": {
+        start: {
+          line: 19,
+          column: 8
+        },
+        end: {
+          line: 19,
+          column: 61
+        }
+      },
+      "7": {
+        start: {
+          line: 24,
+          column: 0
+        },
+        end: {
+          line: 26,
+          column: 1
+        }
+      },
+      "8": {
+        start: {
+          line: 25,
+          column: 4
+        },
+        end: {
+          line: 25,
+          column: 19
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 21
+          },
+          end: {
+            line: 8,
+            column: 22
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 33
+          },
+          end: {
+            line: 21,
+            column: 1
+          }
+        },
+        line: 8
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 24,
+            column: 0
+          },
+          end: {
+            line: 26,
+            column: 1
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 24,
+            column: 0
+          },
+          end: {
+            line: 26,
+            column: 1
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 24
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {
+      "0": [0, 0]
+    },
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "9e5665d4070a6b8de9e424077514e8027b019304"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_mginfkbn6 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_mginfkbn6();
+import { db } from "../config/db.drizzle.js";
+import { logger } from '../utils/logger.js';
+// In Drizzle ORM, we don't need to import models or sync them as they're defined in schema files
+// and migrations are handled separately
+
+// Test database connection
+/* istanbul ignore next */
+cov_mginfkbn6().s[0]++;
+const syncDatabase = async () => {
+  /* istanbul ignore next */
+  cov_mginfkbn6().f[0]++;
+  cov_mginfkbn6().s[1]++;
+  try {
+    /* istanbul ignore next */
+    cov_mginfkbn6().s[2]++;
+    // Test the connection
+    await db.execute('SELECT 1');
+    /* istanbul ignore next */
+    cov_mginfkbn6().s[3]++;
+    logger.info("Database connection has been established successfully.");
+
+    // In Drizzle ORM, we don't need to sync models as they're defined in schema files
+    // and migrations are handled separately
+    /* istanbul ignore next */
+    cov_mginfkbn6().s[4]++;
+    logger.info("Database models are defined in schema files.");
+    /* istanbul ignore next */
+    cov_mginfkbn6().s[5]++;
+    logger.info("Use 'npm run migrate' to generate migrations and 'npm run migrate:run' to apply them.");
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_mginfkbn6().s[6]++;
+    logger.error("Unable to connect to database:", error);
+  }
+};
+
+// Run the sync if this file is executed directly
+/* istanbul ignore next */
+cov_mginfkbn6().s[7]++;
+if (import.meta.url === `file://${process.argv[1]}`) {
+  /* istanbul ignore next */
+  cov_mginfkbn6().b[0][0]++;
+  cov_mginfkbn6().s[8]++;
+  syncDatabase();
+} else
+/* istanbul ignore next */
+{
+  cov_mginfkbn6().b[0][1]++;
+}
+export default syncDatabase;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfbWdpbmZrYm42IiwiYWN0dWFsQ292ZXJhZ2UiLCJkYiIsImxvZ2dlciIsInMiLCJzeW5jRGF0YWJhc2UiLCJmIiwiZXhlY3V0ZSIsImluZm8iLCJlcnJvciIsImltcG9ydCIsIm1ldGEiLCJ1cmwiLCJwcm9jZXNzIiwiYXJndiIsImIiXSwic291cmNlcyI6WyJzeW5jLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IGRiIH0gZnJvbSBcIi4uL2NvbmZpZy9kYi5kcml6emxlLmpzXCI7XG5cbmltcG9ydCB7IGxvZ2dlciB9IGZyb20gJy4uL3V0aWxzL2xvZ2dlci5qcyc7XG4vLyBJbiBEcml6emxlIE9STSwgd2UgZG9uJ3QgbmVlZCB0byBpbXBvcnQgbW9kZWxzIG9yIHN5bmMgdGhlbSBhcyB0aGV5J3JlIGRlZmluZWQgaW4gc2NoZW1hIGZpbGVzXG4vLyBhbmQgbWlncmF0aW9ucyBhcmUgaGFuZGxlZCBzZXBhcmF0ZWx5XG5cbi8vIFRlc3QgZGF0YWJhc2UgY29ubmVjdGlvblxuY29uc3Qgc3luY0RhdGFiYXNlID0gYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICAgIC8vIFRlc3QgdGhlIGNvbm5lY3Rpb25cbiAgICAgICAgYXdhaXQgZGIuZXhlY3V0ZSgnU0VMRUNUIDEnKTtcbiAgICAgICAgbG9nZ2VyLmluZm8oXCJEYXRhYmFzZSBjb25uZWN0aW9uIGhhcyBiZWVuIGVzdGFibGlzaGVkIHN1Y2Nlc3NmdWxseS5cIilcbiAgICAgICAgXG4gICAgICAgIC8vIEluIERyaXp6bGUgT1JNLCB3ZSBkb24ndCBuZWVkIHRvIHN5bmMgbW9kZWxzIGFzIHRoZXkncmUgZGVmaW5lZCBpbiBzY2hlbWEgZmlsZXNcbiAgICAgICAgLy8gYW5kIG1pZ3JhdGlvbnMgYXJlIGhhbmRsZWQgc2VwYXJhdGVseVxuICAgICAgICBsb2dnZXIuaW5mbyhcIkRhdGFiYXNlIG1vZGVscyBhcmUgZGVmaW5lZCBpbiBzY2hlbWEgZmlsZXMuXCIpXG4gICAgICAgIGxvZ2dlci5pbmZvKFwiVXNlICducG0gcnVuIG1pZ3JhdGUnIHRvIGdlbmVyYXRlIG1pZ3JhdGlvbnMgYW5kICducG0gcnVuIG1pZ3JhdGU6cnVuJyB0byBhcHBseSB0aGVtLlwiKVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICAgIGxvZ2dlci5lcnJvcihcIlVuYWJsZSB0byBjb25uZWN0IHRvIGRhdGFiYXNlOlwiLCBlcnJvcilcbiAgICB9XG59O1xuXG4vLyBSdW4gdGhlIHN5bmMgaWYgdGhpcyBmaWxlIGlzIGV4ZWN1dGVkIGRpcmVjdGx5XG5pZiAoaW1wb3J0Lm1ldGEudXJsID09PSBgZmlsZTovLyR7cHJvY2Vzcy5hcmd2WzFdfWApIHtcbiAgICBzeW5jRGF0YWJhc2UoKTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgc3luY0RhdGFiYXNlOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosU0FBU0UsRUFBRSxRQUFRLHlCQUF5QjtBQUU1QyxTQUFTQyxNQUFNLFFBQVEsb0JBQW9CO0FBQzNDO0FBQ0E7O0FBRUE7QUFBQTtBQUFBSCxhQUFBLEdBQUFJLENBQUE7QUFDQSxNQUFNQyxZQUFZLEdBQUcsTUFBQUEsQ0FBQSxLQUFZO0VBQUE7RUFBQUwsYUFBQSxHQUFBTSxDQUFBO0VBQUFOLGFBQUEsR0FBQUksQ0FBQTtFQUM3QixJQUFJO0lBQUE7SUFBQUosYUFBQSxHQUFBSSxDQUFBO0lBQ0E7SUFDQSxNQUFNRixFQUFFLENBQUNLLE9BQU8sQ0FBQyxVQUFVLENBQUM7SUFBQztJQUFBUCxhQUFBLEdBQUFJLENBQUE7SUFDN0JELE1BQU0sQ0FBQ0ssSUFBSSxDQUFDLHdEQUF3RCxDQUFDOztJQUVyRTtJQUNBO0lBQUE7SUFBQVIsYUFBQSxHQUFBSSxDQUFBO0lBQ0FELE1BQU0sQ0FBQ0ssSUFBSSxDQUFDLDhDQUE4QyxDQUFDO0lBQUE7SUFBQVIsYUFBQSxHQUFBSSxDQUFBO0lBQzNERCxNQUFNLENBQUNLLElBQUksQ0FBQyx1RkFBdUYsQ0FBQztFQUN4RyxDQUFDLENBQUMsT0FBT0MsS0FBSyxFQUFFO0lBQUE7SUFBQVQsYUFBQSxHQUFBSSxDQUFBO0lBQ1pELE1BQU0sQ0FBQ00sS0FBSyxDQUFDLGdDQUFnQyxFQUFFQSxLQUFLLENBQUM7RUFDekQ7QUFDSixDQUFDOztBQUVEO0FBQUE7QUFBQVQsYUFBQSxHQUFBSSxDQUFBO0FBQ0EsSUFBSU0sTUFBTSxDQUFDQyxJQUFJLENBQUNDLEdBQUcsS0FBSyxVQUFVQyxPQUFPLENBQUNDLElBQUksQ0FBQyxDQUFDLENBQUMsRUFBRSxFQUFFO0VBQUE7RUFBQWQsYUFBQSxHQUFBZSxDQUFBO0VBQUFmLGFBQUEsR0FBQUksQ0FBQTtFQUNqREMsWUFBWSxDQUFDLENBQUM7QUFDbEIsQ0FBQztBQUFBO0FBQUE7RUFBQUwsYUFBQSxHQUFBZSxDQUFBO0FBQUE7QUFFRCxlQUFlVixZQUFZIiwiaWdub3JlTGlzdCI6W119

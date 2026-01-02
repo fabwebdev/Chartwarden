@@ -1,0 +1,220 @@
+d61d2e0749a35928d71677c61af21e93
+/* istanbul ignore next */
+function cov_1k3e614kme() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/cbsa.routes.js";
+  var hash = "95726ecdd04a78f6df0d8091923acc89568344c6";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/cbsa.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 17,
+          column: 30
+        }
+      },
+      "1": {
+        start: {
+          line: 20,
+          column: 2
+        },
+        end: {
+          line: 22,
+          column: 29
+        }
+      },
+      "2": {
+        start: {
+          line: 25,
+          column: 2
+        },
+        end: {
+          line: 27,
+          column: 35
+        }
+      },
+      "3": {
+        start: {
+          line: 30,
+          column: 2
+        },
+        end: {
+          line: 32,
+          column: 31
+        }
+      },
+      "4": {
+        start: {
+          line: 35,
+          column: 2
+        },
+        end: {
+          line: 37,
+          column: 29
+        }
+      },
+      "5": {
+        start: {
+          line: 40,
+          column: 2
+        },
+        end: {
+          line: 42,
+          column: 28
+        }
+      },
+      "6": {
+        start: {
+          line: 45,
+          column: 2
+        },
+        end: {
+          line: 47,
+          column: 28
+        }
+      },
+      "7": {
+        start: {
+          line: 50,
+          column: 2
+        },
+        end: {
+          line: 52,
+          column: 31
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "cbsaRoutes",
+        decl: {
+          start: {
+            line: 12,
+            column: 30
+          },
+          end: {
+            line: 12,
+            column: 40
+          }
+        },
+        loc: {
+          start: {
+            line: 12,
+            column: 59
+          },
+          end: {
+            line: 53,
+            column: 1
+          }
+        },
+        line: 12
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "95726ecdd04a78f6df0d8091923acc89568344c6"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1k3e614kme = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1k3e614kme();
+import controller from '../controllers/CBSA.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * CBSA Routes
+ * Phase 2A - Electronic Submission Features
+ *
+ * CBSA (Core Based Statistical Area) tracking for UB-04 Value Codes 61 and G8
+ * CMS Requirement: Track CBSA for routine/continuous home care and inpatient care
+ */
+export default async function cbsaRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1k3e614kme().f[0]++;
+  cov_1k3e614kme().s[0]++;
+  // Autocomplete search for CBSA titles/cities
+  fastify.get('/cbsa/autocomplete', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.autocomplete);
+
+  // Lookup CBSA by ZIP code
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[1]++;
+  fastify.get('/cbsa/lookup/:zip', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.lookupByZip);
+
+  // Auto-populate CBSA on claim service lines
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[2]++;
+  fastify.post('/cbsa/auto-populate/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.autoPopulateClaim);
+
+  // Validate CBSA completeness on claim
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[3]++;
+  fastify.get('/cbsa/validate/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.validateClaim);
+
+  // Get all CBSA codes (paginated)
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[4]++;
+  fastify.get('/cbsa/codes', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getAllCodes);
+
+  // Bulk import CBSA codes (admin only)
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[5]++;
+  fastify.post('/cbsa/bulk-import', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SYSTEM)]
+  }, controller.bulkImport);
+
+  // Clear CBSA cache (admin only)
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[6]++;
+  fastify.post('/cbsa/clear-cache', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SYSTEM)]
+  }, controller.clearCache);
+
+  // Get CBSA cache statistics (admin only)
+  /* istanbul ignore next */
+  cov_1k3e614kme().s[7]++;
+  fastify.get('/cbsa/cache-stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SYSTEM)]
+  }, controller.getCacheStats);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWszZTYxNGttZSIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJjYnNhUm91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsImdldCIsInByZUhhbmRsZXIiLCJWSUVXX0NMSU5JQ0FMX05PVEVTIiwiYXV0b2NvbXBsZXRlIiwibG9va3VwQnlaaXAiLCJwb3N0IiwiQ1JFQVRFX0NMSU5JQ0FMX05PVEVTIiwiYXV0b1BvcHVsYXRlQ2xhaW0iLCJ2YWxpZGF0ZUNsYWltIiwiVklFV19SRVBPUlRTIiwiZ2V0QWxsQ29kZXMiLCJNQU5BR0VfU1lTVEVNIiwiYnVsa0ltcG9ydCIsImNsZWFyQ2FjaGUiLCJnZXRDYWNoZVN0YXRzIl0sInNvdXJjZXMiOlsiY2JzYS5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNvbnRyb2xsZXIgZnJvbSAnLi4vY29udHJvbGxlcnMvQ0JTQS5jb250cm9sbGVyLmpzJztcbmltcG9ydCB7IFBFUk1JU1NJT05TIH0gZnJvbSAnLi4vY29uZmlnL3JiYWMuanMnO1xuaW1wb3J0IHsgcmVxdWlyZUFueVBlcm1pc3Npb24gfSBmcm9tICcuLi9taWRkbGV3YXJlL3JiYWMubWlkZGxld2FyZS5qcyc7XG5cbi8qKlxuICogQ0JTQSBSb3V0ZXNcbiAqIFBoYXNlIDJBIC0gRWxlY3Ryb25pYyBTdWJtaXNzaW9uIEZlYXR1cmVzXG4gKlxuICogQ0JTQSAoQ29yZSBCYXNlZCBTdGF0aXN0aWNhbCBBcmVhKSB0cmFja2luZyBmb3IgVUItMDQgVmFsdWUgQ29kZXMgNjEgYW5kIEc4XG4gKiBDTVMgUmVxdWlyZW1lbnQ6IFRyYWNrIENCU0EgZm9yIHJvdXRpbmUvY29udGludW91cyBob21lIGNhcmUgYW5kIGlucGF0aWVudCBjYXJlXG4gKi9cbmV4cG9ydCBkZWZhdWx0IGFzeW5jIGZ1bmN0aW9uIGNic2FSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuXG4gIC8vIEF1dG9jb21wbGV0ZSBzZWFyY2ggZm9yIENCU0EgdGl0bGVzL2NpdGllc1xuICBmYXN0aWZ5LmdldCgnL2Nic2EvYXV0b2NvbXBsZXRlJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5hdXRvY29tcGxldGUpO1xuXG4gIC8vIExvb2t1cCBDQlNBIGJ5IFpJUCBjb2RlXG4gIGZhc3RpZnkuZ2V0KCcvY2JzYS9sb29rdXAvOnppcCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIubG9va3VwQnlaaXApO1xuXG4gIC8vIEF1dG8tcG9wdWxhdGUgQ0JTQSBvbiBjbGFpbSBzZXJ2aWNlIGxpbmVzXG4gIGZhc3RpZnkucG9zdCgnL2Nic2EvYXV0by1wb3B1bGF0ZS86Y2xhaW1JZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5hdXRvUG9wdWxhdGVDbGFpbSk7XG5cbiAgLy8gVmFsaWRhdGUgQ0JTQSBjb21wbGV0ZW5lc3Mgb24gY2xhaW1cbiAgZmFzdGlmeS5nZXQoJy9jYnNhL3ZhbGlkYXRlLzpjbGFpbUlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci52YWxpZGF0ZUNsYWltKTtcblxuICAvLyBHZXQgYWxsIENCU0EgY29kZXMgKHBhZ2luYXRlZClcbiAgZmFzdGlmeS5nZXQoJy9jYnNhL2NvZGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1JFUE9SVFMpXVxuICB9LCBjb250cm9sbGVyLmdldEFsbENvZGVzKTtcblxuICAvLyBCdWxrIGltcG9ydCBDQlNBIGNvZGVzIChhZG1pbiBvbmx5KVxuICBmYXN0aWZ5LnBvc3QoJy9jYnNhL2J1bGstaW1wb3J0Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5NQU5BR0VfU1lTVEVNKV1cbiAgfSwgY29udHJvbGxlci5idWxrSW1wb3J0KTtcblxuICAvLyBDbGVhciBDQlNBIGNhY2hlIChhZG1pbiBvbmx5KVxuICBmYXN0aWZ5LnBvc3QoJy9jYnNhL2NsZWFyLWNhY2hlJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5NQU5BR0VfU1lTVEVNKV1cbiAgfSwgY29udHJvbGxlci5jbGVhckNhY2hlKTtcblxuICAvLyBHZXQgQ0JTQSBjYWNoZSBzdGF0aXN0aWNzIChhZG1pbiBvbmx5KVxuICBmYXN0aWZ5LmdldCgnL2Nic2EvY2FjaGUtc3RhdHMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLk1BTkFHRV9TWVNURU0pXVxuICB9LCBjb250cm9sbGVyLmdldENhY2hlU3RhdHMpO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsVUFBVSxNQUFNLG1DQUFtQztBQUMxRCxTQUFTQyxXQUFXLFFBQVEsbUJBQW1CO0FBQy9DLFNB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

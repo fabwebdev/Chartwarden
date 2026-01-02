@@ -1,0 +1,104 @@
+f245dc6f38fbeec144f9ebc673d387d4
+/* istanbul ignore next */
+function cov_2pleq85v1v() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/middleware/permission.middleware.js";
+  var hash = "461170634000e22907fab9eb79c5d67841c0f61b";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/middleware/permission.middleware.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 9,
+          column: 31
+        },
+        end: {
+          line: 11,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 10,
+          column: 2
+        },
+        end: {
+          line: 10,
+          column: 39
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 31
+          },
+          end: {
+            line: 9,
+            column: 32
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 47
+          },
+          end: {
+            line: 11,
+            column: 1
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "461170634000e22907fab9eb79c5d67841c0f61b"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2pleq85v1v = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2pleq85v1v();
+import { requirePermission } from './rbac.middleware.js';
+
+/**
+ * Middleware factory to check if user has a specific permission
+ * This is a convenience wrapper around requirePermission for single permission checks
+ * @param {string} permission - The permission to check
+ * @returns {Function} Fastify preHandler middleware function
+ */
+/* istanbul ignore next */
+cov_2pleq85v1v().s[0]++;
+export const checkPermission = permission => {
+  /* istanbul ignore next */
+  cov_2pleq85v1v().f[0]++;
+  cov_2pleq85v1v().s[1]++;
+  return requirePermission(permission);
+};
+export default {
+  checkPermission
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMnBsZXE4NXYxdiIsImFjdHVhbENvdmVyYWdlIiwicmVxdWlyZVBlcm1pc3Npb24iLCJzIiwiY2hlY2tQZXJtaXNzaW9uIiwicGVybWlzc2lvbiIsImYiXSwic291cmNlcyI6WyJwZXJtaXNzaW9uLm1pZGRsZXdhcmUuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcmVxdWlyZVBlcm1pc3Npb24gfSBmcm9tICcuL3JiYWMubWlkZGxld2FyZS5qcyc7XG5cbi8qKlxuICogTWlkZGxld2FyZSBmYWN0b3J5IHRvIGNoZWNrIGlmIHVzZXIgaGFzIGEgc3BlY2lmaWMgcGVybWlzc2lvblxuICogVGhpcyBpcyBhIGNvbnZlbmllbmNlIHdyYXBwZXIgYXJvdW5kIHJlcXVpcmVQZXJtaXNzaW9uIGZvciBzaW5nbGUgcGVybWlzc2lvbiBjaGVja3NcbiAqIEBwYXJhbSB7c3RyaW5nfSBwZXJtaXNzaW9uIC0gVGhlIHBlcm1pc3Npb24gdG8gY2hlY2tcbiAqIEByZXR1cm5zIHtGdW5jdGlvbn0gRmFzdGlmeSBwcmVIYW5kbGVyIG1pZGRsZXdhcmUgZnVuY3Rpb25cbiAqL1xuZXhwb3J0IGNvbnN0IGNoZWNrUGVybWlzc2lvbiA9IChwZXJtaXNzaW9uKSA9PiB7XG4gIHJldHVybiByZXF1aXJlUGVybWlzc2lvbihwZXJtaXNzaW9uKTtcbn07XG5cbmV4cG9ydCBkZWZhdWx0IHtcbiAgY2hlY2tQZXJtaXNzaW9uXG59O1xuXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxpQkFBaUIsUUFBUSxzQkFBc0I7O0FBRXhEO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUxBO0FBQUFGLGNBQUEsR0FBQUcsQ0FBQTtBQU1BLE9BQU8sTUFBTUMsZUFBZSxHQUFJQyxVQUFVLElBQUs7RUFBQTtFQUFBTCxjQUFBLEdBQUFNLENBQUE7RUFBQU4sY0FBQSxHQUFBRyxDQUFBO0VBQzdDLE9BQU9ELGlCQUFpQixDQUFDRyxVQUFVLENBQUM7QUFDdEMsQ0FBQztBQUVELGVBQWU7RUFDYkQ7QUFDRixDQUFDIiwiaWdub3JlTGlzdCI6W119

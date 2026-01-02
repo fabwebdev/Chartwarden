@@ -1,0 +1,247 @@
+e3660d8321c4c1300b4620e7d45c63ff
+/* istanbul ignore next */
+function cov_oqt7yo0k1() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/audit.routes.js";
+  var hash = "4ce06d5a3d378ca683f97e5ce8a0d74aa73b293a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/audit.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 22,
+          column: 2
+        },
+        end: {
+          line: 24,
+          column: 26
+        }
+      },
+      "1": {
+        start: {
+          line: 28,
+          column: 2
+        },
+        end: {
+          line: 30,
+          column: 28
+        }
+      },
+      "2": {
+        start: {
+          line: 34,
+          column: 2
+        },
+        end: {
+          line: 36,
+          column: 31
+        }
+      },
+      "3": {
+        start: {
+          line: 40,
+          column: 2
+        },
+        end: {
+          line: 42,
+          column: 25
+        }
+      },
+      "4": {
+        start: {
+          line: 46,
+          column: 2
+        },
+        end: {
+          line: 48,
+          column: 20
+        }
+      },
+      "5": {
+        start: {
+          line: 52,
+          column: 2
+        },
+        end: {
+          line: 54,
+          column: 28
+        }
+      },
+      "6": {
+        start: {
+          line: 61,
+          column: 2
+        },
+        end: {
+          line: 63,
+          column: 19
+        }
+      },
+      "7": {
+        start: {
+          line: 65,
+          column: 2
+        },
+        end: {
+          line: 67,
+          column: 22
+        }
+      },
+      "8": {
+        start: {
+          line: 70,
+          column: 2
+        },
+        end: {
+          line: 72,
+          column: 23
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "auditRoutes",
+        decl: {
+          start: {
+            line: 15,
+            column: 15
+          },
+          end: {
+            line: 15,
+            column: 26
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 45
+          },
+          end: {
+            line: 73,
+            column: 1
+          }
+        },
+        line: 15
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "4ce06d5a3d378ca683f97e5ce8a0d74aa73b293a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_oqt7yo0k1 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_oqt7yo0k1();
+import { getAuditLogs, getUserAuditLogs, getAuditLogById } from '../controllers/Audit.controller.js';
+import { getComplianceReport, getUserActivityReport, getResourceAccessHistory, getRetentionStatus, getAuditStats, getArchivalCandidates } from '../controllers/AuditCompliance.controller.js';
+import { authenticate } from '../middleware/betterAuth.middleware.js';
+import { requireRole } from '../middleware/rbac.middleware.js';
+import { ROLES } from '../config/rbac.js';
+
+// Fastify plugin for audit routes
+async function auditRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().f[0]++;
+  cov_oqt7yo0k1().s[0]++;
+  // =====================
+  // Compliance Endpoints (Admin only)
+  // =====================
+
+  // Get compliance report for date range
+  // GET /api/audit/compliance/report?startDate=2024-01-01&endDate=2024-12-31
+  fastify.get('/compliance/report', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getComplianceReport);
+
+  // Get user activity report
+  // GET /api/audit/compliance/user/:userId?startDate=2024-01-01&endDate=2024-12-31
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[1]++;
+  fastify.get('/compliance/user/:userId', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getUserActivityReport);
+
+  // Get resource access history
+  // GET /api/audit/compliance/resource/:resourceType/:resourceId
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[2]++;
+  fastify.get('/compliance/resource/:resourceType/:resourceId', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getResourceAccessHistory);
+
+  // Get retention compliance status
+  // GET /api/audit/compliance/retention
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[3]++;
+  fastify.get('/compliance/retention', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getRetentionStatus);
+
+  // Get audit service statistics
+  // GET /api/audit/compliance/stats
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[4]++;
+  fastify.get('/compliance/stats', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getAuditStats);
+
+  // Get archival candidates
+  // GET /api/audit/compliance/archival?retentionYears=6
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[5]++;
+  fastify.get('/compliance/archival', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getArchivalCandidates);
+
+  // =====================
+  // Basic Audit Log Endpoints
+  // =====================
+
+  // Admin routes for audit logs
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[6]++;
+  fastify.get('/', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getAuditLogs);
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[7]++;
+  fastify.get('/:id', {
+    preHandler: [authenticate, requireRole(ROLES.ADMIN)]
+  }, getAuditLogById);
+
+  // User route to get their own audit logs
+  /* istanbul ignore next */
+  cov_oqt7yo0k1().s[8]++;
+  fastify.get('/user/logs', {
+    preHandler: [authenticate]
+  }, getUserAuditLogs);
+}
+export default auditRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfb3F0N3lvMGsxIiwiYWN0dWFsQ292ZXJhZ2UiLCJnZXRBdWRpdExvZ3MiLCJnZXRVc2VyQXVkaXRMb2dzIiwiZ2V0QXVkaXRMb2dCeUlkIiwiZ2V0Q29tcGxpYW5jZVJlcG9ydCIsImdldFVzZXJBY3Rpdml0eVJlcG9ydCIsImdldFJlc291cmNlQWNjZXNzSGlzdG9yeSIsImdldFJldGVudGlvblN0YXR1cyIsImdldEF1ZGl0U3RhdHMiLCJnZXRBcmNoaXZhbENhbmRpZGF0ZXMiLCJhdXRoZW50aWNhdGUiLCJyZXF1aXJlUm9sZSIsIlJPTEVTIiwiYXVkaXRSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsIkFETUlOIl0sInNvdXJjZXMiOlsiYXVkaXQucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IGdldEF1ZGl0TG9ncywgZ2V0VXNlckF1ZGl0TG9ncywgZ2V0QXVkaXRMb2dCeUlkIH0gZnJvbSAnLi4vY29udHJvbGxlcnMvQXVkaXQuY29udHJvbGxlci5qcyc7XG5pbXBvcnQge1xuICBnZXRDb21wbGlhbmNlUmVwb3J0LFxuICBnZXRVc2VyQWN0aXZpdHlSZXBvcnQsXG4gIGdldFJlc291cmNlQWNjZXNzSGlzdG9yeSxcbiAgZ2V0UmV0ZW50aW9uU3RhdHVzLFxuICBnZXRBdWRpdFN0YXRzLFxuICBnZXRBcmNoaXZhbENhbmRpZGF0ZXMsXG59IGZyb20gJy4uL2NvbnRyb2xsZXJzL0F1ZGl0Q29tcGxpYW5jZS5jb250cm9sbGVyLmpzJztcbmltcG9ydCB7IGF1dGhlbnRpY2F0ZSB9IGZyb20gJy4uL21pZGRsZXdhcmUvYmV0dGVyQXV0aC5taWRkbGV3YXJlLmpzJztcbmltcG9ydCB7IHJlcXVpcmVSb2xlIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuaW1wb3J0IHsgUk9MRVMgfSBmcm9tICcuLi9jb25maWcvcmJhYy5qcyc7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBhdWRpdCByb3V0ZXNcbmFzeW5jIGZ1bmN0aW9uIGF1ZGl0Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09XG4gIC8vIENvbXBsaWFuY2UgRW5kcG9pbnRzIChBZG1pbiBvbmx5KVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBHZXQgY29tcGxpYW5jZSByZXBvcnQgZm9yIGRhdGUgcmFuZ2VcbiAgLy8gR0VUIC9hcGkvYXVkaXQvY29tcGxpYW5jZS9yZXBvcnQ/c3RhcnREYXRlPTIwMjQtMDEtMDEmZW5kRGF0ZT0yMDI0LTEyLTMxXG4gIGZhc3RpZnkuZ2V0KCcvY29tcGxpYW5jZS9yZXBvcnQnLCB7XG4gICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgcmVxdWlyZVJvbGUoUk9MRVMuQURNSU4pXSxcbiAgfSwgZ2V0Q29tcGxpYW5jZVJlcG9ydCk7XG5cbiAgLy8gR2V0IHVzZXIgYWN0aXZpdHkgcmVwb3J0XG4gIC8vIEdFVCAvYXBpL2F1ZGl0L2NvbXBsaWFuY2UvdXNlci86dXNlcklkP3N0YXJ0RGF0ZT0yMDI0LTAxLTAxJmVuZERhdGU9MjAyNC0xMi0zMVxuICBmYXN0aWZ5LmdldCgnL2NvbXBsaWFuY2UvdXNlci86dXNlcklkJywge1xuICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGUsIHJlcXVpcmVSb2xlKFJPTEVTLkFETUlOKV0sXG4gIH0sIGdldFVzZXJBY3Rpdml0eVJlcG9ydCk7XG5cbiAgLy8gR2V0IHJlc291cmNlIGFjY2VzcyBoaXN0b3J5XG4gIC8vIEdFVCAvYXBpL2F1ZGl0L2NvbXBsaWFuY2UvcmVzb3VyY2UvOnJlc291cmNlVHlwZS86cmVzb3VyY2VJZFxuICBmYXN0aWZ5LmdldCgnL2NvbXBsaWFuY2UvcmVzb3VyY2UvOnJlc291cmNlVHlwZS86cmVzb3VyY2VJZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlLCByZXF1aXJlUm9sZShST0xFUy5BRE1JTildLFxuICB9LCBnZXRSZXNvdXJjZUFjY2Vzc0hpc3RvcnkpO1xuXG4gIC8vIEdldCByZXRlbnRpb24gY29tcGxpYW5jZSBzdGF0dXNcbiAgLy8gR0VUIC9hcGkvYXVkaXQvY29tcGxpYW5jZS9yZXRlbnRpb25cbiAgZmFzdGlmeS5nZXQoJy9jb21wbGlhbmNlL3JldGVudGlvbicsIHtcbiAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlLCByZXF1aXJlUm9sZShST0xFUy5BRE1JTildLFxuICB9LCBnZXRSZXRlbnRpb25TdGF0dXMpO1xuXG4gIC8vIEdldCBhdWRpdCBzZXJ2aWNlIHN0YXRpc3RpY3NcbiAgLy8gR0VUIC9hcGkvYXVkaXQvY29tcGxpYW5jZS9zdGF0c1xuICBmYXN0aWZ5LmdldCgnL2NvbXBsaWFuY2Uvc3RhdHMnLCB7XG4gICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgcmVxdWlyZVJvbGUoUk9MRVMuQURNSU4pXSxcbiAgfSwgZ2V0QXVkaXRTdGF0cyk7XG5cbiAgLy8gR2V0IGFyY2hpdmFsIGNhbmRpZGF0ZXNcbiAgLy8gR0VUIC9hcGkvYXVkaXQvY29tcGxpYW5jZS9hcmNoaXZhbD9yZXRlbnRpb25ZZWFycz02XG4gIGZhc3RpZnkuZ2V0KCcvY29tcGxpYW5jZS9hcmNoaXZhbCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlLCByZXF1aXJlUm9sZShST0xFUy5BRE1JTildLFxuICB9LCBnZXRBcmNoaXZhbENhbmRpZGF0ZXMpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PVxuICAvLyBCYXNpYyBBdWRpdCBMb2cgRW5kcG9pbnRzXG4gIC8vID09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIEFkbWluIHJvdXRlcyBmb3IgYXVkaXQgbG9nc1xuICBmYXN0aWZ5LmdldCgnLycsIHtcbiAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlLCByZXF1aXJlUm9sZShST0xFUy5BRE1JTildLFxuICB9LCBnZXRBdWRpdExvZ3MpO1xuXG4gIGZhc3RpZnkuZ2V0KCcvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGUsIHJlcXVpcmVSb2xlKFJPTEVTLkFETUlOKV0sXG4gIH0sIGdldEF1ZGl0TG9nQnlJZCk7XG5cbiAgLy8gVXNlciByb3V0ZSB0byBnZXQgdGhlaXIgb3duIGF1ZGl0IGxvZ3NcbiAgZmFzdGlmeS5nZXQoJy91c2VyL2xvZ3MnLCB7XG4gICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZV0sXG4gIH0sIGdldFVzZXJBdWRpdExvZ3MpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBhdWRpdFJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosU0FBU0UsWUFBWSxFQUFFQyxnQkFBZ0IsRUFBRUMsZUFBZSxRQUFRLG9DQUFvQztBQUNwRyxTQUNFQyxtQkFBbUIsRUFDbkJDLHFCQUFxQixFQUNyQkMsd0JBQXdCLEVBQ3hCQyxrQkFBa0IsRUFDbEJDLGFBQWEsRUFDYkMscUJBQXFCLFFBQ2hCLDhDQUE4QztBQUNyRCxTQUFTQyxZQUFZLFFBQVEsd0NBQXdDO0FBQ3JFLFNBQVNDLFdBQVcsUUFBUSxrQ0FBa0M7QUFDOUQsU0FBU0MsS0FBSyxRQUFRLG1CQUFtQjs7QUFFekM7QUFDQSxlQUFlQyxXQUFXQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFoQixhQUFBLEdBQUFpQixDQUFBO0VBQUFqQixhQUFBLEdBQUFrQixDQUFBO0VBQzNDO0VBQ0E7RUFDQTs7RUFFQTtFQUNBO0VBQ0FILE9B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

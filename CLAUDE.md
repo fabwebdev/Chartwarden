@@ -43,13 +43,17 @@ Chartwarden/
 ## Development Commands
 
 ```bash
-# Start everything
-docker-compose up -d          # PostgreSQL + Redis
-npm run dev                   # Frontend + Backend
+# Start everything (recommended)
+npm run docker:up             # PostgreSQL + Redis
+npm run dev                   # Frontend + Backend (native)
 
 # Individual apps
 npm run dev:web               # Next.js (port 3000)
 npm run dev:api               # Fastify (port 3001)
+
+# Docker (full stack)
+npm run docker:full           # All services in Docker
+npm run docker:dev            # Dev mode with hot reload
 
 # Database
 npm run db:migrate            # Run migrations
@@ -59,6 +63,8 @@ npm run db:generate           # Generate migration
 npm run sync:frontend         # Pull from ehr_frontend
 npm run sync:backend          # Pull from ehr_backend
 ```
+
+> **See [DOCKER.md](./DOCKER.md)** for comprehensive Docker setup guide
 
 ## API Patterns
 

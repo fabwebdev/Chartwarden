@@ -53,14 +53,6 @@ const SEVERITY_LEVELS = [
   { value: 'SEVERE', label: 'Severe' }
 ];
 
-const FREQUENCY_OPTIONS = [
-  { value: 'NEVER', label: 'Never' },
-  { value: 'RARELY', label: 'Rarely' },
-  { value: 'SOMETIMES', label: 'Sometimes' },
-  { value: 'OFTEN', label: 'Often' },
-  { value: 'ALWAYS', label: 'Always' }
-];
-
 const APPETITE_STATUS = [
   { value: 'GOOD', label: 'Good' },
   { value: 'FAIR', label: 'Fair' },

@@ -1,0 +1,411 @@
+f6591fe166493988b525e4990205f3ca
+/* istanbul ignore next */
+function cov_21vms2tuvg() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/VitalSigns.routes.js";
+  var hash = "cb3911a640588d48058b7a507ac58d453b194b37";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/VitalSigns.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 29,
+          column: 2
+        },
+        end: {
+          line: 31,
+          column: 55
+        }
+      },
+      "1": {
+        start: {
+          line: 35,
+          column: 2
+        },
+        end: {
+          line: 37,
+          column: 54
+        }
+      },
+      "2": {
+        start: {
+          line: 41,
+          column: 2
+        },
+        end: {
+          line: 43,
+          column: 50
+        }
+      },
+      "3": {
+        start: {
+          line: 47,
+          column: 2
+        },
+        end: {
+          line: 49,
+          column: 50
+        }
+      },
+      "4": {
+        start: {
+          line: 53,
+          column: 2
+        },
+        end: {
+          line: 55,
+          column: 41
+        }
+      },
+      "5": {
+        start: {
+          line: 63,
+          column: 2
+        },
+        end: {
+          line: 65,
+          column: 47
+        }
+      },
+      "6": {
+        start: {
+          line: 69,
+          column: 2
+        },
+        end: {
+          line: 71,
+          column: 12
+        }
+      },
+      "7": {
+        start: {
+          line: 75,
+          column: 2
+        },
+        end: {
+          line: 77,
+          column: 12
+        }
+      },
+      "8": {
+        start: {
+          line: 81,
+          column: 2
+        },
+        end: {
+          line: 83,
+          column: 11
+        }
+      },
+      "9": {
+        start: {
+          line: 87,
+          column: 2
+        },
+        end: {
+          line: 89,
+          column: 13
+        }
+      },
+      "10": {
+        start: {
+          line: 94,
+          column: 2
+        },
+        end: {
+          line: 96,
+          column: 45
+        }
+      },
+      "11": {
+        start: {
+          line: 101,
+          column: 2
+        },
+        end: {
+          line: 103,
+          column: 41
+        }
+      },
+      "12": {
+        start: {
+          line: 107,
+          column: 2
+        },
+        end: {
+          line: 109,
+          column: 41
+        }
+      },
+      "13": {
+        start: {
+          line: 117,
+          column: 2
+        },
+        end: {
+          line: 119,
+          column: 42
+        }
+      },
+      "14": {
+        start: {
+          line: 128,
+          column: 2
+        },
+        end: {
+          line: 130,
+          column: 39
+        }
+      },
+      "15": {
+        start: {
+          line: 135,
+          column: 2
+        },
+        end: {
+          line: 137,
+          column: 40
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "vitalSignsRoutes",
+        decl: {
+          start: {
+            line: 22,
+            column: 15
+          },
+          end: {
+            line: 22,
+            column: 31
+          }
+        },
+        loc: {
+          start: {
+            line: 22,
+            column: 50
+          },
+          end: {
+            line: 138,
+            column: 1
+          }
+        },
+        line: 22
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "cb3911a640588d48058b7a507ac58d453b194b37"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_21vms2tuvg = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_21vms2tuvg();
+import controller from '../../controllers/patient/VitalSigns.controller.js';
+import { index, store, show, update } from '../../controllers/patient/VitalSigns.controller.js';
+import { verifyToken } from '../../middleware/betterAuth.middleware.js';
+import { PERMISSIONS } from '../../config/rbac.js';
+import { requireAnyPermission, requirePermission } from '../../middleware/rbac.middleware.js';
+
+/**
+ * Vital Signs Routes
+ * Comprehensive vital signs (BP, HR, RR, Temp, SpO2, Pain) with timestamp, value, and unit information
+ *
+ * RBAC Permissions:
+ * - Nurse: create, read (VIEW_VITAL_SIGNS, CREATE_VITAL_SIGNS)
+ * - Doctor: create, read, update (VIEW_VITAL_SIGNS, CREATE_VITAL_SIGNS, UPDATE_VITAL_SIGNS)
+ * - Admin: full CRUD + view deleted (all vital signs permissions + VIEW_AUDIT_LOGS)
+ *
+ * Routes are organized into:
+ * 1. Patient-scoped routes: /patients/:patientId/vital-signs
+ * 2. Global routes: /vital-signs
+ * 3. Signature/compliance routes: /vital-signs/:id/sign, /vital-signs/:id/amend
+ * 4. Admin routes: /vital-signs/:id/restore
+ */
+async function vitalSignsRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_21vms2tuvg().f[0]++;
+  cov_21vms2tuvg().s[0]++;
+  // =========================================
+  // Patient-scoped vital signs routes
+  // =========================================
+
+  // Get all vital signs for a patient
+  // Nurses, Doctors, Admin can view
+  fastify.get('/patients/:patientId/vital-signs', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, controller.getPatientVitalSigns.bind(controller));
+
+  // Get latest vital signs for a patient
+  // Nurses, Doctors, Admin can view
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[1]++;
+  fastify.get('/patients/:patientId/vital-signs/latest', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, controller.getLatestVitalSigns.bind(controller));
+
+  // Get vital signs statistics for a patient
+  // Nurses, Doctors, Admin can view
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[2]++;
+  fastify.get('/patients/:patientId/vital-signs/stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, controller.getPatientStats.bind(controller));
+
+  // Get vital signs trend for a patient
+  // Nurses, Doctors, Admin can view
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[3]++;
+  fastify.get('/patients/:patientId/vital-signs/trend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, controller.getPatientTrend.bind(controller));
+
+  // Create vital signs for a patient
+  // Nurses, Doctors, Admin can create
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[4]++;
+  fastify.post('/patients/:patientId/vital-signs', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_VITAL_SIGNS)]
+  }, controller.create.bind(controller));
+
+  // =========================================
+  // Global vital signs routes
+  // =========================================
+
+  // Get vital signs reference information (normal ranges, methods, etc.)
+  // Anyone with view permission can access reference data
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[5]++;
+  fastify.get('/vital-signs/reference', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, controller.getReference.bind(controller));
+
+  // Get all vital signs (with filters)
+  // Nurses, Doctors, Admin can view
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[6]++;
+  fastify.get('/vital-signs', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, index);
+
+  // Create new vital signs (legacy route)
+  // Nurses, Doctors, Admin can create
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[7]++;
+  fastify.post('/vital-signs/store', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_VITAL_SIGNS)]
+  }, store);
+
+  // Get a single vital sign record by ID
+  // Nurses, Doctors, Admin can view
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[8]++;
+  fastify.get('/vital-signs/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_VITAL_SIGNS)]
+  }, show);
+
+  // Update vital signs by ID (legacy pattern - POST)
+  // Doctors, Admin can update
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[9]++;
+  fastify.post('/vital-signs/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_VITAL_SIGNS)]
+  }, update);
+
+  // Full update vital signs by ID (RESTful pattern - PUT)
+  // Replaces entire record, requires version for optimistic locking
+  // Doctors, Admin can update
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[10]++;
+  fastify.put('/vital-signs/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_VITAL_SIGNS)]
+  }, controller.fullUpdate.bind(controller));
+
+  // Partial update vital signs by ID (RESTful pattern - PATCH)
+  // Updates only specified fields, requires version for optimistic locking
+  // Doctors, Admin can update
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[11]++;
+  fastify.patch('/vital-signs/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_VITAL_SIGNS)]
+  }, controller.update.bind(controller));
+
+  // Soft delete vital signs by ID
+  // Admin only can delete
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[12]++;
+  fastify.delete('/vital-signs/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_VITAL_SIGNS)]
+  }, controller.delete.bind(controller));
+
+  // =========================================
+  // Admin-only routes
+  // =========================================
+
+  // Restore soft-deleted vital signs
+  // Admin only (requires DELETE permission + VIEW_AUDIT_LOGS for accessing deleted records)
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[13]++;
+  fastify.post('/vital-signs/:id/restore', {
+    preHandler: [requirePermission(PERMISSIONS.DELETE_VITAL_SIGNS, PERMISSIONS.VIEW_AUDIT_LOGS)]
+  }, controller.restore.bind(controller));
+
+  // =========================================
+  // Signature and compliance routes (21 CFR Part 11)
+  // =========================================
+
+  // Sign vital signs record
+  // Creates an electronic signature attestation
+  // Nurses, Doctors, Admin can sign their own records
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[14]++;
+  fastify.post('/vital-signs/:id/sign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_VITAL_SIGNS, PERMISSIONS.UPDATE_VITAL_SIGNS)]
+  }, controller.sign.bind(controller));
+
+  // Amend signed vital signs record
+  // Creates a new version with amendment reason (original preserved)
+  // Doctors, Admin can amend
+  /* istanbul ignore next */
+  cov_21vms2tuvg().s[15]++;
+  fastify.post('/vital-signs/:id/amend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_VITAL_SIGNS)]
+  }, controller.amend.bind(controller));
+}
+export default vitalSignsRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMjF2bXMydHV2ZyIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsImluZGV4Iiwic3RvcmUiLCJzaG93IiwidXBkYXRlIiwidmVyaWZ5VG9rZW4iLCJQRVJNSVNTSU9OUyIsInJlcXVpcmVBbnlQZXJtaXNzaW9uIiwicmVxdWlyZVBlcm1pc3Npb24iLCJ2aXRhbFNpZ25zUm91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsImdldCIsInByZUhhbmRsZXIiLCJWSUVXX1ZJVEFMX1NJR05TIiwiZ2V0UGF0aWVudFZpdGFsU2lnbnMiLCJiaW5kIiwiZ2V0TGF0ZXN0Vml0YWxTaWducyIsImdldFBhdGllbnRTdGF0cyIsImdldFBhdGllbnRUcmVuZCIsInBvc3QiLCJDUkVBVEVfVklUQUxfU0lHTlMiLCJjcmVhdGUiLCJnZXRSZWZlcmVuY2UiLCJVUERBVEVfVklUQUxfU0lHTlMiLCJwdXQiLCJmdWxsVXBkYXRlIiwicGF0Y2giLCJkZWxldGUiLCJERUxFVEVfVklUQUxfU0lHTlMiLCJWSUVXX0FVRElUX0xPR1MiLCJyZXN0b3JlIiwic2lnbiIsImFtZW5kIl0sInNvdXJjZXMiOlsiVml0YWxTaWducy5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNvbnRyb2xsZXIgZnJvbSAnLi4vLi4vY29udHJvbGxlcnMvcGF0aWVudC9WaXRhbFNpZ25zLmNvbnRyb2xsZXIuanMnO1xuaW1wb3J0IHsgaW5kZXgsIHN0b3JlLCBzaG93LCB1cGRhdGUgfSBmcm9tICcuLi8uLi9jb250cm9sbGVycy9wYXRpZW50L1ZpdGFsU2lnbnMuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyB2ZXJpZnlUb2tlbiB9IGZyb20gJy4uLy4uL21pZGRsZXdhcmUvYmV0dGVyQXV0aC5taWRkbGV3YXJlLmpzJztcbmltcG9ydCB7IFBFUk1JU1NJT05TIH0gZnJvbSAnLi4vLi4vY29uZmlnL3JiYWMuanMnO1xuaW1wb3J0IHsgcmVxdWlyZUFueVBlcm1pc3Npb24sIHJlcXVpcmVQZXJtaXNzaW9uIH0gZnJvbSAnLi4vLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIFZpdGFsIFNpZ25zIFJvdXRlc1xuICogQ29tcHJlaGVuc2l2ZSB2aXRhbCBzaWducyAoQlAsIEhSLCBSUiwgVGVtcCwgU3BPMiwgUGFpbikgd2l0aCB0aW1lc3RhbXAsIHZhbHVlLCBhbmQgdW5pdCBpbmZvcm1hdGlvblxuICpcbiAqIFJCQUMgUGVybWlzc2lvbnM6XG4gKiAtIE51cnNlOiBjcmVhdGUsIHJlYWQgKFZJRVdfVklUQUxfU0lHTlMsIENSRUFURV9WSVRBTF9TSUdOUylcbiAqIC0gRG9jdG9yOiBjcmVhdGUsIHJlYWQsIHVwZGF0ZSAoVklFV19WSVRBTF9TSUdOUywgQ1JFQVRFX1ZJVEFMX1NJR05TLCBVUERBVEVfVklUQUxfU0lHTlMpXG4gKiAtIEFkbWluOiBmdWxsIENSVUQgKyB2aWV3IGRlbGV0ZWQgKGFsbCB2aXRhbCBzaWducyBwZXJtaXNzaW9ucyArIFZJRVdfQVVESVRfTE9HUylcbiAqXG4gKiBSb3V0ZXMgYXJlIG9yZ2FuaXplZCBpbnRvOlxuICogMS4gUGF0aWVudC1zY29wZWQgcm91dGVzOiAvcGF0aWVudHMvOnBhdGllbnRJZC92aXRhbC1zaWduc1xuICogMi4gR2xvYmFsIHJvdXRlczogL3ZpdGFsLXNpZ25zXG4gKiAzLiBTaWduYXR1cmUvY29tcGxpYW5jZSByb3V0ZXM6IC92aXRhbC1zaWducy86aWQvc2lnbiwgL3ZpdGFsLXNpZ25zLzppZC9hbWVuZFxuICogNC4gQWRtaW4gcm91dGVzOiAvdml0YWwtc2lnbnMvOmlkL3Jlc3RvcmVcbiAqL1xuYXN5bmMgZnVuY3Rpb24gdml0YWxTaWduc1JvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFBhdGllbnQtc2NvcGVkIHZpdGFsIHNpZ25zIHJvdXRlc1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIEdldCBhbGwgdml0YWwgc2lnbnMgZm9yIGEgcGF0aWVudFxuICAvLyBOdXJzZXMsIERvY3RvcnMsIEFkbWluIGNhbiB2aWV3XG4gIGZhc3RpZnkuZ2V0KCcvcGF0aWVudHMvOnBhdGllbnRJZC92aXRhbC1zaWducycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19WSVRBTF9TSUdOUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGF0aWVudFZpdGFsU2lnbnMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGxhdGVzdCB2aXRhbCBzaWducyBmb3IgYSBwYXRpZW50XG4gIC8vIE51cnNlcywgRG9jdG9ycywgQWRtaW4gY2FuIHZpZXdcbiAgZmFzdGlmeS5nZXQoJy9wYXRpZW50cy86cGF0aWVudElkL3ZpdGFsLXNpZ25zL2xhdGVzdCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19WSVRBTF9TSUdOUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0TGF0ZXN0Vml0YWxTaWducy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgdml0YWwgc2lnbnMgc3RhdGlzdGljcyBmb3IgYSBwYXRpZW50XG4gIC8vIE51cnNlcywgRG9jdG9ycywgQWRtaW4gY2FuIHZpZXdcbiAgZmFzdGlmeS5nZXQoJy9wYXRpZW50cy86cGF0aWVudElkL3ZpdGFsLXNpZ25zL3N0YXRzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1ZJVEFMX1NJR05TKV1cbiAgfSwgY29udHJvbGxlci5nZXRQYXRpZW50U3RhdHMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IHZpdGFsIHNpZ25zIHRyZW5kIGZvciBhIHBhdGllbnRcbiAgLy8gTnVyc2VzLCBEb2N0b3JzLCBBZG1pbiBjYW4gdmlld1xuICBmYXN0aWZ5LmdldCgnL3BhdGllbnRzLzpwYXRpZW50SWQvdml0YWwtc2lnbnMvdHJlbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfVklUQUxfU0lHTlMpXVxuICB9LCBjb250cm9sbGVyLmdldFBhdGllbnRUcmVuZC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBDcmVhdGUgdml0YWwgc2lnbnMgZm9yIGEgcGF0aWVudFxuICAvLyBOdXJzZXMsIERvY3RvcnMsIEFkbWluIGNhbiBjcmVhdGVcbiAgZmFzdGlmeS5wb3N0KCcvcGF0aWVudHMvOnBhdGllbnRJZC92aXRhbC1zaWducycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX1ZJVEFMX1NJR05TKV1cbiAgfSwgY29udHJvbGxlci5jcmVhdGUuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gR2xvYmFsIHZpdGFsIHNpZ25zIHJvdXRlc1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIEdldCB2aXRhbCBzaWducyByZWZlcmVuY2UgaW5mb3JtYXRpb24gKG5vcm1hbCByYW5nZXMsIG1ldGhvZHMsIGV0Yy4pXG4gIC8vIEFueW9uZSB3aXRoIHZpZXcgcGVybWlzc2lvbiBjYW4gYWNjZXNzIHJlZmVyZW5jZSBkYXRhXG4gIGZhc3RpZnkuZ2V0KCcvdml0YWwtc2lnbnMvcmVmZXJlbmNlJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1ZJVEFMX1NJR05TKV1cbiAgfSwgY29udHJvbGxlci5nZXRSZWZlcmVuY2UuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGFsbCB2aXRhbCBzaWducyAod2l0aCBmaWx0ZXJzKVxuICAvLyBOdXJzZXMsIERvY3RvcnMsIEFkbWluIGNhbiB2aWV3XG4gIGZhc3RpZnkuZ2V0KCcvdml0YWwtc2lnbnMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfVklUQUxfU0lHTlMpXVxuICB9LCBpbmRleCk7XG5cbiAgLy8gQ3JlYXRlIG5ldyB2aXRhbCBzaWducyAobGVnYWN5IHJvdXRlKVxuICAvLyBOdXJzZXMsIERvY3RvcnMsIEFkbWluIGNhbiBjcmVhdGVcbiAgZmFzdGlmeS5wb3N0KCcvdml0YWwtc2lnbnMvc3RvcmUnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLkNSRUFURV9WSVRBTF9TSUdOUyldXG4gIH0sIHN0b3JlKTtcblxuICAvLyBHZXQgYSBzaW5nbGUgdml0YWwgc2lnbiByZWNvcmQgYnkgSURcbiAgLy8gTnVyc2VzLCBEb2N0b3JzLCBBZG1pbiBjYW4gdmlld1xuICBmYXN0aWZ5LmdldCgnL3ZpdGFsLXNpZ25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19WSVRBTF9TSUdOUyldXG4gIH0sIHNob3cpO1xuXG4gIC8vIFVwZGF0ZSB2aXRhbCBzaWducyBieSBJRCAobGVnYWN5IHBhdHRlcm4gLSBQT1NUKVxuICAvLyBEb2N0b3JzLCBBZG1pbiBjYW4gdXBkYXRlXG4gIGZhc3RpZnkucG9zdCgnL3ZpdGFsLXNpZ25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX1ZJVEFMX1NJR05TKV1cbiAgfSwgdXBkYXRlKTtcblxuICAvLyBGdWxsIHVwZGF0ZSB2aXRhbCBzaWducyBieSBJRCAoUkVTVGZ1bCBwYXR0ZXJuIC0gUFVUKVxuICAvLyBSZXBsYWNlcyBlbnRpcmUgcmVjb3JkLCByZXF1aXJlcyB2ZXJzaW9uIGZvciBvcHRpbWlzdGljIGxvY2tpbmdcbiAgLy8gRG9jdG9ycywgQWRtaW4gY2FuIHVwZGF0ZVxuICBmYXN0aWZ5LnB1dCgnL3ZpdGFsLXNpZ25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX1ZJVEFMX1NJR05TKV1cbiAgfSwgY29udHJvbGxlci5mdWxsVXBkYXRlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIFBhcnRpYWwgdXBkYXRlIHZpdGFsIHNpZ25zIGJ5IElEIChSRVNUZnVsIHBhdHRlcm4gLSBQQVRDSClcbiAgLy8gVXBkYXRlcyBvbmx5IHNwZWNpZmllZCBmaWVsZHMsIHJlcXVpcmVzIHZlcnNpb24gZm9yIG9wdGltaXN0aWMgbG9ja2luZ1xuICAvLyBEb2N0b3JzLCBBZG1pbiBjYW4gdXBkYXRlXG4gIGZhc3RpZnkucGF0Y2goJy92aXRhbC1zaWducy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9WSVRBTF9TSUdOUyldXG4gIH0sIGNvbnRyb2xsZXIudXBkYXRlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIFNvZnQgZGVsZXRlIHZpdGFsIHNpZ25zIGJ5IElEXG4gIC8vIEFkbWluIG9ubHkgY2FuIGRlbGV0ZVxuICBmYXN0aWZ5LmRlbGV0ZSgnL3ZpdGFsLXNpZ25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuREVMRVRFX1ZJVEFMX1NJR05TKV1cbiAgfSwgY29udHJvbGxlci5kZWxldGUuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gQWRtaW4tb25seSByb3V0ZXNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBSZXN0b3JlIHNvZnQtZGVsZXRlZCB2aXRhbCBzaWduc1xuICAvLyBBZG1pbiBvbmx5IChyZXF1aXJlcyBERUxFVEUgcGVybWlzc2lvbiArIFZJRVdfQVVESVRfTE9HUyBmb3IgYWNjZXNzaW5nIGRlbGV0ZWQgcmVjb3JkcylcbiAgZmFzdGlmeS5wb3N0KCcvdml0YWwtc2lnbnMvOmlkL3Jlc3RvcmUnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVQZXJtaXNzaW9uKFBFUk1JU1NJT05TLkRFTEVURV9WSVRBTF9TSUdOUywgUEVSTUlTU0lPTlMuVklFV19BVURJVF9MT0dTKV1cbiAgfSwgY29udHJvbGxlci5yZXN0b3JlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNpZ25hdHVyZSBhbmQgY29tcGxpYW5jZSByb3V0ZXMgKDIxIENGUiBQYXJ0IDExKVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIFNpZ24gdml0YWwgc2lnbnMgcmVjb3JkXG4gIC8vIENyZWF0ZXMgYW4gZWxlY3Ryb25pYyBzaWduYXR1cmUgYXR0ZXN0YXRpb25cbiAgLy8gTnVyc2VzLCBEb2N0b3JzLCBBZG1pbiBjYW4gc2lnbiB0aGVpciBvd24gcmVjb3Jkc1xuICBmYXN0aWZ5LnBvc3QoJy92aXRhbC1zaWducy86aWQvc2lnbicsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX1ZJVEFMX1NJR05TLCBQRVJNSVNTSU9OUy5VUERBVEVfVklUQUxfU0lHTlMpXVxuICB9LCBjb250cm9sbGVyLnNpZ24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gQW1lbmQgc2lnbmVkIHZpdGFsIHNpZ25zIHJlY29yZFxuICAvLyBDcmVhdGVzIGEgbmV3IHZlcnNpb24gd2l0aCBhbWVuZG1lbnQgcmVhc29uIChvcmlnaW5hbCBwcmVzZXJ2ZWQpXG4gIC8vIERvY3RvcnMsIEFkbWluIGNhbiBhbWVuZFxuICBmYXN0aWZ5LnBvc3QoJy92aXRhbC1zaWducy86aWQvYW1lbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9WSVRBTF9TSUdOUyldXG4gIH0sIGNvbnRyb2xsZXIuYW1lbmQuYmluZChjb250cm9sbGVyKSk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IHZpdGFsU2lnbnNSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsVUFBVSxNQUFNLG9EQUFvRDtBQUMzRSxTQUFTQyxLQUFLLEVBQUVDLEtBQUssRUFBRUMsSUFBSSxFQUFFQyxNQUFNLFFBQVEsb0RBQW9EO0FBQy9GLFNBQVNDLFdBQVcsUUFBUSwyQ0FBMkM7QUFDdkUsU0FBU0MsV0FBVyxRQUFRLHNCQUFzQjtBQUNsRCxTQUFTQyxvQkFBb0IsRUFBRUMsaUJBQWlCLFFBQVEscUNBQXFDOztBQUU3RjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxlQUFlQyxnQkFBZ0JBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQWIsY0FBQSxHQUFBYyxD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

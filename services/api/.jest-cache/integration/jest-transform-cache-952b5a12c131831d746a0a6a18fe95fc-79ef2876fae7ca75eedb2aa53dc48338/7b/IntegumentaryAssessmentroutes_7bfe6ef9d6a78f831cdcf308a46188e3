@@ -1,0 +1,188 @@
+5a354e5d633369198f05897638da47f2
+/* istanbul ignore next */
+function cov_1uupq0o3ym() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/IntegumentaryAssessment.routes.js";
+  var hash = "0527236553985950abe907775907e2d36998f80a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/IntegumentaryAssessment.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 8,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 4
+        }
+      },
+      "1": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 22,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 25,
+          column: 2
+        },
+        end: {
+          line: 42,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 30,
+          column: 10
+        },
+        end: {
+          line: 36,
+          column: 13
+        }
+      },
+      "4": {
+        start: {
+          line: 45,
+          column: 2
+        },
+        end: {
+          line: 51,
+          column: 4
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "integumentaryAssessmentRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 44
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 63
+          },
+          end: {
+            line: 52,
+            column: 1
+          }
+        },
+        line: 5
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 29,
+            column: 8
+          },
+          end: {
+            line: 29,
+            column: 9
+          }
+        },
+        loc: {
+          start: {
+            line: 29,
+            column: 34
+          },
+          end: {
+            line: 37,
+            column: 9
+          }
+        },
+        line: 29
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "0527236553985950abe907775907e2d36998f80a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1uupq0o3ym = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1uupq0o3ym();
+import IntegumentaryAssessmentController from "../../controllers/patient/IntegumentaryAssessment.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for integumentary assessment routes
+async function integumentaryAssessmentRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1uupq0o3ym().f[0]++;
+  cov_1uupq0o3ym().s[0]++;
+  // Integumentary Assessment Routes
+
+  fastify.get("/integumentary-list", {
+    preHandler: [verifyToken]
+  }, IntegumentaryAssessmentController.integumentaryList);
+  /* istanbul ignore next */
+  cov_1uupq0o3ym().s[1]++;
+  fastify.post("/integumentary-assessment/store", {
+    preHandler: [verifyToken]
+  }, IntegumentaryAssessmentController.store);
+
+  // Parameterized route for getting assessment by patient ID
+  /* istanbul ignore next */
+  cov_1uupq0o3ym().s[2]++;
+  fastify.get("/integumentary-assessment/:id", {
+    preHandler: [async (request, reply) => {
+      /* istanbul ignore next */
+      cov_1uupq0o3ym().f[1]++;
+      cov_1uupq0o3ym().s[3]++;
+      console.log("🔍 Integumentary assessment show route hit:", {
+        url: request.url,
+        method: request.method,
+        params: request.params,
+        id: request.params.id,
+        fullUrl: request.url
+      });
+    }, verifyToken]
+  }, IntegumentaryAssessmentController.show);
+
+  // Get all integumentary assessments (exact match route)
+  /* istanbul ignore next */
+  cov_1uupq0o3ym().s[4]++;
+  fastify.get("/integumentary-assessment", {
+    preHandler: [verifyToken]
+  }, IntegumentaryAssessmentController.index);
+}
+export default integumentaryAssessmentRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXV1cHEwbzN5bSIsImFjdHVhbENvdmVyYWdlIiwiSW50ZWd1bWVudGFyeUFzc2Vzc21lbnRDb250cm9sbGVyIiwidmVyaWZ5VG9rZW4iLCJpbnRlZ3VtZW50YXJ5QXNzZXNzbWVudFJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiaW50ZWd1bWVudGFyeUxpc3QiLCJwb3N0Iiwic3RvcmUiLCJyZXF1ZXN0IiwicmVwbHkiLCJjb25zb2xlIiwibG9nIiwidXJsIiwibWV0aG9kIiwicGFyYW1zIiwiaWQiLCJmdWxsVXJsIiwic2hvdyIsImluZGV4Il0sInNvdXJjZXMiOlsiSW50ZWd1bWVudGFyeUFzc2Vzc21lbnQucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBJbnRlZ3VtZW50YXJ5QXNzZXNzbWVudENvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvSW50ZWd1bWVudGFyeUFzc2Vzc21lbnQuY29udHJvbGxlci5qc1wiO1xuaW1wb3J0IHsgdmVyaWZ5VG9rZW4gfSBmcm9tIFwiLi4vLi4vbWlkZGxld2FyZS9iZXR0ZXJBdXRoLm1pZGRsZXdhcmUuanNcIjtcblxuLy8gRmFzdGlmeSBwbHVnaW4gZm9yIGludGVndW1lbnRhcnkgYXNzZXNzbWVudCByb3V0ZXNcbmFzeW5jIGZ1bmN0aW9uIGludGVndW1lbnRhcnlBc3Nlc3NtZW50Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gSW50ZWd1bWVudGFyeSBBc3Nlc3NtZW50IFJvdXRlc1xuICBcbiAgZmFzdGlmeS5nZXQoXG4gICAgXCIvaW50ZWd1bWVudGFyeS1saXN0XCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgICB9LFxuICAgIEludGVndW1lbnRhcnlBc3Nlc3NtZW50Q29udHJvbGxlci5pbnRlZ3VtZW50YXJ5TGlzdFxuICApO1xuICBcbiAgZmFzdGlmeS5wb3N0KFxuICAgIFwiL2ludGVndW1lbnRhcnktYXNzZXNzbWVudC9zdG9yZVwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gICAgfSxcbiAgICBJbnRlZ3VtZW50YXJ5QXNzZXNzbWVudENvbnRyb2xsZXIuc3RvcmVcbiAgKTtcbiAgXG4gIC8vIFBhcmFtZXRlcml6ZWQgcm91dGUgZm9yIGdldHRpbmcgYXNzZXNzbWVudCBieSBwYXRpZW50IElEXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL2ludGVndW1lbnRhcnktYXNzZXNzbWVudC86aWRcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbXG4gICAgICAgIGFzeW5jIChyZXF1ZXN0LCByZXBseSkgPT4ge1xuICAgICAgICAgIGNvbnNvbGUubG9nKFwi8J+UjSBJbnRlZ3VtZW50YXJ5IGFzc2Vzc21lbnQgc2hvdyByb3V0ZSBoaXQ6XCIsIHtcbiAgICAgICAgICAgIHVybDogcmVxdWVzdC51cmwsXG4gICAgICAgICAgICBtZXRob2Q6IHJlcXVlc3QubWV0aG9kLFxuICAgICAgICAgICAgcGFyYW1zOiByZXF1ZXN0LnBhcmFtcyxcbiAgICAgICAgICAgIGlkOiByZXF1ZXN0LnBhcmFtcy5pZCxcbiAgICAgICAgICAgIGZ1bGxVcmw6IHJlcXVlc3QudXJsXG4gICAgICAgICAgfSk7XG4gICAgICAgIH0sXG4gICAgICAgIHZlcmlmeVRva2VuXG4gICAgICBdLFxuICAgIH0sXG4gICAgSW50ZWd1bWVudGFyeUFzc2Vzc21lbnRDb250cm9sbGVyLnNob3dcbiAgKTtcbiAgXG4gIC8vIEdldCBhbGwgaW50ZWd1bWVudGFyeSBhc3Nlc3NtZW50cyAoZXhhY3QgbWF0Y2ggcm91dGUpXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL2ludGVndW1lbnRhcnktYXNzZXNzbWVudFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gICAgfSxcbiAgICBJbnRlZ3VtZW50YXJ5QXNzZXNzbWVudENvbnRyb2xsZXIuaW5kZXhcbiAgKTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgaW50ZWd1bWVudGFyeUFzc2Vzc21lbnRSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsaUNBQWlDLE1BQU0saUVBQWlFO0FBQy9HLFNBQVNDLFdBQVcsUUFBUSwyQ0FBMkM7O0FBRXZFO0FBQ0EsZUFBZUMsNkJBQTZCQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFOLGNBQUEsR0FBQU8sQ0FBQTtFQUFBUCxjQUFBLEdBQUFRLENBQUE7RUFDN0Q7O0VBRUFILE9BQU8sQ0FBQ0ksR0FBRyxDQUNULHFCQUFxQixFQUNyQjtJQUNFQyxVQUFVLEVBQUUsQ0FBQ1AsV0FBVztFQUMxQixDQUFDLEVBQ0RELGlDQUFpQyxDQUFDUyxpQkFDcEMsQ0FBQztFQUFDO0VBQUFYLGNBQUEsR0FBQVEsQ0FBQTtFQUVGSCxPQUFPLENBQUNPLElBQUksQ0FDVixpQ0FBaUMsRUFDakM7SUFDRUYsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUNERCxpQ0FBaUMsQ0FBQ1csS0FDcEMsQ0FBQzs7RUFFRDtFQUFBO0VBQUFiLGNBQUEsR0FBQVEsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FDVCwrQkFBK0IsRUFDL0I7SUFDRUMsVUFBVSxFQUFFLENBQ1YsT0FBT0ksT0FBTyxFQUFFQyxLQUFLLEtBQUs7TUFBQTtNQUFBZixjQUFBLEdBQUFPLENBQUE7TUFBQVAsY0FBQSxHQUFBUSxDQUFBO01BQ3hCUSxPQUFPLENBQUNDLEdBQUcsQ0FBQyw2Q0FBNkMsRUFBRTtRQUN6REMsR0FBRyxFQUFFSixPQUFPLENBQUNJLEdBQUc7UUFDaEJDLE1BQU0sRUFBRUwsT0FBTyxDQUFDSyxNQUFNO1FBQ3RCQyxNQUFNLEVBQUVOLE9BQU8sQ0FBQ00sTUFBTTtRQUN0QkMsRUFBRSxFQUFFUCxPQUFPLENBQUNNLE1BQU0sQ0FBQ0MsRUFBRTtRQUNyQkMsT0FBTyxFQUFFUixPQUFPLENBQUNJO01BQ25CLENBQUMsQ0FBQztJQUNKLENBQUMsRUFDRGYsV0FBVztFQUVmLENBQUMsRUFDREQsaUNBQWlDLENBQUNxQixJQUNwQyxDQUFDOztFQUVEO0VBQUE7RUFBQXZCLGNBQUEsR0FBQVEsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FDVCwyQkFBMkIsRUFDM0I7SUFDRUMsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUNERCxpQ0FBaUMsQ0FBQ3NCLEtBQ3BDLENBQUM7QUFDSDtBQUVBLGVBQWVwQiw2QkFBNkIiLCJpZ25vcmVMaXN0IjpbXX0=

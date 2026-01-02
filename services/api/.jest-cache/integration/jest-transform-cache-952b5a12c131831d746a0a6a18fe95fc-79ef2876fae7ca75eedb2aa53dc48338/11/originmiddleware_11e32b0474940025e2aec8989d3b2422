@@ -1,0 +1,240 @@
+413df6e1e3a728830355051ca7645de5
+/* istanbul ignore next */
+function cov_1uuif6np4() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/middleware/origin.middleware.js";
+  var hash = "2243cb0aeffa64b5c4322eb9fa7d1ce599a7df96";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/middleware/origin.middleware.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 8,
+          column: 25
+        },
+        end: {
+          line: 17,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 10,
+          column: 2
+        },
+        end: {
+          line: 16,
+          column: 3
+        }
+      },
+      "2": {
+        start: {
+          line: 12,
+          column: 20
+        },
+        end: {
+          line: 12,
+          column: 84
+        }
+      },
+      "3": {
+        start: {
+          line: 13,
+          column: 16
+        },
+        end: {
+          line: 13,
+          column: 32
+        }
+      },
+      "4": {
+        start: {
+          line: 14,
+          column: 4
+        },
+        end: {
+          line: 14,
+          column: 40
+        }
+      },
+      "5": {
+        start: {
+          line: 15,
+          column: 4
+        },
+        end: {
+          line: 15,
+          column: 89
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 25
+          },
+          end: {
+            line: 8,
+            column: 26
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 51
+          },
+          end: {
+            line: 17,
+            column: 1
+          }
+        },
+        line: 8
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 10,
+            column: 2
+          },
+          end: {
+            line: 16,
+            column: 3
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 10,
+            column: 2
+          },
+          end: {
+            line: 16,
+            column: 3
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 10
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 12,
+            column: 20
+          },
+          end: {
+            line: 12,
+            column: 84
+          }
+        },
+        type: "binary-expr",
+        locations: [{
+          start: {
+            line: 12,
+            column: 20
+          },
+          end: {
+            line: 12,
+            column: 47
+          }
+        }, {
+          start: {
+            line: 12,
+            column: 51
+          },
+          end: {
+            line: 12,
+            column: 84
+          }
+        }],
+        line: 12
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {
+      "0": [0, 0],
+      "1": [0, 0]
+    },
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "2243cb0aeffa64b5c4322eb9fa7d1ce599a7df96"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1uuif6np4 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1uuif6np4();
+import { logger } from '../utils/logger.js';
+
+/**
+ * Middleware to add Origin header if missing
+ * Better Auth requires Origin header, but Postman/API clients don't send it by default
+ * This adds a default Origin header for testing purposes
+ */
+/* istanbul ignore next */
+cov_1uuif6np4().s[0]++;
+const originMiddleware = async (request, reply) => {
+  /* istanbul ignore next */
+  cov_1uuif6np4().f[0]++;
+  cov_1uuif6np4().s[1]++;
+  // Only add Origin if it's missing (for Postman/testing)
+  if (!request.headers.origin) {
+    /* istanbul ignore next */
+    cov_1uuif6np4().b[0][0]++;
+    // Use the baseURL from Better Auth config or request host
+    const baseURL =
+    /* istanbul ignore next */
+    (cov_1uuif6np4().s[2]++,
+    /* istanbul ignore next */
+    (cov_1uuif6np4().b[1][0]++, process.env.BETTER_AUTH_URL) ||
+    /* istanbul ignore next */
+    (cov_1uuif6np4().b[1][1]++, `https://${request.headers.host}`));
+    const url =
+    /* istanbul ignore next */
+    (cov_1uuif6np4().s[3]++, new URL(baseURL));
+    /* istanbul ignore next */
+    cov_1uuif6np4().s[4]++;
+    request.headers.origin = url.origin;
+    /* istanbul ignore next */
+    cov_1uuif6np4().s[5]++;
+    logger.info(`⚠️  Added default Origin header for testing: ${request.headers.origin}`);
+  } else
+  /* istanbul ignore next */
+  {
+    cov_1uuif6np4().b[0][1]++;
+  }
+};
+export default originMiddleware;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXV1aWY2bnA0IiwiYWN0dWFsQ292ZXJhZ2UiLCJsb2dnZXIiLCJzIiwib3JpZ2luTWlkZGxld2FyZSIsInJlcXVlc3QiLCJyZXBseSIsImYiLCJoZWFkZXJzIiwib3JpZ2luIiwiYiIsImJhc2VVUkwiLCJwcm9jZXNzIiwiZW52IiwiQkVUVEVSX0FVVEhfVVJMIiwiaG9zdCIsInVybCIsIlVSTCIsImluZm8iXSwic291cmNlcyI6WyJvcmlnaW4ubWlkZGxld2FyZS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBsb2dnZXIgfSBmcm9tICcuLi91dGlscy9sb2dnZXIuanMnO1xuXG4vKipcbiAqIE1pZGRsZXdhcmUgdG8gYWRkIE9yaWdpbiBoZWFkZXIgaWYgbWlzc2luZ1xuICogQmV0dGVyIEF1dGggcmVxdWlyZXMgT3JpZ2luIGhlYWRlciwgYnV0IFBvc3RtYW4vQVBJIGNsaWVudHMgZG9uJ3Qgc2VuZCBpdCBieSBkZWZhdWx0XG4gKiBUaGlzIGFkZHMgYSBkZWZhdWx0IE9yaWdpbiBoZWFkZXIgZm9yIHRlc3RpbmcgcHVycG9zZXNcbiAqL1xuY29uc3Qgb3JpZ2luTWlkZGxld2FyZSA9IGFzeW5jIChyZXF1ZXN0LCByZXBseSkgPT4ge1xuICAvLyBPbmx5IGFkZCBPcmlnaW4gaWYgaXQncyBtaXNzaW5nIChmb3IgUG9zdG1hbi90ZXN0aW5nKVxuICBpZiAoIXJlcXVlc3QuaGVhZGVycy5vcmlnaW4pIHtcbiAgICAvLyBVc2UgdGhlIGJhc2VVUkwgZnJvbSBCZXR0ZXIgQXV0aCBjb25maWcgb3IgcmVxdWVzdCBob3N0XG4gICAgY29uc3QgYmFzZVVSTCA9IHByb2Nlc3MuZW52LkJFVFRFUl9BVVRIX1VSTCB8fCBgaHR0cHM6Ly8ke3JlcXVlc3QuaGVhZGVycy5ob3N0fWA7XG4gICAgY29uc3QgdXJsID0gbmV3IFVSTChiYXNlVVJMKTtcbiAgICByZXF1ZXN0LmhlYWRlcnMub3JpZ2luID0gdXJsLm9yaWdpbjtcbiAgICBsb2dnZXIuaW5mbyhg4pqg77iPICBBZGRlZCBkZWZhdWx0IE9yaWdpbiBoZWFkZXIgZm9yIHRlc3Rpbmc6ICR7cmVxdWVzdC5oZWFkZXJzLm9yaWdpbn1gKVxuICB9XG59O1xuXG5leHBvcnQgZGVmYXVsdCBvcmlnaW5NaWRkbGV3YXJlO1xuXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWixTQUFTRSxNQUFNLFFBQVEsb0JBQW9COztBQUUzQztBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBSkE7QUFBQUYsYUFBQSxHQUFBRyxDQUFBO0FBS0EsTUFBTUMsZ0JBQWdCLEdBQUcsTUFBQUEsQ0FBT0MsT0FBTyxFQUFFQyxLQUFLLEtBQUs7RUFBQTtFQUFBTixhQUFBLEdBQUFPLENBQUE7RUFBQVAsYUFBQSxHQUFBRyxDQUFBO0VBQ2pEO0VBQ0EsSUFBSSxDQUFDRSxPQUFPLENBQUNHLE9BQU8sQ0FBQ0MsTUFBTSxFQUFFO0lBQUE7SUFBQVQsYUFBQSxHQUFBVSxDQUFBO0lBQzNCO0lBQ0EsTUFBTUMsT0FBTztJQUFBO0lBQUEsQ0FBQVgsYUFBQSxHQUFBRyxDQUFBO0lBQUc7SUFBQSxDQUFBSCxhQUFBLEdBQUFVLENBQUEsVUFBQUUsT0FBTyxDQUFDQyxHQUFHLENBQUNDLGVBQWU7SUFBQTtJQUFBLENBQUFkLGFBQUEsR0FBQVUsQ0FBQSxVQUFJLFdBQVdMLE9BQU8sQ0FBQ0csT0FBTyxDQUFDTyxJQUFJLEVBQUU7SUFDaEYsTUFBTUMsR0FBRztJQUFBO0lBQUEsQ0FBQWhCLGFBQUEsR0FBQUcsQ0FBQSxPQUFHLElBQUljLEdBQUcsQ0FBQ04sT0FBTyxDQUFDO0lBQUM7SUFBQVgsYUFBQSxHQUFBRyxDQUFBO0lBQzdCRSxPQUFPLENBQUNHLE9BQU8sQ0FBQ0MsTUFBTSxHQUFHTyxHQUFHLENBQUNQLE1BQU07SUFBQztJQUFBVCxhQUFBLEdBQUFHLENBQUE7SUFDcENELE1BQU0sQ0FBQ2dCLElBQUksQ0FBQyxnREFBZ0RiLE9BQU8sQ0FBQ0csT0FBTyxDQUFDQyxNQUFNLEVBQUUsQ0FBQztFQUN2RixDQUFDO0VBQUE7RUFBQTtJQUFBVCxhQUFBLEdBQUFVLENBQUE7RUFBQTtBQUNILENBQUM7QUFFRCxlQUFlTixnQkFBZ0IiLCJpZ25vcmVMaXN0IjpbXX0=

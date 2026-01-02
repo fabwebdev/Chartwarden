@@ -1,0 +1,107 @@
+ec2623191ec420fe246bad80d3578ffa
+/* istanbul ignore next */
+function cov_yhg4ima4t() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/endocrineAssessment.schema.js";
+  var hash = "f5ba9327f605cca15373553bbb3dccc44124889b";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/endocrineAssessment.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 4,
+          column: 36
+        },
+        end: {
+          line: 10,
+          column: 2
+        }
+      },
+      "1": {
+        start: {
+          line: 6,
+          column: 82
+        },
+        end: {
+          line: 6,
+          column: 93
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 76
+          },
+          end: {
+            line: 6,
+            column: 77
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 82
+          },
+          end: {
+            line: 6,
+            column: 93
+          }
+        },
+        line: 6
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "f5ba9327f605cca15373553bbb3dccc44124889b"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_yhg4ima4t = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_yhg4ima4t();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { patients } from './patient.schema.js';
+export const endocrine_assessment =
+/* istanbul ignore next */
+(cov_yhg4ima4t().s[0]++, pgTable('endocrine_assessment', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).notNull().references(() => {
+    /* istanbul ignore next */
+    cov_yhg4ima4t().f[0]++;
+    cov_yhg4ima4t().s[1]++;
+    return patients.id;
+  }),
+  endocrine_ids: varchar('endocrine_ids', {
+    length: 255
+  }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfeWhnNGltYTR0IiwiYWN0dWFsQ292ZXJhZ2UiLCJwZ1RhYmxlIiwiYmlnaW50IiwidmFyY2hhciIsInRpbWVzdGFtcCIsInBhdGllbnRzIiwiZW5kb2NyaW5lX2Fzc2Vzc21lbnQiLCJzIiwiaWQiLCJtb2RlIiwicHJpbWFyeUtleSIsImdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkiLCJwYXRpZW50X2lkIiwibm90TnVsbCIsInJlZmVyZW5jZXMiLCJmIiwiZW5kb2NyaW5lX2lkcyIsImxlbmd0aCIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJlbmRvY3JpbmVBc3Nlc3NtZW50LnNjaGVtYS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwZ1RhYmxlLCBiaWdpbnQsIHZhcmNoYXIsIHRpbWVzdGFtcCB9IGZyb20gJ2RyaXp6bGUtb3JtL3BnLWNvcmUnO1xuaW1wb3J0IHsgcGF0aWVudHMgfSBmcm9tICcuL3BhdGllbnQuc2NoZW1hLmpzJztcblxuZXhwb3J0IGNvbnN0IGVuZG9jcmluZV9hc3Nlc3NtZW50ID0gcGdUYWJsZSgnZW5kb2NyaW5lX2Fzc2Vzc21lbnQnLCB7XG4gIGlkOiBiaWdpbnQoJ2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5wcmltYXJ5S2V5KCkuZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSgpLFxuICBwYXRpZW50X2lkOiBiaWdpbnQoJ3BhdGllbnRfaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLm5vdE51bGwoKS5yZWZlcmVuY2VzKCgpID0+IHBhdGllbnRzLmlkKSxcbiAgZW5kb2NyaW5lX2lkczogdmFyY2hhcignZW5kb2NyaW5lX2lkcycsIHsgbGVuZ3RoOiAyNTUgfSkubm90TnVsbCgpLFxuICBjcmVhdGVkQXQ6IHRpbWVzdGFtcCgnY3JlYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG4gIHVwZGF0ZWRBdDogdGltZXN0YW1wKCd1cGRhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbn0pOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLFNBQVNFLE9BQU8sRUFBRUMsTUFBTSxFQUFFQyxPQUFPLEVBQUVDLFNBQVMsUUFBUSxxQkFBcUI7QUFDekUsU0FBU0MsUUFBUSxRQUFRLHFCQUFxQjtBQUU5QyxPQUFPLE1BQU1DLG9CQUFvQjtBQUFBO0FBQUEsQ0FBQVAsYUFBQSxHQUFBUSxDQUFBLE9BQUdOLE9BQU8sQ0FBQyxzQkFBc0IsRUFBRTtFQUNsRU8sRUFBRSxFQUFFTixNQUFNLENBQUMsSUFBSSxFQUFFO0lBQUVPLElBQUksRUFBRTtFQUFTLENBQUMsQ0FBQyxDQUFDQyxVQUFVLENBQUMsQ0FBQyxDQUFDQyw0QkFBNEIsQ0FBQyxDQUFDO0VBQ2hGQyxVQUFVLEVBQUVWLE1BQU0sQ0FBQyxZQUFZLEVBQUU7SUFBRU8sSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNJLE9BQU8sQ0FBQyxDQUFDLENBQUNDLFVBQVUsQ0FBQyxNQUFNO0lBQUE7SUFBQWYsYUFBQSxHQUFBZ0IsQ0FBQTtJQUFBaEIsYUFBQSxHQUFBUSxDQUFBO0lBQUEsT0FBQUYsUUFBUSxDQUFDRyxFQUFFO0VBQUQsQ0FBQyxDQUFDO0VBQzVGUSxhQUFhLEVBQUViLE9BQU8sQ0FBQyxlQUFlLEVBQUU7SUFBRWMsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDLENBQUNKLE9BQU8sQ0FBQyxDQUFDO0VBQ2xFSyxTQUFTLEVBQUVkLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ2UsVUFBVSxDQUFDLENBQUMsQ0FBQ04sT0FBTyxDQUFDLENBQUM7RUFDekRPLFNBQVMsRUFBRWhCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ2UsVUFBVSxDQUFDLENBQUMsQ0FBQ04sT0FBTyxDQUFDO0FBQzFELENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

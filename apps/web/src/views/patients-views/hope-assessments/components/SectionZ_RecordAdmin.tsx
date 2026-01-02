@@ -18,10 +18,9 @@ import {
   AccordionDetails,
   Chip,
   Alert,
-  Divider,
   SelectChangeEvent
 } from '@mui/material';
-import { ArrowDown2, TickCircle, CloseCircle, Timer1, Send2 } from 'iconsax-react';
+import { ArrowDown2, TickCircle, CloseCircle, Timer1 } from 'iconsax-react';
 import { HOPEAssessment, HOPEAssessmentFormData } from '../../../../api/hopeAssessment';
 
 // ==============================|| CONSTANTS ||============================== //
@@ -99,8 +98,8 @@ const SectionZ_RecordAdmin = ({
   // Get submission status display
   const getSubmissionStatusDisplay = () => {
     const status = formData.z0200_submission_status || 'NOT_SUBMITTED';
-    const statusConfig: Record<string, { color: 'default' | 'primary' | 'success' | 'error' | 'warning'; icon: React.ReactNode }> = {
-      NOT_SUBMITTED: { color: 'default', icon: null },
+    const statusConfig: Record<string, { color: 'default' | 'primary' | 'success' | 'error' | 'warning'; icon: React.ReactElement | undefined }> = {
+      NOT_SUBMITTED: { color: 'default', icon: undefined },
       PENDING: { color: 'warning', icon: <Timer1 size={14} /> },
       ACCEPTED: { color: 'success', icon: <TickCircle size={14} /> },
       REJECTED: { color: 'error', icon: <CloseCircle size={14} /> },
@@ -234,7 +233,7 @@ const SectionZ_RecordAdmin = ({
               label={formData.z0200_submission_status || 'Not Submitted'}
               size="small"
               color={submissionStatus.color}
-              icon={submissionStatus.icon || undefined}
+              icon={submissionStatus.icon}
             />
           </Stack>
         </AccordionSummary>

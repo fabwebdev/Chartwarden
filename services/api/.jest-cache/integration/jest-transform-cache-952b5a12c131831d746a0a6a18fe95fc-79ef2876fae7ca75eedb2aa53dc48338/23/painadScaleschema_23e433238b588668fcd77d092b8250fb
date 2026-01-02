@@ -1,0 +1,531 @@
+64276a70c04fade13a705b8a3a256612
+/* istanbul ignore next */
+function cov_1uljvc4e4z() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/painadScale.schema.js";
+  var hash = "78bc7095756f84ee7cd5f5525b066ddb7d977dcc";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/painadScale.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 30,
+          column: 29
+        },
+        end: {
+          line: 214,
+          column: 3
+        }
+      },
+      "1": {
+        start: {
+          line: 32,
+          column: 72
+        },
+        end: {
+          line: 32,
+          column: 83
+        }
+      },
+      "2": {
+        start: {
+          line: 205,
+          column: 15
+        },
+        end: {
+          line: 214,
+          column: 1
+        }
+      },
+      "3": {
+        start: {
+          line: 217,
+          column: 41
+        },
+        end: {
+          line: 243,
+          column: 1
+        }
+      },
+      "4": {
+        start: {
+          line: 245,
+          column: 36
+        },
+        end: {
+          line: 250,
+          column: 1
+        }
+      },
+      "5": {
+        start: {
+          line: 252,
+          column: 38
+        },
+        end: {
+          line: 257,
+          column: 1
+        }
+      },
+      "6": {
+        start: {
+          line: 259,
+          column: 36
+        },
+        end: {
+          line: 270,
+          column: 1
+        }
+      },
+      "7": {
+        start: {
+          line: 272,
+          column: 46
+        },
+        end: {
+          line: 287,
+          column: 1
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 32,
+            column: 66
+          },
+          end: {
+            line: 32,
+            column: 67
+          }
+        },
+        loc: {
+          start: {
+            line: 32,
+            column: 72
+          },
+          end: {
+            line: 32,
+            column: 83
+          }
+        },
+        line: 32
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 205,
+            column: 3
+          },
+          end: {
+            line: 205,
+            column: 4
+          }
+        },
+        loc: {
+          start: {
+            line: 205,
+            column: 15
+          },
+          end: {
+            line: 214,
+            column: 1
+          }
+        },
+        line: 205
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "78bc7095756f84ee7cd5f5525b066ddb7d977dcc"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1uljvc4e4z = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1uljvc4e4z();
+import { pgTable, bigint, integer, varchar, text, timestamp, boolean, jsonb, index } from 'drizzle-orm/pg-core';
+import { patients } from './patient.schema.js';
+
+/**
+ * PAINAD Scale Schema
+ * Pain Assessment in Advanced Dementia - Behavioral Pain Assessment Tool
+ *
+ * Designed for:
+ * - Patients with advanced dementia who cannot self-report pain
+ * - Non-verbal or cognitively impaired patients
+ * - Hospice patients with cognitive decline
+ *
+ * Five behavioral categories, each scored 0-2:
+ * 1. Breathing (independent of vocalization)
+ * 2. Negative Vocalization
+ * 3. Facial Expression
+ * 4. Body Language
+ * 5. Consolability
+ *
+ * Total score range: 0-10
+ * - 0 = No pain
+ * - 1-3 = Mild pain
+ * - 4-6 = Moderate pain
+ * - 7-10 = Severe pain
+ *
+ * Reference: Warden V, Hurley AC, Volicer L. (2003) Development and psychometric
+ * evaluation of the Pain Assessment in Advanced Dementia (PAINAD) scale.
+ * Journal of the American Medical Directors Association, 4(1), 9-15.
+ */
+export const painad_scales =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[0]++, pgTable('painad_scales', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).references(() => {
+    /* istanbul ignore next */
+    cov_1uljvc4e4z().f[0]++;
+    cov_1uljvc4e4z().s[1]++;
+    return patients.id;
+  }).notNull(),
+  encounter_id: bigint('encounter_id', {
+    mode: 'number'
+  }),
+  note_id: bigint('note_id', {
+    mode: 'number'
+  }),
+  // Assessment metadata
+  assessment_date: timestamp('assessment_date').defaultNow().notNull(),
+  assessment_type: varchar('assessment_type', {
+    length: 50
+  }),
+  // INITIAL, FOLLOW_UP, REASSESSMENT, PRE_INTERVENTION, POST_INTERVENTION
+  assessment_context: varchar('assessment_context', {
+    length: 100
+  }),
+  // ROUTINE, PRN, PRE_MEDICATION, POST_MEDICATION, DURING_CARE
+  assessed_by_id: bigint('assessed_by_id', {
+    mode: 'number'
+  }),
+  // Patient context for dementia assessment
+  dementia_stage: varchar('dementia_stage', {
+    length: 50
+  }),
+  // MILD, MODERATE, SEVERE, END_STAGE
+  dementia_type: varchar('dementia_type', {
+    length: 100
+  }),
+  // ALZHEIMERS, VASCULAR, LEWY_BODY, FRONTOTEMPORAL, MIXED, OTHER
+  baseline_cognitive_status: varchar('baseline_cognitive_status', {
+    length: 255
+  }),
+  verbal_ability: varchar('verbal_ability', {
+    length: 50
+  }),
+  // VERBAL, LIMITED_VERBAL, NON_VERBAL
+
+  // =========================================
+  // PAINAD BEHAVIORAL SCORING (0-2 each)
+  // =========================================
+
+  // 1. Breathing (independent of vocalization) (0-2)
+  // 0 = Normal
+  // 1 = Occasional labored breathing, short period of hyperventilation
+  // 2 = Noisy labored breathing, long period of hyperventilation, Cheyne-Stokes respirations
+  breathing_score: integer('breathing_score').notNull(),
+  breathing_observation: varchar('breathing_observation', {
+    length: 255
+  }),
+  // NORMAL, OCCASIONAL_LABORED, NOISY_LABORED
+  breathing_notes: text('breathing_notes'),
+  // 2. Negative Vocalization (0-2)
+  // 0 = None
+  // 1 = Occasional moan or groan, low-level speech with a negative or disapproving quality
+  // 2 = Repeated troubled calling out, loud moaning or groaning, crying
+  negative_vocalization_score: integer('negative_vocalization_score').notNull(),
+  negative_vocalization_observation: varchar('negative_vocalization_observation', {
+    length: 255
+  }),
+  // NONE, OCCASIONAL_MOAN, REPEATED_CALLING
+  negative_vocalization_notes: text('negative_vocalization_notes'),
+  // 3. Facial Expression (0-2)
+  // 0 = Smiling or inexpressive
+  // 1 = Sad, frightened, frown
+  // 2 = Facial grimacing
+  facial_expression_score: integer('facial_expression_score').notNull(),
+  facial_expression_observation: varchar('facial_expression_observation', {
+    length: 255
+  }),
+  // SMILING_INEXPRESSIVE, SAD_FRIGHTENED, GRIMACING
+  facial_expression_notes: text('facial_expression_notes'),
+  // 4. Body Language (0-2)
+  // 0 = Relaxed
+  // 1 = Tense, distressed pacing, fidgeting
+  // 2 = Rigid, fists clenched, knees pulled up, pulling or pushing away, striking out
+  body_language_score: integer('body_language_score').notNull(),
+  body_language_observation: varchar('body_language_observation', {
+    length: 255
+  }),
+  // RELAXED, TENSE_FIDGETING, RIGID_STRIKING
+  body_language_notes: text('body_language_notes'),
+  // 5. Consolability (0-2)
+  // 0 = No need to console
+  // 1 = Distracted or reassured by voice or touch
+  // 2 = Unable to console, distract, or reassure
+  consolability_score: integer('consolability_score').notNull(),
+  consolability_observation: varchar('consolability_observation', {
+    length: 255
+  }),
+  // NO_NEED, DISTRACTIBLE, UNABLE_TO_CONSOLE
+  consolability_notes: text('consolability_notes'),
+  // =========================================
+  // TOTAL SCORE AND INTERPRETATION
+  // =========================================
+
+  // Total PAINAD Score (0-10)
+  total_score: integer('total_score').notNull(),
+  // Pain severity interpretation
+  pain_severity: varchar('pain_severity', {
+    length: 50
+  }),
+  // NO_PAIN, MILD, MODERATE, SEVERE
+
+  // Pain is considered present if score >= 1
+  pain_present: boolean('pain_present').default(false),
+  // =========================================
+  // CLINICAL CONTEXT
+  // =========================================
+
+  // Current pain status
+  pain_status: varchar('pain_status', {
+    length: 50
+  }),
+  // ACUTE, CHRONIC, BREAKTHROUGH, END_OF_LIFE
+
+  // Location if pain identified (may be inferred from behaviors)
+  suspected_pain_location: varchar('suspected_pain_location', {
+    length: 255
+  }),
+  suspected_pain_location_notes: text('suspected_pain_location_notes'),
+  // Suspected cause (common in dementia patients)
+  suspected_cause: varchar('suspected_cause', {
+    length: 255
+  }),
+  // ARTHRITIS, POSITIONING, CONSTIPATION, UTI, ORAL_PAIN, SKIN_BREAKDOWN, UNKNOWN
+  suspected_cause_notes: text('suspected_cause_notes'),
+  // Triggering activity (when pain behaviors observed)
+  triggering_activity: varchar('triggering_activity', {
+    length: 255
+  }),
+  // AT_REST, DURING_TURNING, DURING_TRANSFERS, DURING_ADL, DURING_DRESSING
+  triggering_activity_notes: text('triggering_activity_notes'),
+  // =========================================
+  // INTERVENTION TRACKING
+  // =========================================
+
+  // Was intervention provided?
+  intervention_provided: boolean('intervention_provided').default(false),
+  // Type of intervention
+  intervention_type: varchar('intervention_type', {
+    length: 100
+  }),
+  // PHARMACOLOGICAL, NON_PHARMACOLOGICAL, COMBINATION
+
+  // Pharmacological intervention details
+  medication_administered: varchar('medication_administered', {
+    length: 255
+  }),
+  medication_dose: varchar('medication_dose', {
+    length: 100
+  }),
+  medication_route: varchar('medication_route', {
+    length: 50
+  }),
+  // ORAL, SL, TOPICAL, TRANSDERMAL, SQ, IM, IV, RECTAL
+  medication_time: timestamp('medication_time'),
+  // Non-pharmacological interventions (stored as array)
+  non_pharm_interventions: jsonb('non_pharm_interventions'),
+  // Array: REPOSITIONING, MASSAGE, HEAT, COLD, MUSIC, PRESENCE, DISTRACTION, AROMATHERAPY, etc.
+
+  // Time to reassess after intervention
+  reassessment_time: timestamp('reassessment_time'),
+  reassessment_score: integer('reassessment_score'),
+  // Intervention effectiveness
+  intervention_effectiveness: varchar('intervention_effectiveness', {
+    length: 50
+  }),
+  // EFFECTIVE, PARTIALLY_EFFECTIVE, NOT_EFFECTIVE
+
+  // =========================================
+  // HOSPICE/DEMENTIA CARE SPECIFIC FIELDS
+  // =========================================
+
+  // Comfort-focused care (hospice-specific)
+  comfort_goal_met: boolean('comfort_goal_met'),
+  comfort_goal_notes: text('comfort_goal_notes'),
+  // Behavioral baseline comparison
+  behavior_change_from_baseline: varchar('behavior_change_from_baseline', {
+    length: 50
+  }),
+  // NO_CHANGE, MILD_CHANGE, SIGNIFICANT_CHANGE
+  baseline_behavior_notes: text('baseline_behavior_notes'),
+  // Family/caregiver involvement
+  caregiver_present: boolean('caregiver_present'),
+  caregiver_observations: text('caregiver_observations'),
+  caregiver_education_provided: boolean('caregiver_education_provided'),
+  caregiver_able_to_assess: boolean('caregiver_able_to_assess'),
+  // Plan of care updates needed
+  care_plan_update_needed: boolean('care_plan_update_needed'),
+  care_plan_recommendations: text('care_plan_recommendations'),
+  // Communication with family about pain management
+  family_communication_notes: text('family_communication_notes'),
+  // =========================================
+  // CLINICAL NOTES AND SUMMARY
+  // =========================================
+
+  clinical_notes: text('clinical_notes'),
+  assessment_summary: text('assessment_summary'),
+  follow_up_plan: text('follow_up_plan'),
+  // =========================================
+  // SIGNATURE AND COMPLIANCE (21 CFR Part 11)
+  // =========================================
+
+  signature_id: bigint('signature_id', {
+    mode: 'number'
+  }),
+  signed_at: timestamp('signed_at'),
+  signed_by_id: bigint('signed_by_id', {
+    mode: 'number'
+  }),
+  // Amendment tracking
+  amended: boolean('amended').default(false),
+  amendment_reason: text('amendment_reason'),
+  amended_at: timestamp('amended_at'),
+  amended_by_id: bigint('amended_by_id', {
+    mode: 'number'
+  }),
+  // =========================================
+  // AUDIT FIELDS
+  // =========================================
+
+  created_by_id: bigint('created_by_id', {
+    mode: 'number'
+  }),
+  updated_by_id: bigint('updated_by_id', {
+    mode: 'number'
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}, table => {
+  /* istanbul ignore next */
+  cov_1uljvc4e4z().f[1]++;
+  cov_1uljvc4e4z().s[2]++;
+  return {
+    // Performance indexes for common queries
+    patientIdx: index('idx_painad_scales_patient_id').on(table.patient_id),
+    assessmentDateIdx: index('idx_painad_scales_assessment_date').on(table.assessment_date),
+    totalScoreIdx: index('idx_painad_scales_total_score').on(table.total_score),
+    patientDateIdx: index('idx_painad_scales_patient_date').on(table.patient_id, table.assessment_date),
+    patientScoreIdx: index('idx_painad_scales_patient_score').on(table.patient_id, table.total_score),
+    dementiaStageIdx: index('idx_painad_scales_dementia_stage').on(table.dementia_stage),
+    painSeverityIdx: index('idx_painad_scales_pain_severity').on(table.pain_severity)
+  };
+}));
+
+// Export score descriptions for use in controllers and frontend
+export const PAINAD_SCORE_DESCRIPTIONS =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[3]++, {
+  breathing: {
+    0: 'Normal',
+    1: 'Occasional labored breathing, short period of hyperventilation',
+    2: 'Noisy labored breathing, long period of hyperventilation, Cheyne-Stokes respirations'
+  },
+  negative_vocalization: {
+    0: 'None',
+    1: 'Occasional moan or groan, low-level speech with a negative or disapproving quality',
+    2: 'Repeated troubled calling out, loud moaning or groaning, crying'
+  },
+  facial_expression: {
+    0: 'Smiling or inexpressive',
+    1: 'Sad, frightened, frown',
+    2: 'Facial grimacing'
+  },
+  body_language: {
+    0: 'Relaxed',
+    1: 'Tense, distressed pacing, fidgeting',
+    2: 'Rigid, fists clenched, knees pulled up, pulling or pushing away, striking out'
+  },
+  consolability: {
+    0: 'No need to console',
+    1: 'Distracted or reassured by voice or touch',
+    2: 'Unable to console, distract, or reassure'
+  }
+});
+export const PAINAD_PAIN_SEVERITY =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[4]++, {
+  NO_PAIN: {
+    min: 0,
+    max: 0,
+    label: 'No pain'
+  },
+  MILD: {
+    min: 1,
+    max: 3,
+    label: 'Mild pain'
+  },
+  MODERATE: {
+    min: 4,
+    max: 6,
+    label: 'Moderate pain'
+  },
+  SEVERE: {
+    min: 7,
+    max: 10,
+    label: 'Severe pain'
+  }
+});
+export const PAINAD_DEMENTIA_STAGES =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[5]++, {
+  MILD: 'Mild cognitive impairment - patient may still self-report some symptoms',
+  MODERATE: 'Moderate dementia - limited verbal communication, relies on behavioral cues',
+  SEVERE: 'Severe dementia - non-verbal, fully dependent on behavioral assessment',
+  END_STAGE: 'End-stage dementia - minimal responsiveness, comfort-focused care'
+});
+export const PAINAD_COMMON_CAUSES =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[6]++, ['ARTHRITIS', 'POSITIONING', 'CONSTIPATION', 'UTI', 'ORAL_PAIN', 'SKIN_BREAKDOWN', 'CONTRACTURES', 'FRACTURE', 'NEUROPATHY', 'UNKNOWN']);
+export const PAINAD_NON_PHARM_INTERVENTIONS =
+/* istanbul ignore next */
+(cov_1uljvc4e4z().s[7]++, ['REPOSITIONING', 'MASSAGE', 'HEAT', 'COLD', 'MUSIC_THERAPY', 'AROMATHERAPY', 'PRESENCE', 'DISTRACTION', 'GENTLE_TOUCH', 'VERBAL_REASSURANCE', 'ENVIRONMENTAL_MODIFICATION', 'RANGE_OF_MOTION', 'SPLINTING', 'OTHER']);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXVsanZjNGU0eiIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsImludGVnZXIiLCJ2YXJjaGFyIiwidGV4dCIsInRpbWVzdGFtcCIsImJvb2xlYW4iLCJqc29uYiIsImluZGV4IiwicGF0aWVudHMiLCJwYWluYWRfc2NhbGVzIiwicyIsImlkIiwibW9kZSIsInByaW1hcnlLZXkiLCJnZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5IiwicGF0aWVudF9pZCIsInJlZmVyZW5jZXMiLCJmIiwibm90TnVsbCIsImVuY291bnRlcl9pZCIsIm5vdGVfaWQiLCJhc3Nlc3NtZW50X2RhdGUiLCJkZWZhdWx0Tm93IiwiYXNzZXNzbWVudF90eXBlIiwibGVuZ3RoIiwiYXNzZXNzbWVudF9jb250ZXh0IiwiYXNzZXNzZWRfYnlfaWQiLCJkZW1lbnRpYV9zdGFnZSIsImRlbWVudGlhX3R5cGUiLCJiYXNlbGluZV9jb2duaXRpdmVfc3RhdHVzIiwidmVyYmFsX2FiaWxpdHkiLCJicmVhdGhpbmdfc2NvcmUiLCJicmVhdGhpbmdfb2JzZXJ2YXRpb24iLCJicmVhdGhpbmdfbm90ZXMiLCJuZWdhdGl2ZV92b2NhbGl6YXRpb25fc2NvcmUiLCJuZWdhdGl2ZV92b2NhbGl6YXRpb25fb2JzZXJ2YXRpb24iLCJuZWdhdGl2ZV92b2NhbGl6YXRpb25fbm90ZXMiLCJmYWNpYWxfZXhwcmVzc2lvbl9zY29yZSIsImZhY2lhbF9leHByZXNzaW9uX29ic2VydmF0aW9uIiwiZmFjaWFsX2V4cHJlc3Npb25fbm90ZXMiLCJib2R5X2xhbmd1YWdlX3Njb3JlIiwiYm9keV9sYW5ndWFnZV9vYnNlcnZhdGlvbiIsImJvZHlfbGFuZ3VhZ2Vfbm90ZXMiLCJjb25zb2xhYmlsaXR5X3Njb3JlIiwiY29uc29sYWJpbGl0eV9vYnNlcnZhdGlvbiIsImNvbnNvbGFiaWxpdHlfbm90ZXMiLCJ0b3RhbF9zY29yZSIsInBhaW5fc2V2ZXJpdHkiLCJwYWluX3ByZXNlbnQiLCJkZWZhdWx0IiwicGFpbl9zdGF0dXMiLCJzdXNwZWN0ZWRfcGFpbl9sb2NhdGlvbiIsInN1c3BlY3RlZF9wYWluX2xvY2F0aW9uX25vdGVzIiwic3VzcGVjdGVkX2NhdXNlIiwic3VzcGVjdGVkX2NhdXNlX25vdGVzIiwidHJpZ2dlcmluZ19hY3Rpdml0eSIsInRyaWdnZXJpbmdfYWN0aXZpdHlfbm90ZXMiLCJpbnRlcnZlbnRpb25fcHJvdmlkZWQiLCJpbnRlcnZlbnRpb25fdHlwZSIsIm1lZGljYXRpb25fYWRtaW5pc3RlcmVkIiwibWVkaWNhdGlvbl9kb3NlIiwibWVkaWNhdGlvbl9yb3V0ZSIsIm1lZGljYXRpb25fdGltZSIsIm5vbl9waGFybV9pbnRlcnZlbnRpb25zIiwicmVhc3Nlc3NtZW50X3RpbWUiLCJyZWFzc2Vzc21lbnRfc2NvcmUiLCJpbnRlcnZlbnRpb25fZWZmZWN0aXZlbmVzcyIsImNvbWZvcnRfZ29hbF9tZXQiLCJjb21mb3J0X2dvYWxfbm90ZXMiLCJiZWhhdmlvcl9jaGFuZ2VfZnJvbV9iYXNlbGluZSIsImJhc2VsaW5lX2JlaGF2aW9yX25vdGVzIiwiY2FyZWdpdmVyX3ByZXNlbnQiLCJjYXJlZ2l2ZXJfb2JzZXJ2YXRpb25zIiwiY2FyZWdpdmVyX2VkdWNhdGlvbl9wcm92aWRlZCIsImNhcmVnaXZlcl9hYmxlX3RvX2Fzc2VzcyIsImNhcmVfcGxhbl91cGRhdGVfbmVlZGVkIiwiY2FyZV9wbGFuX3JlY29tbWVuZGF0aW9ucyIsImZhbWlseV9jb21tdW5pY2F0aW9uX25vdGVzIiwiY2xpbmljYWxfbm90ZXMiLCJhc3Nlc3NtZW50X3N1bW1hcnkiLCJmb2xsb3dfdXBfcGxhbiIsInNpZ25hdHVyZV9pZCIsInNpZ25lZF9hdCIsInNpZ25lZF9ieV9pZCIsImFtZW5kZWQiLCJhbWVuZG1lbnRfcmVhc29uIiwiYW1lbmRlZF9hdCIsImFtZW5kZWRfYnlfaWQiLCJjcmVhdGVkX2J5X2lkIiwidXBkYXRlZF9ieV9pZCIsImNyZWF0ZWRBdCIsInVwZGF0ZWRBdCIsInRhYmxlIiwicGF0aWVudElkeCIsIm9uIiwiYXNzZXNzbWVudERhdGVJZHgiLCJ0b3RhbFNjb3JlSWR4IiwicGF0aWVudERhdGVJZHgiLCJwYXRpZW50U2NvcmVJZHgiLCJkZW1lbnRpYVN0YWdlSWR4IiwicGFpblNldmVyaXR5SWR4IiwiUEFJTkFEX1NDT1JFX0RFU0NSSVBUSU9OUyIsImJyZWF0aGluZyIsIm5lZ2F0aXZlX3ZvY2FsaXphdGlvbiIsImZhY2lhbF9leHByZXNzaW9uIiwiYm9keV9sYW5ndWFnZSIsImNvbnNvbGFiaWxpdHkiLCJQQUlOQURfUEFJTl9TRVZFUklUWSIsIk5PX1BBSU4iLCJtaW4iLCJtYXgiLCJsYWJlbCIsIk1JTEQiLCJNT0RFUkFURSIsIlNFVkVSRSIsIlBBSU5BRF9ERU1FTlRJQV9TVEFHRVMiLCJFTkRfU1RBR0UiLCJQQUlOQURfQ09NTU9OX0NBVVNFUyIsIlBBSU5BRF9OT05fUEhBUk1fSU5URVJWRU5USU9OUyJdLCJzb3VyY2VzIjpbInBhaW5hZFNjYWxlLnNjaGVtYS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwZ1RhYmxlLCBiaWdpbnQsIGludGVnZXIsIHZhcmNoYXIsIHRleHQsIHRpbWVzdGFtcCwgYm9vbGVhbiwganNvbmIsIGluZGV4IH0gZnJvbSAnZHJpenpsZS1vcm0vcGctY29yZSc7XG5pbXBvcnQgeyBwYXRpZW50cyB9IGZyb20gJy4vcGF0aWVudC5zY2hlbWEuanMnO1xuXG4vKipcbiAqIFBBSU5BRCBTY2FsZSBTY2hlbWFcbiAqIFBhaW4gQXNzZXNzbWVudCBpbiBBZHZhbmNlZCBEZW1lbnRpYSAtIEJlaGF2aW9yYWwgUGFpbiBBc3Nlc3NtZW50IFRvb2xcbiAqXG4gKiBEZXNpZ25lZCBmb3I6XG4gKiAtIFBhdGllbnRzIHdpdGggYWR2YW5jZWQgZGVtZW50aWEgd2hvIGNhbm5vdCBzZWxmLXJlcG9ydCBwYWluXG4gKiAtIE5vbi12ZXJiYWwgb3IgY29nbml0aXZlbHkgaW1wYWlyZWQgcGF0aWVudHNcbiAqIC0gSG9zcGljZSBwYXRpZW50cyB3aXRoIGNvZ25pdGl2ZSBkZWNsaW5lXG4gKlxuICogRml2ZSBiZWhhdmlvcmFsIGNhdGVnb3JpZXMsIGVhY2ggc2NvcmVkIDAtMjpcbiAqIDEuIEJyZWF0aGluZyAoaW5kZXBlbmRlbnQgb2Ygdm9jYWxpemF0aW9uKVxuICogMi4gTmVnYXRpdmUgVm9jYWxpemF0aW9uXG4gKiAzLiBGYWNpYWwgRXhwcmVzc2lvblxuICogNC4gQm9keSBMYW5ndWFnZVxuICogNS4gQ29uc29sYWJpbGl0eVxuICpcbiAqIFRvdGFsIHNjb3JlIHJhbmdlOiAwLTEwXG4gKiAtIDAgPSBObyBwYWluXG4gKiAtIDEtMyA9IE1pbGQgcGFpblxuICogLSA0LTYgPSBNb2RlcmF0ZSBwYWluXG4gKiAtIDctMTAgPSBTZXZlcmUgcGFpblxuICpcbiAqIFJlZmVyZW5jZTogV2FyZGVuIFYsIEh1cmxleSBBQywgVm9saWNlciBMLiAoMjAwMykgRGV2ZWxvcG1lbnQgYW5kIHBzeWNob21ldHJpY1xuICogZXZhbHVhdGlvbiBvZiB0aGUgUGFpbiBBc3Nlc3NtZW50IGluIEFkdmFuY2VkIERlbWVudGlhIChQQUlOQUQpIHNjYWxlLlxuICogSm91cm5hbCBvZiB0aGUgQW1lcmljYW4gTWVkaWNhbCBEaXJlY3RvcnMgQXNzb2NpYXRpb24sIDQoMSksIDktMTUuXG4gKi9cbmV4cG9ydCBjb25zdCBwYWluYWRfc2NhbGVzID0gcGdUYWJsZSgncGFpbmFkX3NjYWxlcycsIHtcbiAgaWQ6IGJpZ2ludCgnaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLnByaW1hcnlLZXkoKS5nZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5KCksXG4gIHBhdGllbnRfaWQ6IGJpZ2ludCgncGF0aWVudF9pZCcsIHsgbW9kZTogJ251bWJlcicgfSkucmVmZXJlbmNlcygoKSA9PiBwYXRpZW50cy5pZCkubm90TnVsbCgpLFxuICBlbmNvdW50ZXJfaWQ6IGJpZ2ludCgnZW5jb3VudGVyX2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KSxcbiAgbm90ZV9pZDogYmlnaW50KCdub3RlX2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KSxcblxuICAvLyBBc3Nlc3NtZW50IG1ldGFkYXRhXG4gIGFzc2Vzc21lbnRfZGF0ZTogdGltZXN0YW1wKCdhc3Nlc3NtZW50X2RhdGUnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxuICBhc3Nlc3NtZW50X3R5cGU6IHZhcmNoYXIoJ2Fzc2Vzc21lbnRfdHlwZScsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gSU5JVElBTCwgRk9MTE9XX1VQLCBSRUFTU0VTU01FTlQsIFBSRV9JTlRFUlZFTlRJT04sIFBPU1RfSU5URVJWRU5USU9OXG4gIGFzc2Vzc21lbnRfY29udGV4dDogdmFyY2hhcignYXNzZXNzbWVudF9jb250ZXh0JywgeyBsZW5ndGg6IDEwMCB9KSwgLy8gUk9VVElORSwgUFJOLCBQUkVfTUVESUNBVElPTiwgUE9TVF9NRURJQ0FUSU9OLCBEVVJJTkdfQ0FSRVxuICBhc3Nlc3NlZF9ieV9pZDogYmlnaW50KCdhc3Nlc3NlZF9ieV9pZCcsIHsgbW9kZTogJ251bWJlcicgfSksXG5cbiAgLy8gUGF0aWVudCBjb250ZXh0IGZvciBkZW1lbnRpYSBhc3Nlc3NtZW50XG4gIGRlbWVudGlhX3N0YWdlOiB2YXJjaGFyKCdkZW1lbnRpYV9zdGFnZScsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gTUlMRCwgTU9ERVJBVEUsIFNFVkVSRSwgRU5EX1NUQUdFXG4gIGRlbWVudGlhX3R5cGU6IHZhcmNoYXIoJ2RlbWVudGlhX3R5cGUnLCB7IGxlbmd0aDogMTAwIH0pLCAvLyBBTFpIRUlNRVJTLCBWQVNDVUxBUiwgTEVXWV9CT0RZLCBGUk9OVE9URU1QT1JBTCwgTUlYRUQsIE9USEVSXG4gIGJhc2VsaW5lX2NvZ25pdGl2ZV9zdGF0dXM6IHZhcmNoYXIoJ2Jhc2VsaW5lX2NvZ25pdGl2ZV9zdGF0dXMnLCB7IGxlbmd0aDogMjU1IH0pLFxuICB2ZXJiYWxfYWJpbGl0eTogdmFyY2hhcigndmVyYmFsX2FiaWxpdHknLCB7IGxlbmd0aDogNTAgfSksIC8vIFZFUkJBTCwgTElNSVRFRF9WRVJCQUwsIE5PTl9WRVJCQUxcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBQQUlOQUQgQkVIQVZJT1JBTCBTQ09SSU5HICgwLTIgZWFjaClcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyAxLiBCcmVhdGhpbmcgKGluZGVwZW5kZW50IG9mIHZvY2FsaXphdGlvbikgKDAtMilcbiAgLy8gMCA9IE5vcm1hbFxuICAvLyAxID0gT2NjYXNpb25hbCBsYWJvcmVkIGJyZWF0aGluZywgc2hvcnQgcGVyaW9kIG9mIGh5cGVydmVudGlsYXRpb25cbiAgLy8gMiA9IE5vaXN5IGxhYm9yZWQgYnJlYXRoaW5nLCBsb25nIHBlcmlvZCBvZiBoeXBlcnZlbnRpbGF0aW9uLCBDaGV5bmUtU3Rva2VzIHJlc3BpcmF0aW9uc1xuICBicmVhdGhpbmdfc2NvcmU6IGludGVnZXIoJ2JyZWF0aGluZ19zY29yZScpLm5vdE51bGwoKSxcbiAgYnJlYXRoaW5nX29ic2VydmF0aW9uOiB2YXJjaGFyKCdicmVhdGhpbmdfb2JzZXJ2YXRpb24nLCB7IGxlbmd0aDogMjU1IH0pLCAvLyBOT1JNQUwsIE9DQ0FTSU9OQUxfTEFCT1JFRCwgTk9JU1lfTEFCT1JFRFxuICBicmVhdGhpbmdfbm90ZXM6IHRleHQoJ2JyZWF0aGluZ19ub3RlcycpLFxuXG4gIC8vIDIuIE5lZ2F0aXZlIFZvY2FsaXphdGlvbiAoMC0yKVxuICAvLyAwID0gTm9uZVxuICAvLyAxID0gT2NjYXNpb25hbCBtb2FuIG9yIGdyb2FuLCBsb3ctbGV2ZWwgc3BlZWNoIHdpdGggYSBuZWdhdGl2ZSBvciBkaXNhcHByb3ZpbmcgcXVhbGl0eVxuICAvLyAyID0gUmVwZWF0ZWQgdHJvdWJsZWQgY2FsbGluZyBvdXQsIGxvdWQgbW9hbmluZyBvciBncm9hbmluZywgY3J5aW5nXG4gIG5lZ2F0aXZlX3ZvY2FsaXphdGlvbl9zY29yZTogaW50ZWdlcignbmVnYXRpdmVfdm9jYWxpemF0aW9uX3Njb3JlJykubm90TnVsbCgpLFxuICBuZWdhdGl2ZV92b2NhbGl6YXRpb25fb2JzZXJ2YXRpb246IHZhcmNoYXIoJ25lZ2F0aXZlX3ZvY2FsaXphdGlvbl9vYnNlcnZhdGlvbicsIHsgbGVuZ3RoOiAyNTUgfSksIC8vIE5PTkUsIE9DQ0FTSU9OQUxfTU9BTiwgUkVQRUFURURfQ0FMTElOR1xuICBuZWdhdGl2ZV92b2NhbGl6YXRpb25fbm90ZXM6IHRleHQoJ25lZ2F0aXZlX3ZvY2FsaXphdGlvbl9ub3RlcycpLFxuXG4gIC8vIDMuIEZhY2lhbCBFeHByZXNzaW9uICgwLTIpXG4gIC8vIDAgPSBTbWlsaW5nIG9yIGluZXhwcmVzc2l2ZVxuICAvLyAxID0gU2FkLCBmcmlnaHRlbmVkLCBmcm93blxuICAvLyAyID0gRmFjaWFsIGdyaW1hY2luZ1xuICBmYWNpYWxfZXhwcmVzc2lvbl9zY29yZTogaW50ZWdlcignZmFjaWFsX2V4cHJlc3Npb25fc2NvcmUnKS5ub3ROdWxsKCksXG4gIGZhY2lhbF9leHByZXNzaW9uX29ic2VydmF0aW9uOiB2YXJjaGFyKCdmYWNpYWxfZXhwcmVzc2lvbl9vYnNlcnZhdGlvbicsIHsgbGVuZ3RoOiAyNTUgfSksIC8vIFNNSUxJTkdfSU5FWFBSRVNTSVZFLCBTQURfRlJJR0hURU5FRCwgR1JJTUFDSU5HXG4gIGZhY2lhbF9leHByZXNzaW9uX25vdGVzOiB0ZXh0KCdmYWNpYWxfZXhwcmVzc2lvbl9ub3RlcycpLFxuXG4gIC8vIDQuIEJvZHkgTGFuZ3VhZ2UgKDAtMilcbiAgLy8gMCA9IFJlbGF4ZWRcbiAgLy8gMSA9IFRlbnNlLCBkaXN0cmVzc2VkIHBhY2luZywgZmlkZ2V0aW5nXG4gIC8vIDIgPSBSaWdpZCwgZmlzdHMgY2xlbmNoZWQsIGtuZWVzIHB1bGxlZCB1cCwgcHVsbGluZyBvciBwdXNoaW5nIGF3YXksIHN0cmlraW5nIG91dFxuICBib2R5X2xhbmd1YWdlX3Njb3JlOiBpbnRlZ2VyKCdib2R5X2xhbmd1YWdlX3Njb3JlJykubm90TnVsbCgpLFxuICBib2R5X2xhbmd1YWdlX29ic2VydmF0aW9uOiB2YXJjaGFyKCdib2R5X2xhbmd1YWdlX29ic2VydmF0aW9uJywgeyBsZW5ndGg6IDI1NSB9KSwgLy8gUkVMQVhFRCwgVEVOU0VfRklER0VUSU5HLCBSSUdJRF9TVFJJS0lOR1xuICBib2R5X2xhbmd1YWdlX25vdGVzOiB0ZXh0KCdib2R5X2xhbmd1YWdlX25vdGVzJyksXG5cbiAgLy8gNS4gQ29uc29sYWJpbGl0eSAoMC0yKVxuICAvLyAwID0gTm8gbmVlZCB0byBjb25zb2xlXG4gIC8vIDEgPSBEaXN0cmFjdGVkIG9yIHJlYXNzdXJlZCBieSB2b2ljZSBvciB0b3VjaFxuICAvLyAyID0gVW5hYmxlIHRvIGNvbnNvbGUsIGRpc3RyYWN0LCBvciByZWFzc3VyZVxuICBjb25zb2xhYmlsaXR5X3Njb3JlOiBpbnRlZ2VyKCdjb25zb2xhYmlsaXR5X3Njb3JlJykubm90TnVsbCgpLFxuICBjb25zb2xhYmlsaXR5X29ic2VydmF0aW9uOiB2YXJjaGFyKCdjb25zb2xhYmlsaXR5X29ic2VydmF0aW9uJywgeyBsZW5ndGg6IDI1NSB9KSwgLy8gTk9fTkVFRCwgRElTVFJBQ1RJQkxFLCBVTkFCTEVfVE9fQ09OU09MRVxuICBjb25zb2xhYmlsaXR5X25vdGVzOiB0ZXh0KCdjb25zb2xhYmlsaXR5X25vdGVzJyksXG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gVE9UQUwgU0NPUkUgQU5EIElOVEVSUFJFVEFUSU9OXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLy8gVG90YWwgUEFJTkFEIFNjb3JlICgwLTEwKVxuICB0b3RhbF9zY29yZTogaW50ZWdlcigndG90YWxfc2NvcmUnKS5ub3ROdWxsKCksXG5cbiAgLy8gUGFpbiBzZXZlcml0eSBpbnRlcnByZXRhdGlvblxuICBwYWluX3NldmVyaXR5OiB2YXJjaGFyKCdwYWluX3NldmVyaXR5JywgeyBsZW5ndGg6IDUwIH0pLCAvLyBOT19QQUlOLCBNSUxELCBNT0RFUkFURSwgU0VWRVJFXG5cbiAgLy8gUGFpbiBpcyBjb25zaWRlcmVkIHByZXNlbnQgaWYgc2NvcmUgPj0gMVxuICBwYWluX3ByZXNlbnQ6IGJvb2xlYW4oJ3BhaW5fcHJlc2VudCcpLmRlZmF1bHQoZmFsc2UpLFxuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIENMSU5JQ0FMIENPTlRFWFRcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBDdXJyZW50IHBhaW4gc3RhdHVzXG4gIHBhaW5fc3RhdHVzOiB2YXJjaGFyKCdwYWluX3N0YXR1cycsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gQUNVVEUsIENIUk9OSUMsIEJSRUFLVEhST1VHSCwgRU5EX09GX0xJRkVcblxuICAvLyBMb2NhdGlvbiBpZiBwYWluIGlkZW50aWZpZWQgKG1heSBiZSBpbmZlcnJlZCBmcm9tIGJlaGF2aW9ycylcbiAgc3VzcGVjdGVkX3BhaW5fbG9jYXRpb246IHZhcmNoYXIoJ3N1c3BlY3RlZF9wYWluX2xvY2F0aW9uJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgc3VzcGVjdGVkX3BhaW5fbG9jYXRpb25fbm90ZXM6IHRleHQoJ3N1c3BlY3RlZF9wYWluX2xvY2F0aW9uX25vdGVzJyksXG5cbiAgLy8gU3VzcGVjdGVkIGNhdXNlIChjb21tb24gaW4gZGVtZW50aWEgcGF0aWVudHMpXG4gIHN1c3BlY3RlZF9jYXVzZTogdmFyY2hhcignc3VzcGVjdGVkX2NhdXNlJywgeyBsZW5ndGg6IDI1NSB9KSwgLy8gQVJUSFJJVElTLCBQT1NJVElPTklORywgQ09OU1RJUEFUSU9OLCBVVEksIE9SQUxfUEFJTiwgU0tJTl9CUkVBS0RPV04sIFVOS05PV05cbiAgc3VzcGVjdGVkX2NhdXNlX25vdGVzOiB0ZXh0KCdzdXNwZWN0ZWRfY2F1c2Vfbm90ZXMnKSxcblxuICAvLyBUcmlnZ2VyaW5nIGFjdGl2aXR5ICh3aGVuIHBhaW4gYmVoYXZpb3JzIG9ic2VydmVkKVxuICB0cmlnZ2VyaW5nX2FjdGl2aXR5OiB2YXJjaGFyKCd0cmlnZ2VyaW5nX2FjdGl2aXR5JywgeyBsZW5ndGg6IDI1NSB9KSwgLy8gQVRfUkVTVCwgRFVSSU5HX1RVUk5JTkcsIERVUklOR19UUkFOU0ZFUlMsIERVUklOR19BREwsIERVUklOR19EUkVTU0lOR1xuICB0cmlnZ2VyaW5nX2FjdGl2aXR5X25vdGVzOiB0ZXh0KCd0cmlnZ2VyaW5nX2FjdGl2aXR5X25vdGVzJyksXG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gSU5URVJWRU5USU9OIFRSQUNLSU5HXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLy8gV2FzIGludGVydmVudGlvbiBwcm92aWRlZD9cbiAgaW50ZXJ2ZW50aW9uX3Byb3ZpZGVkOiBib29sZWFuKCdpbnRlcnZlbnRpb25fcHJvdmlkZWQnKS5kZWZhdWx0KGZhbHNlKSxcblxuICAvLyBUeXBlIG9mIGludGVydmVudGlvblxuICBpbnRlcnZlbnRpb25fdHlwZTogdmFyY2hhcignaW50ZXJ2ZW50aW9uX3R5cGUnLCB7IGxlbmd0aDogMTAwIH0pLCAvLyBQSEFSTUFDT0xPR0lDQUwsIE5PTl9QSEFSTUFDT0xPR0lDQUwsIENPTUJJTkFUSU9OXG5cbiAgLy8gUGhhcm1hY29sb2dpY2FsIGludGVydmVudGlvbiBkZXRhaWxzXG4gIG1lZGljYXRpb25fYWRtaW5pc3RlcmVkOiB2YXJjaGFyKCdtZWRpY2F0aW9uX2FkbWluaXN0ZXJlZCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIG1lZGljYXRpb25fZG9zZTogdmFyY2hhcignbWVkaWNhdGlvbl9kb3NlJywgeyBsZW5ndGg6IDEwMCB9KSxcbiAgbWVkaWNhdGlvbl9yb3V0ZTogdmFyY2hhcignbWVkaWNhdGlvbl9yb3V0ZScsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gT1JBTCwgU0wsIFRPUElDQUwsIFRSQU5TREVSTUFMLCBTUSwgSU0sIElWLCBSRUNUQUxcbiAgbWVkaWNhdGlvbl90aW1lOiB0aW1lc3RhbXAoJ21lZGljYXRpb25fdGltZScpLFxuXG4gIC8vIE5vbi1waGFybWFjb2xvZ2ljYWwgaW50ZXJ2ZW50aW9ucyAoc3RvcmVkIGFzIGFycmF5KVxuICBub25fcGhhcm1faW50ZXJ2ZW50aW9uczoganNvbmIoJ25vbl9waGFybV9pbnRlcnZlbnRpb25zJyksIC8vIEFycmF5OiBSRVBPU0lUSU9OSU5HLCBNQVNTQUdFLCBIRUFULCBDT0xELCBNVVNJQywgUFJFU0VOQ0UsIERJU1RSQUNUSU9OLCBBUk9NQVRIRVJBUFksIGV0Yy5cblxuICAvLyBUaW1lIHRvIHJlYXNzZXNzIGFmdGVyIGludGVydmVudGlvblxuICByZWFzc2Vzc21lbnRfdGltZTogdGltZXN0YW1wKCdyZWFzc2Vzc21lbnRfdGltZScpLFxuICByZWFzc2Vzc21lbnRfc2NvcmU6IGludGVnZXIoJ3JlYXNzZXNzbWVudF9zY29yZScpLFxuXG4gIC8vIEludGVydmVudGlvbiBlZmZlY3RpdmVuZXNzXG4gIGludGVydmVudGlvbl9lZmZlY3RpdmVuZXNzOiB2YXJjaGFyKCdpbnRlcnZlbnRpb25fZWZmZWN0aXZlbmVzcycsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gRUZGRUNUSVZFLCBQQVJUSUFMTFlfRUZGRUNUSVZFLCBOT1RfRUZGRUNUSVZFXG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gSE9TUElDRS9ERU1FTlRJQSBDQVJFIFNQRUNJRklDIEZJRUxEU1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIENvbWZvcnQtZm9jdXNlZCBjYXJlIChob3NwaWNlLXNwZWNpZmljKVxuICBjb21mb3J0X2dvYWxfbWV0OiBib29sZWFuKCdjb21mb3J0X2dvYWxfbWV0JyksXG4gIGNvbWZvcnRfZ29hbF9ub3RlczogdGV4dCgnY29tZm9ydF9nb2FsX25vdGVzJyksXG5cbiAgLy8gQmVoYXZpb3JhbCBiYXNlbGluZSBjb21wYXJpc29uXG4gIGJlaGF2aW9yX2NoYW5nZV9mcm9tX2Jhc2VsaW5lOiB2YXJjaGFyKCdiZWhhdmlvcl9jaGFuZ2VfZnJvbV9iYXNlbGluZScsIHsgbGVuZ3RoOiA1MCB9KSwgLy8gTk9fQ0hBTkdFLCBNSUxEX0NIQU5HRSwgU0lHTklGSUNBTlRfQ0hBTkdFXG4gIGJhc2VsaW5lX2JlaGF2aW9yX25vdGVzOiB0ZXh0KCdiYXNlbGluZV9iZWhhdmlvcl9ub3RlcycpLFxuXG4gIC8vIEZhbWlseS9jYXJlZ2l2ZXIgaW52b2x2ZW1lbnRcbiAgY2FyZWdpdmVyX3ByZXNlbnQ6IGJvb2xlYW4oJ2NhcmVnaXZlcl9wcmVzZW50JyksXG4gIGNhcmVnaXZlcl9vYnNlcnZhdGlvbnM6IHRleHQoJ2NhcmVnaXZlcl9vYnNlcnZhdGlvbnMnKSxcbiAgY2FyZWdpdmVyX2VkdWNhdGlvbl9wcm92aWRlZDogYm9vbGVhbignY2FyZWdpdmVyX2VkdWNhdGlvbl9wcm92aWRlZCcpLFxuICBjYXJlZ2l2ZXJfYWJsZV90b19hc3Nlc3M6IGJvb2xlYW4oJ2NhcmVnaXZlcl9hYmxlX3RvX2Fzc2VzcycpLFxuXG4gIC8vIFBsYW4gb2YgY2FyZSB1cGRhdGVzIG5lZWRlZFxuICBjYXJlX3BsYW5fdXBkYXRlX25lZWRlZDogYm9vbGVhbignY2FyZV9wbGFuX3VwZGF0ZV9uZWVkZWQnKSxcbiAgY2FyZV9wbGFuX3JlY29tbWVuZGF0aW9uczogdGV4dCgnY2FyZV9wbGFuX3JlY29tbWVuZGF0aW9ucycpLFxuXG4gIC8vIENvbW11bmljYXRpb24gd2l0aCBmYW1pbHkgYWJvdXQgcGFpbiBtYW5hZ2VtZW50XG4gIGZhbWlseV9jb21tdW5pY2F0aW9uX25vdGVzOiB0ZXh0KCdmYW1pbHlfY29tbXVuaWNhdGlvbl9ub3RlcycpLFxuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIENMSU5JQ0FMIE5PVEVTIEFORCBTVU1NQVJZXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgY2xpbmljYWxfbm90ZXM6IHRleHQoJ2NsaW5pY2FsX25vdGVzJyksXG4gIGFzc2Vzc21lbnRfc3VtbWFyeTogdGV4dCgnYXNzZXNzbWVudF9zdW1tYXJ5JyksXG4gIGZvbGxvd191cF9wbGFuOiB0ZXh0KCdmb2xsb3dfdXBfcGxhbicpLFxuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNJR05BVFVSRSBBTkQgQ09NUExJQU5DRSAoMjEgQ0ZSIFBhcnQgMTEpXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgc2lnbmF0dXJlX2lkOiBiaWdpbnQoJ3NpZ25hdHVyZV9pZCcsIHsgbW9kZTogJ251bWJlcicgfSksXG4gIHNpZ25lZF9hdDogdGltZXN0YW1wKCdzaWduZWRfYXQnKSxcbiAgc2lnbmVkX2J5X2lkOiBiaWdpbnQoJ3NpZ25lZF9ieV9pZCcsIHsgbW9kZTogJ251bWJlcicgfSksXG5cbiAgLy8gQW1lbmRtZW50IHRyYWNraW5nXG4gIGFtZW5kZWQ6IGJvb2xlYW4oJ2FtZW5kZWQnKS5kZWZhdWx0KGZhbHNlKSxcbiAgYW1lbmRtZW50X3JlYXNvbjogdGV4dCgnYW1lbmRtZW50X3JlYXNvbicpLFxuICBhbWVuZGVkX2F0OiB0aW1lc3RhbXAoJ2FtZW5kZWRfYXQnKSxcbiAgYW1lbmRlZF9ieV9pZDogYmlnaW50KCdhbWVuZGVkX2J5X2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KSxcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBBVURJVCBGSUVMRFNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICBjcmVhdGVkX2J5X2lkOiBiaWdpbnQoJ2NyZWF0ZWRfYnlfaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLFxuICB1cGRhdGVkX2J5X2lkOiBiaWdpbnQoJ3VwZGF0ZWRfYnlfaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLFxuICBjcmVhdGVkQXQ6IHRpbWVzdGFtcCgnY3JlYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG4gIHVwZGF0ZWRBdDogdGltZXN0YW1wKCd1cGRhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbn0sICh0YWJsZSkgPT4gKHtcbiAgLy8gUGVyZm9ybWFuY2UgaW5kZXhlcyBmb3IgY29tbW9uIHF1ZXJpZXNcbiAgcGF0aWVudElkeDogaW5kZXgoJ2lkeF9wYWluYWRfc2NhbGVzX3BhdGllbnRfaWQnKS5vbih0YWJsZS5wYXRpZW50X2lkKSxcbiAgYXNzZXNzbWVudERhdGVJZHg6IGluZGV4KCdpZHhfcGFpbmFkX3NjYWxlc19hc3Nlc3NtZW50X2RhdGUnKS5vbih0YWJsZS5hc3Nlc3NtZW50X2RhdGUpLFxuICB0b3RhbFNjb3JlSWR4OiBpbmRleCgnaWR4X3BhaW5hZF9zY2FsZXNfdG90YWxfc2NvcmUnKS5vbih0YWJsZS50b3RhbF9zY29yZSksXG4gIHBhdGllbnREYXRlSWR4OiBpbmRleCgnaWR4X3BhaW5hZF9zY2FsZXNfcGF0aWVudF9kYXRlJykub24odGFibGUucGF0aWVudF9pZCwgdGFibGUuYXNzZXNzbWVudF9kYXRlKSxcbiAgcGF0aWVudFNjb3JlSWR4OiBpbmRleCgnaWR4X3BhaW5hZF9zY2FsZXNfcGF0aWVudF9zY29yZScpLm9uKHRhYmxlLnBhdGllbnRfaWQsIHRhYmxlLnRvdGFsX3Njb3JlKSxcbiAgZGVtZW50aWFTdGFnZUlkeDogaW5kZXgoJ2lkeF9wYWluYWRfc2NhbGVzX2RlbWVudGlhX3N0YWdlJykub24odGFibGUuZGVtZW50aWFfc3RhZ2UpLFxuICBwYWluU2V2ZXJpdHlJZHg6IGluZGV4KCdpZHhfcGFpbmFkX3NjYWxlc19wYWluX3NldmVyaXR5Jykub24odGFibGUucGFpbl9zZXZlcml0eSksXG59KSk7XG5cbi8vIEV4cG9ydCBzY29yZSBkZXNjcmlwdGlvbnMgZm9yIHVzZSBpbiBjb250cm9sbGVycyBhbmQgZnJvbnRlbmRcbmV4cG9ydCBjb25zdCBQQUlOQURfU0NPUkVfREVTQ1JJUFRJT05TID0ge1xuICBicmVhdGhpbmc6IHtcbiAgICAwOiAnTm9ybWFsJyxcbiAgICAxOiAnT2NjYXNpb25hbCBsYWJvcmVkIGJyZWF0aGluZywgc2hvcnQgcGVyaW9kIG9mIGh5cGVydmVudGlsYXRpb24nLFxuICAgIDI6ICdOb2lzeSBsYWJvcmVkIGJyZWF0aGluZywgbG9uZyBwZXJpb2Qgb2YgaHlwZXJ2ZW50aWxhdGlvbiwgQ2hleW5lLVN0b2tlcyByZXNwaXJhdGlvbnMnXG4gIH0sXG4gIG5lZ2F0aXZlX3ZvY2FsaXphdGlvbjoge1xuICAgIDA6ICdOb25lJyxcbiAgICAxOiAnT2NjYXNpb25hbCBtb2FuIG9yIGdyb2FuLCBsb3ctbGV2ZWwgc3BlZWNoIHdpdGggYSBuZWdhdGl2ZSBvciBkaXNhcHByb3ZpbmcgcXVhbGl0eScsXG4gICAgMjogJ1JlcGVhdGVkIHRyb3VibGVkIGNhbGxpbmcgb3V0LCBsb3VkIG1vYW5pbmcgb3IgZ3JvYW5pbmcsIGNyeWluZydcbiAgfSxcbiAgZmFjaWFsX2V4cHJlc3Npb246IHtcbiAgICAwOiAnU21pbGluZyBvciBpbmV4cHJlc3NpdmUnLFxuICAgIDE6ICdTYWQsIGZyaWdodGVuZWQsIGZyb3duJyxcbiAgICAyOiAnRmFjaWFsIGdyaW1hY2luZydcbiAgfSxcbiAgYm9keV9sYW5ndWFnZToge1xuICAgIDA6ICdSZWxheGVkJyxcbiAgICAxOiAnVGVuc2UsIGRpc3RyZXNzZWQgcGFjaW5nLCBmaWRnZXRpbmcnLFxuICAgIDI6ICdSaWdpZCwgZmlzdHMgY2xlbmNoZWQsIGtuZWVzIHB1bGxlZCB1cCwgcHVsbGluZyBvciBwdXNoaW5nIGF3YXksIHN0cmlraW5nIG91dCdcbiAgfSxcbiAgY29uc29sYWJpbGl0eToge1xuICAgIDA6ICdObyBuZWVkIHRvIGNvbnNvbGUnLFxuICAgIDE6ICdEaXN0cmFjdGVkIG9yIHJlYXNzdXJlZCBieSB2b2ljZSBvciB0b3VjaCcsXG4gICAgMjogJ1VuYWJsZSB0byBjb25zb2xlLCBkaXN0cmFjdCwgb3IgcmVhc3N1cmUnXG4gIH1cbn07XG5cbmV4cG9ydCBjb25zdCBQQUlOQURfUEFJTl9TRVZFUklUWSA9IHtcbiAgTk9fUEFJTjogeyBtaW46IDAsIG1heDogMCwgbGFiZWw6ICdObyBwYWluJyB9LFxuICBNSUxEOiB7IG1pbjogMSwgbWF4OiAzLCBsYWJlbDogJ01pbGQgcGFpbicgfSxcbiAgTU9ERVJBVEU6IHsgbWluOiA0LCBtYXg6IDYsIGxhYmVsOiAnTW9kZXJhdGUgcGFpbicgfSxcbiAgU0VWRVJFOiB7IG1pbjogNywgbWF4OiAxMCwgbGFiZWw6ICdTZXZlcmUgcGFpbicgfVxufTtcblxuZXhwb3J0IGNvbnN0IFBBSU5BRF9ERU1FTlRJQV9TVEFHRVMgPSB7XG4gIE1JTEQ6ICdNaWxkIGNvZ25pdGl2ZSBpbXBhaXJtZW50IC0gcGF0aWVudCBtYXkgc3RpbGwgc2VsZi1yZXBvcnQgc29tZSBzeW1wdG9tcycsXG4gIE1PREVSQVRFOiAnTW9kZXJhdGUgZGVtZW50aWEgLSBsaW1pdGVkIHZlcmJhbCBjb21tdW5pY2F0aW9uLCByZWxpZXMgb24gYmVoYXZpb3JhbCBjdWVzJyxcbiAgU0VWRVJFOiAnU2V2ZXJlIGRlbWVudGlhIC0gbm9uLXZlcmJhbCwgZnVsbHkgZGVwZW5kZW50IG9uIGJlaGF2aW9yYWwgYXNzZXNzbWVudCcsXG4gIEVORF9TVEFHRTogJ0VuZC1zdGFnZSBkZW1lbnRpYSAtIG1pbmltYWwgcmVzcG9uc2l2ZW5lc3MsIGNvbWZvcnQtZm9jdXNlZCBjYXJlJ1xufTtcblxuZXhwb3J0IGNvbnN0IFBBSU5BRF9DT01NT05fQ0FVU0VTID0gW1xuICAnQVJUSFJJVElTJyxcbiAgJ1BPU0lUSU9OSU5HJyxcbiAgJ0NPTlNUSVBBVElPTicsXG4gICdVVEknLFxuICAnT1JBTF9QQUlOJyxcbiAgJ1NLSU5fQlJFQUtET1dOJyxcbiAgJ0NPTlRSQUNUVVJFUycsXG4gICdGUkFDVFVSRScsXG4gICdORVVST1BBVEhZJyxcbiAgJ1VOS05PV04nXG5dO1xuXG5leHBvcnQgY29uc3QgUEFJTkFEX05PTl9QSEFSTV9JTlRFUlZFTlRJT05TID0gW1xuICAnUkVQT1NJVElPTklORycsXG4gICdNQVNTQUdFJyxcbiAgJ0hFQVQnLFxuICAnQ09MRCcsXG4gICdNVVNJQ19USEVSQVBZJyxcbiAgJ0FST01BVEhFUkFQWScsXG4gICdQUkVTRU5DRScsXG4gICdESVNUUkFDVElPTicsXG4gICdHRU5UTEVfVE9VQ0gnLFxuICAnVkVSQkFMX1JFQVNTVVJBTkNFJyxcbiAgJ0VOVklST05NRU5UQUxfTU9ESUZJQ0FUSU9OJyxcbiAgJ1JBTkdFX09GX01PVElPTicsXG4gICdTUExJTlRJTkcnLFxuICAnT1RIRVInXG5dO1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQVNFLE9BQU8sRUFBRUMsTUFBTSxFQUFFQyxPQUFPLEVBQUVDLE9BQU8sRUFBRUMsSUFBSSxFQUFFQyxTQUFTLEVBQUVDLE9BQU8sRUFBRUMsS0FBSyxFQUFFQyxLQUFLLFFBQVEscUJBQXFCO0FBQy9HLFNBQVNDLFFBQVEsUUFBUSxxQkFBcUI7O0FBRTlDO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtB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

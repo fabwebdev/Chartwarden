@@ -2,15 +2,23 @@
   "id": "clearinghouse-controller",
   "category": "API",
   "title": "Clearinghouse Integration Controller",
-  "description": "Implement controller for clearinghouse claim submission and response tracking.",
-  "status": "verified",
-  "priority": 1,
+  "description": "Implement Controller for Clearinghouse Claim Submission and Response Tracking\n\nCreate a controller to handle medical claims submission to clearinghouses and track submission status and responses.\n\nTechnical Implementation:\n- Controller: `ClearinghouseController` with endpoints for claim submission, status polling, and response handling\n- API Endpoints:\n  - POST /api/clearinghouse/claims/submit - Submit claim batch to clearinghouse\n  - GET /api/clearinghouse/claims/:id/status - Check submission status\n  - POST /api/clearinghouse/claims/:id/responses - Webhook endpoint for clearinghouse callbacks\n  - GET /api/clearinghouse/claims/:id/errors - Retrieve validation errors\n- Data Models:\n  - ClaimSubmission (claim_id, clearinghouse_id, status, submitted_at, response_at)\n  - ClaimResponse (submission_id, response_type, payload, processed_at)\n  - ClaimError (submission_id, error_code, error_message, field_path)\n- Integration: Connect to clearinghouse API (likely X12 EDI 837 format or proprietary API)\n- Message Format: Transform internal claim data to X12 EDI or clearinghouse-specific JSON/XML\n- Status Management: Track states (pending, submitted, accepted, rejected, processing, completed)\n\nBusiness Logic:\n- Pre-submission validation (required fields, format checks, payer eligibility)\n- Batch processing for multiple claims\n- Retry mechanism with exponential backoff for failed submissions\n- Idempotency handling to prevent duplicate submissions\n\nResponse Processing:\n- Parse 277 (claim status), 835 (remittance), 999 (acknowledgment) responses\n- Map clearinghouse error codes to user-friendly messages\n- Trigger notifications on status changes (accepted/rejected)\n\nSecurity & Compliance:\n- HIPAA-compliant logging (no PHI in plain logs)\n- Encrypt sensitive claim data in transit (TLS) and at rest\n- Audit trail for all submission attempts and responses\n- API authentication with clearinghouse credentials (OAuth2 or API keys)\n\nError Handling:\n- Validation errors (return detailed field-level feedback)\n- Network timeouts (retry up to 3 times)\n- Clearinghouse downtime (queue for later processing)\n- Malformed responses (log and alert operations team)\n\nPerformance:\n- Async job queue (Bull/Sidekiq) for submission processing\n- Rate limiting to respect clearinghouse API limits\n- Database indexing on claim_id, status, submitted_at for fast lookups",
+  "status": "completed",
+  "priority": 3,
   "complexity": "moderate",
   "dependencies": [
     "clearinghouse-schema",
     "edi837-generator-service"
   ],
   "createdAt": "2025-12-31T05:55:26.253Z",
-  "updatedAt": "2025-12-31T19:23:06.233Z",
-  "startedAt": "2025-12-31T19:14:42.571Z"
+  "updatedAt": "2026-01-02T16:01:48.770Z",
+  "startedAt": "2026-01-02T16:00:23.823Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

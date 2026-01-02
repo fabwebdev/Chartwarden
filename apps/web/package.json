@@ -17,8 +17,12 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e": "playwright test tests/e2e",
+    "test:e2e:ui": "playwright test tests/e2e --ui",
+    "test:e2e:headed": "playwright test tests/e2e --headed",
+    "test:e2e:debug": "playwright test tests/e2e --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:ci": "playwright test tests/e2e --reporter=html"
   },
   "dependencies": {
     "@casl/ability": "^6.7.5",

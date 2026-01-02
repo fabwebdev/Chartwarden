@@ -78,9 +78,8 @@ async function userRoutes(fastify, options) {
     },
   }, createUser);
 
-  // Get user by ID - requires admin role
+  // Get user by ID - users can view their own profile, otherwise requires admin role
   fastify.get("/users/:id", {
-    preHandler: [requireAdmin],
     schema: {
       params: {
         type: 'object',
@@ -92,9 +91,8 @@ async function userRoutes(fastify, options) {
     },
   }, getUserById);
 
-  // Update user - requires manage:users permission
+  // Update user - users can update their own profile (excluding roles), otherwise requires manage:users permission
   fastify.put("/users/:id", {
-    preHandler: [requirePermission(PERMISSIONS.MANAGE_USERS)],
     schema: {
       params: {
         type: 'object',

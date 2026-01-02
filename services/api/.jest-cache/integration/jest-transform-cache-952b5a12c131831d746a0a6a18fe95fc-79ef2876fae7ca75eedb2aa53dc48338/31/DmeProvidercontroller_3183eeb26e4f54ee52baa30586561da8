@@ -1,0 +1,204 @@
+43ce2d22bb25db8a484450f824a00462
+/* istanbul ignore next */
+function cov_2i9etpl3pe() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/controllers/patient/DmeProvider.controller.js";
+  var hash = "a4c60a5e32b94f848b8292d0887b57f537ecef4a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/controllers/patient/DmeProvider.controller.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 5,
+          column: 21
+        },
+        end: {
+          line: 24,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 6,
+          column: 2
+        },
+        end: {
+          line: 23,
+          column: 3
+        }
+      },
+      "2": {
+        start: {
+          line: 8,
+          column: 23
+        },
+        end: {
+          line: 15,
+          column: 5
+        }
+      },
+      "3": {
+        start: {
+          line: 17,
+          column: 4
+        },
+        end: {
+          line: 17,
+          column: 20
+        }
+      },
+      "4": {
+        start: {
+          line: 18,
+          column: 4
+        },
+        end: {
+          line: 18,
+          column: 22
+        }
+      },
+      "5": {
+        start: {
+          line: 20,
+          column: 4
+        },
+        end: {
+          line: 20,
+          column: 42
+        }
+      },
+      "6": {
+        start: {
+          line: 21,
+          column: 4
+        },
+        end: {
+          line: 21,
+          column: 20
+        }
+      },
+      "7": {
+        start: {
+          line: 22,
+          column: 4
+        },
+        end: {
+          line: 22,
+          column: 39
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 5,
+            column: 21
+          },
+          end: {
+            line: 5,
+            column: 22
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 47
+          },
+          end: {
+            line: 24,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "a4c60a5e32b94f848b8292d0887b57f537ecef4a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2i9etpl3pe = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2i9etpl3pe();
+import { logger } from '../../utils/logger.js';
+
+// Get all DME provider options (predefined list)
+// DME provider is now a simple dropdown with predefined options
+/* istanbul ignore next */
+cov_2i9etpl3pe().s[0]++;
+export const index = async (request, reply) => {
+  /* istanbul ignore next */
+  cov_2i9etpl3pe().f[0]++;
+  cov_2i9etpl3pe().s[1]++;
+  try {
+    // Return predefined DME equipment options
+    const dmeOptions =
+    /* istanbul ignore next */
+    (cov_2i9etpl3pe().s[2]++, [{
+      value: "none",
+      label: "None"
+    }, {
+      value: "wheelchair",
+      label: "Wheelchair"
+    }, {
+      value: "oxygen",
+      label: "Oxygen"
+    }, {
+      value: "bed",
+      label: "Bed"
+    }, {
+      value: "over bed table",
+      label: "Over Bed Table"
+    }, {
+      value: "pressure mattress",
+      label: "Pressure Mattress"
+    }]);
+    /* istanbul ignore next */
+    cov_2i9etpl3pe().s[3]++;
+    reply.code(200);
+    /* istanbul ignore next */
+    cov_2i9etpl3pe().s[4]++;
+    return dmeOptions;
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_2i9etpl3pe().s[5]++;
+    logger.error("Error in index:", error);
+    /* istanbul ignore next */
+    cov_2i9etpl3pe().s[6]++;
+    reply.code(500);
+    /* istanbul ignore next */
+    cov_2i9etpl3pe().s[7]++;
+    return {
+      message: "Server error"
+    };
+  }
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmk5ZXRwbDNwZSIsImFjdHVhbENvdmVyYWdlIiwibG9nZ2VyIiwicyIsImluZGV4IiwicmVxdWVzdCIsInJlcGx5IiwiZiIsImRtZU9wdGlvbnMiLCJ2YWx1ZSIsImxhYmVsIiwiY29kZSIsImVycm9yIiwibWVzc2FnZSJdLCJzb3VyY2VzIjpbIkRtZVByb3ZpZGVyLmNvbnRyb2xsZXIuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgbG9nZ2VyIH0gZnJvbSAnLi4vLi4vdXRpbHMvbG9nZ2VyLmpzJztcblxuLy8gR2V0IGFsbCBETUUgcHJvdmlkZXIgb3B0aW9ucyAocHJlZGVmaW5lZCBsaXN0KVxuLy8gRE1FIHByb3ZpZGVyIGlzIG5vdyBhIHNpbXBsZSBkcm9wZG93biB3aXRoIHByZWRlZmluZWQgb3B0aW9uc1xuZXhwb3J0IGNvbnN0IGluZGV4ID0gYXN5bmMgKHJlcXVlc3QsIHJlcGx5KSA9PiB7XG4gIHRyeSB7XG4gICAgLy8gUmV0dXJuIHByZWRlZmluZWQgRE1FIGVxdWlwbWVudCBvcHRpb25zXG4gICAgY29uc3QgZG1lT3B0aW9ucyA9IFtcbiAgICAgIHsgdmFsdWU6IFwibm9uZVwiLCBsYWJlbDogXCJOb25lXCIgfSxcbiAgICAgIHsgdmFsdWU6IFwid2hlZWxjaGFpclwiLCBsYWJlbDogXCJXaGVlbGNoYWlyXCIgfSxcbiAgICAgIHsgdmFsdWU6IFwib3h5Z2VuXCIsIGxhYmVsOiBcIk94eWdlblwiIH0sXG4gICAgICB7IHZhbHVlOiBcImJlZFwiLCBsYWJlbDogXCJCZWRcIiB9LFxuICAgICAgeyB2YWx1ZTogXCJvdmVyIGJlZCB0YWJsZVwiLCBsYWJlbDogXCJPdmVyIEJlZCBUYWJsZVwiIH0sXG4gICAgICB7IHZhbHVlOiBcInByZXNzdXJlIG1hdHRyZXNzXCIsIGxhYmVsOiBcIlByZXNzdXJlIE1hdHRyZXNzXCIgfSxcbiAgICBdO1xuICAgIFxuICAgIHJlcGx5LmNvZGUoMjAwKTtcbiAgICByZXR1cm4gZG1lT3B0aW9ucztcbiAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICBsb2dnZXIuZXJyb3IoXCJFcnJvciBpbiBpbmRleDpcIiwgZXJyb3IpXG4gICAgcmVwbHkuY29kZSg1MDApO1xuICAgIHJldHVybiB7IG1lc3NhZ2U6IFwiU2VydmVyIGVycm9yXCIgfTtcbiAgfVxufTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQVNFLE1BQU0sUUFBUSx1QkFBdUI7O0FBRTlDO0FBQ0E7QUFBQTtBQUFBRixjQUFBLEdBQUFHLENBQUE7QUFDQSxPQUFPLE1BQU1DLEtBQUssR0FBRyxNQUFBQSxDQUFPQyxPQUFPLEVBQUVDLEtBQUssS0FBSztFQUFBO0VBQUFOLGNBQUEsR0FBQU8sQ0FBQTtFQUFBUCxjQUFBLEdBQUFHLENBQUE7RUFDN0MsSUFBSTtJQUNGO0lBQ0EsTUFBTUssVUFBVTtJQUFBO0lBQUEsQ0FBQVIsY0FBQSxHQUFBRyxDQUFBLE9BQUcsQ0FDakI7TUFBRU0sS0FBSyxFQUFFLE1BQU07TUFBRUMsS0FBSyxFQUFFO0lBQU8sQ0FBQyxFQUNoQztNQUFFRCxLQUFLLEVBQUUsWUFBWTtNQUFFQyxLQUFLLEVBQUU7SUFBYSxDQUFDLEVBQzVDO01BQUVELEtBQUssRUFBRSxRQUFRO01BQUVDLEtBQUssRUFBRTtJQUFTLENBQUMsRUFDcEM7TUFBRUQsS0FBSyxFQUFFLEtBQUs7TUFBRUMsS0FBSyxFQUFFO0lBQU0sQ0FBQyxFQUM5QjtNQUFFRCxLQUFLLEVBQUUsZ0JBQWdCO01BQUVDLEtBQUssRUFBRTtJQUFpQixDQUFDLEVBQ3BEO01BQUVELEtBQUssRUFBRSxtQkFBbUI7TUFBRUMsS0FBSyxFQUFFO0lBQW9CLENBQUMsQ0FDM0Q7SUFBQztJQUFBVixjQUFBLEdBQUFHLENBQUE7SUFFRkcsS0FBSyxDQUFDSyxJQUFJLENBQUMsR0FBRyxDQUFDO0lBQUM7SUFBQVgsY0FBQSxHQUFBRyxDQUFBO0lBQ2hCLE9BQU9LLFVBQVU7RUFDbkIsQ0FBQyxDQUFDLE9BQU9JLEtBQUssRUFBRTtJQUFBO0lBQUFaLGNBQUEsR0FBQUcsQ0FBQTtJQUNkRCxNQUFNLENBQUNVLEtBQUssQ0FBQyxpQkFBaUIsRUFBRUEsS0FBSyxDQUFDO0lBQUE7SUFBQVosY0FBQSxHQUFBRyxDQUFBO0lBQ3RDRyxLQUFLLENBQUNLLElBQUksQ0FBQyxHQUFHLENBQUM7SUFBQztJQUFBWCxjQUFBLEdBQUFHLENBQUE7SUFDaEIsT0FBTztNQUFFVSxPQUFPLEVBQUU7SUFBZSxDQUFDO0VBQ3BDO0FBQ0YsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

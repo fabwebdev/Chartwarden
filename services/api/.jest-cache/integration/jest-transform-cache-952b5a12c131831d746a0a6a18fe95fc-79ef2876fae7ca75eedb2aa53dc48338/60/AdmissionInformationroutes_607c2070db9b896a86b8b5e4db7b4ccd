@@ -1,0 +1,113 @@
+b07658dd5692707a7d049f7522d656a8
+/* istanbul ignore next */
+function cov_19bfv92try() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/AdmissionInformation.routes.js";
+  var hash = "41f3ed0ec3e0157984b8a7980090876f86755074";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/AdmissionInformation.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 2
+        },
+        end: {
+          line: 10,
+          column: 35
+        }
+      },
+      "1": {
+        start: {
+          line: 11,
+          column: 2
+        },
+        end: {
+          line: 11,
+          column: 38
+        }
+      },
+      "2": {
+        start: {
+          line: 12,
+          column: 2
+        },
+        end: {
+          line: 12,
+          column: 45
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "admissionInformationRoutes",
+        decl: {
+          start: {
+            line: 8,
+            column: 15
+          },
+          end: {
+            line: 8,
+            column: 41
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 60
+          },
+          end: {
+            line: 13,
+            column: 1
+          }
+        },
+        line: 8
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "41f3ed0ec3e0157984b8a7980090876f86755074"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_19bfv92try = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_19bfv92try();
+import { index, show, autoSave } from "../../controllers/patient/AdmissionInformation.controller.js";
+
+// Fastify plugin for admission information routes
+async function admissionInformationRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_19bfv92try().f[0]++;
+  cov_19bfv92try().s[0]++;
+  // Admission Information Routes
+  fastify.get("/admission", index);
+  /* istanbul ignore next */
+  cov_19bfv92try().s[1]++;
+  fastify.get("/admission/:id", show);
+  /* istanbul ignore next */
+  cov_19bfv92try().s[2]++;
+  fastify.post("/admission/store", autoSave);
+}
+export default admissionInformationRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTliZnY5MnRyeSIsImFjdHVhbENvdmVyYWdlIiwiaW5kZXgiLCJzaG93IiwiYXV0b1NhdmUiLCJhZG1pc3Npb25JbmZvcm1hdGlvblJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwb3N0Il0sInNvdXJjZXMiOlsiQWRtaXNzaW9uSW5mb3JtYXRpb24ucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7XG4gICAgaW5kZXgsXG4gICAgc2hvdyxcbiAgICBhdXRvU2F2ZSxcbn0gZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvQWRtaXNzaW9uSW5mb3JtYXRpb24uY29udHJvbGxlci5qc1wiO1xuXG4vLyBGYXN0aWZ5IHBsdWdpbiBmb3IgYWRtaXNzaW9uIGluZm9ybWF0aW9uIHJvdXRlc1xuYXN5bmMgZnVuY3Rpb24gYWRtaXNzaW9uSW5mb3JtYXRpb25Sb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyBBZG1pc3Npb24gSW5mb3JtYXRpb24gUm91dGVzXG4gIGZhc3RpZnkuZ2V0KFwiL2FkbWlzc2lvblwiLCBpbmRleCk7XG4gIGZhc3RpZnkuZ2V0KFwiL2FkbWlzc2lvbi86aWRcIiwgc2hvdyk7XG4gIGZhc3RpZnkucG9zdChcIi9hZG1pc3Npb24vc3RvcmVcIiwgYXV0b1NhdmUpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBhZG1pc3Npb25JbmZvcm1hdGlvblJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosU0FDSUUsS0FBSyxFQUNMQyxJQUFJLEVBQ0pDLFFBQVEsUUFDTCw4REFBOEQ7O0FBRXJFO0FBQ0EsZUFBZUMsMEJBQTBCQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFQLGNBQUEsR0FBQVEsQ0FBQTtFQUFBUixjQUFBLEdBQUFTLENBQUE7RUFDMUQ7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsWUFBWSxFQUFFUixLQUFLLENBQUM7RUFBQztFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDakNILE9BQU8sQ0FBQ0ksR0FBRyxDQUFDLGdCQUFnQixFQUFFUCxJQUFJLENBQUM7RUFBQztFQUFBSCxjQUFBLEdBQUFTLENBQUE7RUFDcENILE9BQU8sQ0FBQ0ssSUFBSSxDQUFDLGtCQUFrQixFQUFFUCxRQUFRLENBQUM7QUFDNUM7QUFFQSxlQUFlQywwQkFBMEIiLCJpZ25vcmVMaXN0IjpbXX0=

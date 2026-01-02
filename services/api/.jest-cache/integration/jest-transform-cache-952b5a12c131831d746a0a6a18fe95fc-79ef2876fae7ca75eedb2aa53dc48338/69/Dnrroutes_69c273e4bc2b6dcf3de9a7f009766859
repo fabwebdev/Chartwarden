@@ -1,0 +1,141 @@
+af6dd1bc77f8098f6d3427e993f16a10
+/* istanbul ignore next */
+function cov_pf4qrhlqm() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/Dnr.routes.js";
+  var hash = "9048e019c95a81d6d559613124e3ff186bec24ee";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/Dnr.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 2
+        },
+        end: {
+          line: 12,
+          column: 29
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 36
+        }
+      },
+      "2": {
+        start: {
+          line: 14,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 32
+        }
+      },
+      "3": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 15,
+          column: 34
+        }
+      },
+      "4": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 16,
+          column: 38
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "dnrRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 15
+          },
+          end: {
+            line: 10,
+            column: 24
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 43
+          },
+          end: {
+            line: 17,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "9048e019c95a81d6d559613124e3ff186bec24ee"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_pf4qrhlqm = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_pf4qrhlqm();
+import { index, store, show, update, destroy } from "../../controllers/patient/Dnr.controller.js";
+
+// Fastify plugin for DNR routes
+async function dnrRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_pf4qrhlqm().f[0]++;
+  cov_pf4qrhlqm().s[0]++;
+  // DNR Routes
+  fastify.get("/dnr", index);
+  /* istanbul ignore next */
+  cov_pf4qrhlqm().s[1]++;
+  fastify.post("/dnr/store", store);
+  /* istanbul ignore next */
+  cov_pf4qrhlqm().s[2]++;
+  fastify.get("/dnr/:id", show);
+  /* istanbul ignore next */
+  cov_pf4qrhlqm().s[3]++;
+  fastify.put("/dnr/:id", update);
+  /* istanbul ignore next */
+  cov_pf4qrhlqm().s[4]++;
+  fastify.delete("/dnr/:id", destroy);
+}
+export default dnrRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfcGY0cXJobHFtIiwiYWN0dWFsQ292ZXJhZ2UiLCJpbmRleCIsInN0b3JlIiwic2hvdyIsInVwZGF0ZSIsImRlc3Ryb3kiLCJkbnJSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicG9zdCIsInB1dCIsImRlbGV0ZSJdLCJzb3VyY2VzIjpbIkRuci5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtcbiAgICBpbmRleCxcbiAgICBzdG9yZSxcbiAgICBzaG93LFxuICAgIHVwZGF0ZSxcbiAgICBkZXN0cm95LFxufSBmcm9tIFwiLi4vLi4vY29udHJvbGxlcnMvcGF0aWVudC9EbnIuY29udHJvbGxlci5qc1wiO1xuXG4vLyBGYXN0aWZ5IHBsdWdpbiBmb3IgRE5SIHJvdXRlc1xuYXN5bmMgZnVuY3Rpb24gZG5yUm91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gRE5SIFJvdXRlc1xuICBmYXN0aWZ5LmdldChcIi9kbnJcIiwgaW5kZXgpO1xuICBmYXN0aWZ5LnBvc3QoXCIvZG5yL3N0b3JlXCIsIHN0b3JlKTtcbiAgZmFzdGlmeS5nZXQoXCIvZG5yLzppZFwiLCBzaG93KTtcbiAgZmFzdGlmeS5wdXQoXCIvZG5yLzppZFwiLCB1cGRhdGUpO1xuICBmYXN0aWZ5LmRlbGV0ZShcIi9kbnIvOmlkXCIsIGRlc3Ryb3kpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBkbnJSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWixTQUNJRSxLQUFLLEVBQ0xDLEtBQUssRUFDTEMsSUFBSSxFQUNKQyxNQUFNLEVBQ05DLE9BQU8sUUFDSiw2Q0FBNkM7O0FBRXBEO0FBQ0EsZUFBZUMsU0FBU0EsQ0FBQ0MsT0FBTyxFQUFFQyxPQUFPLEVBQUU7RUFBQTtFQUFBVCxhQUFBLEdBQUFVLENBQUE7RUFBQVYsYUFBQSxHQUFBVyxDQUFBO0VBQ3pDO0VBQ0FILE9BQU8sQ0FBQ0ksR0FBRyxDQUFDLE1BQU0sRUFBRVYsS0FBSyxDQUFDO0VBQUM7RUFBQUYsYUFBQSxHQUFBVyxDQUFBO0VBQzNCSCxPQUFPLENBQUNLLElBQUksQ0FBQyxZQUFZLEVBQUVWLEtBQUssQ0FBQztFQUFDO0VBQUFILGFBQUEsR0FBQVcsQ0FBQTtFQUNsQ0gsT0FBTyxDQUFDSSxHQUFHLENBQUMsVUFBVSxFQUFFUixJQUFJLENBQUM7RUFBQztFQUFBSixhQUFBLEdBQUFXLENBQUE7RUFDOUJILE9BQU8sQ0FBQ00sR0FBRyxDQUFDLFVBQVUsRUFBRVQsTUFBTSxDQUFDO0VBQUM7RUFBQUwsYUFBQSxHQUFBVyxDQUFBO0VBQ2hDSCxPQUFPLENBQUNPLE1BQU0sQ0FBQyxVQUFVLEVBQUVULE9BQU8sQ0FBQztBQUNyQztBQUVBLGVBQWVDLFNBQVMiLCJpZ25vcmVMaXN0IjpbXX0=

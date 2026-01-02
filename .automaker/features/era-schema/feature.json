@@ -2,14 +2,22 @@
   "id": "era-schema",
   "category": "Database",
   "title": "ERA (Electronic Remittance Advice) Schema",
-  "description": "Create schema for ERA file processing with payment information and reconciliation tracking.",
-  "status": "verified",
+  "description": "Implement ERA (Electronic Remittance Advice) File Processing Schema\n\nDesign and implement a database schema to handle ERA file processing, including payment information capture and reconciliation tracking for healthcare claims remittance.\n\nRequirements:\n- Define core ERA file metadata table (file ID, submission date, payer information, file format version)\n- Create payment transaction table to store individual payment details (claim ID, payment amount, adjustment codes, dates)\n- Implement reconciliation tracking table to link ERA payments with claims and track reconciliation status\n- Add adjustment and remark code reference tables to normalize denial/adjustment reasons\n- Include audit fields (created_at, updated_at, processed_by) for all tables\n- Define relationships and foreign keys between ERA files, payments, and claims\n- Add indexes on frequently queried fields (claim ID, payer ID, payment date, reconciliation status)\n- Support batch processing by tracking file-level totals vs. sum of individual payments\n- Include validation rules for data integrity (payment amounts, required fields, status transitions)\n- Document schema with clear field descriptions and expected data formats\n\nEdge Cases to Consider:\n- Handling multiple payments for the same claim\n- Partial payments and split payments across multiple ERAs\n- Voided or corrected payments\n- Unmatched payments that don't correspond to existing claims\n- ERA file reprocessing and duplicate prevention",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "billing-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.254Z",
-  "updatedAt": "2025-12-31T15:33:19.860Z",
-  "startedAt": "2025-12-31T15:26:49.646Z"
+  "updatedAt": "2026-01-02T15:32:30.727Z",
+  "startedAt": "2026-01-02T15:30:14.537Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

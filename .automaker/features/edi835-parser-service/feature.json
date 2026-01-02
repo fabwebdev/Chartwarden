@@ -2,14 +2,22 @@
   "id": "edi835-parser-service",
   "category": "Service",
   "title": "EDI 835 Parser Service",
-  "description": "Implement EDI 835 remittance advice parser with payment extraction and validation.",
-  "status": "verified",
+  "description": "Implement EDI 835 Remittance Advice Parser with Payment Extraction and Validation\n\nCreate a robust parser for processing X12 835 (Healthcare Claim Payment/Advice) EDI documents with automated payment reconciliation.\n\nTechnical Implementation:\n- Parser Library: Use x12-parser or node-x12 for segment parsing, or implement custom state machine for precise control\n- File Handling: Support both flat file (.txt, .edi) and batch processing with streaming for large files\n- Data Extraction:\n  - Header (ST/BPR/TRN/REF): Transaction metadata, payment amount, payer identification\n  - Loop 1000A/B: Payer and payee entities (N1/N3/N4/REF segments)\n  - Loop 2000: Claim-level data (LX/CLP segments)\n  - Loop 2100: Service line details (SVC/DTM/CAS/AMT/QTY segments)\n  - Adjustment codes: Map CAS segments to adjustment reason codes (CO, PR, OA groups)\n- Validation Rules:\n  - Segment structure compliance (ISA/GS/ST envelope integrity)\n  - Arithmetic validation (claim totals match line-item sums)\n  - Required element presence (NPI, payment dates, amounts)\n  - Cross-reference with 837 claims data for reconciliation\n\nData Model:\n```\nRemittanceAdvice {\n  transactionId, payerName, paymentMethod, totalPaid, checkDate\n  claims[] {\n    claimId, patientAccount, chargedAmount, paidAmount, status\n    serviceLines[] {\n      procedureCode, chargedAmount, paidAmount, adjustments[]\n    }\n  }\n}\n```\n\nArchitecture:\n- EDI835Parser class: Segment tokenization and loop identification\n- ValidationEngine: Rule-based validator with error aggregation\n- PaymentExtractor: Business logic for payment/adjustment calculation\n- ReconciliationService: Match 835 data against outstanding claims (837/claim system)\n\nAPI Endpoints:\n- POST /api/edi/835/parse - Upload and parse EDI file\n- GET /api/edi/835/remittances/:id - Retrieve parsed remittance\n- POST /api/edi/835/reconcile - Trigger payment posting to billing system\n\nOutput Formats:\n- Structured JSON for API consumption\n- CSV export for accounting integration\n- Database persistence for audit trail\n\nError Handling:\n- Segment-level error reporting with line numbers\n- Partial parse support (continue on non-critical errors)\n- Validation error categorization (fatal vs. warning)\n- File quarantine for unparseable documents\n\nPerformance Considerations:\n- Stream processing for files >10MB\n- Batch database inserts for service lines\n- Async processing with job queue for large batches\n\nIntegration Points:\n- Claims management system (match claim IDs)\n- Accounting/ERP system (post payments)\n- Document management system (archive original EDI)\n\nSecurity:\n- PHI/PII handling compliance (HIPAA)\n- File encryption at rest\n- Audit logging for all parse operations",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
     "era-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.255Z",
-  "updatedAt": "2025-12-31T15:57:09.967Z",
-  "startedAt": "2025-12-31T15:51:44.737Z"
+  "updatedAt": "2026-01-02T15:45:26.481Z",
+  "startedAt": "2026-01-02T15:43:36.277Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

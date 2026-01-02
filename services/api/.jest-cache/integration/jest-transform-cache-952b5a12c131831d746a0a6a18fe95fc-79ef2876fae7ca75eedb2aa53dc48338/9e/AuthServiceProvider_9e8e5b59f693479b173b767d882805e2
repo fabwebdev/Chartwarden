@@ -1,0 +1,75 @@
+f1af6ed8561bc97eb36dd50cd888e3b5
+/* istanbul ignore next */
+function cov_1jpts90baj() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/AuthServiceProvider.js";
+  var hash = "bcee93c800e9adec4d77c013e47f9d6b2a44791b";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/AuthServiceProvider.js",
+    statementMap: {},
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 2
+          },
+          end: {
+            line: 8,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 12
+          },
+          end: {
+            line: 12,
+            column: 3
+          }
+        },
+        line: 8
+      }
+    },
+    branchMap: {},
+    s: {},
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "bcee93c800e9adec4d77c013e47f9d6b2a44791b"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1jpts90baj = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1jpts90baj();
+import passport from "passport";
+import auth from "../config/betterAuth.js";
+class AuthServiceProvider {
+  /**
+   * Register any authentication / authorization services.
+   */
+  boot(app) {
+    /* istanbul ignore next */
+    cov_1jpts90baj().f[0]++;
+  } // Register any authentication / authorization services
+  // In Fastify, this would typically be handled by Better Auth or similar
+  // For now, we're just providing the structure
+}
+export default new AuthServiceProvider();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWpwdHM5MGJhaiIsImFjdHVhbENvdmVyYWdlIiwicGFzc3BvcnQiLCJhdXRoIiwiQXV0aFNlcnZpY2VQcm92aWRlciIsImJvb3QiLCJhcHAiLCJmIl0sInNvdXJjZXMiOlsiQXV0aFNlcnZpY2VQcm92aWRlci5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgcGFzc3BvcnQgZnJvbSBcInBhc3Nwb3J0XCI7XG5pbXBvcnQgYXV0aCBmcm9tIFwiLi4vY29uZmlnL2JldHRlckF1dGguanNcIjtcblxuY2xhc3MgQXV0aFNlcnZpY2VQcm92aWRlciB7XG4gIC8qKlxuICAgKiBSZWdpc3RlciBhbnkgYXV0aGVudGljYXRpb24gLyBhdXRob3JpemF0aW9uIHNlcnZpY2VzLlxuICAgKi9cbiAgYm9vdChhcHApIHtcbiAgICAvLyBSZWdpc3RlciBhbnkgYXV0aGVudGljYXRpb24gLyBhdXRob3JpemF0aW9uIHNlcnZpY2VzXG4gICAgLy8gSW4gRmFzdGlmeSwgdGhpcyB3b3VsZCB0eXBpY2FsbHkgYmUgaGFuZGxlZCBieSBCZXR0ZXIgQXV0aCBvciBzaW1pbGFyXG4gICAgLy8gRm9yIG5vdywgd2UncmUganVzdCBwcm92aWRpbmcgdGhlIHN0cnVjdHVyZVxuICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IG5ldyBBdXRoU2VydmljZVByb3ZpZGVyKCk7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsUUFBUSxNQUFNLFVBQVU7QUFDL0IsT0FBT0MsSUFBSSxNQUFNLHlCQUF5QjtBQUUxQyxNQUFNQyxtQkFBbUIsQ0FBQztFQUN4QjtBQUNGO0FBQ0E7RUFDRUMsSUFBSUEsQ0FBQ0MsR0FBRyxFQUFFO0lBQUE7SUFBQU4sY0FBQSxHQUFBTyxDQUFBO0VBSVYsQ0FBQyxDQUhDO0VBQ0E7RUFDQTtBQUVKO0FBRUEsZUFBZSxJQUFJSCxtQkFBbUIsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

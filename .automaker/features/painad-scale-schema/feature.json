@@ -2,14 +2,22 @@
   "id": "painad-scale-schema",
   "category": "Database",
   "title": "PAINAD Scale (Dementia) Schema",
-  "description": "Create schema for PAINAD pain assessment scale for dementia patients with behavioral indicators.",
-  "status": "verified",
+  "description": "Create PAINAD Pain Assessment Scale Schema for Dementia Patients\n\nDesign and implement a structured data schema for the Pain Assessment in Advanced Dementia (PAINAD) scale, which evaluates pain through observable behavioral indicators in patients with severe dementia.\n\nRequirements:\n- Include all five PAINAD assessment categories with proper scoring:\n  1. Breathing (independent of vocalization)\n  2. Negative vocalization\n  3. Facial expression\n  4. Body language\n  5. Consolability\n- Define scoring scale for each category (0-2 points per category, 0-10 total)\n- Specify behavioral descriptors for each score level (0, 1, 2) within each category\n- Include metadata fields: patient identifier, assessor name/role, assessment timestamp, total score\n- Add field for additional clinical notes or observations\n- Ensure schema supports tracking multiple assessments over time for trend analysis\n- Define validation rules to ensure scores fall within acceptable ranges\n- Include interpretation guidelines (e.g., 0 = no pain, 1-3 = mild, 4-6 = moderate, 7-10 = severe)\n- Consider compliance with healthcare data standards (FHIR, HL7) if applicable\n- Document the schema structure with clear field definitions and data types",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "pain-assessment-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.243Z",
-  "updatedAt": "2025-12-31T15:43:23.573Z",
-  "startedAt": "2025-12-31T15:35:02.000Z"
+  "updatedAt": "2026-01-02T15:25:49.647Z",
+  "startedAt": "2026-01-02T15:21:25.923Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

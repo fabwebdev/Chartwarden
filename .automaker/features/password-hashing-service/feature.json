@@ -3,7 +3,7 @@
   "category": "Authentication",
   "title": "Argon2 Password Hashing Service",
   "description": "Implement Secure Password Management System\n\nBuild a comprehensive password security system using Argon2 hashing algorithm with validation rules and strength requirements.\n\nRequirements:\n- Integrate Argon2id hashing library for password storage\n- Configure Argon2 parameters (memory cost, time cost, parallelism) following OWASP recommendations\n- Implement password validation rules:\n  * Minimum length requirement (at least 8 characters recommended)\n  * Complexity requirements (uppercase, lowercase, numbers, special characters)\n  * Check against common password lists/dictionaries\n  * Prevent password reuse (compare against user's password history)\n- Add password strength indicator for user feedback\n- Ensure passwords are hashed before storage, never stored in plain text\n- Implement secure password comparison during authentication\n- Handle hash generation errors gracefully\n- Add rate limiting for password verification attempts to prevent brute force attacks\n- Include unit tests for all validation rules and hashing functions\n- Document password policy for users and developers\n\nEdge cases to consider:\n- Unicode characters in passwords\n- Maximum password length to prevent DoS attacks\n- Migration path for existing passwords if upgrading from different hashing algorithm\n- Password reset flow security",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

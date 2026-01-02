@@ -2,7 +2,7 @@
   "id": "cbsa-service",
   "category": "Service",
   "title": "CBSA Lookup Service",
-  "description": "Implement CBSA code lookup service with geographic code management and caching.",
+  "description": "**Implement CBSA Code Lookup Service with Geographic Code Management and Caching**\n\nBuild a comprehensive service for Core Based Statistical Area (CBSA) code lookups with efficient caching and geographic code management.\n\n**Technical Implementation:**\n\n**Backend Architecture:**\n- Service Layer: `CBSALookupService` class with dependency injection\n- API Endpoints:\n  - `GET /api/cbsa/lookup?zip={zipCode}` - Lookup CBSA by ZIP code\n  - `GET /api/cbsa/codes?state={state}` - Get all CBSA codes by state\n  - `GET /api/cbsa/:code` - Get detailed CBSA information\n  - `POST /api/cbsa/batch` - Batch lookup (multiple ZIP codes)\n- Data Source: USPS/Census Bureau CBSA definition files (CSV import)\n\n**Database Schema:**\n```\ncbsa_codes:\n  - cbsa_code (VARCHAR, PK)\n  - cbsa_title (VARCHAR)\n  - metropolitan_division_code (VARCHAR, nullable)\n  - csa_code (VARCHAR, nullable)\n  - state (VARCHAR)\n  - effective_date (DATE)\n\nzip_to_cbsa_mapping:\n  - zip_code (VARCHAR, PK)\n  - cbsa_code (VARCHAR, FK)\n  - county_fips (VARCHAR)\n  - last_updated (TIMESTAMP)\n```\n\n**Caching Strategy:**\n- Layer 1: In-memory LRU cache (10,000 entries) for hot lookups\n- Layer 2: Redis cache with 24-hour TTL for frequent queries\n- Cache key format: `cbsa:zip:{zipCode}` or `cbsa:code:{cbsaCode}`\n- Cache warming on service startup for top 1000 ZIP codes\n- Implement cache-aside pattern with fallback to database\n\n**Data Management:**\n- CSV Import Service for CBSA definition updates (quarterly)\n- Data validation: Check for duplicate codes, orphaned references\n- Versioning: Track CBSA definition file version and import date\n- Delta updates: Compare and merge changes to minimize disruption\n\n**Performance Optimizations:**\n- Database indexes on zip_code, cbsa_code, and state columns\n- Query result pagination for list endpoints (max 100 items)\n- Connection pooling with appropriate pool size (20-50 connections)\n- Async processing for batch lookups (queue-based for >100 items)\n\n**Error Handling:**\n- Return 404 for invalid ZIP/CBSA codes with suggested alternatives\n- Graceful degradation if cache unavailable (direct DB lookup)\n- Circuit breaker pattern for external CBSA data API calls\n- Logging for cache misses and lookup failures\n\n**Security & Validation:**\n- Input sanitization for ZIP code format (5 or 9 digits)\n- Rate limiting: 100 requests/minute per API key\n- API authentication via JWT or API key\n- Audit logging for batch operations\n\n**Monitoring:**\n- Cache hit/miss ratio metrics\n- Lookup latency percentiles (p50, p95, p99)\n- Database query performance tracking\n- Alert on cache failure or degraded performance",
   "status": "verified",
   "priority": 1,
   "complexity": "simple",
@@ -11,7 +11,14 @@
     "redis-cache-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.259Z",
-  "updatedAt": "2025-12-31T07:55:09.912Z",
+  "updatedAt": "2026-01-02T16:24:04.230Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T07:49:01.475Z"
+  "startedAt": "2026-01-02T16:21:56.060Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

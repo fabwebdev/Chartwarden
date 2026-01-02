@@ -1,0 +1,104 @@
+2e1b4d80f56a29eacce3d8ec15c0c61f
+/* istanbul ignore next */
+function cov_2h2adh3aig() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/channels.js";
+  var hash = "8156f876bb2daea0e641e8f451194bd9a5a0d633";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/channels.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 21,
+          column: 4
+        },
+        end: {
+          line: 21,
+          column: 46
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "authorizeUserChannel",
+        decl: {
+          start: {
+            line: 19,
+            column: 16
+          },
+          end: {
+            line: 19,
+            column: 36
+          }
+        },
+        loc: {
+          start: {
+            line: 19,
+            column: 47
+          },
+          end: {
+            line: 22,
+            column: 1
+          }
+        },
+        line: 19
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "8156f876bb2daea0e641e8f451194bd9a5a0d633"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2h2adh3aig = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2h2adh3aig();
+/**
+ * Broadcast Channels
+ * 
+ * Here you may register all of the event broadcasting channels that your
+ * application supports. The given channel authorization callbacks are
+ * used to check if an authenticated user can listen to the channel.
+ */
+
+// Channel authorizations would be implemented here
+// For example, checking if a user can listen to a specific channel
+
+/**
+ * Example channel authorization
+ * 
+ * @param {Object} user - The authenticated user
+ * @param {string} id - The channel parameter
+ * @returns {boolean} - Whether the user is authorized
+ */
+export function authorizeUserChannel(user, id) {
+  /* istanbul ignore next */
+  cov_2h2adh3aig().f[0]++;
+  cov_2h2adh3aig().s[0]++;
+  // Check if the authenticated user can listen to the channel
+  return parseInt(user.id) === parseInt(id);
+}
+
+// Export all channel authorizations
+export default {
+  authorizeUserChannel
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmgyYWRoM2FpZyIsImFjdHVhbENvdmVyYWdlIiwiYXV0aG9yaXplVXNlckNoYW5uZWwiLCJ1c2VyIiwiaWQiLCJmIiwicyIsInBhcnNlSW50Il0sInNvdXJjZXMiOlsiY2hhbm5lbHMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBCcm9hZGNhc3QgQ2hhbm5lbHNcbiAqIFxuICogSGVyZSB5b3UgbWF5IHJlZ2lzdGVyIGFsbCBvZiB0aGUgZXZlbnQgYnJvYWRjYXN0aW5nIGNoYW5uZWxzIHRoYXQgeW91clxuICogYXBwbGljYXRpb24gc3VwcG9ydHMuIFRoZSBnaXZlbiBjaGFubmVsIGF1dGhvcml6YXRpb24gY2FsbGJhY2tzIGFyZVxuICogdXNlZCB0byBjaGVjayBpZiBhbiBhdXRoZW50aWNhdGVkIHVzZXIgY2FuIGxpc3RlbiB0byB0aGUgY2hhbm5lbC5cbiAqL1xuXG4vLyBDaGFubmVsIGF1dGhvcml6YXRpb25zIHdvdWxkIGJlIGltcGxlbWVudGVkIGhlcmVcbi8vIEZvciBleGFtcGxlLCBjaGVja2luZyBpZiBhIHVzZXIgY2FuIGxpc3RlbiB0byBhIHNwZWNpZmljIGNoYW5uZWxcblxuLyoqXG4gKiBFeGFtcGxlIGNoYW5uZWwgYXV0aG9yaXphdGlvblxuICogXG4gKiBAcGFyYW0ge09iamVjdH0gdXNlciAtIFRoZSBhdXRoZW50aWNhdGVkIHVzZXJcbiAqIEBwYXJhbSB7c3RyaW5nfSBpZCAtIFRoZSBjaGFubmVsIHBhcmFtZXRlclxuICogQHJldHVybnMge2Jvb2xlYW59IC0gV2hldGhlciB0aGUgdXNlciBpcyBhdXRob3JpemVkXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBhdXRob3JpemVVc2VyQ2hhbm5lbCh1c2VyLCBpZCkge1xuICAgIC8vIENoZWNrIGlmIHRoZSBhdXRoZW50aWNhdGVkIHVzZXIgY2FuIGxpc3RlbiB0byB0aGUgY2hhbm5lbFxuICAgIHJldHVybiBwYXJzZUludCh1c2VyLmlkKSA9PT0gcGFyc2VJbnQoaWQpO1xufVxuXG4vLyBFeHBvcnQgYWxsIGNoYW5uZWwgYXV0aG9yaXphdGlvbnNcbmV4cG9ydCBkZWZhdWx0IHtcbiAgICBhdXRob3JpemVVc2VyQ2hhbm5lbFxufTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlo7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUE7QUFDQTs7QUFFQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLE9BQU8sU0FBU0Usb0JBQW9CQSxDQUFDQyxJQUFJLEVBQUVDLEVBQUUsRUFBRTtFQUFBO0VBQUFKLGNBQUEsR0FBQUssQ0FBQTtFQUFBTCxjQUFBLEdBQUFNLENBQUE7RUFDM0M7RUFDQSxPQUFPQyxRQUFRLENBQUNKLElBQUksQ0FBQ0MsRUFBRSxDQUFDLEtBQUtHLFFBQVEsQ0FBQ0gsRUFBRSxDQUFDO0FBQzdDOztBQUVBO0FBQ0EsZUFBZTtFQUNYRjtBQUNKLENBQUMiLCJpZ25vcmVMaXN0IjpbXX0=

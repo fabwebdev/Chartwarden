@@ -1,0 +1,136 @@
+0b1789ade76e3ade6cc03e545430c345
+/* istanbul ignore next */
+function cov_1ypy534tfx() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/EndocrineAssessment.routes.js";
+  var hash = "7c6677bb0eeeae6321ff1adda6e5a2b81113adc5";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/EndocrineAssessment.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 4
+        }
+      },
+      "1": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 21,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 23,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 37,
+          column: 4
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "endocrineAssessmentRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 40
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 59
+          },
+          end: {
+            line: 38,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "7c6677bb0eeeae6321ff1adda6e5a2b81113adc5"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1ypy534tfx = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1ypy534tfx();
+import EndocrineAssessmentController from "../../controllers/patient/EndocrineAssessment.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for endocrine assessment routes
+async function endocrineAssessmentRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1ypy534tfx().f[0]++;
+  cov_1ypy534tfx().s[0]++;
+  // Endocrine Assessment Routes
+  fastify.get("/endocrine-assessment", {
+    preHandler: [verifyToken]
+  }, EndocrineAssessmentController.index);
+  /* istanbul ignore next */
+  cov_1ypy534tfx().s[1]++;
+  fastify.get("/endocrine-list", {
+    preHandler: [verifyToken]
+  }, EndocrineAssessmentController.endocrineList);
+  /* istanbul ignore next */
+  cov_1ypy534tfx().s[2]++;
+  fastify.post("/endocrine-assessment/store", {
+    preHandler: [verifyToken]
+  }, EndocrineAssessmentController.store);
+  /* istanbul ignore next */
+  cov_1ypy534tfx().s[3]++;
+  fastify.get("/endocrine-assessment/:id", {
+    preHandler: [verifyToken]
+  }, EndocrineAssessmentController.show);
+}
+export default endocrineAssessmentRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXlweTUzNHRmeCIsImFjdHVhbENvdmVyYWdlIiwiRW5kb2NyaW5lQXNzZXNzbWVudENvbnRyb2xsZXIiLCJ2ZXJpZnlUb2tlbiIsImVuZG9jcmluZUFzc2Vzc21lbnRSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsImluZGV4IiwiZW5kb2NyaW5lTGlzdCIsInBvc3QiLCJzdG9yZSIsInNob3ciXSwic291cmNlcyI6WyJFbmRvY3JpbmVBc3Nlc3NtZW50LnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgRW5kb2NyaW5lQXNzZXNzbWVudENvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvRW5kb2NyaW5lQXNzZXNzbWVudC5jb250cm9sbGVyLmpzXCI7XG5pbXBvcnQgeyB2ZXJpZnlUb2tlbiB9IGZyb20gXCIuLi8uLi9taWRkbGV3YXJlL2JldHRlckF1dGgubWlkZGxld2FyZS5qc1wiO1xuXG4vLyBGYXN0aWZ5IHBsdWdpbiBmb3IgZW5kb2NyaW5lIGFzc2Vzc21lbnQgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBlbmRvY3JpbmVBc3Nlc3NtZW50Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gRW5kb2NyaW5lIEFzc2Vzc21lbnQgUm91dGVzXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL2VuZG9jcmluZS1hc3Nlc3NtZW50XCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgICB9LFxuICAgIEVuZG9jcmluZUFzc2Vzc21lbnRDb250cm9sbGVyLmluZGV4XG4gICk7XG4gIFxuICBmYXN0aWZ5LmdldChcbiAgICBcIi9lbmRvY3JpbmUtbGlzdFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gICAgfSxcbiAgICBFbmRvY3JpbmVBc3Nlc3NtZW50Q29udHJvbGxlci5lbmRvY3JpbmVMaXN0XG4gICk7XG4gIFxuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvZW5kb2NyaW5lLWFzc2Vzc21lbnQvc3RvcmVcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICAgIH0sXG4gICAgRW5kb2NyaW5lQXNzZXNzbWVudENvbnRyb2xsZXIuc3RvcmVcbiAgKTtcbiAgXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL2VuZG9jcmluZS1hc3Nlc3NtZW50LzppZFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gICAgfSxcbiAgICBFbmRvY3JpbmVBc3Nlc3NtZW50Q29udHJvbGxlci5zaG93XG4gICk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IGVuZG9jcmluZUFzc2Vzc21lbnRSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsNkJBQTZCLE1BQU0sNkRBQTZEO0FBQ3ZHLFNBQVNDLFdBQVcsUUFBUSwyQ0FBMkM7O0FBRXZFO0FBQ0EsZUFBZUMseUJBQXlCQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFOLGNBQUEsR0FBQU8sQ0FBQTtFQUFBUCxjQUFBLEdBQUFRLENBQUE7RUFDekQ7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQ1QsdUJBQXVCLEVBQ3ZCO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsNkJBQTZCLENBQUNTLEtBQ2hDLENBQUM7RUFBQztFQUFBWCxjQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDSSxHQUFHLENBQ1QsaUJBQWlCLEVBQ2pCO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsNkJBQTZCLENBQUNVLGFBQ2hDLENBQUM7RUFBQztFQUFBWixjQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDUSxJQUFJLENBQ1YsNkJBQTZCLEVBQzdCO0lBQ0VILFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsNkJBQTZCLENBQUNZLEtBQ2hDLENBQUM7RUFBQztFQUFBZCxjQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDSSxHQUFHLENBQ1QsMkJBQTJCLEVBQzNCO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsNkJBQTZCLENBQUNhLElBQ2hDLENBQUM7QUFDSDtBQUVBLGVBQWVYLHlCQUF5QiIsImlnbm9yZUxpc3QiOltdfQ==

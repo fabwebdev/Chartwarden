@@ -2,14 +2,22 @@
   "id": "care-plan-schema",
   "category": "Database",
   "title": "Care Plan Database Schema",
-  "description": "Create schema for care plans with goals, interventions, frequency, and progress tracking.",
-  "status": "verified",
+  "description": "Create Schema for Care Plans with Goals, Interventions, Frequency, and Progress Tracking\n\nImplement a comprehensive database schema to manage patient care plans with structured goal-setting, intervention tracking, and progress monitoring capabilities.\n\nTechnical Implementation:\n\nDatabase Schema Design:\n- CarePlan table: id, patient_id, created_by, status (draft/active/completed/archived), start_date, end_date, review_frequency, created_at, updated_at\n- Goal table: id, care_plan_id, title, description, category, target_date, priority (low/medium/high/critical), status (pending/in_progress/achieved/discontinued), measurable_criteria (JSONB/JSON), created_at, updated_at\n- Intervention table: id, goal_id, intervention_type, description, frequency (daily/weekly/biweekly/monthly/as_needed), frequency_details (JSONB for complex schedules), assigned_to, status (scheduled/in_progress/completed/cancelled)\n- ProgressNote table: id, goal_id, intervention_id, recorded_by, note_text, outcome_measure (JSONB for structured metrics), recorded_at, attachments (file references)\n\nRelationships:\n- CarePlan → Patient (many-to-one)\n- CarePlan → Goals (one-to-many)\n- Goal → Interventions (one-to-many)\n- Goal/Intervention → ProgressNotes (one-to-many)\n\nIndexes:\n- patient_id, status on CarePlan\n- care_plan_id, status on Goal\n- goal_id, assigned_to, frequency on Intervention\n- Composite index on (goal_id, recorded_at) for progress tracking queries\n\nJSONB Fields:\n- measurable_criteria: {metric: string, baseline: number, target: number, unit: string}\n- frequency_details: {days: [0-6], times: [\"09:00\", \"15:00\"], duration_minutes: number}\n- outcome_measure: {metric: string, value: number, percentage_of_goal: number}\n\nConstraints:\n- Foreign key constraints with CASCADE on delete for hierarchical data\n- Check constraints for date ranges (end_date > start_date)\n- Enum constraints for status and priority fields\n\nMigration Strategy:\n- Create tables in order: CarePlan → Goal → Intervention → ProgressNote\n- Add seed data for common intervention types and goal categories\n- Create database views for common queries (active plans, overdue goals)\n\nAPI Considerations:\n- POST /api/care-plans (create with nested goals/interventions)\n- GET /api/care-plans/:id?include=goals,interventions,progress\n- PATCH /api/goals/:id/progress (update progress with automatic status calculation)\n- GET /api/care-plans/:id/metrics (aggregate progress data for reporting)\n\nSecurity & Compliance:\n- Audit trail for all changes (created_by, updated_by, timestamps)\n- HIPAA compliance: encryption at rest, access logging\n- Role-based access control (only assigned providers can modify)\n\nPerformance:\n- Partition ProgressNote table by date for large datasets\n- Implement soft deletes for archival compliance\n- Cache frequently accessed active care plans",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "encounter-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.245Z",
-  "updatedAt": "2025-12-31T15:13:46.658Z",
-  "startedAt": "2025-12-31T15:05:45.370Z"
+  "updatedAt": "2026-01-02T16:09:20.458Z",
+  "startedAt": "2026-01-02T16:07:04.478Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "full",
+  "requirePlanApproval": false
 }

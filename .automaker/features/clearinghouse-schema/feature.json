@@ -2,14 +2,22 @@
   "id": "clearinghouse-schema",
   "category": "Database",
   "title": "Clearinghouse Integration Schema",
-  "description": "Create schema for clearinghouse submission tracking with transmission status and response handling.",
-  "status": "verified",
+  "description": "Create Schema for Clearinghouse Submission Tracking with Transmission Status and Response Handling\n\nImplement a comprehensive database schema to track medical/insurance clearinghouse submissions through their entire lifecycle, including transmission attempts, status updates, and response processing.\n\nTechnical Implementation:\n\n**Database Schema:**\n- `clearinghouse_submissions` table:\n  - id (UUID, primary key)\n  - claim_id (foreign key to claims table)\n  - clearinghouse_id (string, vendor identifier)\n  - submission_type (enum: initial, correction, void)\n  - payload (JSONB, original submission data)\n  - created_at, updated_at (timestamps)\n  - submitted_by (foreign key to users)\n\n- `transmission_attempts` table:\n  - id (UUID, primary key)\n  - submission_id (foreign key)\n  - attempt_number (integer, auto-increment per submission)\n  - transmission_method (enum: EDI, API, SFTP)\n  - status (enum: pending, in_progress, sent, failed, timeout)\n  - request_payload (JSONB)\n  - response_payload (JSONB)\n  - error_code, error_message (nullable text)\n  - transmitted_at, acknowledged_at (timestamps)\n  - retry_after (timestamp, for exponential backoff)\n\n- `clearinghouse_responses` table:\n  - id (UUID, primary key)\n  - submission_id (foreign key)\n  - response_type (enum: acknowledgment, rejection, acceptance, status_update)\n  - response_code (string, clearinghouse-specific codes)\n  - response_data (JSONB, parsed response)\n  - received_at (timestamp)\n  - processed (boolean, for idempotency)\n\n**Indexes:**\n- Composite index on (submission_id, attempt_number)\n- Index on status for querying pending/failed transmissions\n- Index on received_at for response processing queue\n\n**State Machine:**\nDefine valid status transitions with database constraints or application-level validation:\n- pending → in_progress → sent → (acknowledgment received)\n- sent → failed → pending (retry logic)\n\n**Business Logic:**\n- Retry Strategy: Exponential backoff (1min, 5min, 15min, 1hr, 4hr)\n- Maximum retry attempts: 5\n- Webhook/callback handling for asynchronous responses\n- Audit trail for all status changes\n\n**Integration Points:**\n- Background job queue (Sidekiq/Bull) for retry processing\n- Event emitter for status change notifications\n- Dead letter queue for permanently failed submissions\n\n**Error Handling:**\n- Capture full request/response for debugging\n- Separate transient errors (network) from permanent (validation)\n- Alert system for submission failures exceeding threshold\n\n**Compliance:**\n- HIPAA-compliant audit logging\n- Data retention policy (7 years)\n- Encryption at rest for PHI in payload fields",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "billing-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.253Z",
-  "updatedAt": "2025-12-31T15:33:46.915Z",
-  "startedAt": "2025-12-31T15:25:56.248Z"
+  "updatedAt": "2026-01-02T15:59:55.997Z",
+  "startedAt": "2026-01-02T15:58:05.652Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "full",
+  "requirePlanApproval": false
 }

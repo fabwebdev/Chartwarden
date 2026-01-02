@@ -414,6 +414,7 @@ const StaffDirectoryPage: React.FC = () => {
                 placeholder="Search by name, email, employee ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                inputProps={{ 'aria-label': 'Search staff members' }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -429,6 +430,7 @@ const StaffDirectoryPage: React.FC = () => {
                   value={statusFilter}
                   label="Status"
                   onChange={(e) => setStatusFilter(e.target.value)}
+                  inputProps={{ 'aria-label': 'Filter by employment status' }}
                 >
                   <MenuItem value="all">All Status</MenuItem>
                   <MenuItem value="ACTIVE">Active</MenuItem>
@@ -443,6 +445,7 @@ const StaffDirectoryPage: React.FC = () => {
                   value={departmentFilter}
                   label="Department"
                   onChange={(e) => setDepartmentFilter(e.target.value)}
+                  inputProps={{ 'aria-label': 'Filter by department' }}
                 >
                   <MenuItem value="all">All Departments</MenuItem>
                   {departments.map(dept => (

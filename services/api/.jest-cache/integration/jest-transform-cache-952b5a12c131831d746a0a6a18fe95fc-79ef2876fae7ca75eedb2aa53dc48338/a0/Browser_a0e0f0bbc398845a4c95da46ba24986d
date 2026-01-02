@@ -1,0 +1,88 @@
+8e1191f0eb314a256d09254aedddb258
+/* istanbul ignore next */
+function cov_1dtg4mqmvk() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Browser.js";
+  var hash = "2a2b954bcd02e9bb019260b5e9bc05ac1ae0ed0c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Browser.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 9,
+          column: 8
+        },
+        end: {
+          line: 9,
+          column: 25
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 4
+          },
+          end: {
+            line: 8,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 31
+          },
+          end: {
+            line: 10,
+            column: 5
+          }
+        },
+        line: 8
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "2a2b954bcd02e9bb019260b5e9bc05ac1ae0ed0c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1dtg4mqmvk = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1dtg4mqmvk();
+import Facade from './Facade.js';
+class Browser extends Facade {
+  /**
+   * Get the registered name of the component
+   * @return {String}
+   */
+  static getFacadeAccessor() {
+    /* istanbul ignore next */
+    cov_1dtg4mqmvk().f[0]++;
+    cov_1dtg4mqmvk().s[0]++;
+    return 'browser';
+  }
+}
+export default Browser;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWR0ZzRtcW12ayIsImFjdHVhbENvdmVyYWdlIiwiRmFjYWRlIiwiQnJvd3NlciIsImdldEZhY2FkZUFjY2Vzc29yIiwiZiIsInMiXSwic291cmNlcyI6WyJCcm93c2VyLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBGYWNhZGUgZnJvbSAnLi9GYWNhZGUuanMnO1xuXG5jbGFzcyBCcm93c2VyIGV4dGVuZHMgRmFjYWRlIHtcbiAgICAvKipcbiAgICAgKiBHZXQgdGhlIHJlZ2lzdGVyZWQgbmFtZSBvZiB0aGUgY29tcG9uZW50XG4gICAgICogQHJldHVybiB7U3RyaW5nfVxuICAgICAqL1xuICAgIHN0YXRpYyBnZXRGYWNhZGVBY2Nlc3NvcigpIHtcbiAgICAgICAgcmV0dXJuICdicm93c2VyJztcbiAgICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IEJyb3dzZXI7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE9BQU9FLE1BQU0sTUFBTSxhQUFhO0FBRWhDLE1BQU1DLE9BQU8sU0FBU0QsTUFBTSxDQUFDO0VBQ3pCO0FBQ0o7QUFDQTtBQUNBO0VBQ0ksT0FBT0UsaUJBQWlCQSxDQUFBLEVBQUc7SUFBQTtJQUFBSixjQUFBLEdBQUFLLENBQUE7SUFBQUwsY0FBQSxHQUFBTSxDQUFBO0lBQ3ZCLE9BQU8sU0FBUztFQUNwQjtBQUNKO0FBRUEsZUFBZUgsT0FBTyIsImlnbm9yZUxpc3QiOltdfQ==

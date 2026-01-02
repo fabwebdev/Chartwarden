@@ -3,7 +3,7 @@
   "category": "Middleware",
   "title": "Audit Logging Middleware",
   "description": "Implement Comprehensive API Audit Logging Middleware\n\nCreate middleware that automatically captures and logs all API requests, responses, and data modifications to an audit trail for compliance, debugging, and security monitoring.\n\nRequirements:\n- Capture incoming request details (HTTP method, endpoint, timestamp, headers, request body, IP address, user identity)\n- Log outgoing response details (status code, response body, response time)\n- Track all data modifications (CREATE, UPDATE, DELETE operations) with before/after states\n- Store audit logs in a structured format (database table, log file, or external service)\n- Include correlation IDs to track requests through the system\n- Handle sensitive data appropriately (mask passwords, tokens, PII in logs)\n- Implement configurable log levels (e.g., exclude GET requests, only log failures)\n- Ensure minimal performance impact on API responses\n- Add error handling to prevent logging failures from breaking API functionality\n- Consider log rotation and retention policies for storage management\n\nEdge Cases to Consider:\n- Large request/response payloads that may need truncation\n- File uploads or binary data handling\n- Concurrent requests with same user\n- Failed authentication attempts\n- Timeout scenarios",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

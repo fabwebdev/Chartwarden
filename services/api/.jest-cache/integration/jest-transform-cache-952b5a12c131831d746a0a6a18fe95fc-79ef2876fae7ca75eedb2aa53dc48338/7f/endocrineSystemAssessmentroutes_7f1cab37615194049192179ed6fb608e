@@ -1,0 +1,285 @@
+5141766148a6ce4e58ed836ac8300dfb
+/* istanbul ignore next */
+function cov_2g2gfchoyu() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/endocrineSystemAssessment.routes.js";
+  var hash = "448c67f9c36cb05a6f76f7772bacbc70bf50b9eb";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/endocrineSystemAssessment.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 17,
+          column: 2
+        },
+        end: {
+          line: 19,
+          column: 56
+        }
+      },
+      "1": {
+        start: {
+          line: 22,
+          column: 2
+        },
+        end: {
+          line: 24,
+          column: 41
+        }
+      },
+      "2": {
+        start: {
+          line: 27,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 50
+        }
+      },
+      "3": {
+        start: {
+          line: 32,
+          column: 2
+        },
+        end: {
+          line: 34,
+          column: 50
+        }
+      },
+      "4": {
+        start: {
+          line: 41,
+          column: 2
+        },
+        end: {
+          line: 43,
+          column: 47
+        }
+      },
+      "5": {
+        start: {
+          line: 46,
+          column: 2
+        },
+        end: {
+          line: 48,
+          column: 40
+        }
+      },
+      "6": {
+        start: {
+          line: 51,
+          column: 2
+        },
+        end: {
+          line: 53,
+          column: 39
+        }
+      },
+      "7": {
+        start: {
+          line: 56,
+          column: 2
+        },
+        end: {
+          line: 58,
+          column: 41
+        }
+      },
+      "8": {
+        start: {
+          line: 61,
+          column: 2
+        },
+        end: {
+          line: 63,
+          column: 41
+        }
+      },
+      "9": {
+        start: {
+          line: 70,
+          column: 2
+        },
+        end: {
+          line: 72,
+          column: 39
+        }
+      },
+      "10": {
+        start: {
+          line: 75,
+          column: 2
+        },
+        end: {
+          line: 77,
+          column: 40
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "endocrineSystemAssessmentRoutes",
+        decl: {
+          start: {
+            line: 11,
+            column: 30
+          },
+          end: {
+            line: 11,
+            column: 61
+          }
+        },
+        loc: {
+          start: {
+            line: 11,
+            column: 80
+          },
+          end: {
+            line: 78,
+            column: 1
+          }
+        },
+        line: 11
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "448c67f9c36cb05a6f76f7772bacbc70bf50b9eb"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2g2gfchoyu = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2g2gfchoyu();
+import controller from '../controllers/EndocrineSystemAssessment.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Endocrine System Assessment Routes
+ * Comprehensive endocrine system assessment for hospice patients
+ * Follows ADA guidelines, American Thyroid Association guidelines,
+ * and Endocrine Society clinical practice guidelines
+ */
+export default async function endocrineSystemAssessmentRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().f[0]++;
+  cov_2g2gfchoyu().s[0]++;
+  // =========================================
+  // Patient-specific assessment routes
+  // =========================================
+
+  // Get all endocrine system assessments for a patient
+  fastify.get('/patients/:patientId/endocrine-system-assessments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientAssessments.bind(controller));
+
+  // Create a new endocrine system assessment for a patient
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[1]++;
+  fastify.post('/patients/:patientId/endocrine-system-assessments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.create.bind(controller));
+
+  // Get endocrine system assessment statistics for a patient
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[2]++;
+  fastify.get('/patients/:patientId/endocrine-system-assessments/stats', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientStats.bind(controller));
+
+  // Get endocrine assessment trend for a patient
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[3]++;
+  fastify.get('/patients/:patientId/endocrine-system-assessments/trend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientTrend.bind(controller));
+
+  // =========================================
+  // Assessment management routes
+  // =========================================
+
+  // Get endocrine assessment reference data
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[4]++;
+  fastify.get('/endocrine-system-assessments/reference', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getReference.bind(controller));
+
+  // Get all endocrine system assessments (with filters)
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[5]++;
+  fastify.get('/endocrine-system-assessments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.index.bind(controller));
+
+  // Get a single endocrine system assessment by ID
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[6]++;
+  fastify.get('/endocrine-system-assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.show.bind(controller));
+
+  // Update an endocrine system assessment
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[7]++;
+  fastify.patch('/endocrine-system-assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.update.bind(controller));
+
+  // Delete an endocrine system assessment
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[8]++;
+  fastify.delete('/endocrine-system-assessments/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.delete.bind(controller));
+
+  // =========================================
+  // Signature and compliance routes (21 CFR Part 11)
+  // =========================================
+
+  // Sign an endocrine system assessment
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[9]++;
+  fastify.post('/endocrine-system-assessments/:id/sign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.sign.bind(controller));
+
+  // Amend a signed endocrine system assessment
+  /* istanbul ignore next */
+  cov_2g2gfchoyu().s[10]++;
+  fastify.post('/endocrine-system-assessments/:id/amend', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.amend.bind(controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmcyZ2ZjaG95dSIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJlbmRvY3JpbmVTeXN0ZW1Bc3Nlc3NtZW50Um91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsImdldCIsInByZUhhbmRsZXIiLCJWSUVXX1BBVElFTlQiLCJWSUVXX0NMSU5JQ0FMX05PVEVTIiwiZ2V0UGF0aWVudEFzc2Vzc21lbnRzIiwiYmluZCIsInBvc3QiLCJDUkVBVEVfQ0xJTklDQUxfTk9URVMiLCJjcmVhdGUiLCJnZXRQYXRpZW50U3RhdHMiLCJnZXRQYXRpZW50VHJlbmQiLCJnZXRSZWZlcmVuY2UiLCJpbmRleCIsInNob3ciLCJwYXRjaCIsIlVQREFURV9DTElOSUNBTF9OT1RFUyIsInVwZGF0ZSIsImRlbGV0ZSIsIkRFTEVURV9DTElOSUNBTF9OT1RFUyIsInNpZ24iLCJhbWVuZCJdLCJzb3VyY2VzIjpbImVuZG9jcmluZVN5c3RlbUFzc2Vzc21lbnQucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBjb250cm9sbGVyIGZyb20gJy4uL2NvbnRyb2xsZXJzL0VuZG9jcmluZVN5c3RlbUFzc2Vzc21lbnQuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBQRVJNSVNTSU9OUyB9IGZyb20gJy4uL2NvbmZpZy9yYmFjLmpzJztcbmltcG9ydCB7IHJlcXVpcmVBbnlQZXJtaXNzaW9uIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIEVuZG9jcmluZSBTeXN0ZW0gQXNzZXNzbWVudCBSb3V0ZXNcbiAqIENvbXByZWhlbnNpdmUgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50IGZvciBob3NwaWNlIHBhdGllbnRzXG4gKiBGb2xsb3dzIEFEQSBndWlkZWxpbmVzLCBBbWVyaWNhbiBUaHlyb2lkIEFzc29jaWF0aW9uIGd1aWRlbGluZXMsXG4gKiBhbmQgRW5kb2NyaW5lIFNvY2lldHkgY2xpbmljYWwgcHJhY3RpY2UgZ3VpZGVsaW5lc1xuICovXG5leHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiBlbmRvY3JpbmVTeXN0ZW1Bc3Nlc3NtZW50Um91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gUGF0aWVudC1zcGVjaWZpYyBhc3Nlc3NtZW50IHJvdXRlc1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIEdldCBhbGwgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50cyBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkuZ2V0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1BBVElFTlQsIFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFBhdGllbnRBc3Nlc3NtZW50cy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBDcmVhdGUgYSBuZXcgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50IGZvciBhIHBhdGllbnRcbiAgZmFzdGlmeS5wb3N0KCcvcGF0aWVudHMvOnBhdGllbnRJZC9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmNyZWF0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50IHN0YXRpc3RpY3MgZm9yIGEgcGF0aWVudFxuICBmYXN0aWZ5LmdldCgnL3BhdGllbnRzLzpwYXRpZW50SWQvZW5kb2NyaW5lLXN5c3RlbS1hc3Nlc3NtZW50cy9zdGF0cycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19QQVRJRU5ULCBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRQYXRpZW50U3RhdHMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGVuZG9jcmluZSBhc3Nlc3NtZW50IHRyZW5kIGZvciBhIHBhdGllbnRcbiAgZmFzdGlmeS5nZXQoJy9wYXRpZW50cy86cGF0aWVudElkL2VuZG9jcmluZS1zeXN0ZW0tYXNzZXNzbWVudHMvdHJlbmQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUEFUSUVOVCwgUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGF0aWVudFRyZW5kLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIEFzc2Vzc21lbnQgbWFuYWdlbWVudCByb3V0ZXNcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBHZXQgZW5kb2NyaW5lIGFzc2Vzc21lbnQgcmVmZXJlbmNlIGRhdGFcbiAgZmFzdGlmeS5nZXQoJy9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzL3JlZmVyZW5jZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UmVmZXJlbmNlLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBhbGwgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50cyAod2l0aCBmaWx0ZXJzKVxuICBmYXN0aWZ5LmdldCgnL2VuZG9jcmluZS1zeXN0ZW0tYXNzZXNzbWVudHMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmluZGV4LmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBhIHNpbmdsZSBlbmRvY3JpbmUgc3lzdGVtIGFzc2Vzc21lbnQgYnkgSURcbiAgZmFzdGlmeS5nZXQoJy9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuc2hvdy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBVcGRhdGUgYW4gZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50XG4gIGZhc3RpZnkucGF0Y2goJy9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci51cGRhdGUuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gRGVsZXRlIGFuIGVuZG9jcmluZSBzeXN0ZW0gYXNzZXNzbWVudFxuICBmYXN0aWZ5LmRlbGV0ZSgnL2VuZG9jcmluZS1zeXN0ZW0tYXNzZXNzbWVudHMvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5ERUxFVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmRlbGV0ZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBTaWduYXR1cmUgYW5kIGNvbXBsaWFuY2Ugcm91dGVzICgyMSBDRlIgUGFydCAxMSlcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBTaWduIGFuIGVuZG9jcmluZSBzeXN0ZW0gYXNzZXNzbWVudFxuICBmYXN0aWZ5LnBvc3QoJy9lbmRvY3JpbmUtc3lzdGVtLWFzc2Vzc21lbnRzLzppZC9zaWduJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnNpZ24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gQW1lbmQgYSBzaWduZWQgZW5kb2NyaW5lIHN5c3RlbSBhc3Nlc3NtZW50XG4gIGZhc3RpZnkucG9zdCgnL2VuZG9jcmluZS1zeXN0ZW0tYXNzZXNzbWVudHMvOmlkL2FtZW5kJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmFtZW5kLmJpbmQoY29udHJvbGxlcikpO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsVUFBVSxNQUFNLHdEQUF3RDtBQUMvRSxTQUFTQyxXQUFXLFFBQVEsbUJBQW1CO0FBQy9DLFNBQVNDLG9C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

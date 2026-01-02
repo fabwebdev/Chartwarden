@@ -1,0 +1,106 @@
+323b031b98317ca46583e2b1cb8e9f61
+/* istanbul ignore next */
+function cov_zgofl7sb8() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/AppServiceProvider.js";
+  var hash = "ce16fddd775f1d0f024983c88b79f2a874a3bb9e";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/providers/AppServiceProvider.js",
+    statementMap: {},
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 5,
+            column: 2
+          },
+          end: {
+            line: 5,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 16
+          },
+          end: {
+            line: 8,
+            column: 3
+          }
+        },
+        line: 5
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 13,
+            column: 2
+          },
+          end: {
+            line: 13,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 13,
+            column: 12
+          },
+          end: {
+            line: 16,
+            column: 3
+          }
+        },
+        line: 13
+      }
+    },
+    branchMap: {},
+    s: {},
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "ce16fddd775f1d0f024983c88b79f2a874a3bb9e"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_zgofl7sb8 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_zgofl7sb8();
+class AppServiceProvider {
+  /**
+   * Register any application services.
+   */
+  register(app) {
+    /* istanbul ignore next */
+    cov_zgofl7sb8().f[0]++;
+  } // In Express.js, this would typically be handled by dependency injection
+  // or by registering services in the container
+
+  /**
+   * Bootstrap any application services.
+   */
+  boot(app) {
+    /* istanbul ignore next */
+    cov_zgofl7sb8().f[1]++;
+  } // Bootstrap application services
+  // This could include setting up global middleware, configurations, etc.
+}
+export default new AppServiceProvider();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfemdvZmw3c2I4IiwiYWN0dWFsQ292ZXJhZ2UiLCJBcHBTZXJ2aWNlUHJvdmlkZXIiLCJyZWdpc3RlciIsImFwcCIsImYiLCJib290Il0sInNvdXJjZXMiOlsiQXBwU2VydmljZVByb3ZpZGVyLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImNsYXNzIEFwcFNlcnZpY2VQcm92aWRlciB7XG4gIC8qKlxuICAgKiBSZWdpc3RlciBhbnkgYXBwbGljYXRpb24gc2VydmljZXMuXG4gICAqL1xuICByZWdpc3RlcihhcHApIHtcbiAgICAvLyBJbiBFeHByZXNzLmpzLCB0aGlzIHdvdWxkIHR5cGljYWxseSBiZSBoYW5kbGVkIGJ5IGRlcGVuZGVuY3kgaW5qZWN0aW9uXG4gICAgLy8gb3IgYnkgcmVnaXN0ZXJpbmcgc2VydmljZXMgaW4gdGhlIGNvbnRhaW5lclxuICB9XG5cbiAgLyoqXG4gICAqIEJvb3RzdHJhcCBhbnkgYXBwbGljYXRpb24gc2VydmljZXMuXG4gICAqL1xuICBib290KGFwcCkge1xuICAgIC8vIEJvb3RzdHJhcCBhcHBsaWNhdGlvbiBzZXJ2aWNlc1xuICAgIC8vIFRoaXMgY291bGQgaW5jbHVkZSBzZXR0aW5nIHVwIGdsb2JhbCBtaWRkbGV3YXJlLCBjb25maWd1cmF0aW9ucywgZXRjLlxuICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IG5ldyBBcHBTZXJ2aWNlUHJvdmlkZXIoKTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosTUFBTUUsa0JBQWtCLENBQUM7RUFDdkI7QUFDRjtBQUNBO0VBQ0VDLFFBQVFBLENBQUNDLEdBQUcsRUFBRTtJQUFBO0lBQUFKLGFBQUEsR0FBQUssQ0FBQTtFQUdkLENBQUMsQ0FGQztFQUNBOztFQUdGO0FBQ0Y7QUFDQTtFQUNFQyxJQUFJQSxDQUFDRixHQUFHLEVBQUU7SUFBQTtJQUFBSixhQUFBLEdBQUFLLENBQUE7RUFHVixDQUFDLENBRkM7RUFDQTtBQUVKO0FBRUEsZUFBZSxJQUFJSCxrQkFBa0IsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

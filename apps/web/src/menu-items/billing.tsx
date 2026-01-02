@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // ASSETS
-import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle, ReceiptItem, DollarCircle } from 'iconsax-react';
+import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle, ReceiptItem, DollarCircle, TicketStar } from 'iconsax-react';
 
 // TYPE
 import { NavItemType } from 'types/menu';
@@ -15,7 +15,8 @@ const icons = {
   claims: DocumentText,
   payments: Receipt21,
   era: ReceiptItem,
-  revenue: DollarCircle
+  revenue: DollarCircle,
+  eligibility: TicketStar
 };
 
 // ==============================|| MENU ITEMS - BILLING ||============================== //
@@ -90,6 +91,14 @@ const billing: NavItemType = {
   icon: icons.billing,
   type: 'group',
   children: ([] as NavItemType[]).concat(
+    hasBillingAccess() ? [{
+      id: 'eligibility-verification',
+      title: <FormattedMessage id="eligibility-verification" defaultMessage="Eligibility Verification" />,
+      type: 'item',
+      url: '/eligibility',
+      icon: icons.eligibility,
+      breadcrumbs: false
+    }] : [],
     hasBillingAccess() ? [{
       id: 'billing-dashboard',
       title: <FormattedMessage id="billing-dashboard" defaultMessage="Claims Dashboard" />,

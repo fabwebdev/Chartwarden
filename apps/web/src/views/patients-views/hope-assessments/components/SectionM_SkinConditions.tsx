@@ -20,8 +20,7 @@ import {
   IconButton,
   Chip,
   Card,
-  CardContent,
-  SelectChangeEvent
+  CardContent
 } from '@mui/material';
 import { ArrowDown2, Add, Trash } from 'iconsax-react';
 import { HOPEAssessmentFormData } from '../../../../api/hopeAssessment';
@@ -698,7 +697,7 @@ const SectionM_SkinConditions = ({
                 type="number"
                 label="Total Score"
                 name="m0500_braden_total_score"
-                value={formData.m0500_braden_total_score ?? bradenTotal || ''}
+                value={formData.m0500_braden_total_score ?? (bradenTotal || '')}
                 InputProps={{ readOnly: true }}
                 helperText="Calculated: sum of all subscales"
               />

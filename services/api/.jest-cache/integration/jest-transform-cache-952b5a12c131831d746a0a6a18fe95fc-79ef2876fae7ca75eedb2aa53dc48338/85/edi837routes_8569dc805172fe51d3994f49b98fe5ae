@@ -1,0 +1,368 @@
+4cb73e515da9b8af08389155602a7e0c
+/* istanbul ignore next */
+function cov_9mop9zy13() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/edi837.routes.js";
+  var hash = "dcf42a9485dd29bb2d579d0e8d08a12f311fbd3c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/edi837.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 52,
+          column: 2
+        },
+        end: {
+          line: 54,
+          column: 29
+        }
+      },
+      "1": {
+        start: {
+          line: 79,
+          column: 2
+        },
+        end: {
+          line: 81,
+          column: 34
+        }
+      },
+      "2": {
+        start: {
+          line: 99,
+          column: 2
+        },
+        end: {
+          line: 101,
+          column: 31
+        }
+      },
+      "3": {
+        start: {
+          line: 122,
+          column: 2
+        },
+        end: {
+          line: 124,
+          column: 28
+        }
+      },
+      "4": {
+        start: {
+          line: 140,
+          column: 2
+        },
+        end: {
+          line: 142,
+          column: 31
+        }
+      },
+      "5": {
+        start: {
+          line: 158,
+          column: 2
+        },
+        end: {
+          line: 160,
+          column: 38
+        }
+      },
+      "6": {
+        start: {
+          line: 172,
+          column: 2
+        },
+        end: {
+          line: 174,
+          column: 29
+        }
+      },
+      "7": {
+        start: {
+          line: 198,
+          column: 2
+        },
+        end: {
+          line: 200,
+          column: 37
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "edi837Routes",
+        decl: {
+          start: {
+            line: 31,
+            column: 30
+          },
+          end: {
+            line: 31,
+            column: 42
+          }
+        },
+        loc: {
+          start: {
+            line: 31,
+            column: 61
+          },
+          end: {
+            line: 201,
+            column: 1
+          }
+        },
+        line: 31
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "dcf42a9485dd29bb2d579d0e8d08a12f311fbd3c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_9mop9zy13 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_9mop9zy13();
+import controller from '../controllers/EDI837.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * EDI 837 Routes
+ * Comprehensive EDI 837 claim file generation for healthcare clearinghouse submission
+ *
+ * Supports:
+ *   - 837I (Institutional Claims) - ANSI X12 005010X223A2
+ *   - 837P (Professional Claims) - ANSI X12 005010X222A1
+ *
+ * Features:
+ *   - Single and batch file generation
+ *   - Pre-generation validation
+ *   - File preview without saving
+ *   - Submission tracking
+ *   - File download
+ *   - HIPAA 5010 compliance
+ *
+ * Endpoints:
+ *   POST /api/edi837/generate/:claimId - Generate 837 for single claim
+ *   POST /api/edi837/generate-batch - Generate batch 837 file
+ *   POST /api/edi837/validate/:claimId - Validate claim for EDI generation
+ *   GET /api/edi837/preview/:claimId - Preview EDI content without saving
+ *   GET /api/edi837/claim-types - Get supported claim types
+ *   GET /api/edi837/submissions/:claimId - Get submission history for claim
+ *   GET /api/edi837/download/:submissionId - Download EDI file
+ *   GET /api/edi837/submission-status - Get submission status summary
+ */
+export default async function edi837Routes(fastify, options) {
+  /* istanbul ignore next */
+  cov_9mop9zy13().f[0]++;
+  cov_9mop9zy13().s[0]++;
+  /**
+   * Generate 837 EDI file for a single claim
+   * POST /api/edi837/generate/:claimId
+   *
+   * Body: {
+   *   claim_type?: '837I' | '837P',  // Auto-detected if not provided
+   *   clearinghouse_id?: string,      // Clearinghouse configuration ID
+   *   skip_validation?: boolean       // Skip pre-generation validation
+   * }
+   *
+   * Response: {
+   *   status: 'success',
+   *   message: '837I file generated successfully',
+   *   data: {
+   *     submission_id, claim_id, claim_type, edi_file_name, edi_file_path,
+   *     edi_control_number, file_size_bytes, segment_count, checksum, generated_at
+   *   }
+   * }
+   */
+  fastify.post('/edi837/generate/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generate837);
+
+  /**
+   * Generate batch 837 EDI file for multiple claims
+   * POST /api/edi837/generate-batch
+   *
+   * Body: {
+   *   claim_ids: number[],            // Array of claim IDs (max 5000)
+   *   batch_name?: string,            // Custom batch identifier
+   *   claim_type?: '837I' | '837P',   // Force specific claim type
+   *   clearinghouse_id?: string,      // Clearinghouse configuration ID
+   *   continue_on_error?: boolean,    // Continue if individual claims fail (default: true)
+   *   skip_validation?: boolean       // Skip pre-generation validation
+   * }
+   *
+   * Response: {
+   *   status: 'success',
+   *   message: 'Batch 837 file generated for X claims',
+   *   data: {
+   *     batch_id, submission_ids, edi_file_name, edi_file_path,
+   *     claims_processed, claims_failed, failed_claims, processed_claims,
+   *     total_charges_cents, file_size_bytes, segment_count, checksum, generated_at
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[1]++;
+  fastify.post('/edi837/generate-batch', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generateBatch837);
+
+  /**
+   * Validate claim for EDI generation
+   * POST /api/edi837/validate/:claimId
+   *
+   * Body: {
+   *   claim_type?: '837I' | '837P'    // Auto-detected if not provided
+   * }
+   *
+   * Response: {
+   *   status: 'success',
+   *   message: 'Claim is valid for EDI generation',
+   *   data: {
+   *     claim_id, claim_type, is_valid, errors, warnings, validated_at
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[2]++;
+  fastify.post('/edi837/validate/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.validateClaim);
+
+  /**
+   * Preview EDI content without saving
+   * GET /api/edi837/preview/:claimId
+   *
+   * Query: {
+   *   claim_type?: '837I' | '837P',   // Auto-detected if not provided
+   *   clearinghouse_id?: string,      // Clearinghouse configuration ID
+   *   skip_validation?: 'true'        // Skip pre-generation validation
+   * }
+   *
+   * Response: {
+   *   status: 'success',
+   *   message: 'EDI preview generated successfully',
+   *   data: {
+   *     preview: true, claim_id, claim_type, edi_content,
+   *     segment_count, checksum, control_numbers
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[3]++;
+  fastify.get('/edi837/preview/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.previewEDI);
+
+  /**
+   * Get supported claim types
+   * GET /api/edi837/claim-types
+   *
+   * Response: {
+   *   status: 'success',
+   *   data: {
+   *     claim_types: {
+   *       '837I': { name, version, description, bill_type_prefix },
+   *       '837P': { name, version, description, bill_type_prefix }
+   *     }
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[4]++;
+  fastify.get('/edi837/claim-types', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimTypes);
+
+  /**
+   * Get submission history for a claim
+   * GET /api/edi837/submissions/:claimId
+   *
+   * Response: {
+   *   status: 'success',
+   *   data: {
+   *     claim_id, submission_count, submissions: [
+   *       { submission_id, batch_id, submission_date, edi_file_name,
+   *         control_numbers, clearinghouse, status, charges_cents, claim_type, ... }
+   *     ]
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[5]++;
+  fastify.get('/edi837/submissions/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getSubmissionHistory);
+
+  /**
+   * Download EDI file
+   * GET /api/edi837/download/:submissionId
+   *
+   * Query: {
+   *   format?: 'raw' | 'formatted'    // 'formatted' adds line breaks (default: 'raw')
+   * }
+   *
+   * Response: Raw EDI file content (text/plain)
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[6]++;
+  fastify.get('/edi837/download/:submissionId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.downloadEDI);
+
+  /**
+   * Get submission status summary
+   * GET /api/edi837/submission-status
+   *
+   * Query: {
+   *   status?: string,                // Filter by status
+   *   date_from?: string,             // Filter from date (ISO format)
+   *   date_to?: string,               // Filter to date (ISO format)
+   *   clearinghouse_id?: string,      // Filter by clearinghouse
+   *   limit?: number,                 // Max results (default: 100)
+   *   offset?: number                 // Offset for pagination (default: 0)
+   * }
+   *
+   * Response: {
+   *   status: 'success',
+   *   data: {
+   *     submissions: [...],
+   *     summary: { total, by_status, total_charges_cents },
+   *     pagination: { limit, offset, returned }
+   *   }
+   * }
+   */
+  /* istanbul ignore next */
+  cov_9mop9zy13().s[7]++;
+  fastify.get('/edi837/submission-status', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getSubmissionStatus);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfOW1vcDl6eTEzIiwiYWN0dWFsQ292ZXJhZ2UiLCJjb250cm9sbGVyIiwiUEVSTUlTU0lPTlMiLCJyZXF1aXJlQW55UGVybWlzc2lvbiIsImVkaTgzN1JvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJwb3N0IiwicHJlSGFuZGxlciIsIkNSRUFURV9DTElOSUNBTF9OT1RFUyIsImdlbmVyYXRlODM3IiwiZ2VuZXJhdGVCYXRjaDgzNyIsIlZJRVdfQ0xJTklDQUxfTk9URVMiLCJ2YWxpZGF0ZUNsYWltIiwiZ2V0IiwicHJldmlld0VESSIsImdldENsYWltVHlwZXMiLCJnZXRTdWJtaXNzaW9uSGlzdG9yeSIsImRvd25sb2FkRURJIiwiVklFV19SRVBPUlRTIiwiZ2V0U3VibWlzc2lvblN0YXR1cyJdLCJzb3VyY2VzIjpbImVkaTgzNy5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGNvbnRyb2xsZXIgZnJvbSAnLi4vY29udHJvbGxlcnMvRURJODM3LmNvbnRyb2xsZXIuanMnO1xuaW1wb3J0IHsgUEVSTUlTU0lPTlMgfSBmcm9tICcuLi9jb25maWcvcmJhYy5qcyc7XG5pbXBvcnQgeyByZXF1aXJlQW55UGVybWlzc2lvbiB9IGZyb20gJy4uL21pZGRsZXdhcmUvcmJhYy5taWRkbGV3YXJlLmpzJztcblxuLyoqXG4gKiBFREkgODM3IFJvdXRlc1xuICogQ29tcHJlaGVuc2l2ZSBFREkgODM3IGNsYWltIGZpbGUgZ2VuZXJhdGlvbiBmb3IgaGVhbHRoY2FyZSBjbGVhcmluZ2hvdXNlIHN1Ym1pc3Npb25cbiAqXG4gKiBTdXBwb3J0czpcbiAqICAgLSA4MzdJIChJbnN0aXR1dGlvbmFsIENsYWltcykgLSBBTlNJIFgxMiAwMDUwMTBYMjIzQTJcbiAqICAgLSA4MzdQIChQcm9mZXNzaW9uYWwgQ2xhaW1zKSAtIEFOU0kgWDEyIDAwNTAxMFgyMjJBMVxuICpcbiAqIEZlYXR1cmVzOlxuICogICAtIFNpbmdsZSBhbmQgYmF0Y2ggZmlsZSBnZW5lcmF0aW9uXG4gKiAgIC0gUHJlLWdlbmVyYXRpb24gdmFsaWRhdGlvblxuICogICAtIEZpbGUgcHJldmlldyB3aXRob3V0IHNhdmluZ1xuICogICAtIFN1Ym1pc3Npb24gdHJhY2tpbmdcbiAqICAgLSBGaWxlIGRvd25sb2FkXG4gKiAgIC0gSElQQUEgNTAxMCBjb21wbGlhbmNlXG4gKlxuICogRW5kcG9pbnRzOlxuICogICBQT1NUIC9hcGkvZWRpODM3L2dlbmVyYXRlLzpjbGFpbUlkIC0gR2VuZXJhdGUgODM3IGZvciBzaW5nbGUgY2xhaW1cbiAqICAgUE9TVCAvYXBpL2VkaTgzNy9nZW5lcmF0ZS1iYXRjaCAtIEdlbmVyYXRlIGJhdGNoIDgzNyBmaWxlXG4gKiAgIFBPU1QgL2FwaS9lZGk4MzcvdmFsaWRhdGUvOmNsYWltSWQgLSBWYWxpZGF0ZSBjbGFpbSBmb3IgRURJIGdlbmVyYXRpb25cbiAqICAgR0VUIC9hcGkvZWRpODM3L3ByZXZpZXcvOmNsYWltSWQgLSBQcmV2aWV3IEVESSBjb250ZW50IHdpdGhvdXQgc2F2aW5nXG4gKiAgIEdFVCAvYXBpL2VkaTgzNy9jbGFpbS10eXBlcyAtIEdldCBzdXBwb3J0ZWQgY2xhaW0gdHlwZXNcbiAqICAgR0VUIC9hcGkvZWRpODM3L3N1Ym1pc3Npb25zLzpjbGFpbUlkIC0gR2V0IHN1Ym1pc3Npb24gaGlzdG9yeSBmb3IgY2xhaW1cbiAqICAgR0VUIC9hcGkvZWRpODM3L2Rvd25sb2FkLzpzdWJtaXNzaW9uSWQgLSBEb3dubG9hZCBFREkgZmlsZVxuICogICBHRVQgL2FwaS9lZGk4Mzcvc3VibWlzc2lvbi1zdGF0dXMgLSBHZXQgc3VibWlzc2lvbiBzdGF0dXMgc3VtbWFyeVxuICovXG5leHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiBlZGk4MzdSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuXG4gIC8qKlxuICAgKiBHZW5lcmF0ZSA4MzcgRURJIGZpbGUgZm9yIGEgc2luZ2xlIGNsYWltXG4gICAqIFBPU1QgL2FwaS9lZGk4MzcvZ2VuZXJhdGUvOmNsYWltSWRcbiAgICpcbiAgICogQm9keToge1xuICAgKiAgIGNsYWltX3R5cGU/OiAnODM3SScgfCAnODM3UCcsICAvLyBBdXRvLWRldGVjdGVkIGlmIG5vdCBwcm92aWRlZFxuICAgKiAgIGNsZWFyaW5naG91c2VfaWQ/OiBzdHJpbmcsICAgICAgLy8gQ2xlYXJpbmdob3VzZSBjb25maWd1cmF0aW9uIElEXG4gICAqICAgc2tpcF92YWxpZGF0aW9uPzogYm9vbGVhbiAgICAgICAvLyBTa2lwIHByZS1nZW5lcmF0aW9uIHZhbGlkYXRpb25cbiAgICogfVxuICAgKlxuICAgKiBSZXNwb25zZToge1xuICAgKiAgIHN0YXR1czogJ3N1Y2Nlc3MnLFxuICAgKiAgIG1lc3NhZ2U6ICc4MzdJIGZpbGUgZ2VuZXJhdGVkIHN1Y2Nlc3NmdWxseScsXG4gICAqICAgZGF0YToge1xuICAgKiAgICAgc3VibWlzc2lvbl9pZCwgY2xhaW1faWQsIGNsYWltX3R5cGUsIGVkaV9maWxlX25hbWUsIGVkaV9maWxlX3BhdGgsXG4gICAqICAgICBlZGlfY29udHJvbF9udW1iZXIsIGZpbGVfc2l6ZV9ieXRlcywgc2VnbWVudF9jb3VudCwgY2hlY2tzdW0sIGdlbmVyYXRlZF9hdFxuICAgKiAgIH1cbiAgICogfVxuICAgKi9cbiAgZmFzdGlmeS5wb3N0KCcvZWRpODM3L2dlbmVyYXRlLzpjbGFpbUlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdlbmVyYXRlODM3KTtcblxuICAvKipcbiAgICogR2VuZXJhdGUgYmF0Y2ggODM3IEVESSBmaWxlIGZvciBtdWx0aXBsZSBjbGFpbXNcbiAgICogUE9TVCAvYXBpL2VkaTgzNy9nZW5lcmF0ZS1iYXRjaFxuICAgKlxuICAgKiBCb2R5OiB7XG4gICAqICAgY2xhaW1faWRzOiBudW1iZXJbXSwgICAgICAgICAgICAvLyBBcnJheSBvZiBjbGFpbSBJRHMgKG1heCA1MDAwKVxuICAgKiAgIGJhdGNoX25hbWU/OiBzdHJpbmcsICAgICAgICAgICAgLy8gQ3VzdG9tIGJhdGNoIGlkZW50aWZpZXJcbiAgICogICBjbGFpbV90eXBlPzogJzgzN0knIHwgJzgzN1AnLCAgIC8vIEZvcmNlIHNwZWNpZmljIGNsYWltIHR5cGVcbiAgICogICBjbGVhcmluZ2hvdXNlX2lkPzogc3RyaW5nLCAgICAgIC8vIENsZWFyaW5naG91c2UgY29uZmlndXJhdGlvbiBJRFxuICAgKiAgIGNvbnRpbnVlX29uX2Vycm9yPzogYm9vbGVhbiwgICAgLy8gQ29udGludWUgaWYgaW5kaXZpZHVhbCBjbGFpbXMgZmFpbCAoZGVmYXVsdDogdHJ1ZSlcbiAgICogICBza2lwX3ZhbGlkYXRpb24/OiBib29sZWFuICAgICAgIC8vIFNraXAgcHJlLWdlbmVyYXRpb24gdmFsaWRhdGlvblxuICAgKiB9XG4gICAqXG4gICAqIFJlc3BvbnNlOiB7XG4gICAqICAgc3RhdHVzOiAnc3VjY2VzcycsXG4gICAqICAgbWVzc2FnZTogJ0JhdGNoIDgzNyBmaWxlIGdlbmVyYXRlZCBmb3IgWCBjbGFpbXMnLFxuICAgKiAgIGRhdGE6IHtcbiAgICogICAgIGJhdGNoX2lkLCBzdWJtaXNzaW9uX2lkcywgZWRpX2ZpbGVfbmFtZSwgZWRpX2ZpbGVfcGF0aCxcbiAgICogICAgIGNsYWltc19wcm9jZXNzZWQsIGNsYWltc19mYWlsZWQsIGZhaWxlZF9jbGFpbXMsIHByb2Nlc3NlZF9jbGFpbXMsXG4gICAqICAgICB0b3RhbF9jaGFyZ2VzX2NlbnRzLCBmaWxlX3NpemVfYnl0ZXMsIHNlZ21lbnRfY291bnQsIGNoZWNrc3VtLCBnZW5lcmF0ZWRfYXRcbiAgICogICB9XG4gICAqIH1cbiAgICovXG4gIGZhc3RpZnkucG9zdCgnL2VkaTgzNy9nZW5lcmF0ZS1iYXRjaCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZW5lcmF0ZUJhdGNoODM3KTtcblxuICAvKipcbiAgICogVmFsaWRhdGUgY2xhaW0gZm9yIEVESSBnZW5lcmF0aW9uXG4gICAqIFBPU1QgL2FwaS9lZGk4MzcvdmFsaWRhdGUvOmNsYWltSWRcbiAgICpcbiAgICogQm9keToge1xuICAgKiAgIGNsYWltX3R5cGU/OiAnODM3SScgfCAnODM3UCcgICAgLy8gQXV0by1kZXRlY3RlZCBpZiBub3QgcHJvdmlkZWRcbiAgICogfVxuICAgKlxuICAgKiBSZXNwb25zZToge1xuICAgKiAgIHN0YXR1czogJ3N1Y2Nlc3MnLFxuICAgKiAgIG1lc3NhZ2U6ICdDbGFpbSBpcyB2YWxpZCBmb3IgRURJIGdlbmVyYXRpb24nLFxuICAgKiAgIGRhdGE6IHtcbiAgICogICAgIGNsYWltX2lkLCBjbGFpbV90eXBlLCBpc192YWxpZCwgZXJyb3JzLCB3YXJuaW5ncywgdmFsaWRhdGVkX2F0XG4gICAqICAgfVxuICAgKiB9XG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoJy9lZGk4MzcvdmFsaWRhdGUvOmNsYWltSWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnZhbGlkYXRlQ2xhaW0pO1xuXG4gIC8qKlxuICAgKiBQcmV2aWV3IEVESSBjb250ZW50IHdpdGhvdXQgc2F2aW5nXG4gICAqIEdFVCAvYXBpL2VkaTgzNy9wcmV2aWV3LzpjbGFpbUlkXG4gICAqXG4gICAqIFF1ZXJ5OiB7XG4gICAqICAgY2xhaW1fdHlwZT86ICc4MzdJJyB8ICc4MzdQJywgICAvLyBBdXRvLWRldGVjdGVkIGlmIG5vdCBwcm92aWRlZFxuICAgKiAgIGNsZWFyaW5naG91c2VfaWQ/OiBzdHJpbmcsICAgICAgLy8gQ2xlYXJpbmdob3VzZSBjb25maWd1cmF0aW9uIElEXG4gICAqICAgc2tpcF92YWxpZGF0aW9uPzogJ3RydWUnICAgICAgICAvLyBTa2lwIHByZS1nZW5lcmF0aW9uIHZhbGlkYXRpb25cbiAgICogfVxuICAgKlxuICAgKiBSZXNwb25zZToge1xuICAgKiAgIHN0YXR1czogJ3N1Y2Nlc3MnLFxuICAgKiAgIG1lc3NhZ2U6ICdFREkgcHJldmlldyBnZW5lcmF0ZWQgc3VjY2Vzc2Z1bGx5JyxcbiAgICogICBkYXRhOiB7XG4gICAqICAgICBwcmV2aWV3OiB0cnVlLCBjbGFpbV9pZCwgY2xhaW1fdHlwZSwgZWRpX2NvbnRlbnQsXG4gICAqICAgICBzZWdtZW50X2NvdW50LCBjaGVja3N1bSwgY29udHJvbF9udW1iZXJzXG4gICAqICAgfVxuICAgKiB9XG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2VkaTgzNy9wcmV2aWV3LzpjbGFpbUlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5wcmV2aWV3RURJKTtcblxuICAvKipcbiAgICogR2V0IHN1cHBvcnRlZCBjbGFpbSB0eXBlc1xuICAgKiBHRVQgL2FwaS9lZGk4MzcvY2xhaW0tdHlwZXNcbiAgICpcbiAgICogUmVzcG9uc2U6IHtcbiAgICogICBzdGF0dXM6ICdzdWNjZXNzJyxcbiAgICogICBkYXRhOiB7XG4gICAqICAgICBjbGFpbV90eXBlczoge1xuICAgKiAgICAgICAnODM3SSc6IHsgbmFtZSwgdmVyc2lvbiwgZGVzY3JpcHRpb24sIGJpbGxfdHlwZV9wcmVmaXggfSxcbiAgICogICAgICAgJzgzN1AnOiB7IG5hbWUsIHZlcnNpb24sIGRlc2NyaXB0aW9uLCBiaWxsX3R5cGVfcHJlZml4IH1cbiAgICogICAgIH1cbiAgICogICB9XG4gICAqIH1cbiAgICovXG4gIGZhc3RpZnkuZ2V0KCcvZWRpODM3L2NsYWltLXR5cGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRDbGFpbVR5cGVzKTtcblxuICAvKipcbiAgICogR2V0IHN1Ym1pc3Npb24gaGlzdG9yeSBmb3IgYSBjbGFpbVxuICAgKiBHRVQgL2FwaS9lZGk4Mzcvc3VibWlzc2lvbnMvOmNsYWltSWRcbiAgICpcbiAgICogUmVzcG9uc2U6IHtcbiAgICogICBzdGF0dXM6ICdzdWNjZXNzJyxcbiAgICogICBkYXRhOiB7XG4gICAqICAgICBjbGFpbV9pZCwgc3VibWlzc2lvbl9jb3VudCwgc3VibWlzc2lvbnM6IFtcbiAgICogICAgICAgeyBzdWJtaXNzaW9uX2lkLCBiYXRjaF9pZCwgc3VibWlzc2lvbl9kYXRlLCBlZGlfZmlsZV9uYW1lLFxuICAgKiAgICAgICAgIGNvbnRyb2xfbnVtYmVycywgY2xlYXJpbmdob3VzZSwgc3RhdHVzLCBjaGFyZ2VzX2NlbnRzLCBjbGFpbV90eXBlLCAuLi4gfVxuICAgKiAgICAgXVxuICAgKiAgIH1cbiAgICogfVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9lZGk4Mzcvc3VibWlzc2lvbnMvOmNsYWltSWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFN1Ym1pc3Npb25IaXN0b3J5KTtcblxuICAvKipcbiAgICogRG93bmxvYWQgRURJIGZpbGVcbiAgICogR0VUIC9hcGkvZWRpODM3L2Rvd25sb2FkLzpzdWJtaXNzaW9uSWRcbiAgICpcbiAgICogUXVlcnk6IHtcbiAgICogICBmb3JtYXQ/OiAncmF3JyB8ICdmb3JtYXR0ZWQnICAgIC8vICdmb3JtYXR0ZWQnIGFkZHMgbGluZSBicmVha3MgKGRlZmF1bHQ6ICdyYXcnKVxuICAgKiB9XG4gICAqXG4gICAqIFJlc3BvbnNlOiBSYXcgRURJIGZpbGUgY29udGVudCAodGV4dC9wbGFpbilcbiAgICovXG4gIGZhc3RpZnkuZ2V0KCcvZWRpODM3L2Rvd25sb2FkLzpzdWJtaXNzaW9uSWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmRvd25sb2FkRURJKTtcblxuICAvKipcbiAgICogR2V0IHN1Ym1pc3Npb24gc3RhdHVzIHN1bW1hcnlcbiAgICogR0VUIC9hcGkvZWRpODM3L3N1Ym1pc3Npb24tc3RhdHVzXG4gICAqXG4gICAqIFF1ZXJ5OiB7XG4gICAqICAgc3RhdHVzPzogc3RyaW5nLCAgICAgICAgICAgICAgICAvLyBGaWx0ZXIgYnkgc3RhdHVzXG4gICAqICAgZGF0ZV9mcm9tPzogc3RyaW5nLCAgICAgICAgICAgICAvLyBGaWx0ZXIgZnJvbSBkYXRlIChJU08gZm9ybWF0KVxuICAgKiAgIGRhdGVfdG8/OiBzdHJpbmcsICAgICAgICAgICAgICAgLy8gRmlsdGVyIHRvIGRhdGUgKElTTyBmb3JtYXQpXG4gICAqICAgY2xlYXJpbmdob3VzZV9pZD86IHN0cmluZywgICAgICAvLyBGaWx0ZXIgYnkgY2xlYXJpbmdob3VzZVxuICAgKiAgIGxpbWl0PzogbnVtYmVyLCAgICAgICAgICAgICAgICAgLy8gTWF4IHJlc3VsdHMgKGRlZmF1bHQ6IDEwMClcbiAgICogICBvZmZzZXQ/OiBudW1iZXIgICAgICAgICAgICAgICAgIC8vIE9mZnNldCBmb3IgcGFnaW5hdGlvbiAoZGVmYXVsdDogMClcbiAgICogfVxuICAgKlxuICAgKiBSZXNwb25zZToge1xuICAgKiAgIHN0YXR1czogJ3N1Y2Nlc3MnLFxuICAgKiAgIGRhdGE6IHtcbiAgICogICAgIHN1Ym1pc3Npb25zOiBbLi4uXSxcbiAgICogICAgIHN1bW1hcnk6IHsgdG90YWwsIGJ5X3N0YXR1cywgdG90YWxfY2hhcmdlc19jZW50cyB9LFxuICAgKiAgICAgcGFnaW5hdGlvbjogeyBsaW1pdCwgb2Zmc2V0LCByZXR1cm5lZCB9XG4gICAqICAgfVxuICAgKiB9XG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2VkaTgzNy9zdWJtaXNzaW9uLXN0YXR1cycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgfSwgY29udHJvbGxlci5nZXRTdWJtaXNzaW9uU3RhdHVzKTtcbn1cbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLE9BQU9FLFVBQVUsTUFBTSxxQ0FBcUM7QUFDNUQsU0FBU0MsV0FBVyxRQUFRLG1CQUFtQjtBQUMvQyxTQUFTQyxvQkFBb0IsUUFBUSxrQ0FBa0M7O0FBRXZFO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxlQUFlLGVBQWVDLFlBQVlBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVAsYUFBQSxHQUFBUSxDQUFBO0VBQUFSLGFBQUEsR0FBQVMsQ0FBQTtFQUUzRDtBQUNGO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtFQUNFSCxPQUFPLENBQUNJLElBQUksQ0FBQywyQkFBMkIsRUFBRTtJQUN4Q0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNTLHFCQUFxQixDQUFDO0VB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

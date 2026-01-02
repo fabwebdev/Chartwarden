@@ -1,0 +1,510 @@
+6d89831780c75728f3a1083c3fdfa1a5
+/* istanbul ignore next */
+function cov_l10agkk91() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/clearinghouse.routes.js";
+  var hash = "e43d56e90f9594b252b029958c20585fbd27594a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/clearinghouse.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 59,
+          column: 2
+        },
+        end: {
+          line: 61,
+          column: 53
+        }
+      },
+      "1": {
+        start: {
+          line: 64,
+          column: 2
+        },
+        end: {
+          line: 66,
+          column: 51
+        }
+      },
+      "2": {
+        start: {
+          line: 69,
+          column: 2
+        },
+        end: {
+          line: 71,
+          column: 54
+        }
+      },
+      "3": {
+        start: {
+          line: 74,
+          column: 2
+        },
+        end: {
+          line: 76,
+          column: 54
+        }
+      },
+      "4": {
+        start: {
+          line: 79,
+          column: 2
+        },
+        end: {
+          line: 81,
+          column: 54
+        }
+      },
+      "5": {
+        start: {
+          line: 88,
+          column: 2
+        },
+        end: {
+          line: 90,
+          column: 46
+        }
+      },
+      "6": {
+        start: {
+          line: 93,
+          column: 2
+        },
+        end: {
+          line: 95,
+          column: 50
+        }
+      },
+      "7": {
+        start: {
+          line: 98,
+          column: 2
+        },
+        end: {
+          line: 100,
+          column: 45
+        }
+      },
+      "8": {
+        start: {
+          line: 107,
+          column: 2
+        },
+        end: {
+          line: 109,
+          column: 53
+        }
+      },
+      "9": {
+        start: {
+          line: 112,
+          column: 2
+        },
+        end: {
+          line: 114,
+          column: 52
+        }
+      },
+      "10": {
+        start: {
+          line: 117,
+          column: 2
+        },
+        end: {
+          line: 119,
+          column: 57
+        }
+      },
+      "11": {
+        start: {
+          line: 122,
+          column: 2
+        },
+        end: {
+          line: 124,
+          column: 54
+        }
+      },
+      "12": {
+        start: {
+          line: 131,
+          column: 2
+        },
+        end: {
+          line: 133,
+          column: 30
+        }
+      },
+      "13": {
+        start: {
+          line: 136,
+          column: 2
+        },
+        end: {
+          line: 138,
+          column: 35
+        }
+      },
+      "14": {
+        start: {
+          line: 141,
+          column: 2
+        },
+        end: {
+          line: 143,
+          column: 50
+        }
+      },
+      "15": {
+        start: {
+          line: 146,
+          column: 2
+        },
+        end: {
+          line: 148,
+          column: 55
+        }
+      },
+      "16": {
+        start: {
+          line: 151,
+          column: 2
+        },
+        end: {
+          line: 153,
+          column: 57
+        }
+      },
+      "17": {
+        start: {
+          line: 156,
+          column: 2
+        },
+        end: {
+          line: 158,
+          column: 39
+        }
+      },
+      "18": {
+        start: {
+          line: 161,
+          column: 2
+        },
+        end: {
+          line: 163,
+          column: 33
+        }
+      },
+      "19": {
+        start: {
+          line: 166,
+          column: 2
+        },
+        end: {
+          line: 168,
+          column: 42
+        }
+      },
+      "20": {
+        start: {
+          line: 171,
+          column: 2
+        },
+        end: {
+          line: 173,
+          column: 39
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "clearinghouseRoutes",
+        decl: {
+          start: {
+            line: 52,
+            column: 30
+          },
+          end: {
+            line: 52,
+            column: 49
+          }
+        },
+        loc: {
+          start: {
+            line: 52,
+            column: 68
+          },
+          end: {
+            line: 174,
+            column: 1
+          }
+        },
+        line: 52
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 0,
+      "18": 0,
+      "19": 0,
+      "20": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "e43d56e90f9594b252b029958c20585fbd27594a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_l10agkk91 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_l10agkk91();
+import controller from '../controllers/Clearinghouse.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Clearinghouse Routes
+ * Phase 2C - 837I EDI Generation & Claim Submission/Response Tracking
+ *
+ * Comprehensive clearinghouse management for electronic claim submission
+ * Features:
+ *   - Clearinghouse configuration management (CRUD)
+ *   - Single and batch 837I file generation
+ *   - X12 format compliance (005010X223A2)
+ *   - Transmission batch management and tracking
+ *   - Clearinghouse submission tracking with full lifecycle
+ *   - Response file processing (TA1, 999, 277CA, 277)
+ *   - Status history and audit trail
+ *   - Retry and resubmission functionality
+ *   - EDI file download
+ *
+ * Configuration Endpoints:
+ * - GET /api/clearinghouse/configurations - List all configurations
+ * - GET /api/clearinghouse/configurations/:id - Get configuration by ID
+ * - POST /api/clearinghouse/configurations - Create configuration
+ * - PUT /api/clearinghouse/configurations/:id - Update configuration
+ * - DELETE /api/clearinghouse/configurations/:id - Delete configuration
+ *
+ * Transmission Batch Endpoints:
+ * - GET /api/clearinghouse/batches - List transmission batches
+ * - GET /api/clearinghouse/batches/:batchId - Get batch details
+ * - POST /api/clearinghouse/batches/:batchId/retry - Retry failed batch
+ *
+ * Submission Endpoints:
+ * - POST /api/clearinghouse/generate-837i/:claimId - Generate 837I for single claim
+ * - POST /api/clearinghouse/generate-batch - Generate batch 837I
+ * - GET /api/clearinghouse/submissions/:claimId - Get submission history for claim
+ * - POST /api/clearinghouse/submit/:submissionId - Submit to clearinghouse
+ * - POST /api/clearinghouse/submissions/:submissionId/retry - Retry submission
+ * - GET /api/clearinghouse/submissions/:submissionId/history - Get status history
+ * - GET /api/clearinghouse/submission-status - Get all submission statuses
+ *
+ * Response Processing Endpoints:
+ * - POST /api/clearinghouse/responses/upload - Upload response file
+ * - GET /api/clearinghouse/responses - List response files
+ * - GET /api/clearinghouse/responses/:fileId - Get response file details
+ * - POST /api/clearinghouse/responses/:fileId/process - Process response file
+ * - POST /api/clearinghouse/process-277 - Process 277 acknowledgment (legacy)
+ *
+ * File Download:
+ * - GET /api/clearinghouse/download-edi/:submissionId - Download EDI file
+ */
+export default async function clearinghouseRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_l10agkk91().f[0]++;
+  cov_l10agkk91().s[0]++;
+  // ==========================================
+  // CLEARINGHOUSE CONFIGURATION MANAGEMENT
+  // ==========================================
+
+  // List all clearinghouse configurations
+  fastify.get('/clearinghouse/configurations', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.listConfigurations.bind(controller));
+
+  // Get clearinghouse configuration by ID
+  /* istanbul ignore next */
+  cov_l10agkk91().s[1]++;
+  fastify.get('/clearinghouse/configurations/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getConfiguration.bind(controller));
+
+  // Create clearinghouse configuration
+  /* istanbul ignore next */
+  cov_l10agkk91().s[2]++;
+  fastify.post('/clearinghouse/configurations', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createConfiguration.bind(controller));
+
+  // Update clearinghouse configuration
+  /* istanbul ignore next */
+  cov_l10agkk91().s[3]++;
+  fastify.put('/clearinghouse/configurations/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateConfiguration.bind(controller));
+
+  // Delete clearinghouse configuration
+  /* istanbul ignore next */
+  cov_l10agkk91().s[4]++;
+  fastify.delete('/clearinghouse/configurations/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.deleteConfiguration.bind(controller));
+
+  // ==========================================
+  // TRANSMISSION BATCH MANAGEMENT
+  // ==========================================
+
+  // List transmission batches
+  /* istanbul ignore next */
+  cov_l10agkk91().s[5]++;
+  fastify.get('/clearinghouse/batches', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.listBatches.bind(controller));
+
+  // Get transmission batch details
+  /* istanbul ignore next */
+  cov_l10agkk91().s[6]++;
+  fastify.get('/clearinghouse/batches/:batchId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getBatchDetails.bind(controller));
+
+  // Retry failed transmission batch
+  /* istanbul ignore next */
+  cov_l10agkk91().s[7]++;
+  fastify.post('/clearinghouse/batches/:batchId/retry', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.retryBatch.bind(controller));
+
+  // ==========================================
+  // RESPONSE FILE PROCESSING
+  // ==========================================
+
+  // Upload response file (TA1, 999, 277CA, 277)
+  /* istanbul ignore next */
+  cov_l10agkk91().s[8]++;
+  fastify.post('/clearinghouse/responses/upload', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.uploadResponseFile.bind(controller));
+
+  // List response files
+  /* istanbul ignore next */
+  cov_l10agkk91().s[9]++;
+  fastify.get('/clearinghouse/responses', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.listResponseFiles.bind(controller));
+
+  // Get response file details
+  /* istanbul ignore next */
+  cov_l10agkk91().s[10]++;
+  fastify.get('/clearinghouse/responses/:fileId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getResponseFileDetails.bind(controller));
+
+  // Process response file
+  /* istanbul ignore next */
+  cov_l10agkk91().s[11]++;
+  fastify.post('/clearinghouse/responses/:fileId/process', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.processResponseFile.bind(controller));
+
+  // ==========================================
+  // SUBMISSION MANAGEMENT (includes legacy + new)
+  // ==========================================
+
+  // Generate 837I EDI file for single claim
+  /* istanbul ignore next */
+  cov_l10agkk91().s[12]++;
+  fastify.post('/clearinghouse/generate-837i/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generate837I);
+
+  // Generate batch 837I file for multiple claims
+  /* istanbul ignore next */
+  cov_l10agkk91().s[13]++;
+  fastify.post('/clearinghouse/generate-batch', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.generateBatch837I);
+
+  // Retry failed submission
+  /* istanbul ignore next */
+  cov_l10agkk91().s[14]++;
+  fastify.post('/clearinghouse/submissions/:submissionId/retry', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.retrySubmission.bind(controller));
+
+  // Get submission status history
+  /* istanbul ignore next */
+  cov_l10agkk91().s[15]++;
+  fastify.get('/clearinghouse/submissions/:submissionId/history', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getSubmissionHistory.bind(controller));
+
+  // Get submission history for claim (legacy - must come after more specific routes)
+  /* istanbul ignore next */
+  cov_l10agkk91().s[16]++;
+  fastify.get('/clearinghouse/submissions/:claimId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getSubmissionsForClaim.bind(controller));
+
+  // Submit EDI file to clearinghouse via SFTP
+  /* istanbul ignore next */
+  cov_l10agkk91().s[17]++;
+  fastify.post('/clearinghouse/submit/:submissionId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.submitToClearinghouse);
+
+  // Download EDI file
+  /* istanbul ignore next */
+  cov_l10agkk91().s[18]++;
+  fastify.get('/clearinghouse/download-edi/:submissionId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.downloadEDIFile);
+
+  // Process 277 acknowledgment from clearinghouse (legacy endpoint)
+  /* istanbul ignore next */
+  cov_l10agkk91().s[19]++;
+  fastify.post('/clearinghouse/process-277', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.process277Acknowledgment);
+
+  // Get all submission statuses
+  /* istanbul ignore next */
+  cov_l10agkk91().s[20]++;
+  fastify.get('/clearinghouse/submission-status', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getSubmissionStatuses);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfbDEwYWdrazkxIiwiYWN0dWFsQ292ZXJhZ2UiLCJjb250cm9sbGVyIiwiUEVSTUlTU0lPTlMiLCJyZXF1aXJlQW55UGVybWlzc2lvbiIsImNsZWFyaW5naG91c2VSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsIlZJRVdfUkVQT1JUUyIsImxpc3RDb25maWd1cmF0aW9ucyIsImJpbmQiLCJnZXRDb25maWd1cmF0aW9uIiwicG9zdCIsIkNSRUFURV9DTElOSUNBTF9OT1RFUyIsImNyZWF0ZUNvbmZpZ3VyYXRpb24iLCJwdXQiLCJVUERBVEVfQ0xJTklDQUxfTk9URVMiLCJ1cGRhdGVDb25maWd1cmF0aW9uIiwiZGVsZXRlIiwiZGVsZXRlQ29uZmlndXJhdGlvbiIsImxpc3RCYXRjaGVzIiwiZ2V0QmF0Y2hEZXRhaWxzIiwicmV0cnlCYXRjaCIsInVwbG9hZFJlc3BvbnNlRmlsZSIsImxpc3RSZXNwb25zZUZpbGVzIiwiZ2V0UmVzcG9uc2VGaWxlRGV0YWlscyIsInByb2Nlc3NSZXNwb25zZUZpbGUiLCJnZW5lcmF0ZTgzN0kiLCJnZW5lcmF0ZUJhdGNoODM3SSIsInJldHJ5U3VibWlzc2lvbiIsImdldFN1Ym1pc3Npb25IaXN0b3J5IiwiVklFV19DTElOSUNBTF9OT1RFUyIsImdldFN1Ym1pc3Npb25zRm9yQ2xhaW0iLCJzdWJtaXRUb0NsZWFyaW5naG91c2UiLCJkb3dubG9hZEVESUZpbGUiLCJwcm9jZXNzMjc3QWNrbm93bGVkZ21lbnQiLCJnZXRTdWJtaXNzaW9uU3RhdHVzZXMiXSwic291cmNlcyI6WyJjbGVhcmluZ2hvdXNlLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29udHJvbGxlciBmcm9tICcuLi9jb250cm9sbGVycy9DbGVhcmluZ2hvdXNlLmNvbnRyb2xsZXIuanMnO1xuaW1wb3J0IHsgUEVSTUlTU0lPTlMgfSBmcm9tICcuLi9jb25maWcvcmJhYy5qcyc7XG5pbXBvcnQgeyByZXF1aXJlQW55UGVybWlzc2lvbiB9IGZyb20gJy4uL21pZGRsZXdhcmUvcmJhYy5taWRkbGV3YXJlLmpzJztcblxuLyoqXG4gKiBDbGVhcmluZ2hvdXNlIFJvdXRlc1xuICogUGhhc2UgMkMgLSA4MzdJIEVESSBHZW5lcmF0aW9uICYgQ2xhaW0gU3VibWlzc2lvbi9SZXNwb25zZSBUcmFja2luZ1xuICpcbiAqIENvbXByZWhlbnNpdmUgY2xlYXJpbmdob3VzZSBtYW5hZ2VtZW50IGZvciBlbGVjdHJvbmljIGNsYWltIHN1Ym1pc3Npb25cbiAqIEZlYXR1cmVzOlxuICogICAtIENsZWFyaW5naG91c2UgY29uZmlndXJhdGlvbiBtYW5hZ2VtZW50IChDUlVEKVxuICogICAtIFNpbmdsZSBhbmQgYmF0Y2ggODM3SSBmaWxlIGdlbmVyYXRpb25cbiAqICAgLSBYMTIgZm9ybWF0IGNvbXBsaWFuY2UgKDAwNTAxMFgyMjNBMilcbiAqICAgLSBUcmFuc21pc3Npb24gYmF0Y2ggbWFuYWdlbWVudCBhbmQgdHJhY2tpbmdcbiAqICAgLSBDbGVhcmluZ2hvdXNlIHN1Ym1pc3Npb24gdHJhY2tpbmcgd2l0aCBmdWxsIGxpZmVjeWNsZVxuICogICAtIFJlc3BvbnNlIGZpbGUgcHJvY2Vzc2luZyAoVEExLCA5OTksIDI3N0NBLCAyNzcpXG4gKiAgIC0gU3RhdHVzIGhpc3RvcnkgYW5kIGF1ZGl0IHRyYWlsXG4gKiAgIC0gUmV0cnkgYW5kIHJlc3VibWlzc2lvbiBmdW5jdGlvbmFsaXR5XG4gKiAgIC0gRURJIGZpbGUgZG93bmxvYWRcbiAqXG4gKiBDb25maWd1cmF0aW9uIEVuZHBvaW50czpcbiAqIC0gR0VUIC9hcGkvY2xlYXJpbmdob3VzZS9jb25maWd1cmF0aW9ucyAtIExpc3QgYWxsIGNvbmZpZ3VyYXRpb25zXG4gKiAtIEdFVCAvYXBpL2NsZWFyaW5naG91c2UvY29uZmlndXJhdGlvbnMvOmlkIC0gR2V0IGNvbmZpZ3VyYXRpb24gYnkgSURcbiAqIC0gUE9TVCAvYXBpL2NsZWFyaW5naG91c2UvY29uZmlndXJhdGlvbnMgLSBDcmVhdGUgY29uZmlndXJhdGlvblxuICogLSBQVVQgL2FwaS9jbGVhcmluZ2hvdXNlL2NvbmZpZ3VyYXRpb25zLzppZCAtIFVwZGF0ZSBjb25maWd1cmF0aW9uXG4gKiAtIERFTEVURSAvYXBpL2NsZWFyaW5naG91c2UvY29uZmlndXJhdGlvbnMvOmlkIC0gRGVsZXRlIGNvbmZpZ3VyYXRpb25cbiAqXG4gKiBUcmFuc21pc3Npb24gQmF0Y2ggRW5kcG9pbnRzOlxuICogLSBHRVQgL2FwaS9jbGVhcmluZ2hvdXNlL2JhdGNoZXMgLSBMaXN0IHRyYW5zbWlzc2lvbiBiYXRjaGVzXG4gKiAtIEdFVCAvYXBpL2NsZWFyaW5naG91c2UvYmF0Y2hlcy86YmF0Y2hJZCAtIEdldCBiYXRjaCBkZXRhaWxzXG4gKiAtIFBPU1QgL2FwaS9jbGVhcmluZ2hvdXNlL2JhdGNoZXMvOmJhdGNoSWQvcmV0cnkgLSBSZXRyeSBmYWlsZWQgYmF0Y2hcbiAqXG4gKiBTdWJtaXNzaW9uIEVuZHBvaW50czpcbiAqIC0gUE9TVCAvYXBpL2NsZWFyaW5naG91c2UvZ2VuZXJhdGUtODM3aS86Y2xhaW1JZCAtIEdlbmVyYXRlIDgzN0kgZm9yIHNpbmdsZSBjbGFpbVxuICogLSBQT1NUIC9hcGkvY2xlYXJpbmdob3VzZS9nZW5lcmF0ZS1iYXRjaCAtIEdlbmVyYXRlIGJhdGNoIDgzN0lcbiAqIC0gR0VUIC9hcGkvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9ucy86Y2xhaW1JZCAtIEdldCBzdWJtaXNzaW9uIGhpc3RvcnkgZm9yIGNsYWltXG4gKiAtIFBPU1QgL2FwaS9jbGVhcmluZ2hvdXNlL3N1Ym1pdC86c3VibWlzc2lvbklkIC0gU3VibWl0IHRvIGNsZWFyaW5naG91c2VcbiAqIC0gUE9TVCAvYXBpL2NsZWFyaW5naG91c2Uvc3VibWlzc2lvbnMvOnN1Ym1pc3Npb25JZC9yZXRyeSAtIFJldHJ5IHN1Ym1pc3Npb25cbiAqIC0gR0VUIC9hcGkvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9ucy86c3VibWlzc2lvbklkL2hpc3RvcnkgLSBHZXQgc3RhdHVzIGhpc3RvcnlcbiAqIC0gR0VUIC9hcGkvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9uLXN0YXR1cyAtIEdldCBhbGwgc3VibWlzc2lvbiBzdGF0dXNlc1xuICpcbiAqIFJlc3BvbnNlIFByb2Nlc3NpbmcgRW5kcG9pbnRzOlxuICogLSBQT1NUIC9hcGkvY2xlYXJpbmdob3VzZS9yZXNwb25zZXMvdXBsb2FkIC0gVXBsb2FkIHJlc3BvbnNlIGZpbGVcbiAqIC0gR0VUIC9hcGkvY2xlYXJpbmdob3VzZS9yZXNwb25zZXMgLSBMaXN0IHJlc3BvbnNlIGZpbGVzXG4gKiAtIEdFVCAvYXBpL2NsZWFyaW5naG91c2UvcmVzcG9uc2VzLzpmaWxlSWQgLSBHZXQgcmVzcG9uc2UgZmlsZSBkZXRhaWxzXG4gKiAtIFBPU1QgL2FwaS9jbGVhcmluZ2hvdXNlL3Jlc3BvbnNlcy86ZmlsZUlkL3Byb2Nlc3MgLSBQcm9jZXNzIHJlc3BvbnNlIGZpbGVcbiAqIC0gUE9TVCAvYXBpL2NsZWFyaW5naG91c2UvcHJvY2Vzcy0yNzcgLSBQcm9jZXNzIDI3NyBhY2tub3dsZWRnbWVudCAobGVnYWN5KVxuICpcbiAqIEZpbGUgRG93bmxvYWQ6XG4gKiAtIEdFVCAvYXBpL2NsZWFyaW5naG91c2UvZG93bmxvYWQtZWRpLzpzdWJtaXNzaW9uSWQgLSBEb3dubG9hZCBFREkgZmlsZVxuICovXG5leHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiBjbGVhcmluZ2hvdXNlUm91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gQ0xFQVJJTkdIT1VTRSBDT05GSUdVUkFUSU9OIE1BTkFHRU1FTlRcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLy8gTGlzdCBhbGwgY2xlYXJpbmdob3VzZSBjb25maWd1cmF0aW9uc1xuICBmYXN0aWZ5LmdldCgnL2NsZWFyaW5naG91c2UvY29uZmlndXJhdGlvbnMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gIH0sIGNvbnRyb2xsZXIubGlzdENvbmZpZ3VyYXRpb25zLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBjbGVhcmluZ2hvdXNlIGNvbmZpZ3VyYXRpb24gYnkgSURcbiAgZmFzdGlmeS5nZXQoJy9jbGVhcmluZ2hvdXNlL2NvbmZpZ3VyYXRpb25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgfSwgY29udHJvbGxlci5nZXRDb25maWd1cmF0aW9uLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIENyZWF0ZSBjbGVhcmluZ2hvdXNlIGNvbmZpZ3VyYXRpb25cbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9jb25maWd1cmF0aW9ucycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5jcmVhdGVDb25maWd1cmF0aW9uLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIFVwZGF0ZSBjbGVhcmluZ2hvdXNlIGNvbmZpZ3VyYXRpb25cbiAgZmFzdGlmeS5wdXQoJy9jbGVhcmluZ2hvdXNlL2NvbmZpZ3VyYXRpb25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci51cGRhdGVDb25maWd1cmF0aW9uLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIERlbGV0ZSBjbGVhcmluZ2hvdXNlIGNvbmZpZ3VyYXRpb25cbiAgZmFzdGlmeS5kZWxldGUoJy9jbGVhcmluZ2hvdXNlL2NvbmZpZ3VyYXRpb25zLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5kZWxldGVDb25maWd1cmF0aW9uLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBUUkFOU01JU1NJT04gQkFUQ0ggTUFOQUdFTUVOVFxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBMaXN0IHRyYW5zbWlzc2lvbiBiYXRjaGVzXG4gIGZhc3RpZnkuZ2V0KCcvY2xlYXJpbmdob3VzZS9iYXRjaGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1JFUE9SVFMpXVxuICB9LCBjb250cm9sbGVyLmxpc3RCYXRjaGVzLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCB0cmFuc21pc3Npb24gYmF0Y2ggZGV0YWlsc1xuICBmYXN0aWZ5LmdldCgnL2NsZWFyaW5naG91c2UvYmF0Y2hlcy86YmF0Y2hJZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgfSwgY29udHJvbGxlci5nZXRCYXRjaERldGFpbHMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gUmV0cnkgZmFpbGVkIHRyYW5zbWlzc2lvbiBiYXRjaFxuICBmYXN0aWZ5LnBvc3QoJy9jbGVhcmluZ2hvdXNlL2JhdGNoZXMvOmJhdGNoSWQvcmV0cnknLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIucmV0cnlCYXRjaC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gUkVTUE9OU0UgRklMRSBQUk9DRVNTSU5HXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8vIFVwbG9hZCByZXNwb25zZSBmaWxlIChUQTEsIDk5OSwgMjc3Q0EsIDI3NylcbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9yZXNwb25zZXMvdXBsb2FkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnVwbG9hZFJlc3BvbnNlRmlsZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBMaXN0IHJlc3BvbnNlIGZpbGVzXG4gIGZhc3RpZnkuZ2V0KCcvY2xlYXJpbmdob3VzZS9yZXNwb25zZXMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gIH0sIGNvbnRyb2xsZXIubGlzdFJlc3BvbnNlRmlsZXMuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IHJlc3BvbnNlIGZpbGUgZGV0YWlsc1xuICBmYXN0aWZ5LmdldCgnL2NsZWFyaW5naG91c2UvcmVzcG9uc2VzLzpmaWxlSWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UmVzcG9uc2VGaWxlRGV0YWlscy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBQcm9jZXNzIHJlc3BvbnNlIGZpbGVcbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9yZXNwb25zZXMvOmZpbGVJZC9wcm9jZXNzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnByb2Nlc3NSZXNwb25zZUZpbGUuYmluZChjb250cm9sbGVyKSk7XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNVQk1JU1NJT04gTUFOQUdFTUVOVCAoaW5jbHVkZXMgbGVnYWN5ICsgbmV3KVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvLyBHZW5lcmF0ZSA4MzdJIEVESSBmaWxlIGZvciBzaW5nbGUgY2xhaW1cbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9nZW5lcmF0ZS04MzdpLzpjbGFpbUlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdlbmVyYXRlODM3SSk7XG5cbiAgLy8gR2VuZXJhdGUgYmF0Y2ggODM3SSBmaWxlIGZvciBtdWx0aXBsZSBjbGFpbXNcbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9nZW5lcmF0ZS1iYXRjaCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuQ1JFQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZW5lcmF0ZUJhdGNoODM3SSk7XG5cbiAgLy8gUmV0cnkgZmFpbGVkIHN1Ym1pc3Npb25cbiAgZmFzdGlmeS5wb3N0KCcvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9ucy86c3VibWlzc2lvbklkL3JldHJ5Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnJldHJ5U3VibWlzc2lvbi5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgc3VibWlzc2lvbiBzdGF0dXMgaGlzdG9yeVxuICBmYXN0aWZ5LmdldCgnL2NsZWFyaW5naG91c2Uvc3VibWlzc2lvbnMvOnN1Ym1pc3Npb25JZC9oaXN0b3J5Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX1JFUE9SVFMpXVxuICB9LCBjb250cm9sbGVyLmdldFN1Ym1pc3Npb25IaXN0b3J5LmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBzdWJtaXNzaW9uIGhpc3RvcnkgZm9yIGNsYWltIChsZWdhY3kgLSBtdXN0IGNvbWUgYWZ0ZXIgbW9yZSBzcGVjaWZpYyByb3V0ZXMpXG4gIGZhc3RpZnkuZ2V0KCcvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9ucy86Y2xhaW1JZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0U3VibWlzc2lvbnNGb3JDbGFpbS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyBTdWJtaXQgRURJIGZpbGUgdG8gY2xlYXJpbmdob3VzZSB2aWEgU0ZUUFxuICBmYXN0aWZ5LnBvc3QoJy9jbGVhcmluZ2hvdXNlL3N1Ym1pdC86c3VibWlzc2lvbklkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnN1Ym1pdFRvQ2xlYXJpbmdob3VzZSk7XG5cbiAgLy8gRG93bmxvYWQgRURJIGZpbGVcbiAgZmFzdGlmeS5nZXQoJy9jbGVhcmluZ2hvdXNlL2Rvd25sb2FkLWVkaS86c3VibWlzc2lvbklkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5kb3dubG9hZEVESUZpbGUpO1xuXG4gIC8vIFByb2Nlc3MgMjc3IGFja25vd2xlZGdtZW50IGZyb20gY2xlYXJpbmdob3VzZSAobGVnYWN5IGVuZHBvaW50KVxuICBmYXN0aWZ5LnBvc3QoJy9jbGVhcmluZ2hvdXNlL3Byb2Nlc3MtMjc3Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnByb2Nlc3MyNzdBY2tub3dsZWRnbWVudCk7XG5cbiAgLy8gR2V0IGFsbCBzdWJtaXNzaW9uIHN0YXR1c2VzXG4gIGZhc3RpZnkuZ2V0KCcvY2xlYXJpbmdob3VzZS9zdWJtaXNzaW9uLXN0YXR1cycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgfSwgY29udHJvbGxlci5nZXRTdWJtaXNzaW9uU3RhdHVzZXMpO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWixPQUFPRSxVQUFVLE1BQU0sNENBQTRDO0FBQ25F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

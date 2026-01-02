@@ -1,0 +1,158 @@
+0aae22ec371be6f8607082b869103ddf
+/* istanbul ignore next */
+function cov_23mj406hf8() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/NegativeVocalization.js";
+  var hash = "5b6d2891b30512beade00b5978c48cf1f868b7c0";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/NegativeVocalization.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 1,
+          column: 29
+        },
+        end: {
+          line: 20,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 9,
+          column: 23
+        },
+        end: {
+          line: 13,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 15,
+          column: 8
+        },
+        end: {
+          line: 18,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 15,
+          column: 45
+        },
+        end: {
+          line: 18,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 13
+          },
+          end: {
+            line: 8,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 25
+          },
+          end: {
+            line: 19,
+            column: 5
+          }
+        },
+        line: 8
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 15,
+            column: 26
+          },
+          end: {
+            line: 15,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 45
+          },
+          end: {
+            line: 18,
+            column: 9
+          }
+        },
+        line: 15
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "5b6d2891b30512beade00b5978c48cf1f868b7c0"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_23mj406hf8 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_23mj406hf8();
+const NegativeVocalization =
+/* istanbul ignore next */
+(cov_23mj406hf8().s[0]++, {
+  NONE: "None (0)",
+  OCCASIONAL_MOAN: "Occasional moan or groan, low level speech with negative or disapproving quality (1)",
+  REPEATED_TROUBLED: "Repeated troubled calling out, loud moaning or groaning, crying (2)",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_23mj406hf8().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_23mj406hf8().s[1]++, [this.NONE, this.OCCASIONAL_MOAN, this.REPEATED_TROUBLED]);
+    /* istanbul ignore next */
+    cov_23mj406hf8().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_23mj406hf8().f[1]++;
+      cov_23mj406hf8().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default NegativeVocalization;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMjNtajQwNmhmOCIsImFjdHVhbENvdmVyYWdlIiwiTmVnYXRpdmVWb2NhbGl6YXRpb24iLCJzIiwiTk9ORSIsIk9DQ0FTSU9OQUxfTU9BTiIsIlJFUEVBVEVEX1RST1VCTEVEIiwidG9BcnJheSIsImYiLCJ2YWx1ZXMiLCJtYXAiLCJ2YWx1ZSIsImluZGV4IiwiaWQiXSwic291cmNlcyI6WyJOZWdhdGl2ZVZvY2FsaXphdGlvbi5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBOZWdhdGl2ZVZvY2FsaXphdGlvbiA9IHtcbiAgICBOT05FOiBcIk5vbmUgKDApXCIsXG4gICAgT0NDQVNJT05BTF9NT0FOOlxuICAgICAgICBcIk9jY2FzaW9uYWwgbW9hbiBvciBncm9hbiwgbG93IGxldmVsIHNwZWVjaCB3aXRoIG5lZ2F0aXZlIG9yIGRpc2FwcHJvdmluZyBxdWFsaXR5ICgxKVwiLFxuICAgIFJFUEVBVEVEX1RST1VCTEVEOlxuICAgICAgICBcIlJlcGVhdGVkIHRyb3VibGVkIGNhbGxpbmcgb3V0LCBsb3VkIG1vYW5pbmcgb3IgZ3JvYW5pbmcsIGNyeWluZyAoMilcIixcblxuICAgIHRvQXJyYXk6IGZ1bmN0aW9uICgpIHtcbiAgICAgICAgY29uc3QgdmFsdWVzID0gW1xuICAgICAgICAgICAgdGhpcy5OT05FLFxuICAgICAgICAgICAgdGhpcy5PQ0NBU0lPTkFMX01PQU4sXG4gICAgICAgICAgICB0aGlzLlJFUEVBVEVEX1RST1VCTEVELFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXgsXG4gICAgICAgICAgICB2YWx1ZTogdmFsdWUsXG4gICAgICAgIH0pKTtcbiAgICB9LFxufTtcblxuZXhwb3J0IGRlZmF1bHQgTmVnYXRpdmVWb2NhbGl6YXRpb247XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE1BQU1FLG9CQUFvQjtBQUFBO0FBQUEsQ0FBQUYsY0FBQSxHQUFBRyxDQUFBLE9BQUc7RUFDekJDLElBQUksRUFBRSxVQUFVO0VBQ2hCQyxlQUFlLEVBQ1gsc0ZBQXNGO0VBQzFGQyxpQkFBaUIsRUFDYixxRUFBcUU7RUFFekVDLE9BQU8sRUFBRSxTQUFBQSxDQUFBLEVBQVk7SUFBQTtJQUFBUCxjQUFBLEdBQUFRLENBQUE7SUFDakIsTUFBTUMsTUFBTTtJQUFBO0lBQUEsQ0FBQVQsY0FBQSxHQUFBRyxDQUFBLE9BQUcsQ0FDWCxJQUFJLENBQUNDLElBQUksRUFDVCxJQUFJLENBQUNDLGVBQWUsRUFDcEIsSUFBSSxDQUFDQyxpQkFBaUIsQ0FDekI7SUFBQztJQUFBTixjQUFBLEdBQUFHLENBQUE7SUFFRixPQUFPTSxNQUFNLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxLQUFLLEVBQUVDLEtBQUssS0FBTTtNQUFBO01BQUFaLGNBQUEsR0FBQVEsQ0FBQTtNQUFBUixjQUFBLEdBQUFHLENBQUE7TUFBQTtRQUNqQ1UsRUFBRSxFQUFFRCxLQUFLO1FBQ1RELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVQsb0JBQW9CIiwiaWdub3JlTGlzdCI6W119

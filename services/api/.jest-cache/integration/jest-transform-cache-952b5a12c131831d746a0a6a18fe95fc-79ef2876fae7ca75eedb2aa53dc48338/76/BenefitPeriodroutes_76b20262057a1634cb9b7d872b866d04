@@ -1,0 +1,867 @@
+ec7fea89776988761d8d1d6c6c1d9ce7
+/* istanbul ignore next */
+function cov_r7romvrux() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/BenefitPeriod.routes.js";
+  var hash = "1b95fd3af8b3c3cfac893bb0d478685d58b0c90c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/BenefitPeriod.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 25,
+          column: 2
+        },
+        end: {
+          line: 64,
+          column: 4
+        }
+      },
+      "1": {
+        start: {
+          line: 71,
+          column: 2
+        },
+        end: {
+          line: 105,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 112,
+          column: 2
+        },
+        end: {
+          line: 138,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 145,
+          column: 2
+        },
+        end: {
+          line: 172,
+          column: 4
+        }
+      },
+      "4": {
+        start: {
+          line: 179,
+          column: 2
+        },
+        end: {
+          line: 205,
+          column: 4
+        }
+      },
+      "5": {
+        start: {
+          line: 212,
+          column: 2
+        },
+        end: {
+          line: 263,
+          column: 4
+        }
+      },
+      "6": {
+        start: {
+          line: 274,
+          column: 2
+        },
+        end: {
+          line: 325,
+          column: 4
+        }
+      },
+      "7": {
+        start: {
+          line: 332,
+          column: 2
+        },
+        end: {
+          line: 359,
+          column: 4
+        }
+      },
+      "8": {
+        start: {
+          line: 370,
+          column: 2
+        },
+        end: {
+          line: 426,
+          column: 4
+        }
+      },
+      "9": {
+        start: {
+          line: 436,
+          column: 2
+        },
+        end: {
+          line: 446,
+          column: 4
+        }
+      },
+      "10": {
+        start: {
+          line: 452,
+          column: 2
+        },
+        end: {
+          line: 462,
+          column: 4
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "benefitPeriodRoutes",
+        decl: {
+          start: {
+            line: 15,
+            column: 15
+          },
+          end: {
+            line: 15,
+            column: 34
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 53
+          },
+          end: {
+            line: 463,
+            column: 1
+          }
+        },
+        line: 15
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "1b95fd3af8b3c3cfac893bb0d478685d58b0c90c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_r7romvrux = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_r7romvrux();
+import BenefitPeriodController from "../../controllers/patient/BenefitPeriod.controller.js";
+import { authenticate } from "../../middleware/betterAuth.middleware.js";
+import { checkPermission } from "../../middleware/permission.middleware.js";
+
+/**
+ * Medicare Hospice Benefit Period Routes
+ *
+ * Comprehensive API for managing hospice benefit periods including:
+ * - Medicare benefit period types (90-day initial, 90-day subsequent, 60-day)
+ * - Level of Care (RHC, CHC, GIP, IRC) tracking
+ * - Election and revocation history
+ *
+ * Compliance: CMS hospice benefit requirements, 42 CFR 418
+ */
+async function benefitPeriodRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_r7romvrux().f[0]++;
+  cov_r7romvrux().s[0]++;
+  // =====================================================
+  // BENEFIT PERIOD CRUD OPERATIONS
+  // =====================================================
+
+  /**
+   * Create next benefit period for a patient
+   * POST /patient/:patientId/benefit-periods/create-next
+   * Permission: benefit-periods:create
+   */
+  fastify.post("/patient/:patientId/benefit-periods/create-next", {
+    preHandler: [authenticate, checkPermission('benefit-periods:create')],
+    schema: {
+      description: 'Create the next Medicare hospice benefit period for a patient',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['patientId'],
+        properties: {
+          patientId: {
+            type: 'number',
+            description: 'Patient ID'
+          }
+        }
+      },
+      body: {
+        type: 'object',
+        properties: {
+          election_date: {
+            type: 'string',
+            format: 'date',
+            description: 'Hospice election date'
+          },
+          election_statement_signed: {
+            type: 'boolean',
+            description: 'Whether election statement is signed'
+          },
+          certification_date: {
+            type: 'string',
+            format: 'date',
+            description: 'Physician certification date'
+          },
+          certifying_physician_id: {
+            type: 'number',
+            description: 'Certifying physician ID'
+          },
+          terminal_prognosis_confirmed: {
+            type: 'boolean',
+            description: 'Terminal prognosis confirmation'
+          },
+          prognosis_6_months_or_less: {
+            type: 'boolean',
+            description: 'Prognosis of 6 months or less'
+          },
+          notes: {
+            type: 'string',
+            description: 'Additional notes'
+          }
+        }
+      },
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.createNextPeriod.bind(BenefitPeriodController));
+
+  /**
+   * List all benefit periods for a patient
+   * GET /patient/:patientId/benefit-periods
+   * Permission: benefit-periods:view
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[1]++;
+  fastify.get("/patient/:patientId/benefit-periods", {
+    preHandler: [authenticate, checkPermission('benefit-periods:view')],
+    schema: {
+      description: 'List all benefit periods for a patient',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['patientId'],
+        properties: {
+          patientId: {
+            type: 'number',
+            description: 'Patient ID'
+          }
+        }
+      },
+      querystring: {
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+            enum: ['ACTIVE', 'REVOKED', 'DISCHARGED', 'EXPIRED', 'PENDING']
+          },
+          includeDeleted: {
+            type: 'boolean',
+            default: false
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            count: {
+              type: 'number'
+            },
+            data: {
+              type: 'array'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.listBenefitPeriods.bind(BenefitPeriodController));
+
+  /**
+   * Get current active benefit period for a patient
+   * GET /patient/:patientId/current-benefit-period
+   * Permission: benefit-periods:view
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[2]++;
+  fastify.get("/patient/:patientId/current-benefit-period", {
+    preHandler: [authenticate, checkPermission('benefit-periods:view')],
+    schema: {
+      description: 'Get the current active benefit period for a patient with level of care',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['patientId'],
+        properties: {
+          patientId: {
+            type: 'number',
+            description: 'Patient ID'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.getCurrentBenefitPeriod.bind(BenefitPeriodController));
+
+  /**
+   * Get election history for a patient
+   * GET /patient/:patientId/elections
+   * Permission: benefit-periods:view
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[3]++;
+  fastify.get("/patient/:patientId/elections", {
+    preHandler: [authenticate, checkPermission('benefit-periods:view')],
+    schema: {
+      description: 'Get hospice election and revocation history for a patient',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['patientId'],
+        properties: {
+          patientId: {
+            type: 'number',
+            description: 'Patient ID'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            count: {
+              type: 'number'
+            },
+            data: {
+              type: 'array'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.getElectionHistory.bind(BenefitPeriodController));
+
+  /**
+   * Get single benefit period with details
+   * GET /:id
+   * Permission: benefit-periods:view
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[4]++;
+  fastify.get("/:id", {
+    preHandler: [authenticate, checkPermission('benefit-periods:view')],
+    schema: {
+      description: 'Get a benefit period with level of care and election history',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: {
+            type: 'number',
+            description: 'Benefit period ID'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.getBenefitPeriod.bind(BenefitPeriodController));
+
+  /**
+   * Update benefit period
+   * PUT /:id
+   * Permission: benefit-periods:update
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[5]++;
+  fastify.put("/:id", {
+    preHandler: [authenticate, checkPermission('benefit-periods:update')],
+    schema: {
+      description: 'Update a benefit period',
+      tags: ['Benefit Periods'],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: {
+            type: 'number',
+            description: 'Benefit period ID'
+          }
+        }
+      },
+      body: {
+        type: 'object',
+        properties: {
+          election_date: {
+            type: 'string',
+            format: 'date'
+          },
+          election_statement_signed: {
+            type: 'boolean'
+          },
+          election_statement_date: {
+            type: 'string',
+            format: 'date'
+          },
+          certification_date: {
+            type: 'string',
+            format: 'date'
+          },
+          certifying_physician_id: {
+            type: 'number'
+          },
+          recertification_required_by: {
+            type: 'string',
+            format: 'date'
+          },
+          face_to_face_completed: {
+            type: 'boolean'
+          },
+          face_to_face_date: {
+            type: 'string',
+            format: 'date'
+          },
+          revocation_date: {
+            type: 'string',
+            format: 'date'
+          },
+          revocation_reason: {
+            type: 'string'
+          },
+          discharge_date: {
+            type: 'string',
+            format: 'date'
+          },
+          discharge_reason: {
+            type: 'string'
+          },
+          status: {
+            type: 'string',
+            enum: ['ACTIVE', 'REVOKED', 'DISCHARGED', 'EXPIRED', 'PENDING']
+          },
+          terminal_prognosis_confirmed: {
+            type: 'boolean'
+          },
+          prognosis_6_months_or_less: {
+            type: 'boolean'
+          },
+          noe_filed: {
+            type: 'boolean'
+          },
+          noe_filed_date: {
+            type: 'string',
+            format: 'date'
+          },
+          noe_timely: {
+            type: 'boolean'
+          },
+          notes: {
+            type: 'string'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.updateBenefitPeriod.bind(BenefitPeriodController));
+
+  // =====================================================
+  // LEVEL OF CARE OPERATIONS
+  // =====================================================
+
+  /**
+   * Add level of care change to a benefit period
+   * POST /:id/loc
+   * Permission: benefit-periods:manage-loc
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[6]++;
+  fastify.post("/:id/loc", {
+    preHandler: [authenticate, checkPermission('benefit-periods:manage-loc')],
+    schema: {
+      description: 'Add a level of care change (RHC, CHC, GIP, IRC) to a benefit period',
+      tags: ['Benefit Periods', 'Level of Care'],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: {
+            type: 'number',
+            description: 'Benefit period ID'
+          }
+        }
+      },
+      body: {
+        type: 'object',
+        required: ['level_of_care', 'effective_date'],
+        properties: {
+          level_of_care: {
+            type: 'string',
+            enum: ['RHC', 'CHC', 'GIP', 'IRC'],
+            description: 'RHC=Routine Home Care, CHC=Continuous Home Care, GIP=General Inpatient, IRC=Inpatient Respite'
+          },
+          effective_date: {
+            type: 'string',
+            format: 'date',
+            description: 'When level of care begins'
+          },
+          end_date: {
+            type: 'string',
+            format: 'date',
+            description: 'When level of care ends (optional)'
+          },
+          chc_start_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'CHC start time'
+          },
+          chc_end_time: {
+            type: 'string',
+            format: 'date-time',
+            description: 'CHC end time'
+          },
+          chc_total_hours: {
+            type: 'number',
+            description: 'Total CHC hours (minimum 8 required)'
+          },
+          facility_id: {
+            type: 'number',
+            description: 'Facility ID for GIP/IRC'
+          },
+          facility_name: {
+            type: 'string',
+            description: 'Facility name for GIP/IRC'
+          },
+          facility_npi: {
+            type: 'string',
+            description: 'Facility NPI for GIP/IRC'
+          },
+          respite_day_count: {
+            type: 'number',
+            description: 'IRC days (max 5 consecutive per benefit period)'
+          },
+          crisis_reason: {
+            type: 'string',
+            description: 'Crisis reason for CHC (required documentation)'
+          },
+          physician_order_date: {
+            type: 'string',
+            format: 'date'
+          },
+          ordering_physician_id: {
+            type: 'number'
+          },
+          notes: {
+            type: 'string'
+          }
+        }
+      },
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.addLevelOfCare.bind(BenefitPeriodController));
+
+  /**
+   * Get level of care history for a benefit period
+   * GET /:id/loc
+   * Permission: benefit-periods:view
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[7]++;
+  fastify.get("/:id/loc", {
+    preHandler: [authenticate, checkPermission('benefit-periods:view')],
+    schema: {
+      description: 'Get level of care history for a benefit period',
+      tags: ['Benefit Periods', 'Level of Care'],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: {
+            type: 'number',
+            description: 'Benefit period ID'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            count: {
+              type: 'number'
+            },
+            data: {
+              type: 'array'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.getLevelOfCareHistory.bind(BenefitPeriodController));
+
+  // =====================================================
+  // ELECTION/REVOCATION OPERATIONS
+  // =====================================================
+
+  /**
+   * Record election or revocation for a benefit period
+   * POST /:id/election
+   * Permission: benefit-periods:manage-election
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[8]++;
+  fastify.post("/:id/election", {
+    preHandler: [authenticate, checkPermission('benefit-periods:manage-election')],
+    schema: {
+      description: 'Record an election, revocation, or transfer for a benefit period',
+      tags: ['Benefit Periods', 'Elections'],
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: {
+            type: 'number',
+            description: 'Benefit period ID'
+          }
+        }
+      },
+      body: {
+        type: 'object',
+        required: ['election_type', 'election_date', 'effective_date'],
+        properties: {
+          election_type: {
+            type: 'string',
+            enum: ['INITIAL_ELECTION', 'RE_ELECTION', 'REVOCATION', 'TRANSFER_IN', 'TRANSFER_OUT'],
+            description: 'Type of election action'
+          },
+          election_date: {
+            type: 'string',
+            format: 'date',
+            description: 'Date of election action'
+          },
+          effective_date: {
+            type: 'string',
+            format: 'date',
+            description: 'Effective date of action'
+          },
+          election_statement_signed: {
+            type: 'boolean'
+          },
+          election_statement_date: {
+            type: 'string',
+            format: 'date'
+          },
+          witness_name: {
+            type: 'string'
+          },
+          witness_signature_date: {
+            type: 'string',
+            format: 'date'
+          },
+          hospice_provider_name: {
+            type: 'string'
+          },
+          hospice_provider_npi: {
+            type: 'string'
+          },
+          attending_physician_id: {
+            type: 'number'
+          },
+          attending_physician_name: {
+            type: 'string'
+          },
+          physician_acknowledgment_date: {
+            type: 'string',
+            format: 'date'
+          },
+          revocation_effective_date: {
+            type: 'string',
+            format: 'date'
+          },
+          revocation_reason: {
+            type: 'string'
+          },
+          remaining_days_in_period: {
+            type: 'number',
+            description: 'Days forfeited upon revocation'
+          },
+          transfer_from_hospice: {
+            type: 'string'
+          },
+          transfer_to_hospice: {
+            type: 'string'
+          },
+          transfer_date: {
+            type: 'string',
+            format: 'date'
+          },
+          notes: {
+            type: 'string'
+          }
+        }
+      },
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean'
+            },
+            message: {
+              type: 'string'
+            },
+            data: {
+              type: 'object'
+            }
+          }
+        }
+      }
+    }
+  }, BenefitPeriodController.recordElection.bind(BenefitPeriodController));
+
+  // =====================================================
+  // LEGACY ROUTES (backwards compatibility)
+  // =====================================================
+
+  /**
+   * Add nursing clinical note to a benefit period
+   * POST /benefit-periods/:benefitPeriodId/nursing-clinical-notes
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[9]++;
+  fastify.post("/benefit-periods/:benefitPeriodId/nursing-clinical-notes", {
+    preHandler: [authenticate],
+    schema: {
+      description: 'Add a nursing clinical note to a benefit period',
+      tags: ['Benefit Periods', 'Clinical Notes']
+    }
+  }, BenefitPeriodController.addNursingClinicalNote.bind(BenefitPeriodController));
+
+  /**
+   * Get patient chart with benefit periods and nursing clinical notes
+   * GET /patients/:id/chart
+   */
+  /* istanbul ignore next */
+  cov_r7romvrux().s[10]++;
+  fastify.get("/patients/:id/chart", {
+    preHandler: [authenticate],
+    schema: {
+      description: 'Get patient chart with benefit periods and nursing clinical notes',
+      tags: ['Benefit Periods', 'Patient Chart']
+    }
+  }, BenefitPeriodController.getPatientChart.bind(BenefitPeriodController));
+}
+export default benefitPeriodRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfcjdyb212cnV4IiwiYWN0dWFsQ292ZXJhZ2UiLCJCZW5lZml0UGVyaW9kQ29udHJvbGxlciIsImF1dGhlbnRpY2F0ZSIsImNoZWNrUGVybWlzc2lvbiIsImJlbmVmaXRQZXJpb2RSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwicG9zdCIsInByZUhhbmRsZXIiLCJzY2hlbWEiLCJkZXNjcmlwdGlvbiIsInRhZ3MiLCJwYXJhbXMiLCJ0eXBlIiwicmVxdWlyZWQiLCJwcm9wZXJ0aWVzIiwicGF0aWVudElkIiwiYm9keSIsImVsZWN0aW9uX2RhdGUiLCJmb3JtYXQiLCJlbGVjdGlvbl9zdGF0ZW1lbnRfc2lnbmVkIiwiY2VydGlmaWNhdGlvbl9kYXRlIiwiY2VydGlmeWluZ19waHlzaWNpYW5faWQiLCJ0ZXJtaW5hbF9wcm9nbm9zaXNfY29uZmlybWVkIiwicHJvZ25vc2lzXzZfbW9udGhzX29yX2xlc3MiLCJub3RlcyIsInJlc3BvbnNlIiwic3VjY2VzcyIsIm1lc3NhZ2UiLCJkYXRhIiwiY3JlYXRlTmV4dFBlcmlvZCIsImJpbmQiLCJnZXQiLCJxdWVyeXN0cmluZyIsInN0YXR1cyIsImVudW0iLCJpbmNsdWRlRGVsZXRlZCIsImRlZmF1bHQiLCJjb3VudCIsImxpc3RCZW5lZml0UGVyaW9kcyIsImdldEN1cnJlbnRCZW5lZml0UGVyaW9kIiwiZ2V0RWxlY3Rpb25IaXN0b3J5IiwiaWQiLCJnZXRCZW5lZml0UGVyaW9kIiwicHV0IiwiZWxlY3Rpb25fc3RhdGVtZW50X2RhdGUiLCJyZWNlcnRpZmljYXRpb25fcmVxdWlyZWRfYnkiLCJmYWNlX3RvX2ZhY2VfY29tcGxldGVkIiwiZmFjZV90b19mYWNlX2RhdGUiLCJyZXZvY2F0aW9uX2RhdGUiLCJyZXZvY2F0aW9uX3JlYXNvbiIsImRpc2NoYXJnZV9kYXRlIiwiZGlzY2hhcmdlX3JlYXNvbiIsIm5vZV9maWxlZCIsIm5vZV9maWxlZF9kYXRlIiwibm9lX3RpbWVseSIsInVwZGF0ZUJlbmVmaXRQZXJpb2QiLCJsZXZlbF9vZl9jYXJlIiwiZWZmZWN0aXZlX2RhdGUiLCJlbmRfZGF0ZSIsImNoY19zdGFydF90aW1lIiwiY2hjX2VuZF90aW1lIiwiY2hjX3RvdGFsX2hvdXJzIiwiZmFjaWxpdHlfaWQiLCJmYWNpbGl0eV9uYW1lIiwiZmFjaWxpdHlfbnBpIiwicmVzcGl0ZV9kYXlfY291bnQiLCJjcmlzaXNfcmVhc29uIiwicGh5c2ljaWFuX29yZGVyX2RhdGUiLCJvcmRlcmluZ19waHlzaWNpYW5faWQiLCJhZGRMZXZlbE9mQ2FyZSIsImdldExldmVsT2ZDYXJlSGlzdG9yeSIsImVsZWN0aW9uX3R5cGUiLCJ3aXRuZXNzX25hbWUiLCJ3aXRuZXNzX3NpZ25hdHVyZV9kYXRlIiwiaG9zcGljZV9wcm92aWRlcl9uYW1lIiwiaG9zcGljZV9wcm92aWRlcl9ucGkiLCJhdHRlbmRpbmdfcGh5c2ljaWFuX2lkIiwiYXR0ZW5kaW5nX3BoeXNpY2lhbl9uYW1lIiwicGh5c2ljaWFuX2Fja25vd2xlZGdtZW50X2RhdGUiLCJyZXZvY2F0aW9uX2VmZmVjdGl2ZV9kYXRlIiwicmVtYWluaW5nX2RheXNfaW5fcGVyaW9kIiwidHJhbnNmZXJfZnJvbV9ob3NwaWNlIiwidHJhbnNmZXJfdG9faG9zcGljZSIsInRyYW5zZmVyX2RhdGUiLCJyZWNvcmRFbGVjdGlvbiIsImFkZE51cnNpbmdDbGluaWNhbE5vdGUiLCJnZXRQYXRpZW50Q2hhcnQiXSwic291cmNlcyI6WyJCZW5lZml0UGVyaW9kLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvQmVuZWZpdFBlcmlvZC5jb250cm9sbGVyLmpzXCI7XG5pbXBvcnQgeyBhdXRoZW50aWNhdGUgfSBmcm9tIFwiLi4vLi4vbWlkZGxld2FyZS9iZXR0ZXJBdXRoLm1pZGRsZXdhcmUuanNcIjtcbmltcG9ydCB7IGNoZWNrUGVybWlzc2lvbiB9IGZyb20gXCIuLi8uLi9taWRkbGV3YXJlL3Blcm1pc3Npb24ubWlkZGxld2FyZS5qc1wiO1xuXG4vKipcbiAqIE1lZGljYXJlIEhvc3BpY2UgQmVuZWZpdCBQZXJpb2QgUm91dGVzXG4gKlxuICogQ29tcHJlaGVuc2l2ZSBBUEkgZm9yIG1hbmFnaW5nIGhvc3BpY2UgYmVuZWZpdCBwZXJpb2RzIGluY2x1ZGluZzpcbiAqIC0gTWVkaWNhcmUgYmVuZWZpdCBwZXJpb2QgdHlwZXMgKDkwLWRheSBpbml0aWFsLCA5MC1kYXkgc3Vic2VxdWVudCwgNjAtZGF5KVxuICogLSBMZXZlbCBvZiBDYXJlIChSSEMsIENIQywgR0lQLCBJUkMpIHRyYWNraW5nXG4gKiAtIEVsZWN0aW9uIGFuZCByZXZvY2F0aW9uIGhpc3RvcnlcbiAqXG4gKiBDb21wbGlhbmNlOiBDTVMgaG9zcGljZSBiZW5lZml0IHJlcXVpcmVtZW50cywgNDIgQ0ZSIDQxOFxuICovXG5hc3luYyBmdW5jdGlvbiBiZW5lZml0UGVyaW9kUm91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gQkVORUZJVCBQRVJJT0QgQ1JVRCBPUEVSQVRJT05TXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIENyZWF0ZSBuZXh0IGJlbmVmaXQgcGVyaW9kIGZvciBhIHBhdGllbnRcbiAgICogUE9TVCAvcGF0aWVudC86cGF0aWVudElkL2JlbmVmaXQtcGVyaW9kcy9jcmVhdGUtbmV4dFxuICAgKiBQZXJtaXNzaW9uOiBiZW5lZml0LXBlcmlvZHM6Y3JlYXRlXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvcGF0aWVudC86cGF0aWVudElkL2JlbmVmaXQtcGVyaW9kcy9jcmVhdGUtbmV4dFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGUsIGNoZWNrUGVybWlzc2lvbignYmVuZWZpdC1wZXJpb2RzOmNyZWF0ZScpXSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0NyZWF0ZSB0aGUgbmV4dCBNZWRpY2FyZSBob3NwaWNlIGJlbmVmaXQgcGVyaW9kIGZvciBhIHBhdGllbnQnLFxuICAgICAgICB0YWdzOiBbJ0JlbmVmaXQgUGVyaW9kcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydwYXRpZW50SWQnXSxcbiAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICBwYXRpZW50SWQ6IHsgdHlwZTogJ251bWJlcicsIGRlc2NyaXB0aW9uOiAnUGF0aWVudCBJRCcgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgYm9keToge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGVsZWN0aW9uX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnLCBkZXNjcmlwdGlvbjogJ0hvc3BpY2UgZWxlY3Rpb24gZGF0ZScgfSxcbiAgICAgICAgICAgIGVsZWN0aW9uX3N0YXRlbWVudF9zaWduZWQ6IHsgdHlwZTogJ2Jvb2xlYW4nLCBkZXNjcmlwdGlvbjogJ1doZXRoZXIgZWxlY3Rpb24gc3RhdGVtZW50IGlzIHNpZ25lZCcgfSxcbiAgICAgICAgICAgIGNlcnRpZmljYXRpb25fZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScsIGRlc2NyaXB0aW9uOiAnUGh5c2ljaWFuIGNlcnRpZmljYXRpb24gZGF0ZScgfSxcbiAgICAgICAgICAgIGNlcnRpZnlpbmdfcGh5c2ljaWFuX2lkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0NlcnRpZnlpbmcgcGh5c2ljaWFuIElEJyB9LFxuICAgICAgICAgICAgdGVybWluYWxfcHJvZ25vc2lzX2NvbmZpcm1lZDogeyB0eXBlOiAnYm9vbGVhbicsIGRlc2NyaXB0aW9uOiAnVGVybWluYWwgcHJvZ25vc2lzIGNvbmZpcm1hdGlvbicgfSxcbiAgICAgICAgICAgIHByb2dub3Npc182X21vbnRoc19vcl9sZXNzOiB7IHR5cGU6ICdib29sZWFuJywgZGVzY3JpcHRpb246ICdQcm9nbm9zaXMgb2YgNiBtb250aHMgb3IgbGVzcycgfSxcbiAgICAgICAgICAgIG5vdGVzOiB7IHR5cGU6ICdzdHJpbmcnLCBkZXNjcmlwdGlvbjogJ0FkZGl0aW9uYWwgbm90ZXMnIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAxOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgbWVzc2FnZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgICBkYXRhOiB7IHR5cGU6ICdvYmplY3QnIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9LFxuICAgIEJlbmVmaXRQZXJpb2RDb250cm9sbGVyLmNyZWF0ZU5leHRQZXJpb2QuYmluZChCZW5lZml0UGVyaW9kQ29udHJvbGxlcilcbiAgKTtcblxuICAvKipcbiAgICogTGlzdCBhbGwgYmVuZWZpdCBwZXJpb2RzIGZvciBhIHBhdGllbnRcbiAgICogR0VUIC9wYXRpZW50LzpwYXRpZW50SWQvYmVuZWZpdC1wZXJpb2RzXG4gICAqIFBlcm1pc3Npb246IGJlbmVmaXQtcGVyaW9kczp2aWV3XG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICBcIi9wYXRpZW50LzpwYXRpZW50SWQvYmVuZWZpdC1wZXJpb2RzXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgY2hlY2tQZXJtaXNzaW9uKCdiZW5lZml0LXBlcmlvZHM6dmlldycpXSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0xpc3QgYWxsIGJlbmVmaXQgcGVyaW9kcyBmb3IgYSBwYXRpZW50JyxcbiAgICAgICAgdGFnczogWydCZW5lZml0IFBlcmlvZHMnXSxcbiAgICAgICAgcGFyYW1zOiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcmVxdWlyZWQ6IFsncGF0aWVudElkJ10sXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgcGF0aWVudElkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ1BhdGllbnQgSUQnIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHF1ZXJ5c3RyaW5nOiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgc3RhdHVzOiB7IHR5cGU6ICdzdHJpbmcnLCBlbnVtOiBbJ0FDVElWRScsICdSRVZPS0VEJywgJ0RJU0NIQVJHRUQnLCAnRVhQSVJFRCcsICdQRU5ESU5HJ10gfSxcbiAgICAgICAgICAgIGluY2x1ZGVEZWxldGVkOiB7IHR5cGU6ICdib29sZWFuJywgZGVmYXVsdDogZmFsc2UgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBjb3VudDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICBkYXRhOiB7IHR5cGU6ICdhcnJheScgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIubGlzdEJlbmVmaXRQZXJpb2RzLmJpbmQoQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIpXG4gICk7XG5cbiAgLyoqXG4gICAqIEdldCBjdXJyZW50IGFjdGl2ZSBiZW5lZml0IHBlcmlvZCBmb3IgYSBwYXRpZW50XG4gICAqIEdFVCAvcGF0aWVudC86cGF0aWVudElkL2N1cnJlbnQtYmVuZWZpdC1wZXJpb2RcbiAgICogUGVybWlzc2lvbjogYmVuZWZpdC1wZXJpb2RzOnZpZXdcbiAgICovXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL3BhdGllbnQvOnBhdGllbnRJZC9jdXJyZW50LWJlbmVmaXQtcGVyaW9kXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgY2hlY2tQZXJtaXNzaW9uKCdiZW5lZml0LXBlcmlvZHM6dmlldycpXSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0dldCB0aGUgY3VycmVudCBhY3RpdmUgYmVuZWZpdCBwZXJpb2QgZm9yIGEgcGF0aWVudCB3aXRoIGxldmVsIG9mIGNhcmUnLFxuICAgICAgICB0YWdzOiBbJ0JlbmVmaXQgUGVyaW9kcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydwYXRpZW50SWQnXSxcbiAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICBwYXRpZW50SWQ6IHsgdHlwZTogJ251bWJlcicsIGRlc2NyaXB0aW9uOiAnUGF0aWVudCBJRCcgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBkYXRhOiB7IHR5cGU6ICdvYmplY3QnIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9LFxuICAgIEJlbmVmaXRQZXJpb2RDb250cm9sbGVyLmdldEN1cnJlbnRCZW5lZml0UGVyaW9kLmJpbmQoQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIpXG4gICk7XG5cbiAgLyoqXG4gICAqIEdldCBlbGVjdGlvbiBoaXN0b3J5IGZvciBhIHBhdGllbnRcbiAgICogR0VUIC9wYXRpZW50LzpwYXRpZW50SWQvZWxlY3Rpb25zXG4gICAqIFBlcm1pc3Npb246IGJlbmVmaXQtcGVyaW9kczp2aWV3XG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICBcIi9wYXRpZW50LzpwYXRpZW50SWQvZWxlY3Rpb25zXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgY2hlY2tQZXJtaXNzaW9uKCdiZW5lZml0LXBlcmlvZHM6dmlldycpXSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0dldCBob3NwaWNlIGVsZWN0aW9uIGFuZCByZXZvY2F0aW9uIGhpc3RvcnkgZm9yIGEgcGF0aWVudCcsXG4gICAgICAgIHRhZ3M6IFsnQmVuZWZpdCBQZXJpb2RzJ10sXG4gICAgICAgIHBhcmFtczoge1xuICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgIHJlcXVpcmVkOiBbJ3BhdGllbnRJZCddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIHBhdGllbnRJZDogeyB0eXBlOiAnbnVtYmVyJywgZGVzY3JpcHRpb246ICdQYXRpZW50IElEJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICByZXNwb25zZToge1xuICAgICAgICAgIDIwMDoge1xuICAgICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICAgIHN1Y2Nlc3M6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICAgIGNvdW50OiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICAgIGRhdGE6IHsgdHlwZTogJ2FycmF5JyB9XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfSxcbiAgICBCZW5lZml0UGVyaW9kQ29udHJvbGxlci5nZXRFbGVjdGlvbkhpc3RvcnkuYmluZChCZW5lZml0UGVyaW9kQ29udHJvbGxlcilcbiAgKTtcblxuICAvKipcbiAgICogR2V0IHNpbmdsZSBiZW5lZml0IHBlcmlvZCB3aXRoIGRldGFpbHNcbiAgICogR0VUIC86aWRcbiAgICogUGVybWlzc2lvbjogYmVuZWZpdC1wZXJpb2RzOnZpZXdcbiAgICovXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiLzppZFwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGUsIGNoZWNrUGVybWlzc2lvbignYmVuZWZpdC1wZXJpb2RzOnZpZXcnKV0sXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdHZXQgYSBiZW5lZml0IHBlcmlvZCB3aXRoIGxldmVsIG9mIGNhcmUgYW5kIGVsZWN0aW9uIGhpc3RvcnknLFxuICAgICAgICB0YWdzOiBbJ0JlbmVmaXQgUGVyaW9kcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydpZCddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGlkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0JlbmVmaXQgcGVyaW9kIElEJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICByZXNwb25zZToge1xuICAgICAgICAgIDIwMDoge1xuICAgICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICAgIHN1Y2Nlc3M6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICAgIGRhdGE6IHsgdHlwZTogJ29iamVjdCcgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIuZ2V0QmVuZWZpdFBlcmlvZC5iaW5kKEJlbmVmaXRQZXJpb2RDb250cm9sbGVyKVxuICApO1xuXG4gIC8qKlxuICAgKiBVcGRhdGUgYmVuZWZpdCBwZXJpb2RcbiAgICogUFVUIC86aWRcbiAgICogUGVybWlzc2lvbjogYmVuZWZpdC1wZXJpb2RzOnVwZGF0ZVxuICAgKi9cbiAgZmFzdGlmeS5wdXQoXG4gICAgXCIvOmlkXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgY2hlY2tQZXJtaXNzaW9uKCdiZW5lZml0LXBlcmlvZHM6dXBkYXRlJyldLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnVXBkYXRlIGEgYmVuZWZpdCBwZXJpb2QnLFxuICAgICAgICB0YWdzOiBbJ0JlbmVmaXQgUGVyaW9kcyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydpZCddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGlkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0JlbmVmaXQgcGVyaW9kIElEJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICBib2R5OiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgZWxlY3Rpb25fZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIGVsZWN0aW9uX3N0YXRlbWVudF9zaWduZWQ6IHsgdHlwZTogJ2Jvb2xlYW4nIH0sXG4gICAgICAgICAgICBlbGVjdGlvbl9zdGF0ZW1lbnRfZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIGNlcnRpZmljYXRpb25fZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIGNlcnRpZnlpbmdfcGh5c2ljaWFuX2lkOiB7IHR5cGU6ICdudW1iZXInIH0sXG4gICAgICAgICAgICByZWNlcnRpZmljYXRpb25fcmVxdWlyZWRfYnk6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICBmYWNlX3RvX2ZhY2VfY29tcGxldGVkOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgZmFjZV90b19mYWNlX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICByZXZvY2F0aW9uX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICByZXZvY2F0aW9uX3JlYXNvbjogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgZGlzY2hhcmdlX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICBkaXNjaGFyZ2VfcmVhc29uOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICBzdGF0dXM6IHsgdHlwZTogJ3N0cmluZycsIGVudW06IFsnQUNUSVZFJywgJ1JFVk9LRUQnLCAnRElTQ0hBUkdFRCcsICdFWFBJUkVEJywgJ1BFTkRJTkcnXSB9LFxuICAgICAgICAgICAgdGVybWluYWxfcHJvZ25vc2lzX2NvbmZpcm1lZDogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgIHByb2dub3Npc182X21vbnRoc19vcl9sZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgbm9lX2ZpbGVkOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgbm9lX2ZpbGVkX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICBub2VfdGltZWx5OiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgbm90ZXM6IHsgdHlwZTogJ3N0cmluZycgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBtZXNzYWdlOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIGRhdGE6IHsgdHlwZTogJ29iamVjdCcgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIudXBkYXRlQmVuZWZpdFBlcmlvZC5iaW5kKEJlbmVmaXRQZXJpb2RDb250cm9sbGVyKVxuICApO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIExFVkVMIE9GIENBUkUgT1BFUkFUSU9OU1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBBZGQgbGV2ZWwgb2YgY2FyZSBjaGFuZ2UgdG8gYSBiZW5lZml0IHBlcmlvZFxuICAgKiBQT1NUIC86aWQvbG9jXG4gICAqIFBlcm1pc3Npb246IGJlbmVmaXQtcGVyaW9kczptYW5hZ2UtbG9jXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvOmlkL2xvY1wiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGUsIGNoZWNrUGVybWlzc2lvbignYmVuZWZpdC1wZXJpb2RzOm1hbmFnZS1sb2MnKV0sXG4gICAgICBzY2hlbWE6IHtcbiAgICAgICAgZGVzY3JpcHRpb246ICdBZGQgYSBsZXZlbCBvZiBjYXJlIGNoYW5nZSAoUkhDLCBDSEMsIEdJUCwgSVJDKSB0byBhIGJlbmVmaXQgcGVyaW9kJyxcbiAgICAgICAgdGFnczogWydCZW5lZml0IFBlcmlvZHMnLCAnTGV2ZWwgb2YgQ2FyZSddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydpZCddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGlkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0JlbmVmaXQgcGVyaW9kIElEJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICBib2R5OiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcmVxdWlyZWQ6IFsnbGV2ZWxfb2ZfY2FyZScsICdlZmZlY3RpdmVfZGF0ZSddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGxldmVsX29mX2NhcmU6IHtcbiAgICAgICAgICAgICAgdHlwZTogJ3N0cmluZycsXG4gICAgICAgICAgICAgIGVudW06IFsnUkhDJywgJ0NIQycsICdHSVAnLCAnSVJDJ10sXG4gICAgICAgICAgICAgIGRlc2NyaXB0aW9uOiAnUkhDPVJvdXRpbmUgSG9tZSBDYXJlLCBDSEM9Q29udGludW91cyBIb21lIENhcmUsIEdJUD1HZW5lcmFsIElucGF0aWVudCwgSVJDPUlucGF0aWVudCBSZXNwaXRlJ1xuICAgICAgICAgICAgfSxcbiAgICAgICAgICAgIGVmZmVjdGl2ZV9kYXRlOiB7IHR5cGU6ICdzdHJpbmcnLCBmb3JtYXQ6ICdkYXRlJywgZGVzY3JpcHRpb246ICdXaGVuIGxldmVsIG9mIGNhcmUgYmVnaW5zJyB9LFxuICAgICAgICAgICAgZW5kX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnLCBkZXNjcmlwdGlvbjogJ1doZW4gbGV2ZWwgb2YgY2FyZSBlbmRzIChvcHRpb25hbCknIH0sXG4gICAgICAgICAgICBjaGNfc3RhcnRfdGltZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZS10aW1lJywgZGVzY3JpcHRpb246ICdDSEMgc3RhcnQgdGltZScgfSxcbiAgICAgICAgICAgIGNoY19lbmRfdGltZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZS10aW1lJywgZGVzY3JpcHRpb246ICdDSEMgZW5kIHRpbWUnIH0sXG4gICAgICAgICAgICBjaGNfdG90YWxfaG91cnM6IHsgdHlwZTogJ251bWJlcicsIGRlc2NyaXB0aW9uOiAnVG90YWwgQ0hDIGhvdXJzIChtaW5pbXVtIDggcmVxdWlyZWQpJyB9LFxuICAgICAgICAgICAgZmFjaWxpdHlfaWQ6IHsgdHlwZTogJ251bWJlcicsIGRlc2NyaXB0aW9uOiAnRmFjaWxpdHkgSUQgZm9yIEdJUC9JUkMnIH0sXG4gICAgICAgICAgICBmYWNpbGl0eV9uYW1lOiB7IHR5cGU6ICdzdHJpbmcnLCBkZXNjcmlwdGlvbjogJ0ZhY2lsaXR5IG5hbWUgZm9yIEdJUC9JUkMnIH0sXG4gICAgICAgICAgICBmYWNpbGl0eV9ucGk6IHsgdHlwZTogJ3N0cmluZycsIGRlc2NyaXB0aW9uOiAnRmFjaWxpdHkgTlBJIGZvciBHSVAvSVJDJyB9LFxuICAgICAgICAgICAgcmVzcGl0ZV9kYXlfY291bnQ6IHsgdHlwZTogJ251bWJlcicsIGRlc2NyaXB0aW9uOiAnSVJDIGRheXMgKG1heCA1IGNvbnNlY3V0aXZlIHBlciBiZW5lZml0IHBlcmlvZCknIH0sXG4gICAgICAgICAgICBjcmlzaXNfcmVhc29uOiB7IHR5cGU6ICdzdHJpbmcnLCBkZXNjcmlwdGlvbjogJ0NyaXNpcyByZWFzb24gZm9yIENIQyAocmVxdWlyZWQgZG9jdW1lbnRhdGlvbiknIH0sXG4gICAgICAgICAgICBwaHlzaWNpYW5fb3JkZXJfZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIG9yZGVyaW5nX3BoeXNpY2lhbl9pZDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgbm90ZXM6IHsgdHlwZTogJ3N0cmluZycgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDE6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBtZXNzYWdlOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICAgIGRhdGE6IHsgdHlwZTogJ29iamVjdCcgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIuYWRkTGV2ZWxPZkNhcmUuYmluZChCZW5lZml0UGVyaW9kQ29udHJvbGxlcilcbiAgKTtcblxuICAvKipcbiAgICogR2V0IGxldmVsIG9mIGNhcmUgaGlzdG9yeSBmb3IgYSBiZW5lZml0IHBlcmlvZFxuICAgKiBHRVQgLzppZC9sb2NcbiAgICogUGVybWlzc2lvbjogYmVuZWZpdC1wZXJpb2RzOnZpZXdcbiAgICovXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiLzppZC9sb2NcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlLCBjaGVja1Blcm1pc3Npb24oJ2JlbmVmaXQtcGVyaW9kczp2aWV3JyldLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnR2V0IGxldmVsIG9mIGNhcmUgaGlzdG9yeSBmb3IgYSBiZW5lZml0IHBlcmlvZCcsXG4gICAgICAgIHRhZ3M6IFsnQmVuZWZpdCBQZXJpb2RzJywgJ0xldmVsIG9mIENhcmUnXSxcbiAgICAgICAgcGFyYW1zOiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcmVxdWlyZWQ6IFsnaWQnXSxcbiAgICAgICAgICBwcm9wZXJ0aWVzOiB7XG4gICAgICAgICAgICBpZDogeyB0eXBlOiAnbnVtYmVyJywgZGVzY3JpcHRpb246ICdCZW5lZml0IHBlcmlvZCBJRCcgfVxuICAgICAgICAgIH1cbiAgICAgICAgfSxcbiAgICAgICAgcmVzcG9uc2U6IHtcbiAgICAgICAgICAyMDA6IHtcbiAgICAgICAgICAgIHR5cGU6ICdvYmplY3QnLFxuICAgICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgICBzdWNjZXNzOiB7IHR5cGU6ICdib29sZWFuJyB9LFxuICAgICAgICAgICAgICBjb3VudDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgICBkYXRhOiB7IHR5cGU6ICdhcnJheScgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH0sXG4gICAgQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIuZ2V0TGV2ZWxPZkNhcmVIaXN0b3J5LmJpbmQoQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIpXG4gICk7XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gRUxFQ1RJT04vUkVWT0NBVElPTiBPUEVSQVRJT05TXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIFJlY29yZCBlbGVjdGlvbiBvciByZXZvY2F0aW9uIGZvciBhIGJlbmVmaXQgcGVyaW9kXG4gICAqIFBPU1QgLzppZC9lbGVjdGlvblxuICAgKiBQZXJtaXNzaW9uOiBiZW5lZml0LXBlcmlvZHM6bWFuYWdlLWVsZWN0aW9uXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvOmlkL2VsZWN0aW9uXCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW2F1dGhlbnRpY2F0ZSwgY2hlY2tQZXJtaXNzaW9uKCdiZW5lZml0LXBlcmlvZHM6bWFuYWdlLWVsZWN0aW9uJyldLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnUmVjb3JkIGFuIGVsZWN0aW9uLCByZXZvY2F0aW9uLCBvciB0cmFuc2ZlciBmb3IgYSBiZW5lZml0IHBlcmlvZCcsXG4gICAgICAgIHRhZ3M6IFsnQmVuZWZpdCBQZXJpb2RzJywgJ0VsZWN0aW9ucyddLFxuICAgICAgICBwYXJhbXM6IHtcbiAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICByZXF1aXJlZDogWydpZCddLFxuICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgIGlkOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0JlbmVmaXQgcGVyaW9kIElEJyB9XG4gICAgICAgICAgfVxuICAgICAgICB9LFxuICAgICAgICBib2R5OiB7XG4gICAgICAgICAgdHlwZTogJ29iamVjdCcsXG4gICAgICAgICAgcmVxdWlyZWQ6IFsnZWxlY3Rpb25fdHlwZScsICdlbGVjdGlvbl9kYXRlJywgJ2VmZmVjdGl2ZV9kYXRlJ10sXG4gICAgICAgICAgcHJvcGVydGllczoge1xuICAgICAgICAgICAgZWxlY3Rpb25fdHlwZToge1xuICAgICAgICAgICAgICB0eXBlOiAnc3RyaW5nJyxcbiAgICAgICAgICAgICAgZW51bTogWydJTklUSUFMX0VMRUNUSU9OJywgJ1JFX0VMRUNUSU9OJywgJ1JFVk9DQVRJT04nLCAnVFJBTlNGRVJfSU4nLCAnVFJBTlNGRVJfT1VUJ10sXG4gICAgICAgICAgICAgIGRlc2NyaXB0aW9uOiAnVHlwZSBvZiBlbGVjdGlvbiBhY3Rpb24nXG4gICAgICAgICAgICB9LFxuICAgICAgICAgICAgZWxlY3Rpb25fZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScsIGRlc2NyaXB0aW9uOiAnRGF0ZSBvZiBlbGVjdGlvbiBhY3Rpb24nIH0sXG4gICAgICAgICAgICBlZmZlY3RpdmVfZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScsIGRlc2NyaXB0aW9uOiAnRWZmZWN0aXZlIGRhdGUgb2YgYWN0aW9uJyB9LFxuICAgICAgICAgICAgZWxlY3Rpb25fc3RhdGVtZW50X3NpZ25lZDogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgIGVsZWN0aW9uX3N0YXRlbWVudF9kYXRlOiB7IHR5cGU6ICdzdHJpbmcnLCBmb3JtYXQ6ICdkYXRlJyB9LFxuICAgICAgICAgICAgd2l0bmVzc19uYW1lOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICB3aXRuZXNzX3NpZ25hdHVyZV9kYXRlOiB7IHR5cGU6ICdzdHJpbmcnLCBmb3JtYXQ6ICdkYXRlJyB9LFxuICAgICAgICAgICAgaG9zcGljZV9wcm92aWRlcl9uYW1lOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICBob3NwaWNlX3Byb3ZpZGVyX25waTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgYXR0ZW5kaW5nX3BoeXNpY2lhbl9pZDogeyB0eXBlOiAnbnVtYmVyJyB9LFxuICAgICAgICAgICAgYXR0ZW5kaW5nX3BoeXNpY2lhbl9uYW1lOiB7IHR5cGU6ICdzdHJpbmcnIH0sXG4gICAgICAgICAgICBwaHlzaWNpYW5fYWNrbm93bGVkZ21lbnRfZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIHJldm9jYXRpb25fZWZmZWN0aXZlX2RhdGU6IHsgdHlwZTogJ3N0cmluZycsIGZvcm1hdDogJ2RhdGUnIH0sXG4gICAgICAgICAgICByZXZvY2F0aW9uX3JlYXNvbjogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgcmVtYWluaW5nX2RheXNfaW5fcGVyaW9kOiB7IHR5cGU6ICdudW1iZXInLCBkZXNjcmlwdGlvbjogJ0RheXMgZm9yZmVpdGVkIHVwb24gcmV2b2NhdGlvbicgfSxcbiAgICAgICAgICAgIHRyYW5zZmVyX2Zyb21faG9zcGljZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgdHJhbnNmZXJfdG9faG9zcGljZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgdHJhbnNmZXJfZGF0ZTogeyB0eXBlOiAnc3RyaW5nJywgZm9ybWF0OiAnZGF0ZScgfSxcbiAgICAgICAgICAgIG5vdGVzOiB7IHR5cGU6ICdzdHJpbmcnIH1cbiAgICAgICAgICB9XG4gICAgICAgIH0sXG4gICAgICAgIHJlc3BvbnNlOiB7XG4gICAgICAgICAgMjAxOiB7XG4gICAgICAgICAgICB0eXBlOiAnb2JqZWN0JyxcbiAgICAgICAgICAgIHByb3BlcnRpZXM6IHtcbiAgICAgICAgICAgICAgc3VjY2VzczogeyB0eXBlOiAnYm9vbGVhbicgfSxcbiAgICAgICAgICAgICAgbWVzc2FnZTogeyB0eXBlOiAnc3RyaW5nJyB9LFxuICAgICAgICAgICAgICBkYXRhOiB7IHR5cGU6ICdvYmplY3QnIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9LFxuICAgIEJlbmVmaXRQZXJpb2RDb250cm9sbGVyLnJlY29yZEVsZWN0aW9uLmJpbmQoQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIpXG4gICk7XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gTEVHQUNZIFJPVVRFUyAoYmFja3dhcmRzIGNvbXBhdGliaWxpdHkpXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIEFkZCBudXJzaW5nIGNsaW5pY2FsIG5vdGUgdG8gYSBiZW5lZml0IHBlcmlvZFxuICAgKiBQT1NUIC9iZW5lZml0LXBlcmlvZHMvOmJlbmVmaXRQZXJpb2RJZC9udXJzaW5nLWNsaW5pY2FsLW5vdGVzXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoXG4gICAgXCIvYmVuZWZpdC1wZXJpb2RzLzpiZW5lZml0UGVyaW9kSWQvbnVyc2luZy1jbGluaWNhbC1ub3Rlc1wiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFthdXRoZW50aWNhdGVdLFxuICAgICAgc2NoZW1hOiB7XG4gICAgICAgIGRlc2NyaXB0aW9uOiAnQWRkIGEgbnVyc2luZyBjbGluaWNhbCBub3RlIHRvIGEgYmVuZWZpdCBwZXJpb2QnLFxuICAgICAgICB0YWdzOiBbJ0JlbmVmaXQgUGVyaW9kcycsICdDbGluaWNhbCBOb3RlcyddXG4gICAgICB9XG4gICAgfSxcbiAgICBCZW5lZml0UGVyaW9kQ29udHJvbGxlci5hZGROdXJzaW5nQ2xpbmljYWxOb3RlLmJpbmQoQmVuZWZpdFBlcmlvZENvbnRyb2xsZXIpXG4gICk7XG5cbiAgLyoqXG4gICAqIEdldCBwYXRpZW50IGNoYXJ0IHdpdGggYmVuZWZpdCBwZXJpb2RzIGFuZCBudXJzaW5nIGNsaW5pY2FsIG5vdGVzXG4gICAqIEdFVCAvcGF0aWVudHMvOmlkL2NoYXJ0XG4gICAqL1xuICBmYXN0aWZ5LmdldChcbiAgICBcIi9wYXRpZW50cy86aWQvY2hhcnRcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbYXV0aGVudGljYXRlXSxcbiAgICAgIHNjaGVtYToge1xuICAgICAgICBkZXNjcmlwdGlvbjogJ0dldCBwYXRpZW50IGNoYXJ0IHdpdGggYmVuZWZpdCBwZXJpb2RzIGFuZCBudXJzaW5nIGNsaW5pY2FsIG5vdGVzJyxcbiAgICAgICAgdGFnczogWydCZW5lZml0IFBlcmlvZHMnLCAnUGF0aWVudCBDaGFydCddXG4gICAgICB9XG4gICAgfSxcbiAgICBCZW5lZml0UGVyaW9kQ29udHJvbGxlci5nZXRQYXRpZW50Q2hhcnQuYmluZChCZW5lZml0UGVyaW9kQ29udHJvbGxlcilcbiAgKTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgYmVuZWZpdFBlcmlvZFJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLE9BQU9FLHVCQUF1QixNQUFNLHVEQUF1RDtBQUMzRixTQUFTQyxZQUFZLFFBQVEsMkNBQTJDO0FBQ3hFLFNBQVNDLGVBQWUsUUFBUSwyQ0FBMkM7O0FBRTNFO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsZUFBZUMsbUJBQW1CQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFQLGFBQUEsR0FBQVEsQ0FBQTtFQUFBUixhQUFBLEdBQUFTLENBQUE7RUFDbkQ7RUFDQTtFQUNBOztFQUVBO0FBQ0Y7QUFDQTtBQUNBO0FBQ0E7RUFDRUgsT0FBTyxDQUFDSSxJQUFJLENBQ1YsaURBQWlELEVBQ2pEO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUixZQUFZLEVBQUVDLGVBQWUsQ0FBQyx3QkFBd0IsQ0FBQyxDQUFDO0lBQ3JFUSxNQUFNLEVBQUU7TUFDTkMsV0FBVyxFQUFFLCtEQUErRDtNQUM1RUMsSUFBSSxFQUFFLENBQUMsaUJBQWlCLENBQUM7TUFDekJDLE1BQU0sRUFBRTtRQUNOQyxJQUFJLEVBQUUsUUFBUTtRQUNkQyxR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

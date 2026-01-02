@@ -1,0 +1,158 @@
+2263408ad15d09403b3ad1e3d8a478e1
+/* istanbul ignore next */
+function cov_1ju6y2uw8a() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/flaaccBehavioral/Face.js";
+  var hash = "c02fa2ebb730770bda0f3abce6e35714eb703ddd";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/flaaccBehavioral/Face.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 1,
+          column: 13
+        },
+        end: {
+          line: 20,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 9,
+          column: 23
+        },
+        end: {
+          line: 13,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 15,
+          column: 8
+        },
+        end: {
+          line: 18,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 15,
+          column: 45
+        },
+        end: {
+          line: 18,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 13
+          },
+          end: {
+            line: 8,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 25
+          },
+          end: {
+            line: 19,
+            column: 5
+          }
+        },
+        line: 8
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 15,
+            column: 26
+          },
+          end: {
+            line: 15,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 45
+          },
+          end: {
+            line: 18,
+            column: 9
+          }
+        },
+        line: 15
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "c02fa2ebb730770bda0f3abce6e35714eb703ddd"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1ju6y2uw8a = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1ju6y2uw8a();
+const Face =
+/* istanbul ignore next */
+(cov_1ju6y2uw8a().s[0]++, {
+  NO_EXPRESSION: "No particular expression or smile (0)",
+  OCCASIONAL_GRIMACE: "Occasional grimace or frown, withdrawn, disinterested (1)",
+  FREQUENT_FROWN: "Frequent to constant frown, clenched jaw, quivering chin (2)",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_1ju6y2uw8a().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_1ju6y2uw8a().s[1]++, [this.NO_EXPRESSION, this.OCCASIONAL_GRIMACE, this.FREQUENT_FROWN]);
+    /* istanbul ignore next */
+    cov_1ju6y2uw8a().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_1ju6y2uw8a().f[1]++;
+      cov_1ju6y2uw8a().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default Face;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWp1NnkydXc4YSIsImFjdHVhbENvdmVyYWdlIiwiRmFjZSIsInMiLCJOT19FWFBSRVNTSU9OIiwiT0NDQVNJT05BTF9HUklNQUNFIiwiRlJFUVVFTlRfRlJPV04iLCJ0b0FycmF5IiwiZiIsInZhbHVlcyIsIm1hcCIsInZhbHVlIiwiaW5kZXgiLCJpZCJdLCJzb3VyY2VzIjpbIkZhY2UuanMiXSwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgRmFjZSA9IHtcbiAgICBOT19FWFBSRVNTSU9OOiBcIk5vIHBhcnRpY3VsYXIgZXhwcmVzc2lvbiBvciBzbWlsZSAoMClcIixcbiAgICBPQ0NBU0lPTkFMX0dSSU1BQ0U6XG4gICAgICAgIFwiT2NjYXNpb25hbCBncmltYWNlIG9yIGZyb3duLCB3aXRoZHJhd24sIGRpc2ludGVyZXN0ZWQgKDEpXCIsXG4gICAgRlJFUVVFTlRfRlJPV046XG4gICAgICAgIFwiRnJlcXVlbnQgdG8gY29uc3RhbnQgZnJvd24sIGNsZW5jaGVkIGphdywgcXVpdmVyaW5nIGNoaW4gKDIpXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuTk9fRVhQUkVTU0lPTixcbiAgICAgICAgICAgIHRoaXMuT0NDQVNJT05BTF9HUklNQUNFLFxuICAgICAgICAgICAgdGhpcy5GUkVRVUVOVF9GUk9XTixcbiAgICAgICAgXTtcblxuICAgICAgICByZXR1cm4gdmFsdWVzLm1hcCgodmFsdWUsIGluZGV4KSA9PiAoe1xuICAgICAgICAgICAgaWQ6IGluZGV4LFxuICAgICAgICAgICAgdmFsdWU6IHZhbHVlLFxuICAgICAgICB9KSk7XG4gICAgfSxcbn07XG5cbmV4cG9ydCBkZWZhdWx0IEZhY2U7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE1BQU1FLElBQUk7QUFBQTtBQUFBLENBQUFGLGNBQUEsR0FBQUcsQ0FBQSxPQUFHO0VBQ1RDLGFBQWEsRUFBRSx1Q0FBdUM7RUFDdERDLGtCQUFrQixFQUNkLDJEQUEyRDtFQUMvREMsY0FBYyxFQUNWLDhEQUE4RDtFQUVsRUMsT0FBTyxFQUFFLFNBQUFBLENBQUEsRUFBWTtJQUFBO0lBQUFQLGNBQUEsR0FBQVEsQ0FBQTtJQUNqQixNQUFNQyxNQUFNO0lBQUE7SUFBQSxDQUFBVCxjQUFBLEdBQUFHLENBQUEsT0FBRyxDQUNYLElBQUksQ0FBQ0MsYUFBYSxFQUNsQixJQUFJLENBQUNDLGtCQUFrQixFQUN2QixJQUFJLENBQUNDLGNBQWMsQ0FDdEI7SUFBQztJQUFBTixjQUFBLEdBQUFHLENBQUE7SUFFRixPQUFPTSxNQUFNLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxLQUFLLEVBQUVDLEtBQUssS0FBTTtNQUFBO01BQUFaLGNBQUEsR0FBQVEsQ0FBQTtNQUFBUixjQUFBLEdBQUFHLENBQUE7TUFBQTtRQUNqQ1UsRUFBRSxFQUFFRCxLQUFLO1FBQ1RELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVQsSUFBSSIsImlnbm9yZUxpc3QiOltdfQ==

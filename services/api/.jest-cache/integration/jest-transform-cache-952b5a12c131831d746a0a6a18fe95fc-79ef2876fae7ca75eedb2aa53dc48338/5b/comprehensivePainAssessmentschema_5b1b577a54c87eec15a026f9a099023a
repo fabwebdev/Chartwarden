@@ -1,0 +1,66 @@
+39f19ab473b0129a10ad698cb3ea0f6f
+/* istanbul ignore next */
+function cov_2kw10glvtc() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/comprehensivePainAssessment.schema.js";
+  var hash = "512c93fb0377a41c416eef45ea68b59998558d28";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/comprehensivePainAssessment.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 45
+        },
+        end: {
+          line: 12,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "512c93fb0377a41c416eef45ea68b59998558d28"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2kw10glvtc = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2kw10glvtc();
+import { pgTable, bigint, integer, varchar, text, timestamp } from 'drizzle-orm/pg-core';
+export const comprehensive_pain_assessment =
+/* istanbul ignore next */
+(cov_2kw10glvtc().s[0]++, pgTable('comprehensive_pain_assessment', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).notNull(),
+  comprehensive_pain: integer('comprehensive_pain'),
+  date_of_assessment: varchar('date_of_assessment', {
+    length: 255
+  }),
+  comprehensive_pain_included: text('comprehensive_pain_included'),
+  comments: text('comments'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmt3MTBnbHZ0YyIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsImludGVnZXIiLCJ2YXJjaGFyIiwidGV4dCIsInRpbWVzdGFtcCIsImNvbXByZWhlbnNpdmVfcGFpbl9hc3Nlc3NtZW50IiwicyIsImlkIiwibW9kZSIsInByaW1hcnlLZXkiLCJnZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5IiwicGF0aWVudF9pZCIsIm5vdE51bGwiLCJjb21wcmVoZW5zaXZlX3BhaW4iLCJkYXRlX29mX2Fzc2Vzc21lbnQiLCJsZW5ndGgiLCJjb21wcmVoZW5zaXZlX3BhaW5faW5jbHVkZWQiLCJjb21tZW50cyIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJ1cGRhdGVkQXQiXSwic291cmNlcyI6WyJjb21wcmVoZW5zaXZlUGFpbkFzc2Vzc21lbnQuc2NoZW1hLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHBnVGFibGUsIGJpZ2ludCwgaW50ZWdlciwgdmFyY2hhciwgdGV4dCwgdGltZXN0YW1wIH0gZnJvbSAnZHJpenpsZS1vcm0vcGctY29yZSc7XG5cbmV4cG9ydCBjb25zdCBjb21wcmVoZW5zaXZlX3BhaW5fYXNzZXNzbWVudCA9IHBnVGFibGUoJ2NvbXByZWhlbnNpdmVfcGFpbl9hc3Nlc3NtZW50Jywge1xuICBpZDogYmlnaW50KCdpZCcsIHsgbW9kZTogJ251bWJlcicgfSkucHJpbWFyeUtleSgpLmdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkoKSxcbiAgcGF0aWVudF9pZDogYmlnaW50KCdwYXRpZW50X2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5ub3ROdWxsKCksXG4gIGNvbXByZWhlbnNpdmVfcGFpbjogaW50ZWdlcignY29tcHJlaGVuc2l2ZV9wYWluJyksXG4gIGRhdGVfb2ZfYXNzZXNzbWVudDogdmFyY2hhcignZGF0ZV9vZl9hc3Nlc3NtZW50JywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgY29tcHJlaGVuc2l2ZV9wYWluX2luY2x1ZGVkOiB0ZXh0KCdjb21wcmVoZW5zaXZlX3BhaW5faW5jbHVkZWQnKSxcbiAgY29tbWVudHM6IHRleHQoJ2NvbW1lbnRzJyksXG4gIGNyZWF0ZWRBdDogdGltZXN0YW1wKCdjcmVhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbiAgdXBkYXRlZEF0OiB0aW1lc3RhbXAoJ3VwZGF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxufSk7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQVNFLE9BQU8sRUFBRUMsTUFBTSxFQUFFQyxPQUFPLEVBQUVDLE9BQU8sRUFBRUMsSUFBSSxFQUFFQyxTQUFTLFFBQVEscUJBQXFCO0FBRXhGLE9BQU8sTUFBTUMsNkJBQTZCO0FBQUE7QUFBQSxDQUFBUixjQUFBLEdBQUFTLENBQUEsT0FBR1AsT0FBTyxDQUFDLCtCQUErQixFQUFFO0VBQ3BGUSxFQUFFLEVBQUVQLE1BQU0sQ0FBQyxJQUFJLEVBQUU7SUFBRVEsSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNDLFVBQVUsQ0FBQyxDQUFDLENBQUNDLDRCQUE0QixDQUFDLENBQUM7RUFDaEZDLFVBQVUsRUFBRVgsTUFBTSxDQUFDLFlBQVksRUFBRTtJQUFFUSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0ksT0FBTyxDQUFDLENBQUM7RUFDOURDLGtCQUFrQixFQUFFWixPQUFPLENBQUMsb0JBQW9CLENBQUM7RUFDakRhLGtCQUFrQixFQUFFWixPQUFPLENBQUMsb0JBQW9CLEVBQUU7SUFBRWEsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ2xFQywyQkFBMkIsRUFBRWIsSUFBSSxDQUFDLDZCQUE2QixDQUFDO0VBQ2hFYyxRQUFRLEVBQUVkLElBQUksQ0FBQyxVQUFVLENBQUM7RUFDMUJlLFNBQVMsRUFBRWQsU0FBUyxDQUFDLFlBQVksQ0FBQyxDQUFDZSxVQUFVLENBQUMsQ0FBQyxDQUFDUCxPQUFPLENBQUMsQ0FBQztFQUN6RFEsU0FBUyxFQUFFaEIsU0FBUyxDQUFDLFlBQVksQ0FBQyxDQUFDZSxVQUFVLENBQUMsQ0FBQyxDQUFDUCxPQUFPLENBQUM7QUFDMUQsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

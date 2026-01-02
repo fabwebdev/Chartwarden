@@ -1,0 +1,164 @@
+9e88cff55ec05d0449cb18e779486eeb
+/* istanbul ignore next */
+function cov_muaw97pb8() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainWorsened.js";
+  var hash = "f8969c3e5f9331875db2285265b91791df236cd1";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainWorsened.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 21
+        },
+        end: {
+          line: 29,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 23
+        },
+        end: {
+          line: 22,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 24,
+          column: 8
+        },
+        end: {
+          line: 27,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 24,
+          column: 45
+        },
+        end: {
+          line: 27,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 12,
+            column: 13
+          },
+          end: {
+            line: 12,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 12,
+            column: 25
+          },
+          end: {
+            line: 28,
+            column: 5
+          }
+        },
+        line: 12
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 24,
+            column: 26
+          },
+          end: {
+            line: 24,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 24,
+            column: 45
+          },
+          end: {
+            line: 27,
+            column: 9
+          }
+        },
+        line: 24
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "f8969c3e5f9331875db2285265b91791df236cd1"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_muaw97pb8 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_muaw97pb8();
+// PainWorsened enum equivalent
+const PainWorsened =
+/* istanbul ignore next */
+(cov_muaw97pb8().s[0]++, {
+  CHANGE_IN_POSITION: "change in position",
+  MOVEMENT: "movement",
+  WALKING: "walking",
+  COLD: "cold",
+  SITTING: "sitting",
+  STANDING: "standing",
+  HEAT: "heat",
+  OTHER: "other",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_muaw97pb8().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_muaw97pb8().s[1]++, [this.CHANGE_IN_POSITION, this.MOVEMENT, this.WALKING, this.COLD, this.SITTING, this.STANDING, this.HEAT, this.OTHER]);
+    /* istanbul ignore next */
+    cov_muaw97pb8().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_muaw97pb8().f[1]++;
+      cov_muaw97pb8().s[3]++;
+      return {
+        id: index + 1,
+        value: value
+      };
+    });
+  }
+});
+export default PainWorsened;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfbXVhdzk3cGI4IiwiYWN0dWFsQ292ZXJhZ2UiLCJQYWluV29yc2VuZWQiLCJzIiwiQ0hBTkdFX0lOX1BPU0lUSU9OIiwiTU9WRU1FTlQiLCJXQUxLSU5HIiwiQ09MRCIsIlNJVFRJTkciLCJTVEFORElORyIsIkhFQVQiLCJPVEhFUiIsInRvQXJyYXkiLCJmIiwidmFsdWVzIiwibWFwIiwidmFsdWUiLCJpbmRleCIsImlkIl0sInNvdXJjZXMiOlsiUGFpbldvcnNlbmVkLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIFBhaW5Xb3JzZW5lZCBlbnVtIGVxdWl2YWxlbnRcbmNvbnN0IFBhaW5Xb3JzZW5lZCA9IHtcbiAgICBDSEFOR0VfSU5fUE9TSVRJT046IFwiY2hhbmdlIGluIHBvc2l0aW9uXCIsXG4gICAgTU9WRU1FTlQ6IFwibW92ZW1lbnRcIixcbiAgICBXQUxLSU5HOiBcIndhbGtpbmdcIixcbiAgICBDT0xEOiBcImNvbGRcIixcbiAgICBTSVRUSU5HOiBcInNpdHRpbmdcIixcbiAgICBTVEFORElORzogXCJzdGFuZGluZ1wiLFxuICAgIEhFQVQ6IFwiaGVhdFwiLFxuICAgIE9USEVSOiBcIm90aGVyXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuQ0hBTkdFX0lOX1BPU0lUSU9OLFxuICAgICAgICAgICAgdGhpcy5NT1ZFTUVOVCxcbiAgICAgICAgICAgIHRoaXMuV0FMS0lORyxcbiAgICAgICAgICAgIHRoaXMuQ09MRCxcbiAgICAgICAgICAgIHRoaXMuU0lUVElORyxcbiAgICAgICAgICAgIHRoaXMuU1RBTkRJTkcsXG4gICAgICAgICAgICB0aGlzLkhFQVQsXG4gICAgICAgICAgICB0aGlzLk9USEVSLFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXggKyAxLFxuICAgICAgICAgICAgdmFsdWU6IHZhbHVlLFxuICAgICAgICB9KSk7XG4gICAgfSxcbn07XG5cbmV4cG9ydCBkZWZhdWx0IFBhaW5Xb3JzZW5lZDtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlo7QUFDQSxNQUFNRSxZQUFZO0FBQUE7QUFBQSxDQUFBRixhQUFBLEdBQUFHLENBQUEsT0FBRztFQUNqQkMsa0JBQWtCLEVBQUUsb0JBQW9CO0VBQ3hDQyxRQUFRLEVBQUUsVUFBVTtFQUNwQkMsT0FBTyxFQUFFLFNBQVM7RUFDbEJDLElBQUksRUFBRSxNQUFNO0VBQ1pDLE9BQU8sRUFBRSxTQUFTO0VBQ2xCQyxRQUFRLEVBQUUsVUFBVTtFQUNwQkMsSUFBSSxFQUFFLE1BQU07RUFDWkMsS0FBSyxFQUFFLE9BQU87RUFFZEMsT0FBTyxFQUFFLFNBQUFBLENBQUEsRUFBWTtJQUFBO0lBQUFaLGFBQUEsR0FBQWEsQ0FBQTtJQUNqQixNQUFNQyxNQUFNO0lBQUE7SUFBQSxDQUFBZCxhQUFBLEdBQUFHLENBQUEsT0FBRyxDQUNYLElBQUksQ0FBQ0Msa0JBQWtCLEVBQ3ZCLElBQUksQ0FBQ0MsUUFBUSxFQUNiLElBQUksQ0FBQ0MsT0FBTyxFQUNaLElBQUksQ0FBQ0MsSUFBSSxFQUNULElBQUksQ0FBQ0MsT0FBTyxFQUNaLElBQUksQ0FBQ0MsUUFBUSxFQUNiLElBQUksQ0FBQ0MsSUFBSSxFQUNULElBQUksQ0FBQ0MsS0FBSyxDQUNiO0lBQUM7SUFBQVgsYUFBQSxHQUFBRyxDQUFBO0lBRUYsT0FBT1csTUFBTSxDQUFDQyxHQUFHLENBQUMsQ0FBQ0MsS0FBSyxFQUFFQyxLQUFLLEtBQU07TUFBQTtNQUFBakIsYUFBQSxHQUFBYSxDQUFBO01BQUFiLGFBQUEsR0FBQUcsQ0FBQTtNQUFBO1FBQ2pDZSxFQUFFLEVBQUVELEtBQUssR0FBRyxDQUFDO1FBQ2JELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZWQsWUFBWSIsImlnbm9yZUxpc3QiOltdfQ==

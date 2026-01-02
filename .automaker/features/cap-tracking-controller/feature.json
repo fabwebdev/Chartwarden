@@ -2,8 +2,8 @@
   "id": "cap-tracking-controller",
   "category": "API",
   "title": "Cap Tracking Controller",
-  "description": "Implement controller for cap calculations and cap limit monitoring.",
-  "status": "verified",
+  "description": "Implement Controller for Cap Calculations and Cap Limit Monitoring\n\nCreate a controller layer to handle capacity/capital calculation logic and monitor threshold limits with alerting capabilities.\n\nTechnical Implementation:\n- Controller Class: `CapController` with methods for calculation and monitoring\n- Calculation Engine: Implement cap calculation algorithms based on business rules (percentage-based, absolute limits, tiered caps)\n- Data Sources: Integrate with transaction/usage data repositories for real-time calculations\n- Monitoring Service: Background job/cron to check current values against configured limits\n- Alert System: Trigger notifications when approaching or exceeding thresholds (e.g., 80%, 90%, 100%)\n\nAPI Endpoints:\n- POST /api/caps/calculate - Calculate current cap values\n- GET /api/caps/status - Retrieve cap utilization status\n- GET /api/caps/limits - Fetch configured cap limits\n- PUT /api/caps/limits/:id - Update cap limit configurations\n- GET /api/caps/alerts - Retrieve active cap alerts\n\nData Models:\n- CapLimit: id, entity_id, limit_type, threshold_value, period (daily/monthly/yearly)\n- CapCalculation: id, entity_id, calculated_value, calculation_time, metadata\n- CapAlert: id, cap_limit_id, severity, triggered_at, resolved_at, notification_status\n\nArchitecture:\n- CapCalculationService: Handles calculation logic and caching\n- CapMonitoringService: Periodic checks (configurable interval, e.g., every 5 minutes)\n- AlertDispatcher: Sends notifications via configured channels (email, webhook, SMS)\n\nPerformance Considerations:\n- Cache calculation results with appropriate TTL\n- Use database indexes on entity_id and calculation_time\n- Implement rate limiting on calculation endpoints\n- Consider event-driven architecture for real-time monitoring\n\nEdge Cases:\n- Handle missing or incomplete data gracefully\n- Support historical cap calculations for reporting\n- Manage timezone considerations for period-based caps\n- Prevent duplicate alerts for same threshold breach\n- Handle concurrent cap updates with optimistic locking",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,14 +11,14 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.258Z",
-  "updatedAt": "2026-01-01T00:26:21.574Z",
+  "updatedAt": "2026-01-02T16:12:32.905Z",
   "branchName": "main",
-  "startedAt": "2026-01-01T00:23:08.366Z",
+  "startedAt": "2026-01-02T16:09:36.120Z",
   "skipTests": false,
-  "model": "opus",
-  "thinkingLevel": "none",
+  "model": "sonnet",
+  "thinkingLevel": "medium",
   "imagePaths": [],
   "textFilePaths": [],
-  "planningMode": "skip",
+  "planningMode": "spec",
   "requirePlanApproval": false
 }

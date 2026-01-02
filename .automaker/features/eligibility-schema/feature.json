@@ -2,15 +2,22 @@
   "id": "eligibility-schema",
   "category": "Database",
   "title": "Eligibility Verification Schema",
-  "description": "Create schema for eligibility verification requests and responses with coverage information.",
-  "status": "verified",
+  "description": "Create Eligibility Verification Schema\n\nDesign and implement a comprehensive data schema for healthcare eligibility verification that handles both incoming verification requests and outgoing responses with coverage details.\n\nRequirements:\n- Define request schema with required fields:\n  * Patient/member identifying information (ID, name, DOB, etc.)\n  * Insurance provider details\n  * Service type or procedure codes being verified\n  * Date of service or service period\n  * Requesting provider/facility information\n\n- Define response schema with coverage information:\n  * Eligibility status (active, inactive, pending)\n  * Coverage effective dates (start/end)\n  * Benefit details (deductibles, copays, coinsurance, out-of-pocket max)\n  * Coverage limits and exclusions\n  * Prior authorization requirements\n  * In-network vs out-of-network benefits\n\n- Include error handling schema:\n  * Validation errors for malformed requests\n  * Not found or invalid member scenarios\n  * System errors or timeout responses\n\n- Ensure compliance considerations:\n  * HIPAA compliance for PHI handling\n  * Standard format compatibility (X12 270/271, HL7, or similar)\n\n- Add field validation rules:\n  * Required vs optional fields\n  * Data type constraints\n  * Format specifications (dates, IDs, codes)\n\n- Support versioning for schema evolution",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "patient-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.253Z",
-  "updatedAt": "2025-12-31T08:26:38.078Z",
+  "updatedAt": "2026-01-02T15:36:15.988Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T08:22:40.800Z"
+  "startedAt": "2026-01-02T15:33:47.497Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

@@ -2,15 +2,22 @@
   "id": "edi271-parser-service",
   "category": "Service",
   "title": "EDI 271 Parser Service",
-  "description": "Implement EDI 271 eligibility response parser with coverage extraction and validation.",
-  "status": "verified",
+  "description": "Implement EDI 271 Eligibility Response Parser with Coverage Extraction and Validation\n\nBuild a parser to process X12 EDI 271 (Eligibility Response) documents, extract coverage details, and validate data integrity.\n\nTechnical Implementation:\n- Parser Library: Use `node-x12` or `edifact` for segment parsing, or implement custom tokenizer for ISA/GS/ST envelope handling\n- Input Format: Accept raw X12 271 string (segments delimited by ~, elements by *, sub-elements by :)\n- Output Schema: Structured JSON with normalized coverage data (dates, codes, amounts)\n\nCore Components:\n- EDI271Parser class: Tokenizes segments, validates structure (ISA→GS→ST→HL hierarchy)\n- CoverageExtractor: Parses EB segments (eligibility/benefit info), extracts service type codes, coverage levels, time periods\n- DataNormalizer: Converts X12 date formats (CCYYMMDD) to ISO-8601, qualifiers to human-readable labels\n- ValidationEngine: Validates control numbers, segment counts, required loops (2000A/B/C/D)\n\nKey Segments to Parse:\n- ISA/GS/ST: Envelope and transaction set headers\n- HL: Hierarchical level (Information Source, Information Receiver, Subscriber, Dependent)\n- NM1: Entity names and identifiers\n- EB: Eligibility/Benefit Information (coverage status, service types, timePeriod qualifiers)\n- DTP: Date/Time Period (coverage dates, eligibility dates)\n- MSG: Message Text (rejection reasons, notes)\n- SE/GE/IEA: Trailer segments with control counts\n\nData Model:\n```\n{\n  controlNumber: string,\n  transactionDate: ISO date,\n  subscriber: { memberId, name, dob },\n  coverages: [{\n    serviceType: code + description,\n    coverageLevel: individual|family,\n    insuranceType: code,\n    timePeriod: { start, end },\n    benefitAmount: { amount, qualifier },\n    planDetails: { network, copay, deductible }\n  }],\n  validationErrors: []\n}\n```\n\nValidation Rules:\n- Verify segment counts match SE01 trailer\n- Validate control numbers match across ISA13/IEA02, GS06/GE02, ST02/SE02\n- Check required loops (2000A subscriber must exist)\n- Validate code sets against X12 standards (EB01 eligibility codes, III01 service type codes)\n- Flag missing critical data (subscriber ID, dates)\n\nError Handling:\n- Malformed segments: Log position and continue parsing\n- Missing required segments: Return partial data with validation errors\n- Invalid control numbers: Reject entire transaction\n- Code mapping failures: Use raw codes with warning flag\n\nPerformance Considerations:\n- Stream processing for large batches (multiple 271s in single file)\n- Memoize code lookups (service type descriptions)\n- Limit recursion depth for HL loops\n\nIntegration Points:\n- Input: File upload or API POST /api/edi/271/parse\n- Output: Store in database (Postgres JSONB or MongoDB) for coverage lookup\n- Downstream: Feed eligibility data to claims processing, benefits verification systems\n\nTesting Requirements:\n- Unit tests with sample 271 segments (active coverage, inactive, multiple dependents)\n- Validation tests for malformed EDI (missing segments, invalid control numbers)\n- Edge cases: No coverage, multiple plans, coordination of benefits scenarios",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "eligibility-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.253Z",
-  "updatedAt": "2025-12-31T14:57:39.755Z",
+  "updatedAt": "2026-01-02T15:45:23.399Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T14:49:39.014Z"
+  "startedAt": "2026-01-02T15:42:18.599Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "ultrathink",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "full",
+  "requirePlanApproval": false
 }

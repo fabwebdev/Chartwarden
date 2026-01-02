@@ -2,15 +2,22 @@
   "id": "staff-routes",
   "category": "API",
   "title": "Staff API Routes",
-  "description": "Create REST API routes for staff management and profile queries.",
-  "status": "verified",
+  "description": "Create REST API Endpoints for Staff Management and Profile Operations\n\nDesign and implement a complete set of RESTful API routes to handle staff-related operations and profile data retrieval.\n\nRequirements:\n- Define resource routes following REST conventions (GET, POST, PUT/PATCH, DELETE)\n- Implement staff CRUD operations:\n  - GET /api/staff - List all staff members with pagination support\n  - GET /api/staff/:id - Retrieve individual staff profile\n  - POST /api/staff - Create new staff member\n  - PUT/PATCH /api/staff/:id - Update staff information\n  - DELETE /api/staff/:id - Remove staff member\n- Add profile query endpoints:\n  - GET /api/staff/:id/profile - Fetch detailed profile information\n  - GET /api/staff/search - Search staff by criteria (name, department, role, etc.)\n- Implement proper HTTP status codes for all responses\n- Add request validation for required fields and data types\n- Include error handling with descriptive messages\n- Add authentication/authorization middleware to protect sensitive operations\n- Document API endpoints with request/response examples\n- Consider filtering, sorting, and pagination for list endpoints\n- Write integration tests for all routes\n\nEdge Cases to Consider:\n- Handle requests for non-existent staff IDs\n- Validate uniqueness constraints (e.g., email, employee ID)\n- Manage partial updates vs full replacements\n- Handle malformed request payloads",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "staff-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.249Z",
-  "updatedAt": "2026-01-01T07:03:02.009Z",
+  "updatedAt": "2026-01-02T15:20:06.037Z",
   "branchName": "main",
-  "startedAt": "2026-01-01T06:53:24.805Z"
+  "startedAt": "2026-01-02T15:17:09.383Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

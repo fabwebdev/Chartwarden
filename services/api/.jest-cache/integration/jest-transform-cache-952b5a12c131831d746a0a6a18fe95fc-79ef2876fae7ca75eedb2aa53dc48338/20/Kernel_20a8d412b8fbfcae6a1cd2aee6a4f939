@@ -1,0 +1,151 @@
+f4727ed79825550e67437289cad1446d
+/* istanbul ignore next */
+function cov_1aauedr639() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Kernel.js";
+  var hash = "3410a3d4a00d663a59e3b96ed4fe3c9cd13eb756";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Kernel.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 4
+        },
+        end: {
+          line: 18,
+          column: 6
+        }
+      },
+      "1": {
+        start: {
+          line: 25,
+          column: 4
+        },
+        end: {
+          line: 41,
+          column: 6
+        }
+      },
+      "2": {
+        start: {
+          line: 50,
+          column: 4
+        },
+        end: {
+          line: 61,
+          column: 6
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 2,
+            column: 2
+          },
+          end: {
+            line: 2,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 2,
+            column: 16
+          },
+          end: {
+            line: 62,
+            column: 3
+          }
+        },
+        line: 2
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "3410a3d4a00d663a59e3b96ed4fe3c9cd13eb756"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1aauedr639 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1aauedr639();
+class Kernel {
+  constructor() {
+    /* istanbul ignore next */
+    cov_1aauedr639().f[0]++;
+    cov_1aauedr639().s[0]++;
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var {Array}
+     */
+    this.middleware = [
+    // TrustHosts,
+    'TrustProxies', 'HandleCors', 'PreventRequestsDuringMaintenance', 'ValidatePostSize', 'TrimStrings', 'ConvertEmptyStringsToNull'];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var {Object}
+     */
+    /* istanbul ignore next */
+    cov_1aauedr639().s[1]++;
+    this.middlewareGroups = {
+      web: ['EncryptCookies', 'AddQueuedCookiesToResponse', 'StartSession',
+      // 'AuthenticateSession',
+      'ShareErrorsFromSession', 'VerifyCsrfToken', 'SubstituteBindings'],
+      api: [
+      // 'EnsureFrontendRequestsAreStateful',
+      'throttle:api', 'SubstituteBindings']
+    };
+
+    /**
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
+     *
+     * @var {Object}
+     */
+    /* istanbul ignore next */
+    cov_1aauedr639().s[2]++;
+    this.routeMiddleware = {
+      auth: 'Authenticate',
+      'auth.basic': 'AuthenticateWithBasicAuth',
+      'cache.headers': 'SetCacheHeaders',
+      can: 'Authorize',
+      guest: 'RedirectIfAuthenticated',
+      'password.confirm': 'RequirePassword',
+      signed: 'ValidateSignature',
+      throttle: 'ThrottleRequests',
+      verified: 'EnsureEmailIsVerified'
+    };
+  }
+}
+export default new Kernel();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWFhdWVkcjYzOSIsImFjdHVhbENvdmVyYWdlIiwiS2VybmVsIiwiY29uc3RydWN0b3IiLCJmIiwicyIsIm1pZGRsZXdhcmUiLCJtaWRkbGV3YXJlR3JvdXBzIiwid2ViIiwiYXBpIiwicm91dGVNaWRkbGV3YXJlIiwiYXV0aCIsImNhbiIsImd1ZXN0Iiwic2lnbmVkIiwidGhyb3R0bGUiLCJ2ZXJpZmllZCJdLCJzb3VyY2VzIjpbIktlcm5lbC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJjbGFzcyBLZXJuZWwge1xuICBjb25zdHJ1Y3RvcigpIHtcbiAgICAvKipcbiAgICAgKiBUaGUgYXBwbGljYXRpb24ncyBnbG9iYWwgSFRUUCBtaWRkbGV3YXJlIHN0YWNrLlxuICAgICAqXG4gICAgICogVGhlc2UgbWlkZGxld2FyZSBhcmUgcnVuIGR1cmluZyBldmVyeSByZXF1ZXN0IHRvIHlvdXIgYXBwbGljYXRpb24uXG4gICAgICpcbiAgICAgKiBAdmFyIHtBcnJheX1cbiAgICAgKi9cbiAgICB0aGlzLm1pZGRsZXdhcmUgPSBbXG4gICAgICAvLyBUcnVzdEhvc3RzLFxuICAgICAgJ1RydXN0UHJveGllcycsXG4gICAgICAnSGFuZGxlQ29ycycsXG4gICAgICAnUHJldmVudFJlcXVlc3RzRHVyaW5nTWFpbnRlbmFuY2UnLFxuICAgICAgJ1ZhbGlkYXRlUG9zdFNpemUnLFxuICAgICAgJ1RyaW1TdHJpbmdzJyxcbiAgICAgICdDb252ZXJ0RW1wdHlTdHJpbmdzVG9OdWxsJyxcbiAgICBdO1xuXG4gICAgLyoqXG4gICAgICogVGhlIGFwcGxpY2F0aW9uJ3Mgcm91dGUgbWlkZGxld2FyZSBncm91cHMuXG4gICAgICpcbiAgICAgKiBAdmFyIHtPYmplY3R9XG4gICAgICovXG4gICAgdGhpcy5taWRkbGV3YXJlR3JvdXBzID0ge1xuICAgICAgd2ViOiBbXG4gICAgICAgICdFbmNyeXB0Q29va2llcycsXG4gICAgICAgICdBZGRRdWV1ZWRDb29raWVzVG9SZXNwb25zZScsXG4gICAgICAgICdTdGFydFNlc3Npb24nLFxuICAgICAgICAvLyAnQXV0aGVudGljYXRlU2Vzc2lvbicsXG4gICAgICAgICdTaGFyZUVycm9yc0Zyb21TZXNzaW9uJyxcbiAgICAgICAgJ1ZlcmlmeUNzcmZUb2tlbicsXG4gICAgICAgICdTdWJzdGl0dXRlQmluZGluZ3MnLFxuICAgICAgXSxcblxuICAgICAgYXBpOiBbXG4gICAgICAgIC8vICdFbnN1cmVGcm9udGVuZFJlcXVlc3RzQXJlU3RhdGVmdWwnLFxuICAgICAgICAndGhyb3R0bGU6YXBpJyxcbiAgICAgICAgJ1N1YnN0aXR1dGVCaW5kaW5ncycsXG4gICAgICBdLFxuICAgIH07XG5cbiAgICAvKipcbiAgICAgKiBUaGUgYXBwbGljYXRpb24ncyByb3V0ZSBtaWRkbGV3YXJlLlxuICAgICAqXG4gICAgICogVGhlc2UgbWlkZGxld2FyZSBtYXkgYmUgYXNzaWduZWQgdG8gZ3JvdXBzIG9yIHVzZWQgaW5kaXZpZHVhbGx5LlxuICAgICAqXG4gICAgICogQHZhciB7T2JqZWN0fVxuICAgICAqL1xuICAgIHRoaXMucm91dGVNaWRkbGV3YXJlID0ge1xuICAgICAgYXV0aDogJ0F1dGhlbnRpY2F0ZScsXG4gICAgICAnYXV0aC5iYXNpYyc6ICdBdXRoZW50aWNhdGVXaXRoQmFzaWNBdXRoJyxcbiAgICAgICdjYWNoZS5oZWFkZXJzJzogJ1NldENhY2hlSGVhZGVycycsXG4gICAgICBjYW46ICdBdXRob3JpemUnLFxuICAgICAgZ3Vlc3Q6ICdSZWRpcmVjdElmQXV0aGVudGljYXRlZCcsXG4gICAgICAncGFzc3dvcmQuY29uZmlybSc6ICdSZXF1aXJlUGFzc3dvcmQnLFxuICAgICAgc2lnbmVkOiAnVmFsaWRhdGVTaWduYXR1cmUnLFxuICAgICAgdGhyb3R0bGU6ICdUaHJvdHRsZVJlcXVlc3RzJyxcbiAgICAgIHZlcmlmaWVkOiAnRW5zdXJlRW1haWxJc1ZlcmlmaWVkJyxcblxuICAgIH07XG4gIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgbmV3IEtlcm5lbCgpOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosTUFBTUUsTUFBTSxDQUFDO0VBQ1hDLFdBQVdBLENBQUEsRUFBRztJQUFBO0lBQUFILGNBQUEsR0FBQUksQ0FBQTtJQUFBSixjQUFBLEdBQUFLLENBQUE7SUFDWjtBQUNKO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtJQUNJLElBQUksQ0FBQ0MsVUFBVSxHQUFHO0lBQ2hCO0lBQ0EsY0FBYyxFQUNkLFlBQVksRUFDWixrQ0FBa0MsRUFDbEMsa0JBQWtCLEVBQ2xCLGFBQWEsRUFDYiwyQkFBMkIsQ0FDNUI7O0lBRUQ7QUFDSjtBQUNBO0FBQ0E7QUFDQTtJQUpJO0lBQUFOLGNBQUEsR0FBQUssQ0FBQTtJQUtBLElBQUksQ0FBQ0UsZ0JBQWdCLEdBQUc7TUFDdEJDLEdBQUcsRUFBRSxDQUNILGdCQUFnQixFQUNoQiw0QkFBNEIsRUFDNUIsY0FBYztNQUNkO01BQ0Esd0JBQXdCLEVBQ3hCLGlCQUFpQixFQUNqQixvQkFBb0IsQ0FDckI7TUFFREMsR0FBRyxFQUFFO01BQ0g7TUFDQSxjQUFjLEVBQ2Qsb0JBQW9CO0lBRXhCLENBQUM7O0lBRUQ7QUFDSjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7SUFOSTtJQUFBVCxjQUFBLEdBQUFLLENBQUE7SUFPQSxJQUFJLENBQUNLLGVBQWUsR0FBRztNQUNyQkMsSUFBSSxFQUFFLGNBQWM7TUFDcEIsWUFBWSxFQUFFLDJCQUEyQjtNQUN6QyxlQUFlLEVBQUUsaUJBQWlCO01BQ2xDQyxHQUFHLEVBQUUsV0FBVztNQUNoQkMsS0FBSyxFQUFFLHlCQUF5QjtNQUNoQyxrQkFBa0IsRUFBRSxpQkFBaUI7TUFDckNDLE1BQU0sRUFBRSxtQkFBbUI7TUFDM0JDLFFBQVEsRUFBRSxrQkFBa0I7TUFDNUJDLFFBQVEsRUFBRTtJQUVaLENBQUM7RUFDSDtBQUNGO0FBRUEsZUFBZSxJQUFJZCxNQUFNLENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

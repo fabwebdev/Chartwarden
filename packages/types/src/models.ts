@@ -510,11 +510,9 @@ export interface ERAReconciliationRequest {
  * Exception Resolution Request - Request payload for resolving exceptions
  */
 export interface ExceptionResolutionRequest {
-  resolutionType: ERAResolutionType;
+  resolutionType: ResolutionType;
   notes?: string;
 }
-
-export type ERAResolutionType = 'MANUAL_POSTED' | 'CLAIM_CORRECTED' | 'PAYER_CONTACTED' | 'WRITTEN_OFF' | 'REFUNDED';
 
 // =============================================================================
 // Denial Management Models

@@ -1,0 +1,291 @@
+2bd0f6879537524205949cc2ab7f857d
+/* istanbul ignore next */
+function cov_1xx8m36q9d() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/prognosisTracking.routes.js";
+  var hash = "400f36375a026e685833d37d8177989ba91abc95";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/prognosisTracking.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 77
+        }
+      },
+      "1": {
+        start: {
+          line: 17,
+          column: 2
+        },
+        end: {
+          line: 19,
+          column: 74
+        }
+      },
+      "2": {
+        start: {
+          line: 22,
+          column: 2
+        },
+        end: {
+          line: 24,
+          column: 88
+        }
+      },
+      "3": {
+        start: {
+          line: 27,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 88
+        }
+      },
+      "4": {
+        start: {
+          line: 32,
+          column: 2
+        },
+        end: {
+          line: 34,
+          column: 85
+        }
+      },
+      "5": {
+        start: {
+          line: 37,
+          column: 2
+        },
+        end: {
+          line: 39,
+          column: 73
+        }
+      },
+      "6": {
+        start: {
+          line: 42,
+          column: 2
+        },
+        end: {
+          line: 44,
+          column: 75
+        }
+      },
+      "7": {
+        start: {
+          line: 47,
+          column: 2
+        },
+        end: {
+          line: 49,
+          column: 75
+        }
+      },
+      "8": {
+        start: {
+          line: 52,
+          column: 2
+        },
+        end: {
+          line: 54,
+          column: 75
+        }
+      },
+      "9": {
+        start: {
+          line: 57,
+          column: 2
+        },
+        end: {
+          line: 59,
+          column: 89
+        }
+      },
+      "10": {
+        start: {
+          line: 62,
+          column: 2
+        },
+        end: {
+          line: 64,
+          column: 90
+        }
+      },
+      "11": {
+        start: {
+          line: 67,
+          column: 2
+        },
+        end: {
+          line: 69,
+          column: 82
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "prognosisTrackingRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 15
+          },
+          end: {
+            line: 10,
+            column: 38
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 57
+          },
+          end: {
+            line: 70,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "400f36375a026e685833d37d8177989ba91abc95"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1xx8m36q9d = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1xx8m36q9d();
+import PrognosisTrackingController from "../controllers/PrognosisTracking.controller.js";
+import { verifyToken } from "../middleware/betterAuth.middleware.js";
+
+/**
+ * Prognosis Tracking Routes
+ * Comprehensive prognosis tracking for hospice patients
+ *
+ * Base path: /api/prognosis-tracking
+ */
+async function prognosisTrackingRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().f[0]++;
+  cov_1xx8m36q9d().s[0]++;
+  // Get enum values for dropdowns
+  fastify.get("/enums", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.getEnums.bind(PrognosisTrackingController));
+
+  // List all prognosis tracking records with filters
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[1]++;
+  fastify.get("/", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.index.bind(PrognosisTrackingController));
+
+  // Get current prognosis for a patient
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[2]++;
+  fastify.get("/patient/:patientId/current", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.getCurrentByPatient.bind(PrognosisTrackingController));
+
+  // Get prognosis history for a patient
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[3]++;
+  fastify.get("/patient/:patientId/history", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.getHistoryByPatient.bind(PrognosisTrackingController));
+
+  // Get prognosis trends for a patient
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[4]++;
+  fastify.get("/patient/:patientId/trends", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.getPatientTrends.bind(PrognosisTrackingController));
+
+  // Get a specific prognosis tracking record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[5]++;
+  fastify.get("/:id", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.show.bind(PrognosisTrackingController));
+
+  // Create a new prognosis tracking record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[6]++;
+  fastify.post("/", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.create.bind(PrognosisTrackingController));
+
+  // Update a prognosis tracking record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[7]++;
+  fastify.put("/:id", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.update.bind(PrognosisTrackingController));
+
+  // Soft delete (archive) a prognosis tracking record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[8]++;
+  fastify.delete("/:id", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.delete.bind(PrognosisTrackingController));
+
+  // Add clinical indicator to a prognosis record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[9]++;
+  fastify.post("/:id/indicators", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.addClinicalIndicator.bind(PrognosisTrackingController));
+
+  // Get clinical indicators for a prognosis record
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[10]++;
+  fastify.get("/:id/indicators", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.getClinicalIndicators.bind(PrognosisTrackingController));
+
+  // Record outcome for a prognosis
+  /* istanbul ignore next */
+  cov_1xx8m36q9d().s[11]++;
+  fastify.post("/:id/outcomes", {
+    preHandler: [verifyToken]
+  }, PrognosisTrackingController.recordOutcome.bind(PrognosisTrackingController));
+}
+export default prognosisTrackingRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXh4OG0zNnE5ZCIsImFjdHVhbENvdmVyYWdlIiwiUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyIiwidmVyaWZ5VG9rZW4iLCJwcm9nbm9zaXNUcmFja2luZ1JvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiZ2V0RW51bXMiLCJiaW5kIiwiaW5kZXgiLCJnZXRDdXJyZW50QnlQYXRpZW50IiwiZ2V0SGlzdG9yeUJ5UGF0aWVudCIsImdldFBhdGllbnRUcmVuZHMiLCJzaG93IiwicG9zdCIsImNyZWF0ZSIsInB1dCIsInVwZGF0ZSIsImRlbGV0ZSIsImFkZENsaW5pY2FsSW5kaWNhdG9yIiwiZ2V0Q2xpbmljYWxJbmRpY2F0b3JzIiwicmVjb3JkT3V0Y29tZSJdLCJzb3VyY2VzIjpbInByb2dub3Npc1RyYWNraW5nLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyIGZyb20gXCIuLi9jb250cm9sbGVycy9Qcm9nbm9zaXNUcmFja2luZy5jb250cm9sbGVyLmpzXCI7XG5pbXBvcnQgeyB2ZXJpZnlUb2tlbiB9IGZyb20gXCIuLi9taWRkbGV3YXJlL2JldHRlckF1dGgubWlkZGxld2FyZS5qc1wiO1xuXG4vKipcbiAqIFByb2dub3NpcyBUcmFja2luZyBSb3V0ZXNcbiAqIENvbXByZWhlbnNpdmUgcHJvZ25vc2lzIHRyYWNraW5nIGZvciBob3NwaWNlIHBhdGllbnRzXG4gKlxuICogQmFzZSBwYXRoOiAvYXBpL3Byb2dub3Npcy10cmFja2luZ1xuICovXG5hc3luYyBmdW5jdGlvbiBwcm9nbm9zaXNUcmFja2luZ1JvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIEdldCBlbnVtIHZhbHVlcyBmb3IgZHJvcGRvd25zXG4gIGZhc3RpZnkuZ2V0KFwiL2VudW1zXCIsIHtcbiAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICB9LCBQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIuZ2V0RW51bXMuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBMaXN0IGFsbCBwcm9nbm9zaXMgdHJhY2tpbmcgcmVjb3JkcyB3aXRoIGZpbHRlcnNcbiAgZmFzdGlmeS5nZXQoXCIvXCIsIHtcbiAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICB9LCBQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIuaW5kZXguYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgY3VycmVudCBwcm9nbm9zaXMgZm9yIGEgcGF0aWVudFxuICBmYXN0aWZ5LmdldChcIi9wYXRpZW50LzpwYXRpZW50SWQvY3VycmVudFwiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyLmdldEN1cnJlbnRCeVBhdGllbnQuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgcHJvZ25vc2lzIGhpc3RvcnkgZm9yIGEgcGF0aWVudFxuICBmYXN0aWZ5LmdldChcIi9wYXRpZW50LzpwYXRpZW50SWQvaGlzdG9yeVwiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyLmdldEhpc3RvcnlCeVBhdGllbnQuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBHZXQgcHJvZ25vc2lzIHRyZW5kcyBmb3IgYSBwYXRpZW50XG4gIGZhc3RpZnkuZ2V0KFwiL3BhdGllbnQvOnBhdGllbnRJZC90cmVuZHNcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlci5nZXRQYXRpZW50VHJlbmRzLmJpbmQoUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyKSk7XG5cbiAgLy8gR2V0IGEgc3BlY2lmaWMgcHJvZ25vc2lzIHRyYWNraW5nIHJlY29yZFxuICBmYXN0aWZ5LmdldChcIi86aWRcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlci5zaG93LmJpbmQoUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyKSk7XG5cbiAgLy8gQ3JlYXRlIGEgbmV3IHByb2dub3NpcyB0cmFja2luZyByZWNvcmRcbiAgZmFzdGlmeS5wb3N0KFwiL1wiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyLmNyZWF0ZS5iaW5kKFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlcikpO1xuXG4gIC8vIFVwZGF0ZSBhIHByb2dub3NpcyB0cmFja2luZyByZWNvcmRcbiAgZmFzdGlmeS5wdXQoXCIvOmlkXCIsIHtcbiAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICB9LCBQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIudXBkYXRlLmJpbmQoUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyKSk7XG5cbiAgLy8gU29mdCBkZWxldGUgKGFyY2hpdmUpIGEgcHJvZ25vc2lzIHRyYWNraW5nIHJlY29yZFxuICBmYXN0aWZ5LmRlbGV0ZShcIi86aWRcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlci5kZWxldGUuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBBZGQgY2xpbmljYWwgaW5kaWNhdG9yIHRvIGEgcHJvZ25vc2lzIHJlY29yZFxuICBmYXN0aWZ5LnBvc3QoXCIvOmlkL2luZGljYXRvcnNcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlci5hZGRDbGluaWNhbEluZGljYXRvci5iaW5kKFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlcikpO1xuXG4gIC8vIEdldCBjbGluaWNhbCBpbmRpY2F0b3JzIGZvciBhIHByb2dub3NpcyByZWNvcmRcbiAgZmFzdGlmeS5nZXQoXCIvOmlkL2luZGljYXRvcnNcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFByb2dub3Npc1RyYWNraW5nQ29udHJvbGxlci5nZXRDbGluaWNhbEluZGljYXRvcnMuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcblxuICAvLyBSZWNvcmQgb3V0Y29tZSBmb3IgYSBwcm9nbm9zaXNcbiAgZmFzdGlmeS5wb3N0KFwiLzppZC9vdXRjb21lc1wiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgUHJvZ25vc2lzVHJhY2tpbmdDb250cm9sbGVyLnJlY29yZE91dGNvbWUuYmluZChQcm9nbm9zaXNUcmFja2luZ0NvbnRyb2xsZXIpKTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgcHJvZ25vc2lzVHJhY2tpbmdSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE9BQU9FLDJCQUEyQixNQUFNLGdEQUFnRDtBQUN4RixTQUFTQyxXQUFXLFFBQVEsd0NBQXdDOztBQUVwRTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFD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

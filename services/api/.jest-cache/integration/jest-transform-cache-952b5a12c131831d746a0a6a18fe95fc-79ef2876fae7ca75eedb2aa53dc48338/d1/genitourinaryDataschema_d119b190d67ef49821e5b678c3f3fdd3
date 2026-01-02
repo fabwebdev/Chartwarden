@@ -1,0 +1,96 @@
+5d6dd38d707ef6932ba735edc306d2c2
+/* istanbul ignore next */
+function cov_1al1qxf3pj() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/genitourinaryData.schema.js";
+  var hash = "81b8a7e76c21c47a17ac6ccc97d79ed377285ea9";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/genitourinaryData.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 34
+        },
+        end: {
+          line: 20,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "81b8a7e76c21c47a17ac6ccc97d79ed377285ea9"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1al1qxf3pj = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1al1qxf3pj();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+export const genitourinary_data =
+/* istanbul ignore next */
+(cov_1al1qxf3pj().s[0]++, pgTable('genitourinary_data', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  note_id: bigint('note_id', {
+    mode: 'number'
+  }).notNull(),
+  genitourinary_normal: varchar('genitourinary_normal', {
+    length: 255
+  }),
+  genitourinary_abnormal: varchar('genitourinary_abnormal', {
+    length: 255
+  }),
+  genitourinary_urinary_pattern: varchar('genitourinary_urinary_pattern', {
+    length: 255
+  }),
+  genitourinary_urinary_incontinence: varchar('genitourinary_urinary_incontinence', {
+    length: 255
+  }),
+  genitourinary_urinary_retention: varchar('genitourinary_urinary_retention', {
+    length: 255
+  }),
+  genitourinary_urinary_urgency: varchar('genitourinary_urinary_urgency', {
+    length: 255
+  }),
+  genitourinary_urinary_frequency: varchar('genitourinary_urinary_frequency', {
+    length: 255
+  }),
+  genitourinary_urinary_nocturia: varchar('genitourinary_urinary_nocturia', {
+    length: 255
+  }),
+  genitourinary_urinary_dysuria: varchar('genitourinary_urinary_dysuria', {
+    length: 255
+  }),
+  genitourinary_urinary_hematuria: varchar('genitourinary_urinary_hematuria', {
+    length: 255
+  }),
+  genitourinary_urinary_catheter: varchar('genitourinary_urinary_catheter', {
+    length: 255
+  }),
+  genitourinary_other: varchar('genitourinary_other', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWFsMXF4ZjNwaiIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsInZhcmNoYXIiLCJ0aW1lc3RhbXAiLCJnZW5pdG91cmluYXJ5X2RhdGEiLCJzIiwiaWQiLCJtb2RlIiwicHJpbWFyeUtleSIsImdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkiLCJub3RlX2lkIiwibm90TnVsbCIsImdlbml0b3VyaW5hcnlfbm9ybWFsIiwibGVuZ3RoIiwiZ2VuaXRvdXJpbmFyeV9hYm5vcm1hbCIsImdlbml0b3VyaW5hcnlfdXJpbmFyeV9wYXR0ZXJuIiwiZ2VuaXRvdXJpbmFyeV91cmluYXJ5X2luY29udGluZW5jZSIsImdlbml0b3VyaW5hcnlfdXJpbmFyeV9yZXRlbnRpb24iLCJnZW5pdG91cmluYXJ5X3VyaW5hcnlfdXJnZW5jeSIsImdlbml0b3VyaW5hcnlfdXJpbmFyeV9mcmVxdWVuY3kiLCJnZW5pdG91cmluYXJ5X3VyaW5hcnlfbm9jdHVyaWEiLCJnZW5pdG91cmluYXJ5X3VyaW5hcnlfZHlzdXJpYSIsImdlbml0b3VyaW5hcnlfdXJpbmFyeV9oZW1hdHVyaWEiLCJnZW5pdG91cmluYXJ5X3VyaW5hcnlfY2F0aGV0ZXIiLCJnZW5pdG91cmluYXJ5X290aGVyIiwiY3JlYXRlZEF0IiwiZGVmYXVsdE5vdyIsInVwZGF0ZWRBdCJdLCJzb3VyY2VzIjpbImdlbml0b3VyaW5hcnlEYXRhLnNjaGVtYS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwZ1RhYmxlLCBiaWdpbnQsIHZhcmNoYXIsIHRpbWVzdGFtcCB9IGZyb20gJ2RyaXp6bGUtb3JtL3BnLWNvcmUnO1xuXG5leHBvcnQgY29uc3QgZ2VuaXRvdXJpbmFyeV9kYXRhID0gcGdUYWJsZSgnZ2VuaXRvdXJpbmFyeV9kYXRhJywge1xuICBpZDogYmlnaW50KCdpZCcsIHsgbW9kZTogJ251bWJlcicgfSkucHJpbWFyeUtleSgpLmdlbmVyYXRlZEJ5RGVmYXVsdEFzSWRlbnRpdHkoKSxcbiAgbm90ZV9pZDogYmlnaW50KCdub3RlX2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5ub3ROdWxsKCksXG4gIGdlbml0b3VyaW5hcnlfbm9ybWFsOiB2YXJjaGFyKCdnZW5pdG91cmluYXJ5X25vcm1hbCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfYWJub3JtYWw6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfYWJub3JtYWwnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnZW5pdG91cmluYXJ5X3VyaW5hcnlfcGF0dGVybjogdmFyY2hhcignZ2VuaXRvdXJpbmFyeV91cmluYXJ5X3BhdHRlcm4nLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnZW5pdG91cmluYXJ5X3VyaW5hcnlfaW5jb250aW5lbmNlOiB2YXJjaGFyKCdnZW5pdG91cmluYXJ5X3VyaW5hcnlfaW5jb250aW5lbmNlJywgeyBsZW5ndGg6IDI1NSB9KSxcbiAgZ2VuaXRvdXJpbmFyeV91cmluYXJ5X3JldGVudGlvbjogdmFyY2hhcignZ2VuaXRvdXJpbmFyeV91cmluYXJ5X3JldGVudGlvbicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfdXJpbmFyeV91cmdlbmN5OiB2YXJjaGFyKCdnZW5pdG91cmluYXJ5X3VyaW5hcnlfdXJnZW5jeScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfdXJpbmFyeV9mcmVxdWVuY3k6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfdXJpbmFyeV9mcmVxdWVuY3knLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnZW5pdG91cmluYXJ5X3VyaW5hcnlfbm9jdHVyaWE6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfdXJpbmFyeV9ub2N0dXJpYScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfdXJpbmFyeV9keXN1cmlhOiB2YXJjaGFyKCdnZW5pdG91cmluYXJ5X3VyaW5hcnlfZHlzdXJpYScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfdXJpbmFyeV9oZW1hdHVyaWE6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfdXJpbmFyeV9oZW1hdHVyaWEnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBnZW5pdG91cmluYXJ5X3VyaW5hcnlfY2F0aGV0ZXI6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfdXJpbmFyeV9jYXRoZXRlcicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGdlbml0b3VyaW5hcnlfb3RoZXI6IHZhcmNoYXIoJ2dlbml0b3VyaW5hcnlfb3RoZXInLCB7IGxlbmd0aDogMjU1IH0pLFxuICBjcmVhdGVkQXQ6IHRpbWVzdGFtcCgnY3JlYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG4gIHVwZGF0ZWRBdDogdGltZXN0YW1wKCd1cGRhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbn0pOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxPQUFPLEVBQUVDLE1BQU0sRUFBRUMsT0FBTyxFQUFFQyxTQUFTLFFBQVEscUJBQXFCO0FBRXpFLE9BQU8sTUFBTUMsa0JBQWtCO0FBQUE7QUFBQSxDQUFBTixjQUFBLEdBQUFPLENBQUEsT0FBR0wsT0FBTyxDQUFDLG9CQUFvQixFQUFFO0VBQzlETSxFQUFFLEVBQUVMLE1BQU0sQ0FBQyxJQUFJLEVBQUU7SUFBRU0sSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNDLFVBQVUsQ0FBQyxDQUFDLENBQUNDLDRCQUE0QixDQUFDLENBQUM7RUFDaEZDLE9BQU8sRUFBRVQsTUFBTSxDQUFDLFNBQVMsRUFBRTtJQUFFTSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0ksT0FBTyxDQUFDLENBQUM7RUFDeERDLG9CQUFvQixFQUFFVixPQUFPLENBQUMsc0JBQXNCLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ3RFQyxzQkFBc0IsRUFBRVosT0FBTyxDQUFDLHdCQUF3QixFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUMxRUUsNkJBQTZCLEVBQUViLE9BQU8sQ0FBQywrQkFBK0IsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDeEZHLGtDQUFrQyxFQUFFZCxPQUFPLENBQUMsb0NBQW9DLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ2xHSSwrQkFBK0IsRUFBRWYsT0FBTyxDQUFDLGlDQUFpQyxFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUM1RkssNkJBQTZCLEVBQUVoQixPQUFPLENBQUMsK0JBQStCLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ3hGTSwrQkFBK0IsRUFBRWpCLE9BQU8sQ0FBQyxpQ0FBaUMsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDNUZPLDhCQUE4QixFQUFFbEIsT0FBTyxDQUFDLGdDQUFnQyxFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUMxRlEsNkJBQTZCLEVBQUVuQixPQUFPLENBQUMsK0JBQStCLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ3hGUywrQkFBK0IsRUFBRXBCLE9BQU8sQ0FBQyxpQ0FBaUMsRUFBRTtJQUFFVyxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDNUZVLDhCQUE4QixFQUFFckIsT0FBTyxDQUFDLGdDQUFnQyxFQUFFO0lBQUVXLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUMxRlcsbUJBQW1CLEVBQUV0QixPQUFPLENBQUMscUJBQXFCLEVBQUU7SUFBRVcsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ3BFWSxTQUFTLEVBQUV0QixTQUFTLENBQUMsWUFBWSxDQUFDLENBQUN1QixVQUFVLENBQUMsQ0FBQyxDQUFDZixPQUFPLENBQUMsQ0FBQztFQUN6RGdCLFNBQVMsRUFBRXhCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ3VCLFVBQVUsQ0FBQyxDQUFDLENBQUNmLE9BQU8sQ0FBQztBQUMxRCxDQUFDLENBQUMiLCJpZ25vcmVMaXN0IjpbXX0=

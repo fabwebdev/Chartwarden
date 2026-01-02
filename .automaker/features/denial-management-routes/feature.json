@@ -2,15 +2,22 @@
   "id": "denial-management-routes",
   "category": "API",
   "title": "Denial Management API Routes",
-  "description": "Create REST API routes for denial management, appeals, and analytics.",
-  "status": "verified",
+  "description": "Create REST API Routes for Denial Management, Appeals, and Analytics\n\nBuild comprehensive RESTful API endpoints for healthcare denial management system with appeals processing and analytics capabilities.\n\nTechnical Implementation:\n\n**API Endpoints:**\n\nDenial Management:\n- POST /api/denials - Create new denial record\n- GET /api/denials - List denials with pagination, filtering, sorting\n- GET /api/denials/:id - Retrieve single denial with full details\n- PUT /api/denials/:id - Update denial status/information\n- DELETE /api/denials/:id - Soft delete denial record\n- POST /api/denials/:id/attachments - Upload supporting documents\n- GET /api/denials/stats - Aggregate denial statistics\n\nAppeals:\n- POST /api/denials/:denialId/appeals - Submit new appeal\n- GET /api/appeals - List all appeals with filters\n- GET /api/appeals/:id - Get appeal details with history\n- PUT /api/appeals/:id - Update appeal status/notes\n- POST /api/appeals/:id/submit - Submit appeal to payer\n- GET /api/appeals/:id/timeline - Get appeal activity log\n\nAnalytics:\n- GET /api/analytics/denials/trends - Time-series denial data\n- GET /api/analytics/denials/by-reason - Group by denial codes\n- GET /api/analytics/denials/by-payer - Payer-specific metrics\n- GET /api/analytics/appeals/success-rate - Appeal outcome statistics\n- GET /api/analytics/revenue-impact - Financial impact calculations\n\n**Data Models:**\n```\nDenial: id, claimId, denialCode, denialReason, amount, payerId, status, receivedDate, dueDate, assignedTo\nAppeal: id, denialId, appealType, submittedDate, status, deadline, outcome, notes, submittedBy\nAttachment: id, denialId/appealId, fileUrl, fileType, uploadedAt\n```\n\n**Architecture:**\n- Express.js/FastAPI routing with controller-service-repository pattern\n- Middleware: Authentication (JWT), authorization (role-based), request validation (Joi/Zod)\n- Service Layer: Business logic for denial workflow, appeal submission, analytics aggregation\n- Repository Layer: Database queries with ORM (TypeORM/Sequelize/Prisma)\n\n**Query Features:**\n- Pagination: limit/offset or cursor-based\n- Filtering: status, date ranges, payer, denial code, assigned user\n- Sorting: receivedDate, amount, priority\n- Search: Full-text search on denial reason and notes\n\n**Response Format:**\n```json\n{\n  \"data\": {},\n  \"meta\": { \"page\": 1, \"total\": 100, \"hasMore\": true },\n  \"error\": null\n}\n```\n\n**Performance:**\n- Database indexing on denialCode, payerId, status, receivedDate\n- Caching analytics queries (Redis, 15-minute TTL)\n- Async processing for document uploads (message queue)\n- Rate limiting: 100 requests/minute per user\n\n**Security:**\n- HIPAA compliance for PHI data handling\n- Row-level security ensuring users access only authorized records\n- Audit logging for all mutations\n- Input sanitization to prevent SQL injection\n- File upload validation (type, size limits)\n\n**Error Handling:**\n- 400: Validation errors with field-level details\n- 401: Unauthorized access\n- 403: Insufficient permissions\n- 404: Resource not found\n- 409: Conflict (duplicate appeal)\n- 500: Server errors with sanitized messages\n\n**Testing Requirements:**\n- Unit tests for service layer business logic\n- Integration tests for API endpoints\n- Mock external payer API calls\n- Test data factories for denials/appeals",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "denial-management-controller"
   ],
   "createdAt": "2025-12-31T05:55:26.257Z",
-  "updatedAt": "2025-12-31T19:49:04.808Z",
+  "updatedAt": "2026-01-02T15:55:13.042Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T19:32:45.768Z"
+  "startedAt": "2026-01-02T15:53:28.487Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

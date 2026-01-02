@@ -2,14 +2,22 @@
   "id": "denial-management-schema",
   "category": "Database",
   "title": "Denial Management Schema",
-  "description": "Create schema for denial tracking with codes, root cause, appeal status, and trend analysis.",
-  "status": "verified",
+  "description": "Create Schema for Denial Tracking with Codes, Root Cause, Appeal Status, and Trend Analysis\n\nImplement a comprehensive database schema to track insurance/claim denials, their causes, appeal lifecycle, and reporting metrics.\n\nTechnical Implementation:\n- Database: PostgreSQL with temporal tables for historical tracking\n- ORM: Define models/migrations for Denials, DenialCodes, Appeals, RootCauses\n- Indexing: B-tree indexes on denial_code, status, created_at; composite index on (status, appeal_deadline) for SLA tracking\n- Time-series: Partition denials table by month for efficient trend queries\n\nSchema Design:\n\n**Denials Table:**\n- id (UUID), claim_id (FK), denial_code_id (FK), denial_date, amount, status (enum: pending, appealed, overturned, upheld)\n- root_cause_id (FK), assigned_to, appeal_deadline, notes\n- created_at, updated_at (timestamps with timezone)\n\n**DenialCodes Table:**\n- id, code (varchar, unique), description, category (enum: medical_necessity, authorization, coding_error, eligibility)\n- payer_id (FK), is_appealable (boolean)\n\n**Appeals Table:**\n- id, denial_id (FK), appeal_date, appeal_level (1st, 2nd, external), submission_method\n- status (enum: submitted, pending_review, approved, denied), outcome_date, outcome_reason\n- documents (JSONB array), appeals_rep_id (FK)\n\n**RootCauses Table:**\n- id, denial_id (FK), category (enum: provider_error, payer_error, patient_info, documentation)\n- subcategory, corrective_action, responsible_party\n\n**TrendAnalytics (Materialized View):**\n- Aggregate denials by code, root cause, time period\n- Refresh strategy: CONCURRENTLY on schedule or trigger-based\n- Metrics: denial_rate, overturn_rate, avg_appeal_time, financial_impact\n\nFeatures:\n- Soft deletes for audit trail\n- Row-level security if multi-tenant\n- Trigger for auto-calculating appeal deadlines based on payer rules\n- JSONB metadata field for extensibility\n\nAPI Considerations:\n- POST /api/denials (create denial record)\n- GET /api/denials/trends (query parameters: date_range, group_by, filters)\n- PUT /api/denials/:id/appeal (update appeal status)\n- GET /api/analytics/denial-patterns (predictive insights)\n\nPerformance:\n- Use database partitioning for historical data (>12 months)\n- Implement read replicas for analytics queries\n- Cache frequently accessed denial codes and payer rules",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "billing-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.256Z",
-  "updatedAt": "2025-12-31T15:36:38.076Z",
-  "startedAt": "2025-12-31T15:25:59.819Z"
+  "updatedAt": "2026-01-02T15:59:15.629Z",
+  "startedAt": "2026-01-02T15:54:26.541Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

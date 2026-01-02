@@ -2,14 +2,22 @@
   "id": "denial-codes-service",
   "category": "Service",
   "title": "Denial Codes Reference Service",
-  "description": "Implement denial codes library (CARC/RARC) with descriptions and resolution recommendations.",
-  "status": "verified",
+  "description": "Implement Denial Codes Library (CARC/RARC) with Descriptions and Resolution Recommendations\n\nCreate a comprehensive denial codes management system for healthcare claim processing, supporting Claim Adjustment Reason Codes (CARC) and Remittance Advice Remark Codes (RARC).\n\nTechnical Implementation:\n- Database: Create `denial_codes` table with fields: code, code_type (CARC/RARC), category, description, resolution_text, action_items, payer_specific_notes, last_updated\n- Data Source: Import official CMS CARC/RARC code sets from X12 standards (maintain versioning for updates)\n- API Endpoints:\n  - GET /api/denial-codes?type={CARC|RARC}&search={query}\n  - GET /api/denial-codes/:code\n  - GET /api/denial-codes/recommendations/:code (resolution strategies)\n- Search: Full-text search on code, description, and resolution text with fuzzy matching\n- Caching: Redis cache for frequently accessed codes (TTL: 24 hours)\n\nData Structure:\n```json\n{\n  \"code\": \"CO-45\",\n  \"type\": \"CARC\",\n  \"category\": \"authorization\",\n  \"description\": \"Charge exceeds fee schedule/maximum allowable\",\n  \"resolution_steps\": [\"Verify fee schedule\", \"Appeal if documented\"],\n  \"typical_turnaround\": \"30-45 days\",\n  \"appeal_success_rate\": 0.65,\n  \"related_codes\": [\"RARC-N130\"]\n}\n```\n\nComponents:\n- DenialCodeSearch: Autocomplete search with category filters\n- CodeDetailView: Full code information with expandable resolution guidance\n- ResolutionWizard: Step-by-step guided workflow for addressing denials\n- BulkCodeLookup: CSV upload for batch code analysis\n\nBusiness Logic:\n- Map denial codes to actionable workflows (appeal, rebill, write-off)\n- Track resolution success rates per code for analytics\n- Support payer-specific code variations and interpretations\n\nIntegration Points:\n- Link to claims system for automated denial code assignment\n- Export resolution recommendations to claim notes\n- Analytics dashboard for denial trends by code\n\nPerformance:\n- Index on code and code_type for fast lookups\n- Preload common codes (top 50) on application startup\n- Lazy load resolution details on demand\n\nSecurity:\n- Read-only access for general users\n- Admin role required for code library updates\n- Audit log for manual code modifications",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "denial-management-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.256Z",
-  "updatedAt": "2025-12-31T16:00:24.814Z",
-  "startedAt": "2025-12-31T15:51:42.186Z"
+  "updatedAt": "2026-01-02T16:05:40.122Z",
+  "startedAt": "2026-01-02T16:02:32.221Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

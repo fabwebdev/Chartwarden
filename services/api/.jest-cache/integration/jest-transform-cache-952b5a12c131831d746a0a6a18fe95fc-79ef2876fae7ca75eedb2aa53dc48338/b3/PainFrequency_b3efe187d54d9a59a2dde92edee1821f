@@ -1,0 +1,162 @@
+c274b80a66a1cbcf453cbd30c59df82d
+/* istanbul ignore next */
+function cov_116hgrd0r5() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainFrequency.js";
+  var hash = "0c674937af14c6df226a5378de47b00364cd102e";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/PainFrequency.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 22
+        },
+        end: {
+          line: 25,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 11,
+          column: 23
+        },
+        end: {
+          line: 18,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 20,
+          column: 8
+        },
+        end: {
+          line: 23,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 20,
+          column: 45
+        },
+        end: {
+          line: 23,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 10,
+            column: 13
+          },
+          end: {
+            line: 10,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 25
+          },
+          end: {
+            line: 24,
+            column: 5
+          }
+        },
+        line: 10
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 20,
+            column: 26
+          },
+          end: {
+            line: 20,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 20,
+            column: 45
+          },
+          end: {
+            line: 23,
+            column: 9
+          }
+        },
+        line: 20
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "0c674937af14c6df226a5378de47b00364cd102e"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_116hgrd0r5 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_116hgrd0r5();
+// PainFrequency enum equivalent
+const PainFrequency =
+/* istanbul ignore next */
+(cov_116hgrd0r5().s[0]++, {
+  NO_PATTERN: "no pattern",
+  CONSTANT: "constant",
+  INTERMITTENT: "intermittent",
+  IN_THE_MORNING: "in the morning",
+  BREAKTHROUGH: "breakthrough",
+  OTHER: "other",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_116hgrd0r5().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_116hgrd0r5().s[1]++, [this.NO_PATTERN, this.CONSTANT, this.INTERMITTENT, this.IN_THE_MORNING, this.BREAKTHROUGH, this.OTHER]);
+    /* istanbul ignore next */
+    cov_116hgrd0r5().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_116hgrd0r5().f[1]++;
+      cov_116hgrd0r5().s[3]++;
+      return {
+        id: index + 1,
+        value: value
+      };
+    });
+  }
+});
+export default PainFrequency;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTE2aGdyZDByNSIsImFjdHVhbENvdmVyYWdlIiwiUGFpbkZyZXF1ZW5jeSIsInMiLCJOT19QQVRURVJOIiwiQ09OU1RBTlQiLCJJTlRFUk1JVFRFTlQiLCJJTl9USEVfTU9STklORyIsIkJSRUFLVEhST1VHSCIsIk9USEVSIiwidG9BcnJheSIsImYiLCJ2YWx1ZXMiLCJtYXAiLCJ2YWx1ZSIsImluZGV4IiwiaWQiXSwic291cmNlcyI6WyJQYWluRnJlcXVlbmN5LmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIFBhaW5GcmVxdWVuY3kgZW51bSBlcXVpdmFsZW50XG5jb25zdCBQYWluRnJlcXVlbmN5ID0ge1xuICAgIE5PX1BBVFRFUk46IFwibm8gcGF0dGVyblwiLFxuICAgIENPTlNUQU5UOiBcImNvbnN0YW50XCIsXG4gICAgSU5URVJNSVRURU5UOiBcImludGVybWl0dGVudFwiLFxuICAgIElOX1RIRV9NT1JOSU5HOiBcImluIHRoZSBtb3JuaW5nXCIsXG4gICAgQlJFQUtUSFJPVUdIOiBcImJyZWFrdGhyb3VnaFwiLFxuICAgIE9USEVSOiBcIm90aGVyXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuTk9fUEFUVEVSTixcbiAgICAgICAgICAgIHRoaXMuQ09OU1RBTlQsXG4gICAgICAgICAgICB0aGlzLklOVEVSTUlUVEVOVCxcbiAgICAgICAgICAgIHRoaXMuSU5fVEhFX01PUk5JTkcsXG4gICAgICAgICAgICB0aGlzLkJSRUFLVEhST1VHSCxcbiAgICAgICAgICAgIHRoaXMuT1RIRVIsXG4gICAgICAgIF07XG5cbiAgICAgICAgcmV0dXJuIHZhbHVlcy5tYXAoKHZhbHVlLCBpbmRleCkgPT4gKHtcbiAgICAgICAgICAgIGlkOiBpbmRleCArIDEsXG4gICAgICAgICAgICB2YWx1ZTogdmFsdWUsXG4gICAgICAgIH0pKTtcbiAgICB9LFxufTtcblxuZXhwb3J0IGRlZmF1bHQgUGFpbkZyZXF1ZW5jeTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlo7QUFDQSxNQUFNRSxhQUFhO0FBQUE7QUFBQSxDQUFBRixjQUFBLEdBQUFHLENBQUEsT0FBRztFQUNsQkMsVUFBVSxFQUFFLFlBQVk7RUFDeEJDLFFBQVEsRUFBRSxVQUFVO0VBQ3BCQyxZQUFZLEVBQUUsY0FBYztFQUM1QkMsY0FBYyxFQUFFLGdCQUFnQjtFQUNoQ0MsWUFBWSxFQUFFLGNBQWM7RUFDNUJDLEtBQUssRUFBRSxPQUFPO0VBRWRDLE9BQU8sRUFBRSxTQUFBQSxDQUFBLEVBQVk7SUFBQTtJQUFBVixjQUFBLEdBQUFXLENBQUE7SUFDakIsTUFBTUMsTUFBTTtJQUFBO0lBQUEsQ0FBQVosY0FBQSxHQUFBRyxDQUFBLE9BQUcsQ0FDWCxJQUFJLENBQUNDLFVBQVUsRUFDZixJQUFJLENBQUNDLFFBQVEsRUFDYixJQUFJLENBQUNDLFlBQVksRUFDakIsSUFBSSxDQUFDQyxjQUFjLEVBQ25CLElBQUksQ0FBQ0MsWUFBWSxFQUNqQixJQUFJLENBQUNDLEtBQUssQ0FDYjtJQUFDO0lBQUFULGNBQUEsR0FBQUcsQ0FBQTtJQUVGLE9BQU9TLE1BQU0sQ0FBQ0MsR0FBRyxDQUFDLENBQUNDLEtBQUssRUFBRUMsS0FBSyxLQUFNO01BQUE7TUFBQWYsY0FBQSxHQUFBVyxDQUFBO01BQUFYLGNBQUEsR0FBQUcsQ0FBQTtNQUFBO1FBQ2pDYSxFQUFFLEVBQUVELEtBQUssR0FBRyxDQUFDO1FBQ2JELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVosYUFBYSIsImlnbm9yZUxpc3QiOltdfQ==

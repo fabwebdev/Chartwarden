@@ -1,0 +1,316 @@
+c67db94bfae4a29cea18f282573d9547
+/* istanbul ignore next */
+function cov_1imq8sam3s() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/claimValidation.routes.js";
+  var hash = "a03bed7446a656770d3f8b329360ad1bbde880aa";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/claimValidation.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 38,
+          column: 2
+        },
+        end: {
+          line: 40,
+          column: 36
+        }
+      },
+      "1": {
+        start: {
+          line: 43,
+          column: 2
+        },
+        end: {
+          line: 45,
+          column: 34
+        }
+      },
+      "2": {
+        start: {
+          line: 48,
+          column: 2
+        },
+        end: {
+          line: 50,
+          column: 34
+        }
+      },
+      "3": {
+        start: {
+          line: 54,
+          column: 2
+        },
+        end: {
+          line: 56,
+          column: 42
+        }
+      },
+      "4": {
+        start: {
+          line: 59,
+          column: 2
+        },
+        end: {
+          line: 61,
+          column: 37
+        }
+      },
+      "5": {
+        start: {
+          line: 64,
+          column: 2
+        },
+        end: {
+          line: 66,
+          column: 37
+        }
+      },
+      "6": {
+        start: {
+          line: 69,
+          column: 2
+        },
+        end: {
+          line: 71,
+          column: 28
+        }
+      },
+      "7": {
+        start: {
+          line: 74,
+          column: 2
+        },
+        end: {
+          line: 76,
+          column: 39
+        }
+      },
+      "8": {
+        start: {
+          line: 79,
+          column: 2
+        },
+        end: {
+          line: 81,
+          column: 44
+        }
+      },
+      "9": {
+        start: {
+          line: 84,
+          column: 2
+        },
+        end: {
+          line: 86,
+          column: 38
+        }
+      },
+      "10": {
+        start: {
+          line: 89,
+          column: 2
+        },
+        end: {
+          line: 91,
+          column: 42
+        }
+      },
+      "11": {
+        start: {
+          line: 94,
+          column: 2
+        },
+        end: {
+          line: 96,
+          column: 30
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "claimValidationRoutes",
+        decl: {
+          start: {
+            line: 35,
+            column: 30
+          },
+          end: {
+            line: 35,
+            column: 51
+          }
+        },
+        loc: {
+          start: {
+            line: 35,
+            column: 70
+          },
+          end: {
+            line: 97,
+            column: 1
+          }
+        },
+        line: 35
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "a03bed7446a656770d3f8b329360ad1bbde880aa"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1imq8sam3s = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1imq8sam3s();
+import controller from '../controllers/ClaimValidation.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Claim Validation Routes
+ * Phase 2B/3B - Claim Scrubbing System with HIPAA 837 Compliance
+ *
+ * Comprehensive pre-submission claim validation with auto-fix capability
+ * Features:
+ *   - 50+ validation rules (HIPAA 837, coverage, coding standards)
+ *   - Field-level error reporting with suggestions
+ *   - Auto-fix capability for common errors
+ *   - Validation history tracking
+ *   - Batch scrubbing for multiple claims
+ *   - HIPAA 837I compliance validation
+ *   - Coverage requirement validation (NOE, eligibility, benefit periods)
+ *   - Coding standard validation (ICD-10, revenue codes, HCPCS)
+ *   - Comprehensive report generation (detailed, summary, CSV)
+ *
+ * Endpoints:
+ * - POST /api/claims/:id/scrub - Scrub single claim (with comprehensive validation)
+ * - POST /api/claims/:id/validate-comprehensive - Run only comprehensive validation
+ * - GET /api/claims/:id/validation-results - Get latest validation results
+ * - GET /api/claims/:id/validation-history - Get validation history
+ * - POST /api/claims/:id/auto-fix - Auto-fix claim errors
+ * - GET /api/claims/failed-validation - Get claims failing validation
+ * - POST /api/claims/batch-scrub - Batch scrub claims
+ * - GET /api/claims/validation-rules - Get available validation rules
+ * - GET /api/claims/:id/validation-report - Generate claim validation report
+ * - GET /api/claims/validation-report/batch - Generate batch validation report
+ * - GET /api/claims/validation-report/compliance - Generate compliance audit report
+ * - GET /api/claims/validation-report/trends - Generate error trend report
+ */
+export default async function claimValidationRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1imq8sam3s().f[0]++;
+  cov_1imq8sam3s().s[0]++;
+  // Get available validation rules (must be before parameterized routes)
+  fastify.get('/claims/validation-rules', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getValidationRules);
+
+  // Get all claims failing validation (must be before parameterized routes)
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[1]++;
+  fastify.get('/claims/failed-validation', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getFailingClaims);
+
+  // Batch scrub claims (must be before parameterized routes)
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[2]++;
+  fastify.post('/claims/batch-scrub', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.batchScrubClaims);
+
+  // Report endpoints (must be before parameterized routes)
+  // Batch validation report
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[3]++;
+  fastify.get('/claims/validation-report/batch', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getBatchValidationReport);
+
+  // Compliance audit report
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[4]++;
+  fastify.get('/claims/validation-report/compliance', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getComplianceReport);
+
+  // Error trend report
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[5]++;
+  fastify.get('/claims/validation-report/trends', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getErrorTrendReport);
+
+  // Scrub claim - Run comprehensive validation
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[6]++;
+  fastify.post('/claims/:id/scrub', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.scrubClaim);
+
+  // Validate claim comprehensively - Direct access to HIPAA/coverage/coding rules
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[7]++;
+  fastify.post('/claims/:id/validate-comprehensive', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.validateComprehensive);
+
+  // Get latest validation results for claim
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[8]++;
+  fastify.get('/claims/:id/validation-results', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getLatestValidationResults);
+
+  // Get validation history for claim
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[9]++;
+  fastify.get('/claims/:id/validation-history', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getValidationHistory);
+
+  // Get claim validation report
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[10]++;
+  fastify.get('/claims/:id/validation-report', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getClaimValidationReport);
+
+  // Auto-fix claim errors
+  /* istanbul ignore next */
+  cov_1imq8sam3s().s[11]++;
+  fastify.post('/claims/:id/auto-fix', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.autoFixClaim);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWltcThzYW0zcyIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJjbGFpbVZhbGlkYXRpb25Sb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsIlZJRVdfQ0xJTklDQUxfTk9URVMiLCJnZXRWYWxpZGF0aW9uUnVsZXMiLCJnZXRGYWlsaW5nQ2xhaW1zIiwicG9zdCIsIlVQREFURV9DTElOSUNBTF9OT1RFUyIsImJhdGNoU2NydWJDbGFpbXMiLCJnZXRCYXRjaFZhbGlkYXRpb25SZXBvcnQiLCJnZXRDb21wbGlhbmNlUmVwb3J0IiwiZ2V0RXJyb3JUcmVuZFJlcG9ydCIsInNjcnViQ2xhaW0iLCJ2YWxpZGF0ZUNvbXByZWhlbnNpdmUiLCJnZXRMYXRlc3RWYWxpZGF0aW9uUmVzdWx0cyIsImdldFZhbGlkYXRpb25IaXN0b3J5IiwiZ2V0Q2xhaW1WYWxpZGF0aW9uUmVwb3J0IiwiYXV0b0ZpeENsYWltIl0sInNvdXJjZXMiOlsiY2xhaW1WYWxpZGF0aW9uLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29udHJvbGxlciBmcm9tICcuLi9jb250cm9sbGVycy9DbGFpbVZhbGlkYXRpb24uY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBQRVJNSVNTSU9OUyB9IGZyb20gJy4uL2NvbmZpZy9yYmFjLmpzJztcbmltcG9ydCB7IHJlcXVpcmVBbnlQZXJtaXNzaW9uIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIENsYWltIFZhbGlkYXRpb24gUm91dGVzXG4gKiBQaGFzZSAyQi8zQiAtIENsYWltIFNjcnViYmluZyBTeXN0ZW0gd2l0aCBISVBBQSA4MzcgQ29tcGxpYW5jZVxuICpcbiAqIENvbXByZWhlbnNpdmUgcHJlLXN1Ym1pc3Npb24gY2xhaW0gdmFsaWRhdGlvbiB3aXRoIGF1dG8tZml4IGNhcGFiaWxpdHlcbiAqIEZlYXR1cmVzOlxuICogICAtIDUwKyB2YWxpZGF0aW9uIHJ1bGVzIChISVBBQSA4MzcsIGNvdmVyYWdlLCBjb2Rpbmcgc3RhbmRhcmRzKVxuICogICAtIEZpZWxkLWxldmVsIGVycm9yIHJlcG9ydGluZyB3aXRoIHN1Z2dlc3Rpb25zXG4gKiAgIC0gQXV0by1maXggY2FwYWJpbGl0eSBmb3IgY29tbW9uIGVycm9yc1xuICogICAtIFZhbGlkYXRpb24gaGlzdG9yeSB0cmFja2luZ1xuICogICAtIEJhdGNoIHNjcnViYmluZyBmb3IgbXVsdGlwbGUgY2xhaW1zXG4gKiAgIC0gSElQQUEgODM3SSBjb21wbGlhbmNlIHZhbGlkYXRpb25cbiAqICAgLSBDb3ZlcmFnZSByZXF1aXJlbWVudCB2YWxpZGF0aW9uIChOT0UsIGVsaWdpYmlsaXR5LCBiZW5lZml0IHBlcmlvZHMpXG4gKiAgIC0gQ29kaW5nIHN0YW5kYXJkIHZhbGlkYXRpb24gKElDRC0xMCwgcmV2ZW51ZSBjb2RlcywgSENQQ1MpXG4gKiAgIC0gQ29tcHJlaGVuc2l2ZSByZXBvcnQgZ2VuZXJhdGlvbiAoZGV0YWlsZWQsIHN1bW1hcnksIENTVilcbiAqXG4gKiBFbmRwb2ludHM6XG4gKiAtIFBPU1QgL2FwaS9jbGFpbXMvOmlkL3NjcnViIC0gU2NydWIgc2luZ2xlIGNsYWltICh3aXRoIGNvbXByZWhlbnNpdmUgdmFsaWRhdGlvbilcbiAqIC0gUE9TVCAvYXBpL2NsYWltcy86aWQvdmFsaWRhdGUtY29tcHJlaGVuc2l2ZSAtIFJ1biBvbmx5IGNvbXByZWhlbnNpdmUgdmFsaWRhdGlvblxuICogLSBHRVQgL2FwaS9jbGFpbXMvOmlkL3ZhbGlkYXRpb24tcmVzdWx0cyAtIEdldCBsYXRlc3QgdmFsaWRhdGlvbiByZXN1bHRzXG4gKiAtIEdFVCAvYXBpL2NsYWltcy86aWQvdmFsaWRhdGlvbi1oaXN0b3J5IC0gR2V0IHZhbGlkYXRpb24gaGlzdG9yeVxuICogLSBQT1NUIC9hcGkvY2xhaW1zLzppZC9hdXRvLWZpeCAtIEF1dG8tZml4IGNsYWltIGVycm9yc1xuICogLSBHRVQgL2FwaS9jbGFpbXMvZmFpbGVkLXZhbGlkYXRpb24gLSBHZXQgY2xhaW1zIGZhaWxpbmcgdmFsaWRhdGlvblxuICogLSBQT1NUIC9hcGkvY2xhaW1zL2JhdGNoLXNjcnViIC0gQmF0Y2ggc2NydWIgY2xhaW1zXG4gKiAtIEdFVCAvYXBpL2NsYWltcy92YWxpZGF0aW9uLXJ1bGVzIC0gR2V0IGF2YWlsYWJsZSB2YWxpZGF0aW9uIHJ1bGVzXG4gKiAtIEdFVCAvYXBpL2NsYWltcy86aWQvdmFsaWRhdGlvbi1yZXBvcnQgLSBHZW5lcmF0ZSBjbGFpbSB2YWxpZGF0aW9uIHJlcG9ydFxuICogLSBHRVQgL2FwaS9jbGFpbXMvdmFsaWRhdGlvbi1yZXBvcnQvYmF0Y2ggLSBHZW5lcmF0ZSBiYXRjaCB2YWxpZGF0aW9uIHJlcG9ydFxuICogLSBHRVQgL2FwaS9jbGFpbXMvdmFsaWRhdGlvbi1yZXBvcnQvY29tcGxpYW5jZSAtIEdlbmVyYXRlIGNvbXBsaWFuY2UgYXVkaXQgcmVwb3J0XG4gKiAtIEdFVCAvYXBpL2NsYWltcy92YWxpZGF0aW9uLXJlcG9ydC90cmVuZHMgLSBHZW5lcmF0ZSBlcnJvciB0cmVuZCByZXBvcnRcbiAqL1xuZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24gY2xhaW1WYWxpZGF0aW9uUm91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcblxuICAvLyBHZXQgYXZhaWxhYmxlIHZhbGlkYXRpb24gcnVsZXMgKG11c3QgYmUgYmVmb3JlIHBhcmFtZXRlcml6ZWQgcm91dGVzKVxuICBmYXN0aWZ5LmdldCgnL2NsYWltcy92YWxpZGF0aW9uLXJ1bGVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRWYWxpZGF0aW9uUnVsZXMpO1xuXG4gIC8vIEdldCBhbGwgY2xhaW1zIGZhaWxpbmcgdmFsaWRhdGlvbiAobXVzdCBiZSBiZWZvcmUgcGFyYW1ldGVyaXplZCByb3V0ZXMpXG4gIGZhc3RpZnkuZ2V0KCcvY2xhaW1zL2ZhaWxlZC12YWxpZGF0aW9uJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRGYWlsaW5nQ2xhaW1zKTtcblxuICAvLyBCYXRjaCBzY3J1YiBjbGFpbXMgKG11c3QgYmUgYmVmb3JlIHBhcmFtZXRlcml6ZWQgcm91dGVzKVxuICBmYXN0aWZ5LnBvc3QoJy9jbGFpbXMvYmF0Y2gtc2NydWInLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuYmF0Y2hTY3J1YkNsYWltcyk7XG5cbiAgLy8gUmVwb3J0IGVuZHBvaW50cyAobXVzdCBiZSBiZWZvcmUgcGFyYW1ldGVyaXplZCByb3V0ZXMpXG4gIC8vIEJhdGNoIHZhbGlkYXRpb24gcmVwb3J0XG4gIGZhc3RpZnkuZ2V0KCcvY2xhaW1zL3ZhbGlkYXRpb24tcmVwb3J0L2JhdGNoJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRCYXRjaFZhbGlkYXRpb25SZXBvcnQpO1xuXG4gIC8vIENvbXBsaWFuY2UgYXVkaXQgcmVwb3J0XG4gIGZhc3RpZnkuZ2V0KCcvY2xhaW1zL3ZhbGlkYXRpb24tcmVwb3J0L2NvbXBsaWFuY2UnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldENvbXBsaWFuY2VSZXBvcnQpO1xuXG4gIC8vIEVycm9yIHRyZW5kIHJlcG9ydFxuICBmYXN0aWZ5LmdldCgnL2NsYWltcy92YWxpZGF0aW9uLXJlcG9ydC90cmVuZHMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldEVycm9yVHJlbmRSZXBvcnQpO1xuXG4gIC8vIFNjcnViIGNsYWltIC0gUnVuIGNvbXByZWhlbnNpdmUgdmFsaWRhdGlvblxuICBmYXN0aWZ5LnBvc3QoJy9jbGFpbXMvOmlkL3NjcnViJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnNjcnViQ2xhaW0pO1xuXG4gIC8vIFZhbGlkYXRlIGNsYWltIGNvbXByZWhlbnNpdmVseSAtIERpcmVjdCBhY2Nlc3MgdG8gSElQQUEvY292ZXJhZ2UvY29kaW5nIHJ1bGVzXG4gIGZhc3RpZnkucG9zdCgnL2NsYWltcy86aWQvdmFsaWRhdGUtY29tcHJlaGVuc2l2ZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIudmFsaWRhdGVDb21wcmVoZW5zaXZlKTtcblxuICAvLyBHZXQgbGF0ZXN0IHZhbGlkYXRpb24gcmVzdWx0cyBmb3IgY2xhaW1cbiAgZmFzdGlmeS5nZXQoJy9jbGFpbXMvOmlkL3ZhbGlkYXRpb24tcmVzdWx0cycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0TGF0ZXN0VmFsaWRhdGlvblJlc3VsdHMpO1xuXG4gIC8vIEdldCB2YWxpZGF0aW9uIGhpc3RvcnkgZm9yIGNsYWltXG4gIGZhc3RpZnkuZ2V0KCcvY2xhaW1zLzppZC92YWxpZGF0aW9uLWhpc3RvcnknLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFZhbGlkYXRpb25IaXN0b3J5KTtcblxuICAvLyBHZXQgY2xhaW0gdmFsaWRhdGlvbiByZXBvcnRcbiAgZmFzdGlmeS5nZXQoJy9jbGFpbXMvOmlkL3ZhbGlkYXRpb24tcmVwb3J0Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRDbGFpbVZhbGlkYXRpb25SZXBvcnQpO1xuXG4gIC8vIEF1dG8tZml4IGNsYWltIGVycm9yc1xuICBmYXN0aWZ5LnBvc3QoJy9jbGFpbXMvOmlkL2F1dG8tZml4Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmF1dG9GaXhDbGFpbSk7XG59XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE9BQU9FLFVBQVUsTUFBTSw4Q0FBOEM7QUFDckUsU0FBU0MsV0FBVyxRQUFRLG1CQUFtQjtBQUMvQyxTQUFTQyxvQkFBb0IsUUFB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

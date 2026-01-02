@@ -1,0 +1,141 @@
+8bc3f3f87ae37dd44ce3abd9c7e3b888
+/* istanbul ignore next */
+function cov_18j4nsq4l2() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/EmergencyPreparednessLevel.routes.js";
+  var hash = "910c94ea027141d06d8b332c03e93e32b80ad1a1";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/EmergencyPreparednessLevel.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 2
+        },
+        end: {
+          line: 12,
+          column: 52
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 59
+        }
+      },
+      "2": {
+        start: {
+          line: 14,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 55
+        }
+      },
+      "3": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 15,
+          column: 57
+        }
+      },
+      "4": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 16,
+          column: 61
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "emergencyPreparednessLevelRoutes",
+        decl: {
+          start: {
+            line: 10,
+            column: 15
+          },
+          end: {
+            line: 10,
+            column: 47
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 66
+          },
+          end: {
+            line: 17,
+            column: 1
+          }
+        },
+        line: 10
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "910c94ea027141d06d8b332c03e93e32b80ad1a1"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_18j4nsq4l2 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_18j4nsq4l2();
+import { index, store, show, update, destroy } from "../../controllers/patient/EmergencyPreparednessLevel.controller.js";
+
+// Fastify plugin for emergency preparedness level routes
+async function emergencyPreparednessLevelRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_18j4nsq4l2().f[0]++;
+  cov_18j4nsq4l2().s[0]++;
+  // Emergency Preparedness Level Routes
+  fastify.get("/emergencyPreparednessLevel", index);
+  /* istanbul ignore next */
+  cov_18j4nsq4l2().s[1]++;
+  fastify.post("/emergencyPreparednessLevel/store", store);
+  /* istanbul ignore next */
+  cov_18j4nsq4l2().s[2]++;
+  fastify.get("/emergencyPreparednessLevel/:id", show);
+  /* istanbul ignore next */
+  cov_18j4nsq4l2().s[3]++;
+  fastify.put("/emergencyPreparednessLevel/:id", update);
+  /* istanbul ignore next */
+  cov_18j4nsq4l2().s[4]++;
+  fastify.delete("/emergencyPreparednessLevel/:id", destroy);
+}
+export default emergencyPreparednessLevelRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMThqNG5zcTRsMiIsImFjdHVhbENvdmVyYWdlIiwiaW5kZXgiLCJzdG9yZSIsInNob3ciLCJ1cGRhdGUiLCJkZXN0cm95IiwiZW1lcmdlbmN5UHJlcGFyZWRuZXNzTGV2ZWxSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicG9zdCIsInB1dCIsImRlbGV0ZSJdLCJzb3VyY2VzIjpbIkVtZXJnZW5jeVByZXBhcmVkbmVzc0xldmVsLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQge1xuICAgIGluZGV4LFxuICAgIHN0b3JlLFxuICAgIHNob3csXG4gICAgdXBkYXRlLFxuICAgIGRlc3Ryb3ksXG59IGZyb20gXCIuLi8uLi9jb250cm9sbGVycy9wYXRpZW50L0VtZXJnZW5jeVByZXBhcmVkbmVzc0xldmVsLmNvbnRyb2xsZXIuanNcIjtcblxuLy8gRmFzdGlmeSBwbHVnaW4gZm9yIGVtZXJnZW5jeSBwcmVwYXJlZG5lc3MgbGV2ZWwgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBlbWVyZ2VuY3lQcmVwYXJlZG5lc3NMZXZlbFJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIEVtZXJnZW5jeSBQcmVwYXJlZG5lc3MgTGV2ZWwgUm91dGVzXG4gIGZhc3RpZnkuZ2V0KFwiL2VtZXJnZW5jeVByZXBhcmVkbmVzc0xldmVsXCIsIGluZGV4KTtcbiAgZmFzdGlmeS5wb3N0KFwiL2VtZXJnZW5jeVByZXBhcmVkbmVzc0xldmVsL3N0b3JlXCIsIHN0b3JlKTtcbiAgZmFzdGlmeS5nZXQoXCIvZW1lcmdlbmN5UHJlcGFyZWRuZXNzTGV2ZWwvOmlkXCIsIHNob3cpO1xuICBmYXN0aWZ5LnB1dChcIi9lbWVyZ2VuY3lQcmVwYXJlZG5lc3NMZXZlbC86aWRcIiwgdXBkYXRlKTtcbiAgZmFzdGlmeS5kZWxldGUoXCIvZW1lcmdlbmN5UHJlcGFyZWRuZXNzTGV2ZWwvOmlkXCIsIGRlc3Ryb3kpO1xufVxuXG5leHBvcnQgZGVmYXVsdCBlbWVyZ2VuY3lQcmVwYXJlZG5lc3NMZXZlbFJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQ0lFLEtBQUssRUFDTEMsS0FBSyxFQUNMQyxJQUFJLEVBQ0pDLE1BQU0sRUFDTkMsT0FBTyxRQUNKLG9FQUFvRTs7QUFFM0U7QUFDQSxlQUFlQyxnQ0FBZ0NBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVQsY0FBQSxHQUFBVSxDQUFBO0VBQUFWLGNBQUEsR0FBQVcsQ0FBQTtFQUNoRTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyw2QkFBNkIsRUFBRVYsS0FBSyxDQUFDO0VBQUM7RUFBQUYsY0FBQSxHQUFBVyxDQUFBO0VBQ2xESCxPQUFPLENBQUNLLElBQUksQ0FBQyxtQ0FBbUMsRUFBRVYsS0FBSyxDQUFDO0VBQUM7RUFBQUgsY0FBQSxHQUFBVyxDQUFBO0VBQ3pESCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxpQ0FBaUMsRUFBRVIsSUFBSSxDQUFDO0VBQUM7RUFBQUosY0FBQSxHQUFBVyxDQUFBO0VBQ3JESCxPQUFPLENBQUNNLEdBQUcsQ0FBQyxpQ0FBaUMsRUFBRVQsTUFBTSxDQUFDO0VBQUM7RUFBQUwsY0FBQSxHQUFBVyxDQUFBO0VBQ3ZESCxPQUFPLENBQUNPLE1BQU0sQ0FBQyxpQ0FBaUMsRUFBRVQsT0FBTyxDQUFDO0FBQzVEO0FBRUEsZUFBZUMsZ0NBQWdDIiwiaWdub3JlTGlzdCI6W119

@@ -1,0 +1,193 @@
+9b1f86a12dd7e635197ba718b3ddc312
+/* istanbul ignore next */
+function cov_1ygrwqzr7c() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/jobs/registerJobs.js";
+  var hash = "14ffb0b0489669948e1319ead89663601e601545";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/jobs/registerJobs.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 32,
+          column: 4
+        },
+        end: {
+          line: 32,
+          column: 50
+        }
+      },
+      "1": {
+        start: {
+          line: 33,
+          column: 4
+        },
+        end: {
+          line: 33,
+          column: 78
+        }
+      },
+      "2": {
+        start: {
+          line: 34,
+          column: 4
+        },
+        end: {
+          line: 34,
+          column: 65
+        }
+      },
+      "3": {
+        start: {
+          line: 35,
+          column: 4
+        },
+        end: {
+          line: 35,
+          column: 75
+        }
+      },
+      "4": {
+        start: {
+          line: 41,
+          column: 4
+        },
+        end: {
+          line: 41,
+          column: 83
+        }
+      },
+      "5": {
+        start: {
+          line: 42,
+          column: 4
+        },
+        end: {
+          line: 42,
+          column: 77
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "registerAllJobs",
+        decl: {
+          start: {
+            line: 30,
+            column: 16
+          },
+          end: {
+            line: 30,
+            column: 31
+          }
+        },
+        loc: {
+          start: {
+            line: 30,
+            column: 34
+          },
+          end: {
+            line: 43,
+            column: 1
+          }
+        },
+        line: 30
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "14ffb0b0489669948e1319ead89663601e601545"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1ygrwqzr7c = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1ygrwqzr7c();
+/**
+ * Job Registry - Register all jobs at application startup
+ *
+ * SECURITY: This replaces the dangerous eval() pattern with a secure
+ * whitelist of allowed jobs. Only pre-registered jobs can be executed.
+ *
+ * Usage:
+ *   import { registerAllJobs } from './jobs/registerJobs.js';
+ *
+ *   // In server.js startup:
+ *   registerAllJobs();
+ *
+ *   // To queue a job:
+ *   await Queue.push('default', 'send-email', { to: 'user@example.com', ... });
+ */
+
+import Queue from '../facades/Queue.js';
+import { logger } from '../utils/logger.js';
+import { sendEmailJob, sendPasswordResetEmailJob, sendWelcomeEmailJob, sendNotificationEmailJob } from './SendEmailJob.js';
+
+/**
+ * Register all available jobs
+ * Call this function once during application startup
+ */
+export function registerAllJobs() {
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().f[0]++;
+  cov_1ygrwqzr7c().s[0]++;
+  // Email jobs
+  Queue.registerJob('send-email', sendEmailJob);
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().s[1]++;
+  Queue.registerJob('send-password-reset-email', sendPasswordResetEmailJob);
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().s[2]++;
+  Queue.registerJob('send-welcome-email', sendWelcomeEmailJob);
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().s[3]++;
+  Queue.registerJob('send-notification-email', sendNotificationEmailJob);
+
+  // Add more jobs here as needed:
+  // Queue.registerJob('generate-pdf', generatePdfJob);
+  // Queue.registerJob('process-report', processReportJob);
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().s[4]++;
+  logger.info(`✅ Registered ${Queue.getRegisteredJobNames().length} queue jobs`);
+  /* istanbul ignore next */
+  cov_1ygrwqzr7c().s[5]++;
+  logger.info('Available jobs:', Queue.getRegisteredJobNames().join(', '));
+}
+
+/**
+ * Example usage in controllers/services:
+ *
+ * // Queue a job
+ * const jobId = await Queue.push('default', 'send-email', {
+ *     to: 'patient@example.com',
+ *     subject: 'Appointment Reminder',
+ *     body: 'Your appointment is tomorrow at 10am'
+ * });
+ *
+ * // Process jobs (typically in a background worker)
+ * await Queue.process();
+ */
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXlncndxenI3YyIsImFjdHVhbENvdmVyYWdlIiwiUXVldWUiLCJsb2dnZXIiLCJzZW5kRW1haWxKb2IiLCJzZW5kUGFzc3dvcmRSZXNldEVtYWlsSm9iIiwic2VuZFdlbGNvbWVFbWFpbEpvYiIsInNlbmROb3RpZmljYXRpb25FbWFpbEpvYiIsInJlZ2lzdGVyQWxsSm9icyIsImYiLCJzIiwicmVnaXN0ZXJKb2IiLCJpbmZvIiwiZ2V0UmVnaXN0ZXJlZEpvYk5hbWVzIiwibGVuZ3RoIiwiam9pbiJdLCJzb3VyY2VzIjpbInJlZ2lzdGVySm9icy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEpvYiBSZWdpc3RyeSAtIFJlZ2lzdGVyIGFsbCBqb2JzIGF0IGFwcGxpY2F0aW9uIHN0YXJ0dXBcbiAqXG4gKiBTRUNVUklUWTogVGhpcyByZXBsYWNlcyB0aGUgZGFuZ2Vyb3VzIGV2YWwoKSBwYXR0ZXJuIHdpdGggYSBzZWN1cmVcbiAqIHdoaXRlbGlzdCBvZiBhbGxvd2VkIGpvYnMuIE9ubHkgcHJlLXJlZ2lzdGVyZWQgam9icyBjYW4gYmUgZXhlY3V0ZWQuXG4gKlxuICogVXNhZ2U6XG4gKiAgIGltcG9ydCB7IHJlZ2lzdGVyQWxsSm9icyB9IGZyb20gJy4vam9icy9yZWdpc3RlckpvYnMuanMnO1xuICpcbiAqICAgLy8gSW4gc2VydmVyLmpzIHN0YXJ0dXA6XG4gKiAgIHJlZ2lzdGVyQWxsSm9icygpO1xuICpcbiAqICAgLy8gVG8gcXVldWUgYSBqb2I6XG4gKiAgIGF3YWl0IFF1ZXVlLnB1c2goJ2RlZmF1bHQnLCAnc2VuZC1lbWFpbCcsIHsgdG86ICd1c2VyQGV4YW1wbGUuY29tJywgLi4uIH0pO1xuICovXG5cbmltcG9ydCBRdWV1ZSBmcm9tICcuLi9mYWNhZGVzL1F1ZXVlLmpzJztcbmltcG9ydCB7IGxvZ2dlciB9IGZyb20gJy4uL3V0aWxzL2xvZ2dlci5qcyc7XG5pbXBvcnQge1xuICAgIHNlbmRFbWFpbEpvYixcbiAgICBzZW5kUGFzc3dvcmRSZXNldEVtYWlsSm9iLFxuICAgIHNlbmRXZWxjb21lRW1haWxKb2IsXG4gICAgc2VuZE5vdGlmaWNhdGlvbkVtYWlsSm9iXG59IGZyb20gJy4vU2VuZEVtYWlsSm9iLmpzJztcblxuLyoqXG4gKiBSZWdpc3RlciBhbGwgYXZhaWxhYmxlIGpvYnNcbiAqIENhbGwgdGhpcyBmdW5jdGlvbiBvbmNlIGR1cmluZyBhcHBsaWNhdGlvbiBzdGFydHVwXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiByZWdpc3RlckFsbEpvYnMoKSB7XG4gICAgLy8gRW1haWwgam9ic1xuICAgIFF1ZXVlLnJlZ2lzdGVySm9iKCdzZW5kLWVtYWlsJywgc2VuZEVtYWlsSm9iKTtcbiAgICBRdWV1ZS5yZWdpc3RlckpvYignc2VuZC1wYXNzd29yZC1yZXNldC1lbWFpbCcsIHNlbmRQYXNzd29yZFJlc2V0RW1haWxKb2IpO1xuICAgIFF1ZXVlLnJlZ2lzdGVySm9iKCdzZW5kLXdlbGNvbWUtZW1haWwnLCBzZW5kV2VsY29tZUVtYWlsSm9iKTtcbiAgICBRdWV1ZS5yZWdpc3RlckpvYignc2VuZC1ub3RpZmljYXRpb24tZW1haWwnLCBzZW5kTm90aWZpY2F0aW9uRW1haWxKb2IpO1xuXG4gICAgLy8gQWRkIG1vcmUgam9icyBoZXJlIGFzIG5lZWRlZDpcbiAgICAvLyBRdWV1ZS5yZWdpc3RlckpvYignZ2VuZXJhdGUtcGRmJywgZ2VuZXJhdGVQZGZKb2IpO1xuICAgIC8vIFF1ZXVlLnJlZ2lzdGVySm9iKCdwcm9jZXNzLXJlcG9ydCcsIHByb2Nlc3NSZXBvcnRKb2IpO1xuXG4gICAgbG9nZ2VyLmluZm8oYOKchSBSZWdpc3RlcmVkICR7UXVldWUuZ2V0UmVnaXN0ZXJlZEpvYk5hbWVzKCkubGVuZ3RofSBxdWV1ZSBqb2JzYCk7XG4gICAgbG9nZ2VyLmluZm8oJ0F2YWlsYWJsZSBqb2JzOicsIFF1ZXVlLmdldFJlZ2lzdGVyZWRKb2JOYW1lcygpLmpvaW4oJywgJykpO1xufVxuXG4vKipcbiAqIEV4YW1wbGUgdXNhZ2UgaW4gY29udHJvbGxlcnMvc2VydmljZXM6XG4gKlxuICogLy8gUXVldWUgYSBqb2JcbiAqIGNvbnN0IGpvYklkID0gYXdhaXQgUXVldWUucHVzaCgnZGVmYXVsdCcsICdzZW5kLWVtYWlsJywge1xuICogICAgIHRvOiAncGF0aWVudEBleGFtcGxlLmNvbScsXG4gKiAgICAgc3ViamVjdDogJ0FwcG9pbnRtZW50IFJlbWluZGVyJyxcbiAqICAgICBib2R5OiAnWW91ciBhcHBvaW50bWVudCBpcyB0b21vcnJvdyBhdCAxMGFtJ1xuICogfSk7XG4gKlxuICogLy8gUHJvY2VzcyBqb2JzICh0eXBpY2FsbHkgaW4gYSBiYWNrZ3JvdW5kIHdvcmtlcilcbiAqIGF3YWl0IFF1ZXVlLnByb2Nlc3MoKTtcbiAqL1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUEsT0FBT0UsS0FBSyxNQUFNLHFCQUFxQjtBQUN2QyxTQUFTQyxNQUFNLFFBQVEsb0JBQW9CO0FBQzNDLFNBQ0lDLFlBQVksRUFDWkMseUJBQXlCLEVBQ3pCQyxtQkFBbUIsRUFDbkJDLHdCQUF3QixRQUNyQixtQkFBbUI7O0FBRTFCO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsT0FBTyxTQUFTQyxlQUFlQSxDQUFBLEVBQUc7RUFBQTtFQUFBUixjQUFBLEdBQUFTLENBQUE7RUFBQVQsY0FBQSxHQUFBVSxDQUFBO0VBQzlCO0VBQ0FSLEtBQUssQ0FBQ1MsV0FBVyxDQUFDLFlBQVksRUFBRVAsWUFBWSxDQUFDO0VBQUM7RUFBQUosY0FBQSxHQUFBVSxDQUFBO0VBQzlDUixLQUFLLENBQUNTLFdBQVcsQ0FBQywyQkFBMkIsRUFBRU4seUJBQXlCLENBQUM7RUFBQztFQUFBTCxjQUFBLEdBQUFVLENBQUE7RUFDMUVSLEtBQUssQ0FBQ1MsV0FBVyxDQUFDLG9CQUFvQixFQUFFTCxtQkFBbUIsQ0FBQztFQUFDO0VBQUFOLGNBQUEsR0FBQVUsQ0FBQTtFQUM3RFIsS0FBSyxDQUFDUyxXQUFXLENBQUMseUJBQXlCLEVBQUVKLHdCQUF3QixDQUFDOztFQUV0RTtFQUNBO0VBQ0E7RUFBQTtFQUFBUCxjQUFBLEdBQUFVLENBQUE7RUFFQVAsTUFBTSxDQUFDUyxJQUFJLENBQUMsZ0JBQWdCVixLQUFLLENBQUNXLHFCQUFxQixDQUFDLENBQUMsQ0FBQ0MsTUFBTSxhQUFhLENBQUM7RUFBQztFQUFBZCxjQUFBLEdBQUFVLENBQUE7RUFDL0VQLE1BQU0sQ0FBQ1MsSUFBSSxDQUFDLGlCQUFpQixFQUFFVixLQUFLLENBQUNXLHFCQUFxQixDQUFDLENBQUMsQ0FBQ0UsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO0FBQzVFOztBQUVBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBIiwiaWdub3JlTGlzdCI6W119

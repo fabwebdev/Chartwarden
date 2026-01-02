@@ -1,0 +1,136 @@
+55ca9423050dfcee6aab4a9fc9381a53
+/* istanbul ignore next */
+function cov_1z10bk9yz() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/console.js";
+  var hash = "500dd09f9056c970c5b742658ba5cf2b5ee71ea6";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/console.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 18,
+          column: 4
+        },
+        end: {
+          line: 23,
+          column: 11
+        }
+      },
+      "1": {
+        start: {
+          line: 22,
+          column: 12
+        },
+        end: {
+          line: 22,
+          column: 43
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "registerInspireCommand",
+        decl: {
+          start: {
+            line: 17,
+            column: 16
+          },
+          end: {
+            line: 17,
+            column: 38
+          }
+        },
+        loc: {
+          start: {
+            line: 17,
+            column: 48
+          },
+          end: {
+            line: 24,
+            column: 1
+          }
+        },
+        line: 17
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 21,
+            column: 16
+          },
+          end: {
+            line: 21,
+            column: 17
+          }
+        },
+        loc: {
+          start: {
+            line: 21,
+            column: 22
+          },
+          end: {
+            line: 23,
+            column: 9
+          }
+        },
+        line: 21
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "500dd09f9056c970c5b742658ba5cf2b5ee71ea6"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1z10bk9yz = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1z10bk9yz();
+import { Command } from 'commander';
+import Inspiring from '../utils/inspiring.js';
+import { logger } from '../utils/logger.js';
+/**
+ * Console Routes
+ * 
+ * This file is where you may define all of your Closure based console
+ * commands. Each function is bound to a command instance allowing a
+ * simple approach to interacting with each command's IO methods.
+ */
+
+/**
+ * Register the inspire command
+ * @param {Command} program - The commander program instance
+ */
+export function registerInspireCommand(program) {
+  /* istanbul ignore next */
+  cov_1z10bk9yz().f[0]++;
+  cov_1z10bk9yz().s[0]++;
+  program.command('inspire').description('Display an inspiring quote').action(() => {
+    /* istanbul ignore next */
+    cov_1z10bk9yz().f[1]++;
+    cov_1z10bk9yz().s[1]++;
+    logger.info(Inspiring.quote());
+  });
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXoxMGJrOXl6IiwiYWN0dWFsQ292ZXJhZ2UiLCJDb21tYW5kIiwiSW5zcGlyaW5nIiwibG9nZ2VyIiwicmVnaXN0ZXJJbnNwaXJlQ29tbWFuZCIsInByb2dyYW0iLCJmIiwicyIsImNvbW1hbmQiLCJkZXNjcmlwdGlvbiIsImFjdGlvbiIsImluZm8iLCJxdW90ZSJdLCJzb3VyY2VzIjpbImNvbnNvbGUuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29tbWFuZCB9IGZyb20gJ2NvbW1hbmRlcic7XG5pbXBvcnQgSW5zcGlyaW5nIGZyb20gJy4uL3V0aWxzL2luc3BpcmluZy5qcyc7XG5cbmltcG9ydCB7IGxvZ2dlciB9IGZyb20gJy4uL3V0aWxzL2xvZ2dlci5qcyc7XG4vKipcbiAqIENvbnNvbGUgUm91dGVzXG4gKiBcbiAqIFRoaXMgZmlsZSBpcyB3aGVyZSB5b3UgbWF5IGRlZmluZSBhbGwgb2YgeW91ciBDbG9zdXJlIGJhc2VkIGNvbnNvbGVcbiAqIGNvbW1hbmRzLiBFYWNoIGZ1bmN0aW9uIGlzIGJvdW5kIHRvIGEgY29tbWFuZCBpbnN0YW5jZSBhbGxvd2luZyBhXG4gKiBzaW1wbGUgYXBwcm9hY2ggdG8gaW50ZXJhY3Rpbmcgd2l0aCBlYWNoIGNvbW1hbmQncyBJTyBtZXRob2RzLlxuICovXG5cbi8qKlxuICogUmVnaXN0ZXIgdGhlIGluc3BpcmUgY29tbWFuZFxuICogQHBhcmFtIHtDb21tYW5kfSBwcm9ncmFtIC0gVGhlIGNvbW1hbmRlciBwcm9ncmFtIGluc3RhbmNlXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiByZWdpc3Rlckluc3BpcmVDb21tYW5kKHByb2dyYW0pIHtcbiAgICBwcm9ncmFtXG4gICAgICAgIC5jb21tYW5kKCdpbnNwaXJlJylcbiAgICAgICAgLmRlc2NyaXB0aW9uKCdEaXNwbGF5IGFuIGluc3BpcmluZyBxdW90ZScpXG4gICAgICAgIC5hY3Rpb24oKCkgPT4ge1xuICAgICAgICAgICAgbG9nZ2VyLmluZm8oSW5zcGlyaW5nLnF1b3RlKCkpO1xuICAgICAgICB9KTtcbn0iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosU0FBU0UsT0FBTyxRQUFRLFdBQVc7QUFDbkMsT0FBT0MsU0FBUyxNQUFNLHVCQUF1QjtBQUU3QyxTQUFTQyxNQUFNLFFBQVEsb0JBQW9CO0FBQzNDO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsT0FBTyxTQUFTQyxzQkFBc0JBLENBQUNDLE9BQU8sRUFBRTtFQUFBO0VBQUFOLGFBQUEsR0FBQU8sQ0FBQTtFQUFBUCxhQUFBLEdBQUFRLENBQUE7RUFDNUNGLE9BQU8sQ0FDRkcsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUNsQkMsV0FBVyxDQUFDLDRCQUE0QixDQUFDLENBQ3pDQyxNQUFNLENBQUMsTUFBTTtJQUFBO0lBQUFYLGFBQUEsR0FBQU8sQ0FBQTtJQUFBUCxhQUFBLEdBQUFRLENBQUE7SUFDVkosTUFBTSxDQUFDUSxJQUFJLENBQUNULFNBQVMsQ0FBQ1UsS0FBSyxDQUFDLENBQUMsQ0FBQztFQUNsQyxDQUFDLENBQUM7QUFDViIsImlnbm9yZUxpc3QiOltdfQ==

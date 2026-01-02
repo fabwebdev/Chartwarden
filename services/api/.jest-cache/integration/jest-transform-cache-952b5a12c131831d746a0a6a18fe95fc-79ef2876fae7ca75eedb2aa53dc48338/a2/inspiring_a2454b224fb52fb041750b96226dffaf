@@ -1,0 +1,108 @@
+54afbec025187fedc09d595eb3d15e15
+/* istanbul ignore next */
+function cov_1w0ak3hevv() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/utils/inspiring.js";
+  var hash = "e91cd41bda3fb4115931ce722465073b502d77e1";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/utils/inspiring.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 13,
+          column: 23
+        },
+        end: {
+          line: 27,
+          column: 9
+        }
+      },
+      "1": {
+        start: {
+          line: 29,
+          column: 8
+        },
+        end: {
+          line: 29,
+          column: 65
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 12,
+            column: 4
+          },
+          end: {
+            line: 12,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 12,
+            column: 19
+          },
+          end: {
+            line: 30,
+            column: 5
+          }
+        },
+        line: 12
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "e91cd41bda3fb4115931ce722465073b502d77e1"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1w0ak3hevv = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1w0ak3hevv();
+/**
+ * Inspiring Quotes Utility
+ * 
+ * Provides inspiring quotes similar to Laravel's Inspiring class
+ */
+
+class Inspiring {
+  /**
+   * Get an inspiring quote
+   * @returns {string} An inspiring quote
+   */
+  static quote() {
+    /* istanbul ignore next */
+    cov_1w0ak3hevv().f[0]++;
+    const quotes =
+    /* istanbul ignore next */
+    (cov_1w0ak3hevv().s[0]++, ["When there is no desire, all things are at peace. - Laozi", "Simplicity is the ultimate sophistication. - Leonardo da Vinci", "Simplicity is the essence of happiness. - Cedric Bledsoe", "Smile, breathe, and go slowly. - Thich Nhat Hanh", "Simplicity is an acquired taste. - Katharine Gerould", "Well begun is half done. - Aristotle", "He who is contented is rich. - Laozi", "Very little is needed to make a happy life. - Marcus Antoninus", "It is quality rather than quantity that matters. - Lucius Annaeus Seneca", "Genius is one percent inspiration and ninety-nine percent perspiration. - Thomas Edison", "Computer science is no more about computers than astronomy is about telescopes. - Edsger Dijkstra", "It always seems impossible until it is done. - Nelson Mandela", "Act only according to that maxim whereby you can, at the same time, will that it should become a universal law. - Immanuel Kant"]);
+    /* istanbul ignore next */
+    cov_1w0ak3hevv().s[1]++;
+    return quotes[Math.floor(Math.random() * quotes.length)];
+  }
+}
+export default Inspiring;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXcwYWszaGV2diIsImFjdHVhbENvdmVyYWdlIiwiSW5zcGlyaW5nIiwicXVvdGUiLCJmIiwicXVvdGVzIiwicyIsIk1hdGgiLCJmbG9vciIsInJhbmRvbSIsImxlbmd0aCJdLCJzb3VyY2VzIjpbImluc3BpcmluZy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEluc3BpcmluZyBRdW90ZXMgVXRpbGl0eVxuICogXG4gKiBQcm92aWRlcyBpbnNwaXJpbmcgcXVvdGVzIHNpbWlsYXIgdG8gTGFyYXZlbCdzIEluc3BpcmluZyBjbGFzc1xuICovXG5cbmNsYXNzIEluc3BpcmluZyB7XG4gICAgLyoqXG4gICAgICogR2V0IGFuIGluc3BpcmluZyBxdW90ZVxuICAgICAqIEByZXR1cm5zIHtzdHJpbmd9IEFuIGluc3BpcmluZyBxdW90ZVxuICAgICAqL1xuICAgIHN0YXRpYyBxdW90ZSgpIHtcbiAgICAgICAgY29uc3QgcXVvdGVzID0gW1xuICAgICAgICAgICAgXCJXaGVuIHRoZXJlIGlzIG5vIGRlc2lyZSwgYWxsIHRoaW5ncyBhcmUgYXQgcGVhY2UuIC0gTGFvemlcIixcbiAgICAgICAgICAgIFwiU2ltcGxpY2l0eSBpcyB0aGUgdWx0aW1hdGUgc29waGlzdGljYXRpb24uIC0gTGVvbmFyZG8gZGEgVmluY2lcIixcbiAgICAgICAgICAgIFwiU2ltcGxpY2l0eSBpcyB0aGUgZXNzZW5jZSBvZiBoYXBwaW5lc3MuIC0gQ2VkcmljIEJsZWRzb2VcIixcbiAgICAgICAgICAgIFwiU21pbGUsIGJyZWF0aGUsIGFuZCBnbyBzbG93bHkuIC0gVGhpY2ggTmhhdCBIYW5oXCIsXG4gICAgICAgICAgICBcIlNpbXBsaWNpdHkgaXMgYW4gYWNxdWlyZWQgdGFzdGUuIC0gS2F0aGFyaW5lIEdlcm91bGRcIixcbiAgICAgICAgICAgIFwiV2VsbCBiZWd1biBpcyBoYWxmIGRvbmUuIC0gQXJpc3RvdGxlXCIsXG4gICAgICAgICAgICBcIkhlIHdobyBpcyBjb250ZW50ZWQgaXMgcmljaC4gLSBMYW96aVwiLFxuICAgICAgICAgICAgXCJWZXJ5IGxpdHRsZSBpcyBuZWVkZWQgdG8gbWFrZSBhIGhhcHB5IGxpZmUuIC0gTWFyY3VzIEFudG9uaW51c1wiLFxuICAgICAgICAgICAgXCJJdCBpcyBxdWFsaXR5IHJhdGhlciB0aGFuIHF1YW50aXR5IHRoYXQgbWF0dGVycy4gLSBMdWNpdXMgQW5uYWV1cyBTZW5lY2FcIixcbiAgICAgICAgICAgIFwiR2VuaXVzIGlzIG9uZSBwZXJjZW50IGluc3BpcmF0aW9uIGFuZCBuaW5ldHktbmluZSBwZXJjZW50IHBlcnNwaXJhdGlvbi4gLSBUaG9tYXMgRWRpc29uXCIsXG4gICAgICAgICAgICBcIkNvbXB1dGVyIHNjaWVuY2UgaXMgbm8gbW9yZSBhYm91dCBjb21wdXRlcnMgdGhhbiBhc3Ryb25vbXkgaXMgYWJvdXQgdGVsZXNjb3Blcy4gLSBFZHNnZXIgRGlqa3N0cmFcIixcbiAgICAgICAgICAgIFwiSXQgYWx3YXlzIHNlZW1zIGltcG9zc2libGUgdW50aWwgaXQgaXMgZG9uZS4gLSBOZWxzb24gTWFuZGVsYVwiLFxuICAgICAgICAgICAgXCJBY3Qgb25seSBhY2NvcmRpbmcgdG8gdGhhdCBtYXhpbSB3aGVyZWJ5IHlvdSBjYW4sIGF0IHRoZSBzYW1lIHRpbWUsIHdpbGwgdGhhdCBpdCBzaG91bGQgYmVjb21lIGEgdW5pdmVyc2FsIGxhdy4gLSBJbW1hbnVlbCBLYW50XCJcbiAgICAgICAgXTtcbiAgICAgICAgXG4gICAgICAgIHJldHVybiBxdW90ZXNbTWF0aC5mbG9vcihNYXRoLnJhbmRvbSgpICogcXVvdGVzLmxlbmd0aCldO1xuICAgIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgSW5zcGlyaW5nOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7O0FBRUEsTUFBTUUsU0FBUyxDQUFDO0VBQ1o7QUFDSjtBQUNBO0FBQ0E7RUFDSSxPQUFPQyxLQUFLQSxDQUFBLEVBQUc7SUFBQTtJQUFBSCxjQUFBLEdBQUFJLENBQUE7SUFDWCxNQUFNQyxNQUFNO0lBQUE7SUFBQSxDQUFBTCxjQUFBLEdBQUFNLENBQUEsT0FBRyxDQUNYLDJEQUEyRCxFQUMzRCxnRUFBZ0UsRUFDaEUsMERBQTBELEVBQzFELGtEQUFrRCxFQUNsRCxzREFBc0QsRUFDdEQsc0NBQXNDLEVBQ3RDLHNDQUFzQyxFQUN0QyxnRUFBZ0UsRUFDaEUsMEVBQTBFLEVBQzFFLHlGQUF5RixFQUN6RixtR0FBbUcsRUFDbkcsK0RBQStELEVBQy9ELGlJQUFpSSxDQUNwSTtJQUFDO0lBQUFOLGNBQUEsR0FBQU0sQ0FBQTtJQUVGLE9BQU9ELE1BQU0sQ0FBQ0UsSUFBSSxDQUFDQyxLQUFLLENBQUNELElBQUksQ0FBQ0UsTUFBTSxDQUFDLENBQUMsR0FBR0osTUFBTSxDQUFDSyxNQUFNLENBQUMsQ0FBQztFQUM1RDtBQUNKO0FBRUEsZUFBZVIsU0FBUyIsImlnbm9yZUxpc3QiOltdfQ==

@@ -2,8 +2,8 @@
   "id": "medication-administration-record-schema",
   "category": "Database",
   "title": "Medication Administration Record Schema",
-  "description": "Create schema for MAR with administered medication, dose, time, route, nurse ID, and status.",
-  "status": "verified",
+  "description": "Create Medication Administration Record (MAR) Database Schema\n\nDesign and implement a comprehensive database schema for tracking medication administration records in a healthcare system.\n\nRequirements:\n- Define a MAR table/model with the following required fields:\n  * Administered medication (name, dosage form, strength)\n  * Dose administered (quantity and unit of measurement)\n  * Administration time (scheduled time vs actual administration time)\n  * Route of administration (oral, IV, IM, subcutaneous, etc.)\n  * Nurse ID (foreign key to staff/user table)\n  * Status (scheduled, administered, missed, refused, held, discontinued)\n\n- Add supporting fields for data integrity:\n  * Unique record identifier (primary key)\n  * Patient identifier (foreign key to patient table)\n  * Medication order reference (link to prescribing order)\n  * Timestamps (created_at, updated_at)\n  * Administration notes/comments field for special circumstances\n\n- Implement constraints and validation:\n  * Ensure required fields are non-nullable\n  * Add check constraints for valid status values\n  * Validate dose values are positive numbers\n  * Set up foreign key relationships with proper referential integrity\n\n- Consider audit requirements:\n  * Track who administered the medication and when\n  * Preserve historical records (no deletions, only status updates)\n  * Include fields for witnessing nurse if required for controlled substances\n\n- Document the schema with:\n  * Field descriptions and data types\n  * Relationships to other tables (patients, medications, nurses, orders)\n  * Indexes for common query patterns (by patient, by nurse, by time range)",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
@@ -11,6 +11,14 @@
     "encounter-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.248Z",
-  "updatedAt": "2025-12-31T15:33:53.337Z",
-  "startedAt": "2025-12-31T15:26:53.130Z"
+  "updatedAt": "2026-01-02T15:26:01.919Z",
+  "startedAt": "2026-01-02T15:24:00.484Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

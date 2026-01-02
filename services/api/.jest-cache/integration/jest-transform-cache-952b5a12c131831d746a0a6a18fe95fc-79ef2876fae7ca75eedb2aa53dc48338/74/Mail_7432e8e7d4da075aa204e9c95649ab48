@@ -1,0 +1,236 @@
+6972e8ee18c789bfd1b01d80e5c16d35
+/* istanbul ignore next */
+function cov_eia8krcet() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Mail.js";
+  var hash = "04f0f93ed77ebb37a1f37e4bad7825a8cc23ee30";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Mail.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 8
+        },
+        end: {
+          line: 10,
+          column: 47
+        }
+      },
+      "1": {
+        start: {
+          line: 21,
+          column: 8
+        },
+        end: {
+          line: 21,
+          column: 61
+        }
+      },
+      "2": {
+        start: {
+          line: 32,
+          column: 8
+        },
+        end: {
+          line: 32,
+          column: 61
+        }
+      },
+      "3": {
+        start: {
+          line: 40,
+          column: 8
+        },
+        end: {
+          line: 40,
+          column: 42
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 4
+          },
+          end: {
+            line: 9,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 31
+          },
+          end: {
+            line: 11,
+            column: 5
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 20,
+            column: 4
+          },
+          end: {
+            line: 20,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 20,
+            column: 45
+          },
+          end: {
+            line: 22,
+            column: 5
+          }
+        },
+        line: 20
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 31,
+            column: 4
+          },
+          end: {
+            line: 31,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 31,
+            column: 45
+          },
+          end: {
+            line: 33,
+            column: 5
+          }
+        },
+        line: 31
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 39,
+            column: 4
+          },
+          end: {
+            line: 39,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 39,
+            column: 26
+          },
+          end: {
+            line: 41,
+            column: 5
+          }
+        },
+        line: 39
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "04f0f93ed77ebb37a1f37e4bad7825a8cc23ee30"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_eia8krcet = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_eia8krcet();
+import MailService from '../services/MailService.js';
+class Mail {
+  /**
+   * Send an email
+   * @param {Object} options - Email options
+   * @returns {Promise} Promise that resolves when email is sent
+   */
+  static async send(options) {
+    /* istanbul ignore next */
+    cov_eia8krcet().f[0]++;
+    cov_eia8krcet().s[0]++;
+    return await MailService.send(options);
+  }
+
+  /**
+   * Send a plain text email
+   * @param {string} to - Recipient email address
+   * @param {string} subject - Email subject
+   * @param {string} text - Plain text content
+   * @returns {Promise} Promise that resolves when email is sent
+   */
+  static async sendText(to, subject, text) {
+    /* istanbul ignore next */
+    cov_eia8krcet().f[1]++;
+    cov_eia8krcet().s[1]++;
+    return await MailService.sendText(to, subject, text);
+  }
+
+  /**
+   * Send an HTML email
+   * @param {string} to - Recipient email address
+   * @param {string} subject - Email subject
+   * @param {string} html - HTML content
+   * @returns {Promise} Promise that resolves when email is sent
+   */
+  static async sendHtml(to, subject, html) {
+    /* istanbul ignore next */
+    cov_eia8krcet().f[2]++;
+    cov_eia8krcet().s[2]++;
+    return await MailService.sendHtml(to, subject, html);
+  }
+
+  /**
+   * Verify the transporter configuration
+   * @returns {Promise} Promise that resolves when transporter is verified
+   */
+  static async verify() {
+    /* istanbul ignore next */
+    cov_eia8krcet().f[3]++;
+    cov_eia8krcet().s[3]++;
+    return await MailService.verify();
+  }
+}
+export default Mail;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfZWlhOGtyY2V0IiwiYWN0dWFsQ292ZXJhZ2UiLCJNYWlsU2VydmljZSIsIk1haWwiLCJzZW5kIiwib3B0aW9ucyIsImYiLCJzIiwic2VuZFRleHQiLCJ0byIsInN1YmplY3QiLCJ0ZXh0Iiwic2VuZEh0bWwiLCJodG1sIiwidmVyaWZ5Il0sInNvdXJjZXMiOlsiTWFpbC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgTWFpbFNlcnZpY2UgZnJvbSAnLi4vc2VydmljZXMvTWFpbFNlcnZpY2UuanMnO1xuXG5jbGFzcyBNYWlsIHtcbiAgICAvKipcbiAgICAgKiBTZW5kIGFuIGVtYWlsXG4gICAgICogQHBhcmFtIHtPYmplY3R9IG9wdGlvbnMgLSBFbWFpbCBvcHRpb25zXG4gICAgICogQHJldHVybnMge1Byb21pc2V9IFByb21pc2UgdGhhdCByZXNvbHZlcyB3aGVuIGVtYWlsIGlzIHNlbnRcbiAgICAgKi9cbiAgICBzdGF0aWMgYXN5bmMgc2VuZChvcHRpb25zKSB7XG4gICAgICAgIHJldHVybiBhd2FpdCBNYWlsU2VydmljZS5zZW5kKG9wdGlvbnMpO1xuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBTZW5kIGEgcGxhaW4gdGV4dCBlbWFpbFxuICAgICAqIEBwYXJhbSB7c3RyaW5nfSB0byAtIFJlY2lwaWVudCBlbWFpbCBhZGRyZXNzXG4gICAgICogQHBhcmFtIHtzdHJpbmd9IHN1YmplY3QgLSBFbWFpbCBzdWJqZWN0XG4gICAgICogQHBhcmFtIHtzdHJpbmd9IHRleHQgLSBQbGFpbiB0ZXh0IGNvbnRlbnRcbiAgICAgKiBAcmV0dXJucyB7UHJvbWlzZX0gUHJvbWlzZSB0aGF0IHJlc29sdmVzIHdoZW4gZW1haWwgaXMgc2VudFxuICAgICAqL1xuICAgIHN0YXRpYyBhc3luYyBzZW5kVGV4dCh0bywgc3ViamVjdCwgdGV4dCkge1xuICAgICAgICByZXR1cm4gYXdhaXQgTWFpbFNlcnZpY2Uuc2VuZFRleHQodG8sIHN1YmplY3QsIHRleHQpO1xuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBTZW5kIGFuIEhUTUwgZW1haWxcbiAgICAgKiBAcGFyYW0ge3N0cmluZ30gdG8gLSBSZWNpcGllbnQgZW1haWwgYWRkcmVzc1xuICAgICAqIEBwYXJhbSB7c3RyaW5nfSBzdWJqZWN0IC0gRW1haWwgc3ViamVjdFxuICAgICAqIEBwYXJhbSB7c3RyaW5nfSBodG1sIC0gSFRNTCBjb250ZW50XG4gICAgICogQHJldHVybnMge1Byb21pc2V9IFByb21pc2UgdGhhdCByZXNvbHZlcyB3aGVuIGVtYWlsIGlzIHNlbnRcbiAgICAgKi9cbiAgICBzdGF0aWMgYXN5bmMgc2VuZEh0bWwodG8sIHN1YmplY3QsIGh0bWwpIHtcbiAgICAgICAgcmV0dXJuIGF3YWl0IE1haWxTZXJ2aWNlLnNlbmRIdG1sKHRvLCBzdWJqZWN0LCBodG1sKTtcbiAgICB9XG4gICAgXG4gICAgLyoqXG4gICAgICogVmVyaWZ5IHRoZSB0cmFuc3BvcnRlciBjb25maWd1cmF0aW9uXG4gICAgICogQHJldHVybnMge1Byb21pc2V9IFByb21pc2UgdGhhdCByZXNvbHZlcyB3aGVuIHRyYW5zcG9ydGVyIGlzIHZlcmlmaWVkXG4gICAgICovXG4gICAgc3RhdGljIGFzeW5jIHZlcmlmeSgpIHtcbiAgICAgICAgcmV0dXJuIGF3YWl0IE1haWxTZXJ2aWNlLnZlcmlmeSgpO1xuICAgIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgTWFpbDsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosT0FBT0UsV0FBVyxNQUFNLDRCQUE0QjtBQUVwRCxNQUFNQyxJQUFJLENBQUM7RUFDUDtBQUNKO0FBQ0E7QUFDQTtBQUNBO0VBQ0ksYUFBYUMsSUFBSUEsQ0FBQ0MsT0FBTyxFQUFFO0lBQUE7SUFBQUwsYUFBQSxHQUFBTSxDQUFBO0lBQUFOLGFBQUEsR0FBQU8sQ0FBQTtJQUN2QixPQUFPLE1BQU1MLFdBQVcsQ0FBQ0UsSUFBSSxDQUFDQyxPQUFPLENBQUM7RUFDMUM7O0VBRUE7QUFDSjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7RUFDSSxhQUFhRyxRQUFRQSxDQUFDQyxFQUFFLEVBQUVDLE9BQU8sRUFBRUMsSUFBSSxFQUFFO0lBQUE7SUFBQVgsYUFBQSxHQUFBTSxDQUFBO0lBQUFOLGFBQUEsR0FBQU8sQ0FBQTtJQUNyQyxPQUFPLE1BQU1MLFdBQVcsQ0FBQ00sUUFBUSxDQUFDQyxFQUFFLEVBQUVDLE9BQU8sRUFBRUMsSUFBSSxDQUFDO0VBQ3hEOztFQUVBO0FBQ0o7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0VBQ0ksYUFBYUMsUUFBUUEsQ0FBQ0gsRUFBRSxFQUFFQyxPQUFPLEVBQUVHLElBQUksRUFBRTtJQUFBO0lBQUFiLGFBQUEsR0FBQU0sQ0FBQTtJQUFBTixhQUFBLEdBQUFPLENBQUE7SUFDckMsT0FBTyxNQUFNTCxXQUFXLENBQUNVLFFBQVEsQ0FBQ0gsRUFBRSxFQUFFQyxPQUFPLEVBQUVHLElBQUksQ0FBQztFQUN4RDs7RUFFQTtBQUNKO0FBQ0E7QUFDQTtFQUNJLGFBQWFDLE1BQU1BLENBQUEsRUFBRztJQUFBO0lBQUFkLGFBQUEsR0FBQU0sQ0FBQTtJQUFBTixhQUFBLEdBQUFPLENBQUE7SUFDbEIsT0FBTyxNQUFNTCxXQUFXLENBQUNZLE1BQU0sQ0FBQyxDQUFDO0VBQ3JDO0FBQ0o7QUFFQSxlQUFlWCxJQUFJIiwiaWdub3JlTGlzdCI6W119

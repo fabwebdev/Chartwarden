@@ -1,0 +1,357 @@
+61fad2e2bc5877d0cfcb0b2106af3eb0
+/* istanbul ignore next */
+function cov_1fkvasw43v() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/idgMeetingDocumentation.routes.js";
+  var hash = "0715474794c2802cf589b48ae4258439b5ddbe73";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/idgMeetingDocumentation.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 32,
+          column: 2
+        },
+        end: {
+          line: 34,
+          column: 54
+        }
+      },
+      "1": {
+        start: {
+          line: 50,
+          column: 2
+        },
+        end: {
+          line: 52,
+          column: 58
+        }
+      },
+      "2": {
+        start: {
+          line: 73,
+          column: 2
+        },
+        end: {
+          line: 75,
+          column: 54
+        }
+      },
+      "3": {
+        start: {
+          line: 87,
+          column: 2
+        },
+        end: {
+          line: 89,
+          column: 51
+        }
+      },
+      "4": {
+        start: {
+          line: 101,
+          column: 2
+        },
+        end: {
+          line: 103,
+          column: 54
+        }
+      },
+      "5": {
+        start: {
+          line: 117,
+          column: 2
+        },
+        end: {
+          line: 119,
+          column: 54
+        }
+      },
+      "6": {
+        start: {
+          line: 136,
+          column: 2
+        },
+        end: {
+          line: 138,
+          column: 54
+        }
+      },
+      "7": {
+        start: {
+          line: 156,
+          column: 2
+        },
+        end: {
+          line: 158,
+          column: 50
+        }
+      },
+      "8": {
+        start: {
+          line: 174,
+          column: 2
+        },
+        end: {
+          line: 176,
+          column: 48
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "idgMeetingDocumentationRoutes",
+        decl: {
+          start: {
+            line: 22,
+            column: 30
+          },
+          end: {
+            line: 22,
+            column: 59
+          }
+        },
+        loc: {
+          start: {
+            line: 22,
+            column: 78
+          },
+          end: {
+            line: 177,
+            column: 1
+          }
+        },
+        line: 22
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "0715474794c2802cf589b48ae4258439b5ddbe73"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1fkvasw43v = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1fkvasw43v();
+import controller from '../controllers/IDGMeetingDocumentation.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * IDG Meeting Documentation Routes
+ *
+ * CMS 14-Day Compliance Enforcement for IDG Meeting Documentation
+ * Per 42 CFR §418.56, documentation must be completed within 14 calendar days
+ *
+ * Endpoints:
+ * - POST   /idg-meetings/documentation              - Create new documentation
+ * - GET    /idg-meetings/documentation/:id          - Get specific documentation
+ * - PUT    /idg-meetings/documentation/:id          - Update documentation (draft save)
+ * - DELETE /idg-meetings/documentation/:id          - Delete documentation (soft delete)
+ * - POST   /idg-meetings/documentation/:id/submit   - Submit documentation (final submission with deadline enforcement)
+ * - POST   /idg-meetings/documentation/:id/override - Request late submission override (supervisor only)
+ * - GET    /idg-meetings/documentation/pending      - List pending documentation with deadline status
+ * - GET    /idg-meetings/documentation/compliance-report - Generate compliance metrics report
+ * - GET    /idg-meetings/documentation/:id/audit-trail - Get documentation audit trail
+ */
+export default async function idgMeetingDocumentationRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1fkvasw43v().f[0]++;
+  cov_1fkvasw43v().s[0]++;
+  // ============================================================================
+  // STATIC ROUTES (must be registered BEFORE parameterized routes)
+  // ============================================================================
+
+  /**
+   * Create new IDG meeting documentation
+   * POST /idg-meetings/documentation
+   */
+  fastify.post('/idg-meetings/documentation', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.createDocumentation.bind(controller));
+
+  /**
+   * Get all pending documentation with deadline status
+   * GET /idg-meetings/documentation/pending
+   *
+   * Query params:
+   * - limit: number (default 50)
+   * - offset: number (default 0)
+   * - include_overdue: boolean (default true)
+   *
+   * Returns:
+   * - List of pending documentation with real-time deadline countdown
+   * - Summary counts by urgency category
+   * - Categorized lists (overdue, due_today, due_tomorrow, etc.)
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[1]++;
+  fastify.get('/idg-meetings/documentation/pending', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getPendingDocumentation.bind(controller));
+
+  /**
+   * Generate compliance report
+   * GET /idg-meetings/documentation/compliance-report
+   *
+   * Query params:
+   * - month: number (1-12)
+   * - year: number (e.g., 2024)
+   * OR
+   * - start_date: ISO date string
+   * - end_date: ISO date string
+   *
+   * Returns comprehensive compliance metrics:
+   * - Total meetings and documentation coverage
+   * - On-time vs late submission rates
+   * - Override statistics and reasons
+   * - Average completion times
+   * - Meetings without documentation
+   * - CMS regulation reference (42 CFR §418.56)
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[2]++;
+  fastify.get('/idg-meetings/documentation/compliance-report', {
+    preHandler: [requireAnyPermission(PERMISSIONS.GENERATE_REPORTS)]
+  }, controller.getComplianceReport.bind(controller));
+
+  // ============================================================================
+  // PARAMETERIZED ROUTES (must be registered AFTER static routes)
+  // ============================================================================
+
+  /**
+   * Get documentation by ID
+   * GET /idg-meetings/documentation/:id
+   *
+   * Returns documentation with real-time deadline countdown
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[3]++;
+  fastify.get('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getDocumentation.bind(controller));
+
+  /**
+   * Update documentation (draft save)
+   * PUT /idg-meetings/documentation/:id
+   *
+   * Notes:
+   * - Draft saves are allowed at any time (no deadline enforcement)
+   * - Cannot modify meeting_date after creation
+   * - Cannot update finalized (submitted/approved) documentation
+   * - Each update increments draft_version
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[4]++;
+  fastify.put('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.updateDocumentation.bind(controller));
+
+  /**
+   * Delete documentation (soft delete with audit trail)
+   * DELETE /idg-meetings/documentation/:id
+   *
+   * Required body:
+   * - deletion_reason: string (minimum 20 characters)
+   *
+   * Notes:
+   * - Requires administrator role
+   * - Creates immutable audit trail entry
+   * - Cancels pending compliance alerts
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[5]++;
+  fastify.delete('/idg-meetings/documentation/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.deleteDocumentation.bind(controller));
+
+  /**
+   * Submit documentation (final submission with 14-day deadline enforcement)
+   * POST /idg-meetings/documentation/:id/submit
+   *
+   * IMPORTANT: This endpoint enforces the CMS 14-day deadline per 42 CFR §418.56
+   *
+   * Behavior:
+   * - If within deadline: Accepts submission, marks as SUBMITTED
+   * - If past deadline without override: Returns HTTP 422 with CMS regulation reference
+   * - If past deadline with override: Accepts submission, marks as OVERRIDDEN
+   *
+   * Validation:
+   * - Required fields must be complete
+   * - Cannot resubmit already submitted documentation
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[6]++;
+  fastify.post('/idg-meetings/documentation/:id/submit', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.submitDocumentation.bind(controller));
+
+  /**
+   * Request late submission override
+   * POST /idg-meetings/documentation/:id/override
+   *
+   * Required body:
+   * - justification: string (minimum 50 characters)
+   *
+   * Authorization:
+   * - Requires supervisor, administrator, director, or compliance_officer role
+   *
+   * Effects:
+   * - Grants override for this documentation
+   * - Flags documentation in compliance reports
+   * - Creates audit trail entry
+   * - Notifies compliance team (when notification service available)
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[7]++;
+  fastify.post('/idg-meetings/documentation/:id/override', {
+    preHandler: [requireAnyPermission(PERMISSIONS.MANAGE_SETTINGS)] // Admin-level permission
+  }, controller.requestOverride.bind(controller));
+
+  /**
+   * Get documentation audit trail
+   * GET /idg-meetings/documentation/:id/audit-trail
+   *
+   * Query params:
+   * - limit: number (default 100)
+   * - offset: number (default 0)
+   *
+   * Returns immutable audit log entries for the documentation including:
+   * - All status transitions
+   * - User actions (create, update, submit, override)
+   * - IP addresses and user agents
+   * - Deadline status at time of each action
+   */
+  /* istanbul ignore next */
+  cov_1fkvasw43v().s[8]++;
+  fastify.get('/idg-meetings/documentation/:id/audit-trail', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_AUDIT_LOGS)]
+  }, controller.getAuditTrail.bind(controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWZrdmFzdzQzdiIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJpZGdNZWV0aW5nRG9jdW1lbnRhdGlvblJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJwb3N0IiwicHJlSGFuZGxlciIsIkNSRUFURV9DTElOSUNBTF9OT1RFUyIsImNyZWF0ZURvY3VtZW50YXRpb24iLCJiaW5kIiwiZ2V0IiwiVklFV19SRVBPUlRTIiwiZ2V0UGVuZGluZ0RvY3VtZW50YXRpb24iLCJHRU5FUkFURV9SRVBPUlRTIiwiZ2V0Q29tcGxpYW5jZVJlcG9ydCIsIlZJRVdfQ0xJTklDQUxfTk9URVMiLCJnZXREb2N1bWVudGF0aW9uIiwicHV0IiwiVVBEQVRFX0NMSU5JQ0FMX05PVEVTIiwidXBkYXRlRG9jdW1lbnRhdGlvbiIsImRlbGV0ZSIsIkRFTEVURV9DTElOSUNBTF9OT1RFUyIsImRlbGV0ZURvY3VtZW50YXRpb24iLCJzdWJtaXREb2N1bWVudGF0aW9uIiwiTUFOQUdFX1NFVFRJTkdTIiwicmVxdWVzdE92ZXJyaWRlIiwiVklFV19BVURJVF9MT0dTIiwiZ2V0QXVkaXRUcmFpbCJdLCJzb3VyY2VzIjpbImlkZ01lZXRpbmdEb2N1bWVudGF0aW9uLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY29udHJvbGxlciBmcm9tICcuLi9jb250cm9sbGVycy9JREdNZWV0aW5nRG9jdW1lbnRhdGlvbi5jb250cm9sbGVyLmpzJztcbmltcG9ydCB7IFBFUk1JU1NJT05TIH0gZnJvbSAnLi4vY29uZmlnL3JiYWMuanMnO1xuaW1wb3J0IHsgcmVxdWlyZUFueVBlcm1pc3Npb24gfSBmcm9tICcuLi9taWRkbGV3YXJlL3JiYWMubWlkZGxld2FyZS5qcyc7XG5cbi8qKlxuICogSURHIE1lZXRpbmcgRG9jdW1lbnRhdGlvbiBSb3V0ZXNcbiAqXG4gKiBDTVMgMTQtRGF5IENvbXBsaWFuY2UgRW5mb3JjZW1lbnQgZm9yIElERyBNZWV0aW5nIERvY3VtZW50YXRpb25cbiAqIFBlciA0MiBDRlIgwqc0MTguNTYsIGRvY3VtZW50YXRpb24gbXVzdCBiZSBjb21wbGV0ZWQgd2l0aGluIDE0IGNhbGVuZGFyIGRheXNcbiAqXG4gKiBFbmRwb2ludHM6XG4gKiAtIFBPU1QgICAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24gICAgICAgICAgICAgIC0gQ3JlYXRlIG5ldyBkb2N1bWVudGF0aW9uXG4gKiAtIEdFVCAgICAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkICAgICAgICAgIC0gR2V0IHNwZWNpZmljIGRvY3VtZW50YXRpb25cbiAqIC0gUFVUICAgIC9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi86aWQgICAgICAgICAgLSBVcGRhdGUgZG9jdW1lbnRhdGlvbiAoZHJhZnQgc2F2ZSlcbiAqIC0gREVMRVRFIC9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi86aWQgICAgICAgICAgLSBEZWxldGUgZG9jdW1lbnRhdGlvbiAoc29mdCBkZWxldGUpXG4gKiAtIFBPU1QgICAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkL3N1Ym1pdCAgIC0gU3VibWl0IGRvY3VtZW50YXRpb24gKGZpbmFsIHN1Ym1pc3Npb24gd2l0aCBkZWFkbGluZSBlbmZvcmNlbWVudClcbiAqIC0gUE9TVCAgIC9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi86aWQvb3ZlcnJpZGUgLSBSZXF1ZXN0IGxhdGUgc3VibWlzc2lvbiBvdmVycmlkZSAoc3VwZXJ2aXNvciBvbmx5KVxuICogLSBHRVQgICAgL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uL3BlbmRpbmcgICAgICAtIExpc3QgcGVuZGluZyBkb2N1bWVudGF0aW9uIHdpdGggZGVhZGxpbmUgc3RhdHVzXG4gKiAtIEdFVCAgICAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vY29tcGxpYW5jZS1yZXBvcnQgLSBHZW5lcmF0ZSBjb21wbGlhbmNlIG1ldHJpY3MgcmVwb3J0XG4gKiAtIEdFVCAgICAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkL2F1ZGl0LXRyYWlsIC0gR2V0IGRvY3VtZW50YXRpb24gYXVkaXQgdHJhaWxcbiAqL1xuZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24gaWRnTWVldGluZ0RvY3VtZW50YXRpb25Sb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gU1RBVElDIFJPVVRFUyAobXVzdCBiZSByZWdpc3RlcmVkIEJFRk9SRSBwYXJhbWV0ZXJpemVkIHJvdXRlcylcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBDcmVhdGUgbmV3IElERyBtZWV0aW5nIGRvY3VtZW50YXRpb25cbiAgICogUE9TVCAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb25cbiAgICovXG4gIGZhc3RpZnkucG9zdCgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmNyZWF0ZURvY3VtZW50YXRpb24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLyoqXG4gICAqIEdldCBhbGwgcGVuZGluZyBkb2N1bWVudGF0aW9uIHdpdGggZGVhZGxpbmUgc3RhdHVzXG4gICAqIEdFVCAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vcGVuZGluZ1xuICAgKlxuICAgKiBRdWVyeSBwYXJhbXM6XG4gICAqIC0gbGltaXQ6IG51bWJlciAoZGVmYXVsdCA1MClcbiAgICogLSBvZmZzZXQ6IG51bWJlciAoZGVmYXVsdCAwKVxuICAgKiAtIGluY2x1ZGVfb3ZlcmR1ZTogYm9vbGVhbiAoZGVmYXVsdCB0cnVlKVxuICAgKlxuICAgKiBSZXR1cm5zOlxuICAgKiAtIExpc3Qgb2YgcGVuZGluZyBkb2N1bWVudGF0aW9uIHdpdGggcmVhbC10aW1lIGRlYWRsaW5lIGNvdW50ZG93blxuICAgKiAtIFN1bW1hcnkgY291bnRzIGJ5IHVyZ2VuY3kgY2F0ZWdvcnlcbiAgICogLSBDYXRlZ29yaXplZCBsaXN0cyAob3ZlcmR1ZSwgZHVlX3RvZGF5LCBkdWVfdG9tb3Jyb3csIGV0Yy4pXG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uL3BlbmRpbmcnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0UGVuZGluZ0RvY3VtZW50YXRpb24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLyoqXG4gICAqIEdlbmVyYXRlIGNvbXBsaWFuY2UgcmVwb3J0XG4gICAqIEdFVCAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vY29tcGxpYW5jZS1yZXBvcnRcbiAgICpcbiAgICogUXVlcnkgcGFyYW1zOlxuICAgKiAtIG1vbnRoOiBudW1iZXIgKDEtMTIpXG4gICAqIC0geWVhcjogbnVtYmVyIChlLmcuLCAyMDI0KVxuICAgKiBPUlxuICAgKiAtIHN0YXJ0X2RhdGU6IElTTyBkYXRlIHN0cmluZ1xuICAgKiAtIGVuZF9kYXRlOiBJU08gZGF0ZSBzdHJpbmdcbiAgICpcbiAgICogUmV0dXJucyBjb21wcmVoZW5zaXZlIGNvbXBsaWFuY2UgbWV0cmljczpcbiAgICogLSBUb3RhbCBtZWV0aW5ncyBhbmQgZG9jdW1lbnRhdGlvbiBjb3ZlcmFnZVxuICAgKiAtIE9uLXRpbWUgdnMgbGF0ZSBzdWJtaXNzaW9uIHJhdGVzXG4gICAqIC0gT3ZlcnJpZGUgc3RhdGlzdGljcyBhbmQgcmVhc29uc1xuICAgKiAtIEF2ZXJhZ2UgY29tcGxldGlvbiB0aW1lc1xuICAgKiAtIE1lZXRpbmdzIHdpdGhvdXQgZG9jdW1lbnRhdGlvblxuICAgKiAtIENNUyByZWd1bGF0aW9uIHJlZmVyZW5jZSAoNDIgQ0ZSIMKnNDE4LjU2KVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi9jb21wbGlhbmNlLXJlcG9ydCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuR0VORVJBVEVfUkVQT1JUUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0Q29tcGxpYW5jZVJlcG9ydC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFBBUkFNRVRFUklaRUQgUk9VVEVTIChtdXN0IGJlIHJlZ2lzdGVyZWQgQUZURVIgc3RhdGljIHJvdXRlcylcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBHZXQgZG9jdW1lbnRhdGlvbiBieSBJRFxuICAgKiBHRVQgL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZFxuICAgKlxuICAgKiBSZXR1cm5zIGRvY3VtZW50YXRpb24gd2l0aCByZWFsLXRpbWUgZGVhZGxpbmUgY291bnRkb3duXG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0RG9jdW1lbnRhdGlvbi5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvKipcbiAgICogVXBkYXRlIGRvY3VtZW50YXRpb24gKGRyYWZ0IHNhdmUpXG4gICAqIFBVVCAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkXG4gICAqXG4gICAqIE5vdGVzOlxuICAgKiAtIERyYWZ0IHNhdmVzIGFyZSBhbGxvd2VkIGF0IGFueSB0aW1lIChubyBkZWFkbGluZSBlbmZvcmNlbWVudClcbiAgICogLSBDYW5ub3QgbW9kaWZ5IG1lZXRpbmdfZGF0ZSBhZnRlciBjcmVhdGlvblxuICAgKiAtIENhbm5vdCB1cGRhdGUgZmluYWxpemVkIChzdWJtaXR0ZWQvYXBwcm92ZWQpIGRvY3VtZW50YXRpb25cbiAgICogLSBFYWNoIHVwZGF0ZSBpbmNyZW1lbnRzIGRyYWZ0X3ZlcnNpb25cbiAgICovXG4gIGZhc3RpZnkucHV0KCcvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnVwZGF0ZURvY3VtZW50YXRpb24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLyoqXG4gICAqIERlbGV0ZSBkb2N1bWVudGF0aW9uIChzb2Z0IGRlbGV0ZSB3aXRoIGF1ZGl0IHRyYWlsKVxuICAgKiBERUxFVEUgL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZFxuICAgKlxuICAgKiBSZXF1aXJlZCBib2R5OlxuICAgKiAtIGRlbGV0aW9uX3JlYXNvbjogc3RyaW5nIChtaW5pbXVtIDIwIGNoYXJhY3RlcnMpXG4gICAqXG4gICAqIE5vdGVzOlxuICAgKiAtIFJlcXVpcmVzIGFkbWluaXN0cmF0b3Igcm9sZVxuICAgKiAtIENyZWF0ZXMgaW1tdXRhYmxlIGF1ZGl0IHRyYWlsIGVudHJ5XG4gICAqIC0gQ2FuY2VscyBwZW5kaW5nIGNvbXBsaWFuY2UgYWxlcnRzXG4gICAqL1xuICBmYXN0aWZ5LmRlbGV0ZSgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuREVMRVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5kZWxldGVEb2N1bWVudGF0aW9uLmJpbmQoY29udHJvbGxlcikpO1xuXG4gIC8qKlxuICAgKiBTdWJtaXQgZG9jdW1lbnRhdGlvbiAoZmluYWwgc3VibWlzc2lvbiB3aXRoIDE0LWRheSBkZWFkbGluZSBlbmZvcmNlbWVudClcbiAgICogUE9TVCAvaWRnLW1lZXRpbmdzL2RvY3VtZW50YXRpb24vOmlkL3N1Ym1pdFxuICAgKlxuICAgKiBJTVBPUlRBTlQ6IFRoaXMgZW5kcG9pbnQgZW5mb3JjZXMgdGhlIENNUyAxNC1kYXkgZGVhZGxpbmUgcGVyIDQyIENGUiDCpzQxOC41NlxuICAgKlxuICAgKiBCZWhhdmlvcjpcbiAgICogLSBJZiB3aXRoaW4gZGVhZGxpbmU6IEFjY2VwdHMgc3VibWlzc2lvbiwgbWFya3MgYXMgU1VCTUlUVEVEXG4gICAqIC0gSWYgcGFzdCBkZWFkbGluZSB3aXRob3V0IG92ZXJyaWRlOiBSZXR1cm5zIEhUVFAgNDIyIHdpdGggQ01TIHJlZ3VsYXRpb24gcmVmZXJlbmNlXG4gICAqIC0gSWYgcGFzdCBkZWFkbGluZSB3aXRoIG92ZXJyaWRlOiBBY2NlcHRzIHN1Ym1pc3Npb24sIG1hcmtzIGFzIE9WRVJSSURERU5cbiAgICpcbiAgICogVmFsaWRhdGlvbjpcbiAgICogLSBSZXF1aXJlZCBmaWVsZHMgbXVzdCBiZSBjb21wbGV0ZVxuICAgKiAtIENhbm5vdCByZXN1Ym1pdCBhbHJlYWR5IHN1Ym1pdHRlZCBkb2N1bWVudGF0aW9uXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoJy9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi86aWQvc3VibWl0Jywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnN1Ym1pdERvY3VtZW50YXRpb24uYmluZChjb250cm9sbGVyKSk7XG5cbiAgLyoqXG4gICAqIFJlcXVlc3QgbGF0ZSBzdWJtaXNzaW9uIG92ZXJyaWRlXG4gICAqIFBPU1QgL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZC9vdmVycmlkZVxuICAgKlxuICAgKiBSZXF1aXJlZCBib2R5OlxuICAgKiAtIGp1c3RpZmljYXRpb246IHN0cmluZyAobWluaW11bSA1MCBjaGFyYWN0ZXJzKVxuICAgKlxuICAgKiBBdXRob3JpemF0aW9uOlxuICAgKiAtIFJlcXVpcmVzIHN1cGVydmlzb3IsIGFkbWluaXN0cmF0b3IsIGRpcmVjdG9yLCBvciBjb21wbGlhbmNlX29mZmljZXIgcm9sZVxuICAgKlxuICAgKiBFZmZlY3RzOlxuICAgKiAtIEdyYW50cyBvdmVycmlkZSBmb3IgdGhpcyBkb2N1bWVudGF0aW9uXG4gICAqIC0gRmxhZ3MgZG9jdW1lbnRhdGlvbiBpbiBjb21wbGlhbmNlIHJlcG9ydHNcbiAgICogLSBDcmVhdGVzIGF1ZGl0IHRyYWlsIGVudHJ5XG4gICAqIC0gTm90aWZpZXMgY29tcGxpYW5jZSB0ZWFtICh3aGVuIG5vdGlmaWNhdGlvbiBzZXJ2aWNlIGF2YWlsYWJsZSlcbiAgICovXG4gIGZhc3RpZnkucG9zdCgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZC9vdmVycmlkZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuTUFOQUdFX1NFVFRJTkdTKV0gLy8gQWRtaW4tbGV2ZWwgcGVybWlzc2lvblxuICB9LCBjb250cm9sbGVyLnJlcXVlc3RPdmVycmlkZS5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAvKipcbiAgICogR2V0IGRvY3VtZW50YXRpb24gYXVkaXQgdHJhaWxcbiAgICogR0VUIC9pZGctbWVldGluZ3MvZG9jdW1lbnRhdGlvbi86aWQvYXVkaXQtdHJhaWxcbiAgICpcbiAgICogUXVlcnkgcGFyYW1zOlxuICAgKiAtIGxpbWl0OiBudW1iZXIgKGRlZmF1bHQgMTAwKVxuICAgKiAtIG9mZnNldDogbnVtYmVyIChkZWZhdWx0IDApXG4gICAqXG4gICAqIFJldHVybnMgaW1tdXRhYmxlIGF1ZGl0IGxvZyBlbnRyaWVzIGZvciB0aGUgZG9jdW1lbnRhdGlvbiBpbmNsdWRpbmc6XG4gICAqIC0gQWxsIHN0YXR1cyB0cmFuc2l0aW9uc1xuICAgKiAtIFVzZXIgYWN0aW9ucyAoY3JlYXRlLCB1cGRhdGUsIHN1Ym1pdCwgb3ZlcnJpZGUpXG4gICAqIC0gSVAgYWRkcmVzc2VzIGFuZCB1c2VyIGFnZW50c1xuICAgKiAtIERlYWRsaW5lIHN0YXR1cyBhdCB0aW1lIG9mIGVhY2ggYWN0aW9uXG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2lkZy1tZWV0aW5ncy9kb2N1bWVudGF0aW9uLzppZC9hdWRpdC10cmFpbCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19BVURJVF9MT0dTKV1cbiAgfSwgY29udHJvbGxlci5nZXRBdWRpdFRyYWlsLmJpbmQoY29udHJvbGxlcikpO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxVQUFVLE1BQU0sc0RBQXNEO0FBQzdFLFNBQVNDLFdBQVcsUUFBUSxtQkFBbUI7QUFDL0MsU0FBU0Msb0JBQW9CLFFBQVEsa0NBQWtDOztBQUV2RTtBQUNBO0FB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

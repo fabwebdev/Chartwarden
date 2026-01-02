@@ -1,0 +1,156 @@
+f0494828193195463089cf1338582c51
+/* istanbul ignore next */
+function cov_1wjzr3lmdl() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/RaceEthnicity.routes.js";
+  var hash = "e4009a4a308d36b253b4c244628f33a61c8e2551";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/RaceEthnicity.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 14,
+          column: 2
+        },
+        end: {
+          line: 14,
+          column: 52
+        }
+      },
+      "1": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 15,
+          column: 39
+        }
+      },
+      "2": {
+        start: {
+          line: 16,
+          column: 2
+        },
+        end: {
+          line: 16,
+          column: 46
+        }
+      },
+      "3": {
+        start: {
+          line: 17,
+          column: 2
+        },
+        end: {
+          line: 17,
+          column: 42
+        }
+      },
+      "4": {
+        start: {
+          line: 18,
+          column: 2
+        },
+        end: {
+          line: 18,
+          column: 44
+        }
+      },
+      "5": {
+        start: {
+          line: 19,
+          column: 2
+        },
+        end: {
+          line: 19,
+          column: 48
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "raceEthnicityRoutes",
+        decl: {
+          start: {
+            line: 11,
+            column: 15
+          },
+          end: {
+            line: 11,
+            column: 34
+          }
+        },
+        loc: {
+          start: {
+            line: 11,
+            column: 53
+          },
+          end: {
+            line: 20,
+            column: 1
+          }
+        },
+        line: 11
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "e4009a4a308d36b253b4c244628f33a61c8e2551"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1wjzr3lmdl = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1wjzr3lmdl();
+import { index, store, show, update, destroy, getOptions } from "../../controllers/patient/RaceEthnicity.controller.js";
+
+// Fastify plugin for race ethnicity routes
+async function raceEthnicityRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().f[0]++;
+  cov_1wjzr3lmdl().s[0]++;
+  // Race Ethnicity Routes
+  // Note: More specific routes must be defined before parameterized routes
+  fastify.get("/raceEthnicity/options", getOptions); // Get comprehensive list of options
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().s[1]++;
+  fastify.get("/raceEthnicity", index); // Get all from database
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().s[2]++;
+  fastify.post("/raceEthnicity/store", store);
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().s[3]++;
+  fastify.get("/raceEthnicity/:id", show);
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().s[4]++;
+  fastify.put("/raceEthnicity/:id", update);
+  /* istanbul ignore next */
+  cov_1wjzr3lmdl().s[5]++;
+  fastify.delete("/raceEthnicity/:id", destroy);
+}
+export default raceEthnicityRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXdqenIzbG1kbCIsImFjdHVhbENvdmVyYWdlIiwiaW5kZXgiLCJzdG9yZSIsInNob3ciLCJ1cGRhdGUiLCJkZXN0cm95IiwiZ2V0T3B0aW9ucyIsInJhY2VFdGhuaWNpdHlSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicG9zdCIsInB1dCIsImRlbGV0ZSJdLCJzb3VyY2VzIjpbIlJhY2VFdGhuaWNpdHkucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7XG4gICAgaW5kZXgsXG4gICAgc3RvcmUsXG4gICAgc2hvdyxcbiAgICB1cGRhdGUsXG4gICAgZGVzdHJveSxcbiAgICBnZXRPcHRpb25zLFxufSBmcm9tIFwiLi4vLi4vY29udHJvbGxlcnMvcGF0aWVudC9SYWNlRXRobmljaXR5LmNvbnRyb2xsZXIuanNcIjtcblxuLy8gRmFzdGlmeSBwbHVnaW4gZm9yIHJhY2UgZXRobmljaXR5IHJvdXRlc1xuYXN5bmMgZnVuY3Rpb24gcmFjZUV0aG5pY2l0eVJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIFJhY2UgRXRobmljaXR5IFJvdXRlc1xuICAvLyBOb3RlOiBNb3JlIHNwZWNpZmljIHJvdXRlcyBtdXN0IGJlIGRlZmluZWQgYmVmb3JlIHBhcmFtZXRlcml6ZWQgcm91dGVzXG4gIGZhc3RpZnkuZ2V0KFwiL3JhY2VFdGhuaWNpdHkvb3B0aW9uc1wiLCBnZXRPcHRpb25zKTsgLy8gR2V0IGNvbXByZWhlbnNpdmUgbGlzdCBvZiBvcHRpb25zXG4gIGZhc3RpZnkuZ2V0KFwiL3JhY2VFdGhuaWNpdHlcIiwgaW5kZXgpOyAvLyBHZXQgYWxsIGZyb20gZGF0YWJhc2VcbiAgZmFzdGlmeS5wb3N0KFwiL3JhY2VFdGhuaWNpdHkvc3RvcmVcIiwgc3RvcmUpO1xuICBmYXN0aWZ5LmdldChcIi9yYWNlRXRobmljaXR5LzppZFwiLCBzaG93KTtcbiAgZmFzdGlmeS5wdXQoXCIvcmFjZUV0aG5pY2l0eS86aWRcIiwgdXBkYXRlKTtcbiAgZmFzdGlmeS5kZWxldGUoXCIvcmFjZUV0aG5pY2l0eS86aWRcIiwgZGVzdHJveSk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IHJhY2VFdGhuaWNpdHlSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQ0lFLEtBQUssRUFDTEMsS0FBSyxFQUNMQyxJQUFJLEVBQ0pDLE1BQU0sRUFDTkMsT0FBTyxFQUNQQyxVQUFVLFFBQ1AsdURBQXVEOztBQUU5RDtBQUNBLGVBQWVDLG1CQUFtQkEsQ0FBQ0MsT0FBTyxFQUFFQyxPQUFPLEVBQUU7RUFBQTtFQUFBVixjQUFBLEdBQUFXLENBQUE7RUFBQVgsY0FBQSxHQUFBWSxDQUFBO0VBQ25EO0VBQ0E7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsd0JBQXdCLEVBQUVOLFVBQVUsQ0FBQyxDQUFDLENBQUM7RUFBQTtFQUFBUCxjQUFBLEdBQUFZLENBQUE7RUFDbkRILE9BQU8sQ0FBQ0ksR0FBRyxDQUFDLGdCQUFnQixFQUFFWCxLQUFLLENBQUMsQ0FBQyxDQUFDO0VBQUE7RUFBQUYsY0FBQSxHQUFBWSxDQUFBO0VBQ3RDSCxPQUFPLENBQUNLLElBQUksQ0FBQyxzQkFBc0IsRUFBRVgsS0FBSyxDQUFDO0VBQUM7RUFBQUgsY0FBQSxHQUFBWSxDQUFBO0VBQzVDSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxvQkFBb0IsRUFBRVQsSUFBSSxDQUFDO0VBQUM7RUFBQUosY0FBQSxHQUFBWSxDQUFBO0VBQ3hDSCxPQUFPLENBQUNNLEdBQUcsQ0FBQyxvQkFBb0IsRUFBRVYsTUFBTSxDQUFDO0VBQUM7RUFBQUwsY0FBQSxHQUFBWSxDQUFBO0VBQzFDSCxPQUFPLENBQUNPLE1BQU0sQ0FBQyxvQkFBb0IsRUFBRVYsT0FBTyxDQUFDO0FBQy9DO0FBRUEsZUFBZUUsbUJBQW1CIiwiaWdub3JlTGlzdCI6W119

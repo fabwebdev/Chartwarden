@@ -1,0 +1,425 @@
+677c5ba7e4015028962cde90e9770851
+/* istanbul ignore next */
+function cov_cb03bxtun() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/electronicSignature.routes.js";
+  var hash = "32f1782f9afe08e0b447c3cb8c370e8781a976e2";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/electronicSignature.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 41,
+          column: 2
+        },
+        end: {
+          line: 43,
+          column: 43
+        }
+      },
+      "1": {
+        start: {
+          line: 49,
+          column: 2
+        },
+        end: {
+          line: 51,
+          column: 41
+        }
+      },
+      "2": {
+        start: {
+          line: 62,
+          column: 2
+        },
+        end: {
+          line: 64,
+          column: 50
+        }
+      },
+      "3": {
+        start: {
+          line: 78,
+          column: 2
+        },
+        end: {
+          line: 80,
+          column: 43
+        }
+      },
+      "4": {
+        start: {
+          line: 93,
+          column: 2
+        },
+        end: {
+          line: 95,
+          column: 60
+        }
+      },
+      "5": {
+        start: {
+          line: 104,
+          column: 2
+        },
+        end: {
+          line: 106,
+          column: 50
+        }
+      },
+      "6": {
+        start: {
+          line: 127,
+          column: 2
+        },
+        end: {
+          line: 129,
+          column: 43
+        }
+      },
+      "7": {
+        start: {
+          line: 138,
+          column: 2
+        },
+        end: {
+          line: 140,
+          column: 59
+        }
+      },
+      "8": {
+        start: {
+          line: 156,
+          column: 2
+        },
+        end: {
+          line: 158,
+          column: 43
+        }
+      },
+      "9": {
+        start: {
+          line: 171,
+          column: 2
+        },
+        end: {
+          line: 173,
+          column: 50
+        }
+      },
+      "10": {
+        start: {
+          line: 187,
+          column: 2
+        },
+        end: {
+          line: 189,
+          column: 52
+        }
+      },
+      "11": {
+        start: {
+          line: 201,
+          column: 2
+        },
+        end: {
+          line: 203,
+          column: 56
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "electronicSignatureRoutes",
+        decl: {
+          start: {
+            line: 13,
+            column: 15
+          },
+          end: {
+            line: 13,
+            column: 40
+          }
+        },
+        loc: {
+          start: {
+            line: 13,
+            column: 59
+          },
+          end: {
+            line: 204,
+            column: 1
+          }
+        },
+        line: 13
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "32f1782f9afe08e0b447c3cb8c370e8781a976e2"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_cb03bxtun = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_cb03bxtun();
+import ElectronicSignatureController from '../controllers/ElectronicSignature.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Electronic Signature Routes
+ *
+ * 21 CFR Part 11 Compliant Electronic Signature API
+ *
+ * All routes require authentication via the global auth middleware.
+ * Additional permission checks are applied where needed.
+ */
+async function electronicSignatureRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_cb03bxtun().f[0]++;
+  cov_cb03bxtun().s[0]++;
+  // ============================================================================
+  // SIGNATURE CREATION & MANAGEMENT
+  // ============================================================================
+
+  /**
+   * Create a new electronic signature
+   * POST /electronic-signatures
+   *
+   * Required body fields:
+   * - document_type: Type of document being signed (e.g., 'encounter', 'order', 'certification')
+   * - document_id: ID of the document being signed
+   * - signature_type: TYPED | DRAWN | BIOMETRIC | PIN | SMART_CARD | DIGITAL_CERT
+   * - signature_meaning: AUTHOR | REVIEWER | APPROVER | VERIFIER | WITNESS | COSIGNER | etc.
+   * - signature_statement: Legal statement the signer is acknowledging
+   * - signature_data: Actual signature data (typed name, base64 image, etc.)
+   *
+   * Optional fields:
+   * - document_content: Content to hash for integrity verification
+   * - document_version: Version of the document (default: '1.0')
+   * - signature_image_format: Format for DRAWN signatures (PNG, SVG)
+   * - requires_cosigner: Whether a cosignature is required (default: false)
+   * - required_cosigner_id: Specific user ID required to cosign
+   * - required_cosigner_role: Role required for cosigner (e.g., 'doctor')
+   * - cosignature_deadline: Deadline for cosignature
+   * - regulatory_context: Regulatory framework (default: 'HIPAA')
+   * - metadata: Additional metadata object
+   */
+  fastify.post('/electronic-signatures', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.create);
+
+  /**
+   * Get electronic signature by ID
+   * GET /electronic-signatures/:id
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[1]++;
+  fastify.get('/electronic-signatures/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.show);
+
+  /**
+   * Get all signatures for a specific document
+   * GET /electronic-signatures/document/:documentType/:documentId
+   *
+   * Query parameters:
+   * - status: Filter by signature status (VALID, PENDING_REVIEW, REVOKED, etc.)
+   * - meaning: Filter by signature meaning (AUTHOR, COSIGNER, etc.)
+   * - include_superseded: Include superseded signatures (default: false)
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[2]++;
+  fastify.get('/electronic-signatures/document/:documentType/:documentId', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.getByDocument);
+
+  // ============================================================================
+  // SIGNATURE VERIFICATION
+  // ============================================================================
+
+  /**
+   * Verify signature integrity
+   * POST /electronic-signatures/:id/verify
+   *
+   * Verifies that the document content matches the stored hash.
+   * Required body:
+   * - document_content: Content to verify against stored hash
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[3]++;
+  fastify.post('/electronic-signatures/:id/verify', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.verify);
+
+  /**
+   * Create a verification token for external verification
+   * POST /electronic-signatures/:id/verification-token
+   *
+   * Creates a token that can be used to verify the signature without authentication.
+   * Useful for sharing verification links with external parties.
+   *
+   * Optional body:
+   * - expires_in_hours: Hours until token expires (default: 24)
+   * - max_uses: Maximum number of times token can be used (default: unlimited)
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[4]++;
+  fastify.post('/electronic-signatures/:id/verification-token', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.createVerificationToken);
+
+  /**
+   * Verify signature using external token (public endpoint)
+   * GET /electronic-signatures/verify-token/:token
+   *
+   * This endpoint does not require authentication - anyone with the token
+   * can verify the signature. Rate limiting should be applied.
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[5]++;
+  fastify.get('/electronic-signatures/verify-token/:token', {
+    // No authentication required for token-based verification
+  }, ElectronicSignatureController.verifyByToken);
+
+  // ============================================================================
+  // COSIGNATURE WORKFLOW
+  // ============================================================================
+
+  /**
+   * Cosign a signature
+   * POST /electronic-signatures/:id/cosign
+   *
+   * Creates a cosignature for a document that requires cosigning.
+   * The cosigner must be authorized (matching required_cosigner_id or required_cosigner_role).
+   *
+   * Required body:
+   * - signature_data: Cosigner's signature data
+   *
+   * Optional body:
+   * - signature_type: Type of signature (default: TYPED)
+   * - signature_statement: Custom statement (default: standard cosigner statement)
+   * - signature_image_format: Format for DRAWN signatures
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[6]++;
+  fastify.post('/electronic-signatures/:id/cosign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.cosign);
+
+  /**
+   * Get pending cosignatures for the current user
+   * GET /electronic-signatures/pending-cosignatures
+   *
+   * Returns all signatures that require cosigning by the current user
+   * based on their user ID or role.
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[7]++;
+  fastify.get('/electronic-signatures/pending-cosignatures', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.getPendingCosignatures);
+
+  // ============================================================================
+  // SIGNATURE REVOCATION
+  // ============================================================================
+
+  /**
+   * Revoke a signature
+   * POST /electronic-signatures/:id/revoke
+   *
+   * Marks a signature as revoked. This is an immutable operation -
+   * the signature record is preserved for audit purposes.
+   *
+   * Required body:
+   * - revocation_reason: Reason for revoking the signature
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[8]++;
+  fastify.post('/electronic-signatures/:id/revoke', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.revoke);
+
+  // ============================================================================
+  // AUDIT & REPORTING
+  // ============================================================================
+
+  /**
+   * Get signature audit trail
+   * GET /electronic-signatures/:id/audit-trail
+   *
+   * Returns the complete audit trail for a signature, including
+   * all events (creation, views, verifications, etc.).
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[9]++;
+  fastify.get('/electronic-signatures/:id/audit-trail', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_AUDIT_LOGS)]
+  }, ElectronicSignatureController.getAuditTrail);
+
+  /**
+   * Get current user's signature history
+   * GET /electronic-signatures/my-signatures
+   *
+   * Query parameters:
+   * - limit: Number of results (default: 50)
+   * - offset: Pagination offset (default: 0)
+   * - status: Filter by status
+   * - document_type: Filter by document type
+   * - start_date: Filter by signed_at >= date
+   * - end_date: Filter by signed_at <= date
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[10]++;
+  fastify.get('/electronic-signatures/my-signatures', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, ElectronicSignatureController.getMySignatures);
+
+  /**
+   * Get compliance report for signatures
+   * GET /electronic-signatures/compliance-report
+   *
+   * Generates a compliance report with signature statistics.
+   *
+   * Query parameters:
+   * - start_date: Start of reporting period (default: 30 days ago)
+   * - end_date: End of reporting period (default: now)
+   */
+  /* istanbul ignore next */
+  cov_cb03bxtun().s[11]++;
+  fastify.get('/electronic-signatures/compliance-report', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_AUDIT_LOGS, PERMISSIONS.VIEW_REPORTS)]
+  }, ElectronicSignatureController.getComplianceReport);
+}
+export default electronicSignatureRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfY2IwM2J4dHVuIiwiYWN0dWFsQ292ZXJhZ2UiLCJFbGVjdHJvbmljU2lnbmF0dXJlQ29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJlbGVjdHJvbmljU2lnbmF0dXJlUm91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsInBvc3QiLCJwcmVIYW5kbGVyIiwiVVBEQVRFX0NMSU5JQ0FMX05PVEVTIiwiY3JlYXRlIiwiZ2V0IiwiVklFV19DTElOSUNBTF9OT1RFUyIsInNob3ciLCJnZXRCeURvY3VtZW50IiwidmVyaWZ5IiwiY3JlYXRlVmVyaWZpY2F0aW9uVG9rZW4iLCJ2ZXJpZnlCeVRva2VuIiwiY29zaWduIiwiZ2V0UGVuZGluZ0Nvc2lnbmF0dXJlcyIsIkRFTEVURV9DTElOSUNBTF9OT1RFUyIsInJldm9rZSIsIlZJRVdfQVVESVRfTE9HUyIsImdldEF1ZGl0VHJhaWwiLCJnZXRNeVNpZ25hdHVyZXMiLCJWSUVXX1JFUE9SVFMiLCJnZXRDb21wbGlhbmNlUmVwb3J0Il0sInNvdXJjZXMiOlsiZWxlY3Ryb25pY1NpZ25hdHVyZS5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyIGZyb20gJy4uL2NvbnRyb2xsZXJzL0VsZWN0cm9uaWNTaWduYXR1cmUuY29udHJvbGxlci5qcyc7XG5pbXBvcnQgeyBQRVJNSVNTSU9OUyB9IGZyb20gJy4uL2NvbmZpZy9yYmFjLmpzJztcbmltcG9ydCB7IHJlcXVpcmVBbnlQZXJtaXNzaW9uIH0gZnJvbSAnLi4vbWlkZGxld2FyZS9yYmFjLm1pZGRsZXdhcmUuanMnO1xuXG4vKipcbiAqIEVsZWN0cm9uaWMgU2lnbmF0dXJlIFJvdXRlc1xuICpcbiAqIDIxIENGUiBQYXJ0IDExIENvbXBsaWFudCBFbGVjdHJvbmljIFNpZ25hdHVyZSBBUElcbiAqXG4gKiBBbGwgcm91dGVzIHJlcXVpcmUgYXV0aGVudGljYXRpb24gdmlhIHRoZSBnbG9iYWwgYXV0aCBtaWRkbGV3YXJlLlxuICogQWRkaXRpb25hbCBwZXJtaXNzaW9uIGNoZWNrcyBhcmUgYXBwbGllZCB3aGVyZSBuZWVkZWQuXG4gKi9cbmFzeW5jIGZ1bmN0aW9uIGVsZWN0cm9uaWNTaWduYXR1cmVSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFNJR05BVFVSRSBDUkVBVElPTiAmIE1BTkFHRU1FTlRcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBDcmVhdGUgYSBuZXcgZWxlY3Ryb25pYyBzaWduYXR1cmVcbiAgICogUE9TVCAvZWxlY3Ryb25pYy1zaWduYXR1cmVzXG4gICAqXG4gICAqIFJlcXVpcmVkIGJvZHkgZmllbGRzOlxuICAgKiAtIGRvY3VtZW50X3R5cGU6IFR5cGUgb2YgZG9jdW1lbnQgYmVpbmcgc2lnbmVkIChlLmcuLCAnZW5jb3VudGVyJywgJ29yZGVyJywgJ2NlcnRpZmljYXRpb24nKVxuICAgKiAtIGRvY3VtZW50X2lkOiBJRCBvZiB0aGUgZG9jdW1lbnQgYmVpbmcgc2lnbmVkXG4gICAqIC0gc2lnbmF0dXJlX3R5cGU6IFRZUEVEIHwgRFJBV04gfCBCSU9NRVRSSUMgfCBQSU4gfCBTTUFSVF9DQVJEIHwgRElHSVRBTF9DRVJUXG4gICAqIC0gc2lnbmF0dXJlX21lYW5pbmc6IEFVVEhPUiB8IFJFVklFV0VSIHwgQVBQUk9WRVIgfCBWRVJJRklFUiB8IFdJVE5FU1MgfCBDT1NJR05FUiB8IGV0Yy5cbiAgICogLSBzaWduYXR1cmVfc3RhdGVtZW50OiBMZWdhbCBzdGF0ZW1lbnQgdGhlIHNpZ25lciBpcyBhY2tub3dsZWRnaW5nXG4gICAqIC0gc2lnbmF0dXJlX2RhdGE6IEFjdHVhbCBzaWduYXR1cmUgZGF0YSAodHlwZWQgbmFtZSwgYmFzZTY0IGltYWdlLCBldGMuKVxuICAgKlxuICAgKiBPcHRpb25hbCBmaWVsZHM6XG4gICAqIC0gZG9jdW1lbnRfY29udGVudDogQ29udGVudCB0byBoYXNoIGZvciBpbnRlZ3JpdHkgdmVyaWZpY2F0aW9uXG4gICAqIC0gZG9jdW1lbnRfdmVyc2lvbjogVmVyc2lvbiBvZiB0aGUgZG9jdW1lbnQgKGRlZmF1bHQ6ICcxLjAnKVxuICAgKiAtIHNpZ25hdHVyZV9pbWFnZV9mb3JtYXQ6IEZvcm1hdCBmb3IgRFJBV04gc2lnbmF0dXJlcyAoUE5HLCBTVkcpXG4gICAqIC0gcmVxdWlyZXNfY29zaWduZXI6IFdoZXRoZXIgYSBjb3NpZ25hdHVyZSBpcyByZXF1aXJlZCAoZGVmYXVsdDogZmFsc2UpXG4gICAqIC0gcmVxdWlyZWRfY29zaWduZXJfaWQ6IFNwZWNpZmljIHVzZXIgSUQgcmVxdWlyZWQgdG8gY29zaWduXG4gICAqIC0gcmVxdWlyZWRfY29zaWduZXJfcm9sZTogUm9sZSByZXF1aXJlZCBmb3IgY29zaWduZXIgKGUuZy4sICdkb2N0b3InKVxuICAgKiAtIGNvc2lnbmF0dXJlX2RlYWRsaW5lOiBEZWFkbGluZSBmb3IgY29zaWduYXR1cmVcbiAgICogLSByZWd1bGF0b3J5X2NvbnRleHQ6IFJlZ3VsYXRvcnkgZnJhbWV3b3JrIChkZWZhdWx0OiAnSElQQUEnKVxuICAgKiAtIG1ldGFkYXRhOiBBZGRpdGlvbmFsIG1ldGFkYXRhIG9iamVjdFxuICAgKi9cbiAgZmFzdGlmeS5wb3N0KCcvZWxlY3Ryb25pYy1zaWduYXR1cmVzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBFbGVjdHJvbmljU2lnbmF0dXJlQ29udHJvbGxlci5jcmVhdGUpO1xuXG4gIC8qKlxuICAgKiBHZXQgZWxlY3Ryb25pYyBzaWduYXR1cmUgYnkgSURcbiAgICogR0VUIC9lbGVjdHJvbmljLXNpZ25hdHVyZXMvOmlkXG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBFbGVjdHJvbmljU2lnbmF0dXJlQ29udHJvbGxlci5zaG93KTtcblxuICAvKipcbiAgICogR2V0IGFsbCBzaWduYXR1cmVzIGZvciBhIHNwZWNpZmljIGRvY3VtZW50XG4gICAqIEdFVCAvZWxlY3Ryb25pYy1zaWduYXR1cmVzL2RvY3VtZW50Lzpkb2N1bWVudFR5cGUvOmRvY3VtZW50SWRcbiAgICpcbiAgICogUXVlcnkgcGFyYW1ldGVyczpcbiAgICogLSBzdGF0dXM6IEZpbHRlciBieSBzaWduYXR1cmUgc3RhdHVzIChWQUxJRCwgUEVORElOR19SRVZJRVcsIFJFVk9LRUQsIGV0Yy4pXG4gICAqIC0gbWVhbmluZzogRmlsdGVyIGJ5IHNpZ25hdHVyZSBtZWFuaW5nIChBVVRIT1IsIENPU0lHTkVSLCBldGMuKVxuICAgKiAtIGluY2x1ZGVfc3VwZXJzZWRlZDogSW5jbHVkZSBzdXBlcnNlZGVkIHNpZ25hdHVyZXMgKGRlZmF1bHQ6IGZhbHNlKVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9lbGVjdHJvbmljLXNpZ25hdHVyZXMvZG9jdW1lbnQvOmRvY3VtZW50VHlwZS86ZG9jdW1lbnRJZCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyLmdldEJ5RG9jdW1lbnQpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gU0lHTkFUVVJFIFZFUklGSUNBVElPTlxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG5cbiAgLyoqXG4gICAqIFZlcmlmeSBzaWduYXR1cmUgaW50ZWdyaXR5XG4gICAqIFBPU1QgL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy86aWQvdmVyaWZ5XG4gICAqXG4gICAqIFZlcmlmaWVzIHRoYXQgdGhlIGRvY3VtZW50IGNvbnRlbnQgbWF0Y2hlcyB0aGUgc3RvcmVkIGhhc2guXG4gICAqIFJlcXVpcmVkIGJvZHk6XG4gICAqIC0gZG9jdW1lbnRfY29udGVudDogQ29udGVudCB0byB2ZXJpZnkgYWdhaW5zdCBzdG9yZWQgaGFzaFxuICAgKi9cbiAgZmFzdGlmeS5wb3N0KCcvZWxlY3Ryb25pYy1zaWduYXR1cmVzLzppZC92ZXJpZnknLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBFbGVjdHJvbmljU2lnbmF0dXJlQ29udHJvbGxlci52ZXJpZnkpO1xuXG4gIC8qKlxuICAgKiBDcmVhdGUgYSB2ZXJpZmljYXRpb24gdG9rZW4gZm9yIGV4dGVybmFsIHZlcmlmaWNhdGlvblxuICAgKiBQT1NUIC9lbGVjdHJvbmljLXNpZ25hdHVyZXMvOmlkL3ZlcmlmaWNhdGlvbi10b2tlblxuICAgKlxuICAgKiBDcmVhdGVzIGEgdG9rZW4gdGhhdCBjYW4gYmUgdXNlZCB0byB2ZXJpZnkgdGhlIHNpZ25hdHVyZSB3aXRob3V0IGF1dGhlbnRpY2F0aW9uLlxuICAgKiBVc2VmdWwgZm9yIHNoYXJpbmcgdmVyaWZpY2F0aW9uIGxpbmtzIHdpdGggZXh0ZXJuYWwgcGFydGllcy5cbiAgICpcbiAgICogT3B0aW9uYWwgYm9keTpcbiAgICogLSBleHBpcmVzX2luX2hvdXJzOiBIb3VycyB1bnRpbCB0b2tlbiBleHBpcmVzIChkZWZhdWx0OiAyNClcbiAgICogLSBtYXhfdXNlczogTWF4aW11bSBudW1iZXIgb2YgdGltZXMgdG9rZW4gY2FuIGJlIHVzZWQgKGRlZmF1bHQ6IHVubGltaXRlZClcbiAgICovXG4gIGZhc3RpZnkucG9zdCgnL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy86aWQvdmVyaWZpY2F0aW9uLXRva2VuJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5VUERBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBFbGVjdHJvbmljU2lnbmF0dXJlQ29udHJvbGxlci5jcmVhdGVWZXJpZmljYXRpb25Ub2tlbik7XG5cbiAgLyoqXG4gICAqIFZlcmlmeSBzaWduYXR1cmUgdXNpbmcgZXh0ZXJuYWwgdG9rZW4gKHB1YmxpYyBlbmRwb2ludClcbiAgICogR0VUIC9lbGVjdHJvbmljLXNpZ25hdHVyZXMvdmVyaWZ5LXRva2VuLzp0b2tlblxuICAgKlxuICAgKiBUaGlzIGVuZHBvaW50IGRvZXMgbm90IHJlcXVpcmUgYXV0aGVudGljYXRpb24gLSBhbnlvbmUgd2l0aCB0aGUgdG9rZW5cbiAgICogY2FuIHZlcmlmeSB0aGUgc2lnbmF0dXJlLiBSYXRlIGxpbWl0aW5nIHNob3VsZCBiZSBhcHBsaWVkLlxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9lbGVjdHJvbmljLXNpZ25hdHVyZXMvdmVyaWZ5LXRva2VuLzp0b2tlbicsIHtcbiAgICAvLyBObyBhdXRoZW50aWNhdGlvbiByZXF1aXJlZCBmb3IgdG9rZW4tYmFzZWQgdmVyaWZpY2F0aW9uXG4gIH0sIEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyLnZlcmlmeUJ5VG9rZW4pO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gQ09TSUdOQVRVUkUgV09SS0ZMT1dcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBDb3NpZ24gYSBzaWduYXR1cmVcbiAgICogUE9TVCAvZWxlY3Ryb25pYy1zaWduYXR1cmVzLzppZC9jb3NpZ25cbiAgICpcbiAgICogQ3JlYXRlcyBhIGNvc2lnbmF0dXJlIGZvciBhIGRvY3VtZW50IHRoYXQgcmVxdWlyZXMgY29zaWduaW5nLlxuICAgKiBUaGUgY29zaWduZXIgbXVzdCBiZSBhdXRob3JpemVkIChtYXRjaGluZyByZXF1aXJlZF9jb3NpZ25lcl9pZCBvciByZXF1aXJlZF9jb3NpZ25lcl9yb2xlKS5cbiAgICpcbiAgICogUmVxdWlyZWQgYm9keTpcbiAgICogLSBzaWduYXR1cmVfZGF0YTogQ29zaWduZXIncyBzaWduYXR1cmUgZGF0YVxuICAgKlxuICAgKiBPcHRpb25hbCBib2R5OlxuICAgKiAtIHNpZ25hdHVyZV90eXBlOiBUeXBlIG9mIHNpZ25hdHVyZSAoZGVmYXVsdDogVFlQRUQpXG4gICAqIC0gc2lnbmF0dXJlX3N0YXRlbWVudDogQ3VzdG9tIHN0YXRlbWVudCAoZGVmYXVsdDogc3RhbmRhcmQgY29zaWduZXIgc3RhdGVtZW50KVxuICAgKiAtIHNpZ25hdHVyZV9pbWFnZV9mb3JtYXQ6IEZvcm1hdCBmb3IgRFJBV04gc2lnbmF0dXJlc1xuICAgKi9cbiAgZmFzdGlmeS5wb3N0KCcvZWxlY3Ryb25pYy1zaWduYXR1cmVzLzppZC9jb3NpZ24nLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyLmNvc2lnbik7XG5cbiAgLyoqXG4gICAqIEdldCBwZW5kaW5nIGNvc2lnbmF0dXJlcyBmb3IgdGhlIGN1cnJlbnQgdXNlclxuICAgKiBHRVQgL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy9wZW5kaW5nLWNvc2lnbmF0dXJlc1xuICAgKlxuICAgKiBSZXR1cm5zIGFsbCBzaWduYXR1cmVzIHRoYXQgcmVxdWlyZSBjb3NpZ25pbmcgYnkgdGhlIGN1cnJlbnQgdXNlclxuICAgKiBiYXNlZCBvbiB0aGVpciB1c2VyIElEIG9yIHJvbGUuXG4gICAqL1xuICBmYXN0aWZ5LmdldCgnL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy9wZW5kaW5nLWNvc2lnbmF0dXJlcycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyLmdldFBlbmRpbmdDb3NpZ25hdHVyZXMpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gU0lHTkFUVVJFIFJFVk9DQVRJT05cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIC8qKlxuICAgKiBSZXZva2UgYSBzaWduYXR1cmVcbiAgICogUE9TVCAvZWxlY3Ryb25pYy1zaWduYXR1cmVzLzppZC9yZXZva2VcbiAgICpcbiAgICogTWFya3MgYSBzaWduYXR1cmUgYXMgcmV2b2tlZC4gVGhpcyBpcyBhbiBpbW11dGFibGUgb3BlcmF0aW9uIC1cbiAgICogdGhlIHNpZ25hdHVyZSByZWNvcmQgaXMgcHJlc2VydmVkIGZvciBhdWRpdCBwdXJwb3Nlcy5cbiAgICpcbiAgICogUmVxdWlyZWQgYm9keTpcbiAgICogLSByZXZvY2F0aW9uX3JlYXNvbjogUmVhc29uIGZvciByZXZva2luZyB0aGUgc2lnbmF0dXJlXG4gICAqL1xuICBmYXN0aWZ5LnBvc3QoJy9lbGVjdHJvbmljLXNpZ25hdHVyZXMvOmlkL3Jldm9rZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuREVMRVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgRWxlY3Ryb25pY1NpZ25hdHVyZUNvbnRyb2xsZXIucmV2b2tlKTtcblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIEFVRElUICYgUkVQT1JUSU5HXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICAvKipcbiAgICogR2V0IHNpZ25hdHVyZSBhdWRpdCB0cmFpbFxuICAgKiBHRVQgL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy86aWQvYXVkaXQtdHJhaWxcbiAgICpcbiAgICogUmV0dXJucyB0aGUgY29tcGxldGUgYXVkaXQgdHJhaWwgZm9yIGEgc2lnbmF0dXJlLCBpbmNsdWRpbmdcbiAgICogYWxsIGV2ZW50cyAoY3JlYXRpb24sIHZpZXdzLCB2ZXJpZmljYXRpb25zLCBldGMuKS5cbiAgICovXG4gIGZhc3RpZnkuZ2V0KCcvZWxlY3Ryb25pYy1zaWduYXR1cmVzLzppZC9hdWRpdC10cmFpbCcsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19BVURJVF9MT0dTKV1cbiAgfSwgRWxlY3Ryb25pY1NpZ25hdHVyZUNvbnRyb2xsZXIuZ2V0QXVkaXRUcmFpbCk7XG5cbiAgLyoqXG4gICAqIEdldCBjdXJyZW50IHVzZXIncyBzaWduYXR1cmUgaGlzdG9yeVxuICAgKiBHRVQgL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy9teS1zaWduYXR1cmVzXG4gICAqXG4gICAqIFF1ZXJ5IHBhcmFtZXRlcnM6XG4gICAqIC0gbGltaXQ6IE51bWJlciBvZiByZXN1bHRzIChkZWZhdWx0OiA1MClcbiAgICogLSBvZmZzZXQ6IFBhZ2luYXRpb24gb2Zmc2V0IChkZWZhdWx0OiAwKVxuICAgKiAtIHN0YXR1czogRmlsdGVyIGJ5IHN0YXR1c1xuICAgKiAtIGRvY3VtZW50X3R5cGU6IEZpbHRlciBieSBkb2N1bWVudCB0eXBlXG4gICAqIC0gc3RhcnRfZGF0ZTogRmlsdGVyIGJ5IHNpZ25lZF9hdCA+PSBkYXRlXG4gICAqIC0gZW5kX2RhdGU6IEZpbHRlciBieSBzaWduZWRfYXQgPD0gZGF0ZVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9lbGVjdHJvbmljLXNpZ25hdHVyZXMvbXktc2lnbmF0dXJlcycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIEVsZWN0cm9uaWNTaWduYXR1cmVDb250cm9sbGVyLmdldE15U2lnbmF0dXJlcyk7XG5cbiAgLyoqXG4gICAqIEdldCBjb21wbGlhbmNlIHJlcG9ydCBmb3Igc2lnbmF0dXJlc1xuICAgKiBHRVQgL2VsZWN0cm9uaWMtc2lnbmF0dXJlcy9jb21wbGlhbmNlLXJlcG9ydFxuICAgKlxuICAgKiBHZW5lcmF0ZXMgYSBjb21wbGlhbmNlIHJlcG9ydCB3aXRoIHNpZ25hdHVyZSBzdGF0aXN0aWNzLlxuICAgKlxuICAgKiBRdWVyeSBwYXJhbWV0ZXJzOlxuICAgKiAtIHN0YXJ0X2RhdGU6IFN0YXJ0IG9mIHJlcG9ydGluZyBwZXJpb2QgKGRlZmF1bHQ6IDMwIGRheXMgYWdvKVxuICAgKiAtIGVuZF9kYXRlOiBFbmQgb2YgcmVwb3J0aW5nIHBlcmlvZCAoZGVmYXVsdDogbm93KVxuICAgKi9cbiAgZmFzdGlmeS5nZXQoJy9lbGVjdHJvbmljLXNpZ25hdHVyZXMvY29tcGxpYW5jZS1yZXBvcnQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQVVESVRfTE9HUywgUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgfSwgRWxlY3Ryb25pY1NpZ25hdHVyZUNvbnRyb2xsZXIuZ2V0Q29tcGxpYW5jZVJlcG9ydCk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IGVsZWN0cm9uaWNTaWduYXR1cmVSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLE9BQU9FLDZCQUE2QixNQUFNLGtEQUFrRDtBQUM1RixTQUFTQyxXQUFXLFFBQVEsbUJBQW1CO0FBQy9DLFNBQVNDLG9CQUFvQixRQUFRLGtDQUFrQzs7QUFFdkU7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLGVBQWVDLHlCQUF5QkEsQ0FBQ0MsT0FBTyxFQUFFQyxPQUFPLEVBQUU7RUFBQTtFQUFBUCxhQUFBLEdBQUFRLENBQUE7RUFBQVIsYUFBQSxHQUFBUyxDQUFBO0VBQ3pEO0VBQ0E7RUFDQTs7RUFFQTtBQUNGO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0VBQ0VILE9BQU8sQ0FBQ0ksSUFBSSxDQUFDLHdCQUF3QixFQUFFO0lBQ3JDQyxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ1MscUJBQXFCLENBQUM7RUFDdEUsQ0FBQyxFQUFFViw2QkFBNkIsQ0FBQ1csTUFBTSxDQUFDOztFQUV4QztBQUNGO0FBQ0E7QUFD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

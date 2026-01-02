@@ -2,8 +2,8 @@
   "id": "patient-detail-ui",
   "category": "UI",
   "title": "Patient Detail View UI",
-  "description": "Create patient detail page with demographics, identifiers, addresses, contacts, pharmacy, and payer information displays.",
-  "status": "verified",
+  "description": "Build Complete Patient Detail Page with Comprehensive Information Display\n\nCreate a full-featured patient detail view that presents all patient information in a well-organized, user-friendly interface with proper data handling and responsive design.\n\nRequirements:\n\n**Data Display Sections:**\n- Demographics: Name (first, middle, last, suffix), date of birth, calculated age, gender, marital status, preferred language\n- Identifiers: Medical Record Number (MRN), Social Security Number (masked/secured), insurance member ID, other facility-specific identifiers\n- Addresses: Display all address types (residential, billing, mailing, emergency contact) with labels, including street, city, state, ZIP, country\n- Contact Information: Phone numbers (home, mobile, work) with type labels, email addresses, preferred contact method\n- Pharmacy Details: Pharmacy name, full address, phone number, fax number, hours of operation if available\n- Insurance/Payer Information: Primary and secondary insurance providers, policy numbers, group numbers, coverage effective dates, subscriber information, authorization details\n\n**Layout & Organization:**\n- Group related information into distinct visual sections or cards\n- Use clear headings and labels for each data category\n- Implement collapsible sections for dense information areas\n- Prioritize most-accessed information for prominent placement\n- Maintain consistent spacing and visual hierarchy\n\n**Data Handling:**\n- Format dates consistently (consider locale-specific formats)\n- Format phone numbers with standard patterns (e.g., (XXX) XXX-XXXX)\n- Mask sensitive data (SSN, full account numbers) with option to reveal if authorized\n- Display placeholder text or \"Not provided\" for missing fields\n- Validate data integrity and flag inconsistencies if detected\n\n**User Experience:**\n- Implement loading skeleton or spinner during data fetch\n- Show clear error messages if data retrieval fails with retry option\n- Support both read-only view and edit mode (with appropriate permissions)\n- Add print-friendly formatting option\n- Ensure responsive design works on desktop, tablet, and mobile viewports\n- Support keyboard navigation for accessibility\n- Include breadcrumb navigation or clear back button\n\n**Edge Cases to Consider:**\n- Patients with multiple addresses or phone numbers of the same type\n- Missing or incomplete insurance information\n- Patients without assigned pharmacy\n- Very long names or addresses that need proper truncation/wrapping\n- Expired vs active insurance coverage indication\n- Deceased patients (appropriate visual indicators)\n\n**Performance & Technical:**\n- Fetch patient data efficiently with single API call or optimized batch requests\n- Cache patient data appropriately to reduce redundant requests\n- Handle API timeouts gracefully\n- Support deep linking to specific patient detail pages\n- Maintain patient ID in URL for bookmarking/sharing capability",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,7 +11,14 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.240Z",
-  "updatedAt": "2026-01-01T07:07:06.529Z",
+  "updatedAt": "2026-01-02T15:11:16.748Z",
   "branchName": "main",
-  "startedAt": "2026-01-01T06:53:21.397Z"
+  "startedAt": "2026-01-02T15:08:25.742Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "spec",
+  "requirePlanApproval": false
 }

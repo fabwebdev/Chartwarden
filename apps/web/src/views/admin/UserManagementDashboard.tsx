@@ -219,13 +219,27 @@ const UserManagementDashboard: React.FC = () => {
   // Fetch roles
   const fetchRoles = useCallback(async () => {
     try {
-      const response = await http.get('/rbac/roles');
+      // Try /roles endpoint first (role management API), fallback to /rbac/roles
+      let response;
+      try {
+        response = await http.get('/roles');
+      } catch (err: any) {
+        if (err.response?.status === 404 || err.response?.status === 403) {
+          // Fallback to rbac endpoint
+          response = await http.get('/rbac/roles');
+        } else {
+          throw err;
+        }
+      }
+
       let rolesData: Role[] = [];
 
       if (Array.isArray(response.data)) {
         rolesData = response.data;
       } else if (response.data?.data && Array.isArray(response.data.data)) {
         rolesData = response.data.data;
+      } else if (response.data?.data?.roles && Array.isArray(response.data.data.roles)) {
+        rolesData = response.data.data.roles;
       } else if (response.data?.roles && Array.isArray(response.data.roles)) {
         rolesData = response.data.roles;
       }
@@ -237,7 +251,8 @@ const UserManagementDashboard: React.FC = () => {
         }
         return {
           id: role.id || role.name,
-          name: role.name || role.id
+          name: role.name || role.id,
+          description: role.description || role.display_name
         };
       });
 

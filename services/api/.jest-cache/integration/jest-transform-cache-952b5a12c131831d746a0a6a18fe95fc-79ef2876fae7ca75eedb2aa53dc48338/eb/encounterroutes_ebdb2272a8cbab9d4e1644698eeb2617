@@ -1,0 +1,275 @@
+f6f07918ae875c358c03a5f997148b01
+/* istanbul ignore next */
+function cov_7j73wuimq() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/encounter.routes.js";
+  var hash = "264fb23e00b58bd80eb17f4822cb527152d6d5b8";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/encounter.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 11,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 23
+        }
+      },
+      "1": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 17,
+          column: 23
+        }
+      },
+      "2": {
+        start: {
+          line: 19,
+          column: 2
+        },
+        end: {
+          line: 21,
+          column: 22
+        }
+      },
+      "3": {
+        start: {
+          line: 23,
+          column: 2
+        },
+        end: {
+          line: 25,
+          column: 24
+        }
+      },
+      "4": {
+        start: {
+          line: 27,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 25
+        }
+      },
+      "5": {
+        start: {
+          line: 32,
+          column: 2
+        },
+        end: {
+          line: 34,
+          column: 22
+        }
+      },
+      "6": {
+        start: {
+          line: 36,
+          column: 2
+        },
+        end: {
+          line: 38,
+          column: 24
+        }
+      },
+      "7": {
+        start: {
+          line: 41,
+          column: 2
+        },
+        end: {
+          line: 43,
+          column: 29
+        }
+      },
+      "8": {
+        start: {
+          line: 45,
+          column: 2
+        },
+        end: {
+          line: 47,
+          column: 30
+        }
+      },
+      "9": {
+        start: {
+          line: 50,
+          column: 2
+        },
+        end: {
+          line: 52,
+          column: 29
+        }
+      },
+      "10": {
+        start: {
+          line: 54,
+          column: 2
+        },
+        end: {
+          line: 56,
+          column: 33
+        }
+      },
+      "11": {
+        start: {
+          line: 59,
+          column: 2
+        },
+        end: {
+          line: 61,
+          column: 38
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "encounterRoutes",
+        decl: {
+          start: {
+            line: 9,
+            column: 30
+          },
+          end: {
+            line: 9,
+            column: 45
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 64
+          },
+          end: {
+            line: 62,
+            column: 1
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "264fb23e00b58bd80eb17f4822cb527152d6d5b8"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_7j73wuimq = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_7j73wuimq();
+import controller from '../controllers/Encounter.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Encounter Routes
+ * Clinical encounter documentation - Required for billing
+ */
+export default async function encounterRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_7j73wuimq().f[0]++;
+  cov_7j73wuimq().s[0]++;
+  // Main encounter CRUD routes
+  fastify.get('/encounters', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.index);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[1]++;
+  fastify.post('/encounters', {
+    preHandler: [requireAnyPermission(PERMISSIONS.CREATE_CLINICAL_NOTES)]
+  }, controller.store);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[2]++;
+  fastify.get('/encounters/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.show);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[3]++;
+  fastify.patch('/encounters/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.update);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[4]++;
+  fastify.delete('/encounters/:id', {
+    preHandler: [requireAnyPermission(PERMISSIONS.DELETE_CLINICAL_NOTES)]
+  }, controller.destroy);
+
+  // Signature routes
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[5]++;
+  fastify.post('/encounters/:id/sign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.sign);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[6]++;
+  fastify.post('/encounters/:id/cosign', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.cosign);
+
+  // Addendum and amendment routes
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[7]++;
+  fastify.post('/encounters/:id/addendum', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.addAddendum);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[8]++;
+  fastify.post('/encounters/:id/amendments', {
+    preHandler: [requireAnyPermission(PERMISSIONS.UPDATE_CLINICAL_NOTES)]
+  }, controller.addAmendment);
+
+  // Query routes
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[9]++;
+  fastify.get('/encounters/unsigned', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getUnsigned);
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[10]++;
+  fastify.get('/encounters/by-discipline', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getByDiscipline);
+
+  // Patient encounters
+  /* istanbul ignore next */
+  cov_7j73wuimq().s[11]++;
+  fastify.get('/patients/:id/encounters', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT, PERMISSIONS.VIEW_CLINICAL_NOTES)]
+  }, controller.getPatientEncounters);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfN2o3M3d1aW1xIiwiYWN0dWFsQ292ZXJhZ2UiLCJjb250cm9sbGVyIiwiUEVSTUlTU0lPTlMiLCJyZXF1aXJlQW55UGVybWlzc2lvbiIsImVuY291bnRlclJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiVklFV19DTElOSUNBTF9OT1RFUyIsImluZGV4IiwicG9zdCIsIkNSRUFURV9DTElOSUNBTF9OT1RFUyIsInN0b3JlIiwic2hvdyIsInBhdGNoIiwiVVBEQVRFX0NMSU5JQ0FMX05PVEVTIiwidXBkYXRlIiwiZGVsZXRlIiwiREVMRVRFX0NMSU5JQ0FMX05PVEVTIiwiZGVzdHJveSIsInNpZ24iLCJjb3NpZ24iLCJhZGRBZGRlbmR1bSIsImFkZEFtZW5kbWVudCIsImdldFVuc2lnbmVkIiwiZ2V0QnlEaXNjaXBsaW5lIiwiVklFV19QQVRJRU5UIiwiZ2V0UGF0aWVudEVuY291bnRlcnMiXSwic291cmNlcyI6WyJlbmNvdW50ZXIucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBjb250cm9sbGVyIGZyb20gJy4uL2NvbnRyb2xsZXJzL0VuY291bnRlci5jb250cm9sbGVyLmpzJztcbmltcG9ydCB7IFBFUk1JU1NJT05TIH0gZnJvbSAnLi4vY29uZmlnL3JiYWMuanMnO1xuaW1wb3J0IHsgcmVxdWlyZUFueVBlcm1pc3Npb24gfSBmcm9tICcuLi9taWRkbGV3YXJlL3JiYWMubWlkZGxld2FyZS5qcyc7XG5cbi8qKlxuICogRW5jb3VudGVyIFJvdXRlc1xuICogQ2xpbmljYWwgZW5jb3VudGVyIGRvY3VtZW50YXRpb24gLSBSZXF1aXJlZCBmb3IgYmlsbGluZ1xuICovXG5leHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiBlbmNvdW50ZXJSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyBNYWluIGVuY291bnRlciBDUlVEIHJvdXRlc1xuICBmYXN0aWZ5LmdldCgnL2VuY291bnRlcnMnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmluZGV4KTtcblxuICBmYXN0aWZ5LnBvc3QoJy9lbmNvdW50ZXJzJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5DUkVBVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLnN0b3JlKTtcblxuICBmYXN0aWZ5LmdldCgnL2VuY291bnRlcnMvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5zaG93KTtcblxuICBmYXN0aWZ5LnBhdGNoKCcvZW5jb3VudGVycy86aWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIudXBkYXRlKTtcblxuICBmYXN0aWZ5LmRlbGV0ZSgnL2VuY291bnRlcnMvOmlkJywge1xuICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihQRVJNSVNTSU9OUy5ERUxFVEVfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmRlc3Ryb3kpO1xuXG4gIC8vIFNpZ25hdHVyZSByb3V0ZXNcbiAgZmFzdGlmeS5wb3N0KCcvZW5jb3VudGVycy86aWQvc2lnbicsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5zaWduKTtcblxuICBmYXN0aWZ5LnBvc3QoJy9lbmNvdW50ZXJzLzppZC9jb3NpZ24nLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlVQREFURV9DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuY29zaWduKTtcblxuICAvLyBBZGRlbmR1bSBhbmQgYW1lbmRtZW50IHJvdXRlc1xuICBmYXN0aWZ5LnBvc3QoJy9lbmNvdW50ZXJzLzppZC9hZGRlbmR1bScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5hZGRBZGRlbmR1bSk7XG5cbiAgZmFzdGlmeS5wb3N0KCcvZW5jb3VudGVycy86aWQvYW1lbmRtZW50cycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVVBEQVRFX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5hZGRBbWVuZG1lbnQpO1xuXG4gIC8vIFF1ZXJ5IHJvdXRlc1xuICBmYXN0aWZ5LmdldCgnL2VuY291bnRlcnMvdW5zaWduZWQnLCB7XG4gICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMpXVxuICB9LCBjb250cm9sbGVyLmdldFVuc2lnbmVkKTtcblxuICBmYXN0aWZ5LmdldCgnL2VuY291bnRlcnMvYnktZGlzY2lwbGluZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyldXG4gIH0sIGNvbnRyb2xsZXIuZ2V0QnlEaXNjaXBsaW5lKTtcblxuICAvLyBQYXRpZW50IGVuY291bnRlcnNcbiAgZmFzdGlmeS5nZXQoJy9wYXRpZW50cy86aWQvZW5jb3VudGVycycsIHtcbiAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19QQVRJRU5ULCBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTKV1cbiAgfSwgY29udHJvbGxlci5nZXRQYXRpZW50RW5jb3VudGVycyk7XG59XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLE9BQU9FLFVBQVUsTUFBTSx3Q0FBd0M7QUFDL0QsU0FBU0MsV0FBVyxRQUFRLG1CQUFtQjtBQUMvQyxTQUFTQyxvQkFBb0IsUUFBUSxrQ0FBa0M7O0FBRXZFO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsZUFBZSxlQUFlQyxlQUFlQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFQLGFBQUEsR0FBQVEsQ0FBQTtFQUFBUixhQUFBLEdBQUFTLENBQUE7RUFDOUQ7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsYUFBYSxFQUFFO0lBQ3pCQyxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ1MsbUJBQW1CLENBQUM7RUFDcEUsQ0FBQyxFQUFFVixVQUFVLENBQUNXLEtBQUssQ0FBQztFQUFDO0VBQUFiLGFBQUEsR0FBQVMsQ0FBQTtFQUVyQkgsT0FBTyxDQUFDUSxJQUFJLENBQUMsYUFBYSxFQUFFO0lBQzFCSCxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ1kscUJBQXFCLENBQUM7RUFDdEUsQ0FBQyxFQUFFYixVQUFVLENBQUNjLEtBQUssQ0FBQztFQUFDO0VBQUFoQixhQUFBLEdBQUFTLENBQUE7RUFFckJILE9BQU8sQ0FB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

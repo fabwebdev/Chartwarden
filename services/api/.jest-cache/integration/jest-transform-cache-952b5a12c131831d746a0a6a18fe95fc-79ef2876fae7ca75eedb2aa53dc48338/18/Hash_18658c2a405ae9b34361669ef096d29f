@@ -1,0 +1,186 @@
+d912729d9e0b891838cfa737e77667a7
+/* istanbul ignore next */
+function cov_29luuttw13() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Hash.js";
+  var hash = "dfc6bdaeec96cf607bb963340b91a4b0491ef57f";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Hash.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 10,
+          column: 8
+        },
+        end: {
+          line: 10,
+          column: 45
+        }
+      },
+      "1": {
+        start: {
+          line: 20,
+          column: 8
+        },
+        end: {
+          line: 20,
+          column: 52
+        }
+      },
+      "2": {
+        start: {
+          line: 29,
+          column: 8
+        },
+        end: {
+          line: 29,
+          column: 45
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 4
+          },
+          end: {
+            line: 9,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 29
+          },
+          end: {
+            line: 11,
+            column: 5
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 19,
+            column: 4
+          },
+          end: {
+            line: 19,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 19,
+            column: 36
+          },
+          end: {
+            line: 21,
+            column: 5
+          }
+        },
+        line: 19
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 28,
+            column: 4
+          },
+          end: {
+            line: 28,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 28,
+            column: 29
+          },
+          end: {
+            line: 30,
+            column: 5
+          }
+        },
+        line: 28
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "dfc6bdaeec96cf607bb963340b91a4b0491ef57f"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_29luuttw13 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_29luuttw13();
+import HashService from '../services/HashService.js';
+class Hash {
+  /**
+   * Hash a value
+   * @param {string} value - The value to hash
+   * @returns {Promise<string>} The hashed value
+   */
+  static async make(value) {
+    /* istanbul ignore next */
+    cov_29luuttw13().f[0]++;
+    cov_29luuttw13().s[0]++;
+    return await HashService.make(value);
+  }
+
+  /**
+   * Check if a value matches a hash
+   * @param {string} value - The value to check
+   * @param {string} hash - The hash to compare against
+   * @returns {Promise<boolean>} True if the value matches the hash
+   */
+  static async check(value, hash) {
+    /* istanbul ignore next */
+    cov_29luuttw13().f[1]++;
+    cov_29luuttw13().s[1]++;
+    return await HashService.check(value, hash);
+  }
+
+  /**
+   * Check if a hash needs to be rehashed
+   * @param {string} hash - The hash to check
+   * @returns {boolean} True if the hash needs to be rehashed
+   */
+  static needsRehash(hash) {
+    /* istanbul ignore next */
+    cov_29luuttw13().f[2]++;
+    cov_29luuttw13().s[2]++;
+    return HashService.needsRehash(hash);
+  }
+}
+export default Hash;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMjlsdXV0dHcxMyIsImFjdHVhbENvdmVyYWdlIiwiSGFzaFNlcnZpY2UiLCJIYXNoIiwibWFrZSIsInZhbHVlIiwiZiIsInMiLCJjaGVjayIsImhhc2giLCJuZWVkc1JlaGFzaCJdLCJzb3VyY2VzIjpbIkhhc2guanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IEhhc2hTZXJ2aWNlIGZyb20gJy4uL3NlcnZpY2VzL0hhc2hTZXJ2aWNlLmpzJztcblxuY2xhc3MgSGFzaCB7XG4gICAgLyoqXG4gICAgICogSGFzaCBhIHZhbHVlXG4gICAgICogQHBhcmFtIHtzdHJpbmd9IHZhbHVlIC0gVGhlIHZhbHVlIHRvIGhhc2hcbiAgICAgKiBAcmV0dXJucyB7UHJvbWlzZTxzdHJpbmc+fSBUaGUgaGFzaGVkIHZhbHVlXG4gICAgICovXG4gICAgc3RhdGljIGFzeW5jIG1ha2UodmFsdWUpIHtcbiAgICAgICAgcmV0dXJuIGF3YWl0IEhhc2hTZXJ2aWNlLm1ha2UodmFsdWUpO1xuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBDaGVjayBpZiBhIHZhbHVlIG1hdGNoZXMgYSBoYXNoXG4gICAgICogQHBhcmFtIHtzdHJpbmd9IHZhbHVlIC0gVGhlIHZhbHVlIHRvIGNoZWNrXG4gICAgICogQHBhcmFtIHtzdHJpbmd9IGhhc2ggLSBUaGUgaGFzaCB0byBjb21wYXJlIGFnYWluc3RcbiAgICAgKiBAcmV0dXJucyB7UHJvbWlzZTxib29sZWFuPn0gVHJ1ZSBpZiB0aGUgdmFsdWUgbWF0Y2hlcyB0aGUgaGFzaFxuICAgICAqL1xuICAgIHN0YXRpYyBhc3luYyBjaGVjayh2YWx1ZSwgaGFzaCkge1xuICAgICAgICByZXR1cm4gYXdhaXQgSGFzaFNlcnZpY2UuY2hlY2sodmFsdWUsIGhhc2gpO1xuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBDaGVjayBpZiBhIGhhc2ggbmVlZHMgdG8gYmUgcmVoYXNoZWRcbiAgICAgKiBAcGFyYW0ge3N0cmluZ30gaGFzaCAtIFRoZSBoYXNoIHRvIGNoZWNrXG4gICAgICogQHJldHVybnMge2Jvb2xlYW59IFRydWUgaWYgdGhlIGhhc2ggbmVlZHMgdG8gYmUgcmVoYXNoZWRcbiAgICAgKi9cbiAgICBzdGF0aWMgbmVlZHNSZWhhc2goaGFzaCkge1xuICAgICAgICByZXR1cm4gSGFzaFNlcnZpY2UubmVlZHNSZWhhc2goaGFzaCk7XG4gICAgfVxufVxuXG5leHBvcnQgZGVmYXVsdCBIYXNoOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxXQUFXLE1BQU0sNEJBQTRCO0FBRXBELE1BQU1DLElBQUksQ0FBQztFQUNQO0FBQ0o7QUFDQTtBQUNBO0FBQ0E7RUFDSSxhQUFhQyxJQUFJQSxDQUFDQyxLQUFLLEVBQUU7SUFBQTtJQUFBTCxjQUFBLEdBQUFNLENBQUE7SUFBQU4sY0FBQSxHQUFBTyxDQUFBO0lBQ3JCLE9BQU8sTUFBTUwsV0FBVyxDQUFDRSxJQUFJLENBQUNDLEtBQUssQ0FBQztFQUN4Qzs7RUFFQTtBQUNKO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7RUFDSSxhQUFhRyxLQUFLQSxDQUFDSCxLQUFLLEVBQUVJLElBQUksRUFBRTtJQUFBO0lBQUFULGNBQUEsR0FBQU0sQ0FBQTtJQUFBTixjQUFBLEdBQUFPLENBQUE7SUFDNUIsT0FBTyxNQUFNTCxXQUFXLENBQUNNLEtBQUssQ0FBQ0gsS0FBSyxFQUFFSSxJQUFJLENBQUM7RUFDL0M7O0VBRUE7QUFDSjtBQUNBO0FBQ0E7QUFDQTtFQUNJLE9BQU9DLFdBQVdBLENBQUNELElBQUksRUFBRTtJQUFBO0lBQUFULGNBQUEsR0FBQU0sQ0FBQTtJQUFBTixjQUFBLEdBQUFPLENBQUE7SUFDckIsT0FBT0wsV0FBVyxDQUFDUSxXQUFXLENBQUNELElBQUksQ0FBQztFQUN4QztBQUNKO0FBRUEsZUFBZU4sSUFBSSIsImlnbm9yZUxpc3QiOltdfQ==

@@ -1,0 +1,158 @@
+91ca5dc8c3c115e3a94918ee3c920b7c
+/* istanbul ignore next */
+function cov_18v99vzmyw() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/BodyLanguage.js";
+  var hash = "9d095b49167e219ed29cfcc2fad0114dbae148a6";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/painAssessmentInAdvanced/BodyLanguage.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 1,
+          column: 21
+        },
+        end: {
+          line: 19,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 8,
+          column: 23
+        },
+        end: {
+          line: 12,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 14,
+          column: 8
+        },
+        end: {
+          line: 17,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 14,
+          column: 45
+        },
+        end: {
+          line: 17,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 7,
+            column: 13
+          },
+          end: {
+            line: 7,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 25
+          },
+          end: {
+            line: 18,
+            column: 5
+          }
+        },
+        line: 7
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 14,
+            column: 26
+          },
+          end: {
+            line: 14,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 14,
+            column: 45
+          },
+          end: {
+            line: 17,
+            column: 9
+          }
+        },
+        line: 14
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "9d095b49167e219ed29cfcc2fad0114dbae148a6"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_18v99vzmyw = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_18v99vzmyw();
+const BodyLanguage =
+/* istanbul ignore next */
+(cov_18v99vzmyw().s[0]++, {
+  RELAXED: "Relaxed (0)",
+  TENSE_DISTRESSED: "Tense, distressed pacing, fidgeting (1)",
+  RIGID_FISTS_CLENCHED: "Rigid, fists clenched, knees pulled up, pulling or pushing away, striking out (2)",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_18v99vzmyw().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_18v99vzmyw().s[1]++, [this.RELAXED, this.TENSE_DISTRESSED, this.RIGID_FISTS_CLENCHED]);
+    /* istanbul ignore next */
+    cov_18v99vzmyw().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_18v99vzmyw().f[1]++;
+      cov_18v99vzmyw().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default BodyLanguage;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTh2OTl2em15dyIsImFjdHVhbENvdmVyYWdlIiwiQm9keUxhbmd1YWdlIiwicyIsIlJFTEFYRUQiLCJURU5TRV9ESVNUUkVTU0VEIiwiUklHSURfRklTVFNfQ0xFTkNIRUQiLCJ0b0FycmF5IiwiZiIsInZhbHVlcyIsIm1hcCIsInZhbHVlIiwiaW5kZXgiLCJpZCJdLCJzb3VyY2VzIjpbIkJvZHlMYW5ndWFnZS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBCb2R5TGFuZ3VhZ2UgPSB7XG4gICAgUkVMQVhFRDogXCJSZWxheGVkICgwKVwiLFxuICAgIFRFTlNFX0RJU1RSRVNTRUQ6IFwiVGVuc2UsIGRpc3RyZXNzZWQgcGFjaW5nLCBmaWRnZXRpbmcgKDEpXCIsXG4gICAgUklHSURfRklTVFNfQ0xFTkNIRUQ6XG4gICAgICAgIFwiUmlnaWQsIGZpc3RzIGNsZW5jaGVkLCBrbmVlcyBwdWxsZWQgdXAsIHB1bGxpbmcgb3IgcHVzaGluZyBhd2F5LCBzdHJpa2luZyBvdXQgKDIpXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuUkVMQVhFRCxcbiAgICAgICAgICAgIHRoaXMuVEVOU0VfRElTVFJFU1NFRCxcbiAgICAgICAgICAgIHRoaXMuUklHSURfRklTVFNfQ0xFTkNIRUQsXG4gICAgICAgIF07XG5cbiAgICAgICAgcmV0dXJuIHZhbHVlcy5tYXAoKHZhbHVlLCBpbmRleCkgPT4gKHtcbiAgICAgICAgICAgIGlkOiBpbmRleCxcbiAgICAgICAgICAgIHZhbHVlOiB2YWx1ZSxcbiAgICAgICAgfSkpO1xuICAgIH0sXG59O1xuXG5leHBvcnQgZGVmYXVsdCBCb2R5TGFuZ3VhZ2U7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLE1BQU1FLFlBQVk7QUFBQTtBQUFBLENBQUFGLGNBQUEsR0FBQUcsQ0FBQSxPQUFHO0VBQ2pCQyxPQUFPLEVBQUUsYUFBYTtFQUN0QkMsZ0JBQWdCLEVBQUUseUNBQXlDO0VBQzNEQyxvQkFBb0IsRUFDaEIsbUZBQW1GO0VBRXZGQyxPQUFPLEVBQUUsU0FBQUEsQ0FBQSxFQUFZO0lBQUE7SUFBQVAsY0FBQSxHQUFBUSxDQUFBO0lBQ2pCLE1BQU1DLE1BQU07SUFBQTtJQUFBLENBQUFULGNBQUEsR0FBQUcsQ0FBQSxPQUFHLENBQ1gsSUFBSSxDQUFDQyxPQUFPLEVBQ1osSUFBSSxDQUFDQyxnQkFBZ0IsRUFDckIsSUFBSSxDQUFDQyxvQkFBb0IsQ0FDNUI7SUFBQztJQUFBTixjQUFBLEdBQUFHLENBQUE7SUFFRixPQUFPTSxNQUFNLENBQUNDLEdBQUcsQ0FBQyxDQUFDQyxLQUFLLEVBQUVDLEtBQUssS0FBTTtNQUFBO01BQUFaLGNBQUEsR0FBQVEsQ0FBQTtNQUFBUixjQUFBLEdBQUFHLENBQUE7TUFBQTtRQUNqQ1UsRUFBRSxFQUFFRCxLQUFLO1FBQ1RELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVQsWUFBWSIsImlnbm9yZUxpc3QiOltdfQ==

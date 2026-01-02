@@ -15,7 +15,6 @@ import {
   CircularProgress,
   IconButton,
   Tooltip,
-  Badge,
   FormControl,
   InputLabel,
   Select,
@@ -33,7 +32,6 @@ import {
   CloseCircle,
   Warning2,
   Timer1,
-  Chart,
   Send2,
   Edit2,
   Personalcard,
@@ -64,8 +62,7 @@ import {
   submitHOPEAssessment,
   HOPEAssessment,
   HOPEAssessmentFormData,
-  HOPEAssessmentType,
-  HOPEAssessmentStatus
+  HOPEAssessmentType
 } from '../../../api/hopeAssessment';
 import { getPatientById } from '../../../api/patient';
 

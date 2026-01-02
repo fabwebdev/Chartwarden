@@ -1,0 +1,202 @@
+351a3c6971b1d98f9ee8ae55678d6c40
+/* istanbul ignore next */
+function cov_5hv5gtywu() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/services/SessionService.js";
+  var hash = "f51a80d6b626fb5efd1eb1aacd93e79938fbaf1b";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/services/SessionService.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 4
+        },
+        end: {
+          line: 7,
+          column: 32
+        }
+      },
+      "1": {
+        start: {
+          line: 17,
+          column: 4
+        },
+        end: {
+          line: 20,
+          column: 6
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 2
+          },
+          end: {
+            line: 6,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 16
+          },
+          end: {
+            line: 8,
+            column: 3
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 15,
+            column: 2
+          },
+          end: {
+            line: 15,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 18
+          },
+          end: {
+            line: 21,
+            column: 3
+          }
+        },
+        line: 15
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 17,
+            column: 11
+          },
+          end: {
+            line: 17,
+            column: 12
+          }
+        },
+        loc: {
+          start: {
+            line: 17,
+            column: 37
+          },
+          end: {
+            line: 20,
+            column: 5
+          }
+        },
+        line: 17
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 29,
+            column: 2
+          },
+          end: {
+            line: 29,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 29,
+            column: 30
+          },
+          end: {
+            line: 32,
+            column: 3
+          }
+        },
+        line: 29
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "f51a80d6b626fb5efd1eb1aacd93e79938fbaf1b"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_5hv5gtywu = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_5hv5gtywu();
+// Note: SessionService is now using Better Auth for session management
+// This service is kept for compatibility but Better Auth handles sessions automatically
+import sessionConfig from "../config/session.config.js";
+class SessionService {
+  constructor() {
+    /* istanbul ignore next */
+    cov_5hv5gtywu().f[0]++;
+    cov_5hv5gtywu().s[0]++;
+    this.config = sessionConfig;
+  }
+
+  /**
+   * Get the session middleware (Fastify compatible)
+   * Note: In Fastify with Better Auth, sessions are handled automatically
+   * @returns {Function} Fastify hook function
+   */
+  getMiddleware() {
+    /* istanbul ignore next */
+    cov_5hv5gtywu().f[1]++;
+    cov_5hv5gtywu().s[1]++;
+    // Return a Fastify hook that does nothing (Better Auth handles sessions)
+    return async (request, reply) => {
+      /* istanbul ignore next */
+      cov_5hv5gtywu().f[2]++;
+    } // Better Auth handles sessions automatically via cookies
+    // This is a no-op for compatibility
+    ;
+  }
+
+  /**
+   * Start a new session (Fastify compatible)
+   * Note: Better Auth handles sessions automatically
+   * @param {Object} request - Fastify request object
+   * @param {Object} reply - Fastify reply object
+   */
+  async start(request, reply) {
+    /* istanbul ignore next */
+    cov_5hv5gtywu().f[3]++;
+  } // Better Auth handles sessions automatically
+  // This is a no-op for compatibility
+}
+export default new SessionService();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfNWh2NWd0eXd1IiwiYWN0dWFsQ292ZXJhZ2UiLCJzZXNzaW9uQ29uZmlnIiwiU2Vzc2lvblNlcnZpY2UiLCJjb25zdHJ1Y3RvciIsImYiLCJzIiwiY29uZmlnIiwiZ2V0TWlkZGxld2FyZSIsInJlcXVlc3QiLCJyZXBseSIsInN0YXJ0Il0sInNvdXJjZXMiOlsiU2Vzc2lvblNlcnZpY2UuanMiXSwic291cmNlc0NvbnRlbnQiOlsiLy8gTm90ZTogU2Vzc2lvblNlcnZpY2UgaXMgbm93IHVzaW5nIEJldHRlciBBdXRoIGZvciBzZXNzaW9uIG1hbmFnZW1lbnRcbi8vIFRoaXMgc2VydmljZSBpcyBrZXB0IGZvciBjb21wYXRpYmlsaXR5IGJ1dCBCZXR0ZXIgQXV0aCBoYW5kbGVzIHNlc3Npb25zIGF1dG9tYXRpY2FsbHlcbmltcG9ydCBzZXNzaW9uQ29uZmlnIGZyb20gXCIuLi9jb25maWcvc2Vzc2lvbi5jb25maWcuanNcIjtcblxuY2xhc3MgU2Vzc2lvblNlcnZpY2Uge1xuICBjb25zdHJ1Y3RvcigpIHtcbiAgICB0aGlzLmNvbmZpZyA9IHNlc3Npb25Db25maWc7XG4gIH1cblxuICAvKipcbiAgICogR2V0IHRoZSBzZXNzaW9uIG1pZGRsZXdhcmUgKEZhc3RpZnkgY29tcGF0aWJsZSlcbiAgICogTm90ZTogSW4gRmFzdGlmeSB3aXRoIEJldHRlciBBdXRoLCBzZXNzaW9ucyBhcmUgaGFuZGxlZCBhdXRvbWF0aWNhbGx5XG4gICAqIEByZXR1cm5zIHtGdW5jdGlvbn0gRmFzdGlmeSBob29rIGZ1bmN0aW9uXG4gICAqL1xuICBnZXRNaWRkbGV3YXJlKCkge1xuICAgIC8vIFJldHVybiBhIEZhc3RpZnkgaG9vayB0aGF0IGRvZXMgbm90aGluZyAoQmV0dGVyIEF1dGggaGFuZGxlcyBzZXNzaW9ucylcbiAgICByZXR1cm4gYXN5bmMgKHJlcXVlc3QsIHJlcGx5KSA9PiB7XG4gICAgICAvLyBCZXR0ZXIgQXV0aCBoYW5kbGVzIHNlc3Npb25zIGF1dG9tYXRpY2FsbHkgdmlhIGNvb2tpZXNcbiAgICAgIC8vIFRoaXMgaXMgYSBuby1vcCBmb3IgY29tcGF0aWJpbGl0eVxuICAgIH07XG4gIH1cblxuICAvKipcbiAgICogU3RhcnQgYSBuZXcgc2Vzc2lvbiAoRmFzdGlmeSBjb21wYXRpYmxlKVxuICAgKiBOb3RlOiBCZXR0ZXIgQXV0aCBoYW5kbGVzIHNlc3Npb25zIGF1dG9tYXRpY2FsbHlcbiAgICogQHBhcmFtIHtPYmplY3R9IHJlcXVlc3QgLSBGYXN0aWZ5IHJlcXVlc3Qgb2JqZWN0XG4gICAqIEBwYXJhbSB7T2JqZWN0fSByZXBseSAtIEZhc3RpZnkgcmVwbHkgb2JqZWN0XG4gICAqL1xuICBhc3luYyBzdGFydChyZXF1ZXN0LCByZXBseSkge1xuICAgIC8vIEJldHRlciBBdXRoIGhhbmRsZXMgc2Vzc2lvbnMgYXV0b21hdGljYWxseVxuICAgIC8vIFRoaXMgaXMgYSBuby1vcCBmb3IgY29tcGF0aWJpbGl0eVxuICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IG5ldyBTZXNzaW9uU2VydmljZSgpO1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlo7QUFDQTtBQUNBLE9BQU9FLGFBQWEsTUFBTSw2QkFBNkI7QUFFdkQsTUFBTUMsY0FBYyxDQUFDO0VBQ25CQyxXQUFXQSxDQUFBLEVBQUc7SUFBQTtJQUFBSixhQUFBLEdBQUFLLENBQUE7SUFBQUwsYUFBQSxHQUFBTSxDQUFBO0lBQ1osSUFBSSxDQUFDQyxNQUFNLEdBQUdMLGFBQWE7RUFDN0I7O0VBRUE7QUFDRjtBQUNBO0FBQ0E7QUFDQTtFQUNFTSxhQUFhQSxDQUFBLEVBQUc7SUFBQTtJQUFBUixhQUFBLEdBQUFLLENBQUE7SUFBQUwsYUFBQSxHQUFBTSxDQUFBO0lBQ2Q7SUFDQSxPQUFPLE9BQU9HLE9BQU8sRUFBRUMsS0FBSyxLQUFLO01BQUE7TUFBQVYsYUFBQSxHQUFBSyxDQUFBO0lBR2pDLENBQUMsQ0FGQztJQUNBO0lBQ0Q7RUFDSDs7RUFFQTtBQUNGO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7RUFDRSxNQUFNTSxLQUFLQSxDQUFDRixPQUFPLEVBQUVDLEtBQUssRUFBRTtJQUFBO0lBQUFWLGFBQUEsR0FBQUssQ0FBQTtFQUc1QixDQUFDLENBRkM7RUFDQTtBQUVKO0FBRUEsZUFBZSxJQUFJRixjQUFjLENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

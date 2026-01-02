@@ -1,0 +1,40 @@
+7e91c1f9cf05365c2629012d069474d6
+/* istanbul ignore next */
+function cov_bqg9psn4o() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/index.js";
+  var hash = "fd1d19fbbe893361a250f42f78ed08763e6db065";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/index.js",
+    statementMap: {},
+    fnMap: {},
+    branchMap: {},
+    s: {},
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "fd1d19fbbe893361a250f42f78ed08763e6db065"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_bqg9psn4o = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_bqg9psn4o();
+/**
+ * Database Connection Export
+ * Centralizes database connection for all modules
+ */
+
+export { db } from '../config/db.drizzle.js';
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfYnFnOXBzbjRvIiwiYWN0dWFsQ292ZXJhZ2UiLCJkYiJdLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogRGF0YWJhc2UgQ29ubmVjdGlvbiBFeHBvcnRcbiAqIENlbnRyYWxpemVzIGRhdGFiYXNlIGNvbm5lY3Rpb24gZm9yIGFsbCBtb2R1bGVzXG4gKi9cblxuZXhwb3J0IHsgZGIgfSBmcm9tICcuLi9jb25maWcvZGIuZHJpenpsZS5qcyc7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWjtBQUNBO0FBQ0E7QUFDQTs7QUFFQSxTQUFTRSxFQUFFLFFBQVEseUJBQXlCIiwiaWdub3JlTGlzdCI6W119

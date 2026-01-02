@@ -1,0 +1,109 @@
+f07cf8ee30f7fbef670d760ab09b769b
+/* istanbul ignore next */
+function cov_1mf5rqon87() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/seeders/DatabaseSeeder.js";
+  var hash = "06a6520c815fdf15a0b0d2e50fcfd0dc3d5cf910";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/seeders/DatabaseSeeder.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 4
+        },
+        end: {
+          line: 12,
+          column: 46
+        }
+      },
+      "1": {
+        start: {
+          line: 18,
+          column: 4
+        },
+        end: {
+          line: 18,
+          column: 46
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 2
+          },
+          end: {
+            line: 9,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 14
+          },
+          end: {
+            line: 19,
+            column: 3
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "06a6520c815fdf15a0b0d2e50fcfd0dc3d5cf910"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1mf5rqon87 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1mf5rqon87();
+import { logger } from '../../utils/logger.js';
+class DatabaseSeeder {
+  /**
+   * Seed the application's database.
+   *
+   * @return {Promise<void>}
+   */
+  async run() {
+    /* istanbul ignore next */
+    cov_1mf5rqon87().f[0]++;
+    cov_1mf5rqon87().s[0]++;
+    // In Fastify/Node.js, we would typically call other seeder files directly
+    // This is a placeholder to match Laravel's structure
+    logger.info('Running database seeders...');
+
+    // Call other seeders
+    // await UserSeeder.run();
+    // await SelectSeeder.run();
+    /* istanbul ignore next */
+    cov_1mf5rqon87().s[1]++;
+    logger.info('Database seeding completed.');
+  }
+}
+export default new DatabaseSeeder();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMW1mNXJxb244NyIsImFjdHVhbENvdmVyYWdlIiwibG9nZ2VyIiwiRGF0YWJhc2VTZWVkZXIiLCJydW4iLCJmIiwicyIsImluZm8iXSwic291cmNlcyI6WyJEYXRhYmFzZVNlZWRlci5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBsb2dnZXIgfSBmcm9tICcuLi8uLi91dGlscy9sb2dnZXIuanMnO1xuXG5jbGFzcyBEYXRhYmFzZVNlZWRlciB7XG4gIC8qKlxuICAgKiBTZWVkIHRoZSBhcHBsaWNhdGlvbidzIGRhdGFiYXNlLlxuICAgKlxuICAgKiBAcmV0dXJuIHtQcm9taXNlPHZvaWQ+fVxuICAgKi9cbiAgYXN5bmMgcnVuKCkge1xuICAgIC8vIEluIEZhc3RpZnkvTm9kZS5qcywgd2Ugd291bGQgdHlwaWNhbGx5IGNhbGwgb3RoZXIgc2VlZGVyIGZpbGVzIGRpcmVjdGx5XG4gICAgLy8gVGhpcyBpcyBhIHBsYWNlaG9sZGVyIHRvIG1hdGNoIExhcmF2ZWwncyBzdHJ1Y3R1cmVcbiAgICBsb2dnZXIuaW5mbygnUnVubmluZyBkYXRhYmFzZSBzZWVkZXJzLi4uJylcbiAgICBcbiAgICAvLyBDYWxsIG90aGVyIHNlZWRlcnNcbiAgICAvLyBhd2FpdCBVc2VyU2VlZGVyLnJ1bigpO1xuICAgIC8vIGF3YWl0IFNlbGVjdFNlZWRlci5ydW4oKTtcbiAgICBcbiAgICBsb2dnZXIuaW5mbygnRGF0YWJhc2Ugc2VlZGluZyBjb21wbGV0ZWQuJylcbiAgfVxufVxuXG5leHBvcnQgZGVmYXVsdCBuZXcgRGF0YWJhc2VTZWVkZXIoKTsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixTQUFTRSxNQUFNLFFBQVEsdUJBQXVCO0FBRTlDLE1BQU1DLGNBQWMsQ0FBQztFQUNuQjtBQUNGO0FBQ0E7QUFDQTtBQUNBO0VBQ0UsTUFBTUMsR0FBR0EsQ0FBQSxFQUFHO0lBQUE7SUFBQUosY0FBQSxHQUFBSyxDQUFBO0lBQUFMLGNBQUEsR0FBQU0sQ0FBQTtJQUNWO0lBQ0E7SUFDQUosTUFBTSxDQUFDSyxJQUFJLENBQUMsNkJBQTZCLENBQUM7O0lBRTFDO0lBQ0E7SUFDQTtJQUFBO0lBQUFQLGNBQUEsR0FBQU0sQ0FBQTtJQUVBSixNQUFNLENBQUNLLElBQUksQ0FBQyw2QkFBNkIsQ0FBQztFQUM1QztBQUNGO0FBRUEsZUFBZSxJQUFJSixjQUFjLENBQUMsQ0FBQyIsImlnbm9yZUxpc3QiOltdfQ==

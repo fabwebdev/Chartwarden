@@ -1,0 +1,117 @@
+3e0d8e49171c646c6c497caa5f6c0e95
+/* istanbul ignore next */
+function cov_1eie59qt4n() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/livingArrangements.schema.js";
+  var hash = "dad7eef4613f5362cd17a596b9aa8eac1af3ea5a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/livingArrangements.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 4,
+          column: 35
+        },
+        end: {
+          line: 14,
+          column: 2
+        }
+      },
+      "1": {
+        start: {
+          line: 6,
+          column: 82
+        },
+        end: {
+          line: 6,
+          column: 93
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 76
+          },
+          end: {
+            line: 6,
+            column: 77
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 82
+          },
+          end: {
+            line: 6,
+            column: 93
+          }
+        },
+        line: 6
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "dad7eef4613f5362cd17a596b9aa8eac1af3ea5a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1eie59qt4n = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1eie59qt4n();
+import { pgTable, bigint, varchar, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { patients } from './patient.schema.js';
+export const living_arrangements =
+/* istanbul ignore next */
+(cov_1eie59qt4n().s[0]++, pgTable('living_arrangements', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  patient_id: bigint('patient_id', {
+    mode: 'number'
+  }).notNull().references(() => {
+    /* istanbul ignore next */
+    cov_1eie59qt4n().f[0]++;
+    cov_1eie59qt4n().s[1]++;
+    return patients.id;
+  }),
+  primary_caregiver: varchar('primary_caregiver', {
+    length: 255
+  }),
+  primary_location_of_patient: varchar('primary_location_of_patient', {
+    length: 255
+  }),
+  caregiver_availability: varchar('caregiver_availability', {
+    length: 255
+  }),
+  patient_able: boolean('patient_able'),
+  need_hospice_service: varchar('need_hospice_service', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMWVpZTU5cXQ0biIsImFjdHVhbENvdmVyYWdlIiwicGdUYWJsZSIsImJpZ2ludCIsInZhcmNoYXIiLCJib29sZWFuIiwidGltZXN0YW1wIiwicGF0aWVudHMiLCJsaXZpbmdfYXJyYW5nZW1lbnRzIiwicyIsImlkIiwibW9kZSIsInByaW1hcnlLZXkiLCJnZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5IiwicGF0aWVudF9pZCIsIm5vdE51bGwiLCJyZWZlcmVuY2VzIiwiZiIsInByaW1hcnlfY2FyZWdpdmVyIiwibGVuZ3RoIiwicHJpbWFyeV9sb2NhdGlvbl9vZl9wYXRpZW50IiwiY2FyZWdpdmVyX2F2YWlsYWJpbGl0eSIsInBhdGllbnRfYWJsZSIsIm5lZWRfaG9zcGljZV9zZXJ2aWNlIiwiY3JlYXRlZEF0IiwiZGVmYXVsdE5vdyIsInVwZGF0ZWRBdCJdLCJzb3VyY2VzIjpbImxpdmluZ0FycmFuZ2VtZW50cy5zY2hlbWEuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGdUYWJsZSwgYmlnaW50LCB2YXJjaGFyLCBib29sZWFuLCB0aW1lc3RhbXAgfSBmcm9tICdkcml6emxlLW9ybS9wZy1jb3JlJztcbmltcG9ydCB7IHBhdGllbnRzIH0gZnJvbSAnLi9wYXRpZW50LnNjaGVtYS5qcyc7XG5cbmV4cG9ydCBjb25zdCBsaXZpbmdfYXJyYW5nZW1lbnRzID0gcGdUYWJsZSgnbGl2aW5nX2FycmFuZ2VtZW50cycsIHtcbiAgaWQ6IGJpZ2ludCgnaWQnLCB7IG1vZGU6ICdudW1iZXInIH0pLnByaW1hcnlLZXkoKS5nZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5KCksXG4gIHBhdGllbnRfaWQ6IGJpZ2ludCgncGF0aWVudF9pZCcsIHsgbW9kZTogJ251bWJlcicgfSkubm90TnVsbCgpLnJlZmVyZW5jZXMoKCkgPT4gcGF0aWVudHMuaWQpLFxuICBwcmltYXJ5X2NhcmVnaXZlcjogdmFyY2hhcigncHJpbWFyeV9jYXJlZ2l2ZXInLCB7IGxlbmd0aDogMjU1IH0pLFxuICBwcmltYXJ5X2xvY2F0aW9uX29mX3BhdGllbnQ6IHZhcmNoYXIoJ3ByaW1hcnlfbG9jYXRpb25fb2ZfcGF0aWVudCcsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNhcmVnaXZlcl9hdmFpbGFiaWxpdHk6IHZhcmNoYXIoJ2NhcmVnaXZlcl9hdmFpbGFiaWxpdHknLCB7IGxlbmd0aDogMjU1IH0pLFxuICBwYXRpZW50X2FibGU6IGJvb2xlYW4oJ3BhdGllbnRfYWJsZScpLFxuICBuZWVkX2hvc3BpY2Vfc2VydmljZTogdmFyY2hhcignbmVlZF9ob3NwaWNlX3NlcnZpY2UnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBjcmVhdGVkQXQ6IHRpbWVzdGFtcCgnY3JlYXRlZF9hdCcpLmRlZmF1bHROb3coKS5ub3ROdWxsKCksXG4gIHVwZGF0ZWRBdDogdGltZXN0YW1wKCd1cGRhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbn0pOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQVNFLE9BQU8sRUFBRUMsTUFBTSxFQUFFQyxPQUFPLEVBQUVDLE9BQU8sRUFBRUMsU0FBUyxRQUFRLHFCQUFxQjtBQUNsRixTQUFTQyxRQUFRLFFBQVEscUJBQXFCO0FBRTlDLE9BQU8sTUFBTUMsbUJBQW1CO0FBQUE7QUFBQSxDQUFBUixjQUFBLEdBQUFTLENBQUEsT0FBR1AsT0FBTyxDQUFDLHFCQUFxQixFQUFFO0VBQ2hFUSxFQUFFLEVBQUVQLE1BQU0sQ0FBQyxJQUFJLEVBQUU7SUFBRVEsSUFBSSxFQUFFO0VBQVMsQ0FBQyxDQUFDLENBQUNDLFVBQVUsQ0FBQyxDQUFDLENBQUNDLDRCQUE0QixDQUFDLENBQUM7RUFDaEZDLFVBQVUsRUFBRVgsTUFBTSxDQUFDLFlBQVksRUFBRTtJQUFFUSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0ksT0FBTyxDQUFDLENBQUMsQ0FBQ0MsVUFBVSxDQUFDLE1BQU07SUFBQTtJQUFBaEIsY0FBQSxHQUFBaUIsQ0FBQTtJQUFBakIsY0FBQSxHQUFBUyxDQUFBO0lBQUEsT0FBQUYsUUFBUSxDQUFDRyxFQUFFO0VBQUQsQ0FBQyxDQUFDO0VBQzVGUSxpQkFBaUIsRUFBRWQsT0FBTyxDQUFDLG1CQUFtQixFQUFFO0lBQUVlLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUNoRUMsMkJBQTJCLEVBQUVoQixPQUFPLENBQUMsNkJBQTZCLEVBQUU7SUFBRWUsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQ3BGRSxzQkFBc0IsRUFBRWpCLE9BQU8sQ0FBQyx3QkFBd0IsRUFBRTtJQUFFZSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDMUVHLFlBQVksRUFBRWpCLE9BQU8sQ0FBQyxjQUFjLENBQUM7RUFDckNrQixvQkFBb0IsRUFBRW5CLE9BQU8sQ0FBQyxzQkFBc0IsRUFBRTtJQUFFZSxNQUFNLEVBQUU7RUFBSSxDQUFDLENBQUM7RUFDdEVLLFNBQVMsRUFBRWxCLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ21CLFVBQVUsQ0FBQyxDQUFDLENBQUNWLE9BQU8sQ0FBQyxDQUFDO0VBQ3pEVyxTQUFTLEVBQUVwQixTQUFTLENBQUMsWUFBWSxDQUFDLENBQUNtQixVQUFVLENBQUMsQ0FBQyxDQUFDVixPQUFPLENBQUM7QUFDMUQsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

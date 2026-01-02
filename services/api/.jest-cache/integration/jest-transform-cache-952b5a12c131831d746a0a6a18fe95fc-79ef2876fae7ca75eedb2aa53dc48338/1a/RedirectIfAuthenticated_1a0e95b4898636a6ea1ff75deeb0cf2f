@@ -1,0 +1,220 @@
+39b6f402d08fbd6c80a7b1e676c236fe
+/* istanbul ignore next */
+function cov_2998wdzlxd() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/RedirectIfAuthenticated.js";
+  var hash = "330900da6bc1dae953bdf44dc43a1f4f3dfd610a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/RedirectIfAuthenticated.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 24
+        },
+        end: {
+          line: 12,
+          column: 61
+        }
+      },
+      "1": {
+        start: {
+          line: 16,
+          column: 4
+        },
+        end: {
+          line: 19,
+          column: 5
+        }
+      },
+      "2": {
+        start: {
+          line: 17,
+          column: 6
+        },
+        end: {
+          line: 17,
+          column: 30
+        }
+      },
+      "3": {
+        start: {
+          line: 18,
+          column: 6
+        },
+        end: {
+          line: 18,
+          column: 13
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 11,
+            column: 2
+          },
+          end: {
+            line: 11,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 11,
+            column: 42
+          },
+          end: {
+            line: 22,
+            column: 3
+          }
+        },
+        line: 11
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 12,
+            column: 24
+          },
+          end: {
+            line: 12,
+            column: 61
+          }
+        },
+        type: "cond-expr",
+        locations: [{
+          start: {
+            line: 12,
+            column: 46
+          },
+          end: {
+            line: 12,
+            column: 52
+          }
+        }, {
+          start: {
+            line: 12,
+            column: 55
+          },
+          end: {
+            line: 12,
+            column: 61
+          }
+        }],
+        line: 12
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 16,
+            column: 4
+          },
+          end: {
+            line: 19,
+            column: 5
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 16,
+            column: 4
+          },
+          end: {
+            line: 19,
+            column: 5
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 16
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {
+      "0": [0, 0],
+      "1": [0, 0]
+    },
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "330900da6bc1dae953bdf44dc43a1f4f3dfd610a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2998wdzlxd = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2998wdzlxd();
+// Note: Converted to Fastify compatible middleware
+class RedirectIfAuthenticated {
+  /**
+   * Handle an incoming request (Fastify compatible).
+   *
+   * @param {Object} request - Fastify request object
+   * @param {Object} reply - Fastify reply object
+   * @param {...string} guards
+   * @return {Object|void}
+   */
+  async handle(request, reply, ...guards) {
+    /* istanbul ignore next */
+    cov_2998wdzlxd().f[0]++;
+    const guardsArray =
+    /* istanbul ignore next */
+    (cov_2998wdzlxd().s[0]++, guards.length === 0 ?
+    /* istanbul ignore next */
+    (cov_2998wdzlxd().b[0][0]++, [null]) :
+    /* istanbul ignore next */
+    (cov_2998wdzlxd().b[0][1]++, guards));
+
+    // Check if user is authenticated
+    // If authenticated, redirect to home page
+    /* istanbul ignore next */
+    cov_2998wdzlxd().s[1]++;
+    if (request.user) {
+      /* istanbul ignore next */
+      cov_2998wdzlxd().b[1][0]++;
+      cov_2998wdzlxd().s[2]++;
+      reply.redirect('/home');
+      /* istanbul ignore next */
+      cov_2998wdzlxd().s[3]++;
+      return;
+    } else
+    /* istanbul ignore next */
+    {
+      cov_2998wdzlxd().b[1][1]++;
+    }
+
+    // User is not authenticated, continue
+  }
+}
+export default RedirectIfAuthenticated;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMjk5OHdkemx4ZCIsImFjdHVhbENvdmVyYWdlIiwiUmVkaXJlY3RJZkF1dGhlbnRpY2F0ZWQiLCJoYW5kbGUiLCJyZXF1ZXN0IiwicmVwbHkiLCJndWFyZHMiLCJmIiwiZ3VhcmRzQXJyYXkiLCJzIiwibGVuZ3RoIiwiYiIsInVzZXIiLCJyZWRpcmVjdCJdLCJzb3VyY2VzIjpbIlJlZGlyZWN0SWZBdXRoZW50aWNhdGVkLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIE5vdGU6IENvbnZlcnRlZCB0byBGYXN0aWZ5IGNvbXBhdGlibGUgbWlkZGxld2FyZVxuY2xhc3MgUmVkaXJlY3RJZkF1dGhlbnRpY2F0ZWQge1xuICAvKipcbiAgICogSGFuZGxlIGFuIGluY29taW5nIHJlcXVlc3QgKEZhc3RpZnkgY29tcGF0aWJsZSkuXG4gICAqXG4gICAqIEBwYXJhbSB7T2JqZWN0fSByZXF1ZXN0IC0gRmFzdGlmeSByZXF1ZXN0IG9iamVjdFxuICAgKiBAcGFyYW0ge09iamVjdH0gcmVwbHkgLSBGYXN0aWZ5IHJlcGx5IG9iamVjdFxuICAgKiBAcGFyYW0gey4uLnN0cmluZ30gZ3VhcmRzXG4gICAqIEByZXR1cm4ge09iamVjdHx2b2lkfVxuICAgKi9cbiAgYXN5bmMgaGFuZGxlKHJlcXVlc3QsIHJlcGx5LCAuLi5ndWFyZHMpIHtcbiAgICBjb25zdCBndWFyZHNBcnJheSA9IGd1YXJkcy5sZW5ndGggPT09IDAgPyBbbnVsbF0gOiBndWFyZHM7XG5cbiAgICAvLyBDaGVjayBpZiB1c2VyIGlzIGF1dGhlbnRpY2F0ZWRcbiAgICAvLyBJZiBhdXRoZW50aWNhdGVkLCByZWRpcmVjdCB0byBob21lIHBhZ2VcbiAgICBpZiAocmVxdWVzdC51c2VyKSB7XG4gICAgICByZXBseS5yZWRpcmVjdCgnL2hvbWUnKTtcbiAgICAgIHJldHVybjtcbiAgICB9XG4gICAgXG4gICAgLy8gVXNlciBpcyBub3QgYXV0aGVudGljYXRlZCwgY29udGludWVcbiAgfVxufVxuXG5leHBvcnQgZGVmYXVsdCBSZWRpcmVjdElmQXV0aGVudGljYXRlZDsiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaO0FBQ0EsTUFBTUUsdUJBQXVCLENBQUM7RUFDNUI7QUFDRjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtFQUNFLE1BQU1DLE1BQU1BLENBQUNDLE9BQU8sRUFBRUMsS0FBSyxFQUFFLEdBQUdDLE1BQU0sRUFBRTtJQUFBO0lBQUFOLGNBQUEsR0FBQU8sQ0FBQTtJQUN0QyxNQUFNQyxXQUFXO0lBQUE7SUFBQSxDQUFBUixjQUFBLEdBQUFTLENBQUEsT0FBR0gsTUFBTSxDQUFDSSxNQUFNLEtBQUssQ0FBQztJQUFBO0lBQUEsQ0FBQVYsY0FBQSxHQUFBVyxDQUFBLFVBQUcsQ0FBQyxJQUFJLENBQUM7SUFBQTtJQUFBLENBQUFYLGNBQUEsR0FBQVcsQ0FBQSxVQUFHTCxNQUFNOztJQUV6RDtJQUNBO0lBQUE7SUFBQU4sY0FBQSxHQUFBUyxDQUFBO0lBQ0EsSUFBSUwsT0FBTyxDQUFDUSxJQUFJLEVBQUU7TUFBQTtNQUFBWixjQUFBLEdBQUFXLENBQUE7TUFBQVgsY0FBQSxHQUFBUyxDQUFBO01BQ2hCSixLQUFLLENBQUNRLFFBQVEsQ0FBQyxPQUFPLENBQUM7TUFBQztNQUFBYixjQUFBLEdBQUFTLENBQUE7TUFDeEI7SUFDRixDQUFDO0lBQUE7SUFBQTtNQUFBVCxjQUFBLEdBQUFXLENBQUE7SUFBQTs7SUFFRDtFQUNGO0FBQ0Y7QUFFQSxlQUFlVCx1QkFBdUIiLCJpZ25vcmVMaXN0IjpbXX0=

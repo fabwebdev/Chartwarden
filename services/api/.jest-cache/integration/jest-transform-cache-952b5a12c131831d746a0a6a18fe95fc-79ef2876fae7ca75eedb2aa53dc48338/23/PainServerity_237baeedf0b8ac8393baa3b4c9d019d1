@@ -1,0 +1,161 @@
+c99a1afa2587c566b961a1b1915a587a
+/* istanbul ignore next */
+function cov_n8bes8pvy() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/PainScreening/PainServerity.js";
+  var hash = "6749448bc7c846aa62989eadfc77a14cfa15dfb9";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/PainScreening/PainServerity.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 22
+        },
+        end: {
+          line: 23,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 10,
+          column: 23
+        },
+        end: {
+          line: 16,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 18,
+          column: 8
+        },
+        end: {
+          line: 21,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 18,
+          column: 45
+        },
+        end: {
+          line: 21,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 13
+          },
+          end: {
+            line: 9,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 25
+          },
+          end: {
+            line: 22,
+            column: 5
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 18,
+            column: 26
+          },
+          end: {
+            line: 18,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 18,
+            column: 45
+          },
+          end: {
+            line: 21,
+            column: 9
+          }
+        },
+        line: 18
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "6749448bc7c846aa62989eadfc77a14cfa15dfb9"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_n8bes8pvy = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_n8bes8pvy();
+// PainServerity enum equivalent
+const PainServerity =
+/* istanbul ignore next */
+(cov_n8bes8pvy().s[0]++, {
+  NO_PAIN: "0. None",
+  MILD_PAIN: "1. Mild",
+  MODERATE_PAIN: "2. Moderate",
+  SEVERE_PAIN: "3. Severe",
+  NOT_RATED: "9. Pain not rated",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_n8bes8pvy().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_n8bes8pvy().s[1]++, [this.NO_PAIN, this.MILD_PAIN, this.MODERATE_PAIN, this.SEVERE_PAIN, this.NOT_RATED]);
+    /* istanbul ignore next */
+    cov_n8bes8pvy().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_n8bes8pvy().f[1]++;
+      cov_n8bes8pvy().s[3]++;
+      return {
+        id: index,
+        value: value
+      };
+    });
+  }
+});
+export default PainServerity;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfbjhiZXM4cHZ5IiwiYWN0dWFsQ292ZXJhZ2UiLCJQYWluU2VydmVyaXR5IiwicyIsIk5PX1BBSU4iLCJNSUxEX1BBSU4iLCJNT0RFUkFURV9QQUlOIiwiU0VWRVJFX1BBSU4iLCJOT1RfUkFURUQiLCJ0b0FycmF5IiwiZiIsInZhbHVlcyIsIm1hcCIsInZhbHVlIiwiaW5kZXgiLCJpZCJdLCJzb3VyY2VzIjpbIlBhaW5TZXJ2ZXJpdHkuanMiXSwic291cmNlc0NvbnRlbnQiOlsiLy8gUGFpblNlcnZlcml0eSBlbnVtIGVxdWl2YWxlbnRcbmNvbnN0IFBhaW5TZXJ2ZXJpdHkgPSB7XG4gICAgTk9fUEFJTjogXCIwLiBOb25lXCIsXG4gICAgTUlMRF9QQUlOOiBcIjEuIE1pbGRcIixcbiAgICBNT0RFUkFURV9QQUlOOiBcIjIuIE1vZGVyYXRlXCIsXG4gICAgU0VWRVJFX1BBSU46IFwiMy4gU2V2ZXJlXCIsXG4gICAgTk9UX1JBVEVEOiBcIjkuIFBhaW4gbm90IHJhdGVkXCIsXG5cbiAgICB0b0FycmF5OiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIGNvbnN0IHZhbHVlcyA9IFtcbiAgICAgICAgICAgIHRoaXMuTk9fUEFJTixcbiAgICAgICAgICAgIHRoaXMuTUlMRF9QQUlOLFxuICAgICAgICAgICAgdGhpcy5NT0RFUkFURV9QQUlOLFxuICAgICAgICAgICAgdGhpcy5TRVZFUkVfUEFJTixcbiAgICAgICAgICAgIHRoaXMuTk9UX1JBVEVELFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXgsXG4gICAgICAgICAgICB2YWx1ZTogdmFsdWUsXG4gICAgICAgIH0pKTtcbiAgICB9LFxufTtcblxuZXhwb3J0IGRlZmF1bHQgUGFpblNlcnZlcml0eTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlo7QUFDQSxNQUFNRSxhQUFhO0FBQUE7QUFBQSxDQUFBRixhQUFBLEdBQUFHLENBQUEsT0FBRztFQUNsQkMsT0FBTyxFQUFFLFNBQVM7RUFDbEJDLFNBQVMsRUFBRSxTQUFTO0VBQ3BCQyxhQUFhLEVBQUUsYUFBYTtFQUM1QkMsV0FBVyxFQUFFLFdBQVc7RUFDeEJDLFNBQVMsRUFBRSxtQkFBbUI7RUFFOUJDLE9BQU8sRUFBRSxTQUFBQSxDQUFBLEVBQVk7SUFBQTtJQUFBVCxhQUFBLEdBQUFVLENBQUE7SUFDakIsTUFBTUMsTUFBTTtJQUFBO0lBQUEsQ0FBQVgsYUFBQSxHQUFBRyxDQUFBLE9BQUcsQ0FDWCxJQUFJLENBQUNDLE9BQU8sRUFDWixJQUFJLENBQUNDLFNBQVMsRUFDZCxJQUFJLENBQUNDLGFBQWEsRUFDbEIsSUFBSSxDQUFDQyxXQUFXLEVBQ2hCLElBQUksQ0FBQ0MsU0FBUyxDQUNqQjtJQUFDO0lBQUFSLGFBQUEsR0FBQUcsQ0FBQTtJQUVGLE9BQU9RLE1BQU0sQ0FBQ0MsR0FBRyxDQUFDLENBQUNDLEtBQUssRUFBRUMsS0FBSyxLQUFNO01BQUE7TUFBQWQsYUFBQSxHQUFBVSxDQUFBO01BQUFWLGFBQUEsR0FBQUcsQ0FBQTtNQUFBO1FBQ2pDWSxFQUFFLEVBQUVELEtBQUs7UUFDVEQsS0FBSyxFQUFFQTtNQUNYLENBQUM7SUFBRCxDQUFFLENBQUM7RUFDUDtBQUNKLENBQUM7QUFFRCxlQUFlWCxhQUFhIiwiaWdub3JlTGlzdCI6W119

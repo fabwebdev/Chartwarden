@@ -1,0 +1,97 @@
+c572454363768c03d39e67dc4b407cbd
+/* istanbul ignore next */
+function cov_98v0hhhcn() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/permission.routes.js";
+  var hash = "ea2deb93c029d351a29c1fef936f878551cddf5d";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/permission.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 19,
+          column: 2
+        },
+        end: {
+          line: 21,
+          column: 23
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "permissionRoutes",
+        decl: {
+          start: {
+            line: 16,
+            column: 15
+          },
+          end: {
+            line: 16,
+            column: 31
+          }
+        },
+        loc: {
+          start: {
+            line: 16,
+            column: 50
+          },
+          end: {
+            line: 22,
+            column: 1
+          }
+        },
+        line: 16
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "ea2deb93c029d351a29c1fef936f878551cddf5d"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_98v0hhhcn = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_98v0hhhcn();
+/**
+ * Permission Routes (Legacy)
+ *
+ * NOTE: Most permission routes are now handled by permissionManagement.routes.js
+ * This file only provides backwards-compatible routes that don't conflict.
+ *
+ * @deprecated Use permissionManagement.routes.js for new development
+ */
+import { createPermission, permissionValidation } from '../controllers/Permission.controller.js';
+import validate from '../middleware/validation.middleware.js';
+
+// Fastify plugin for permission routes
+async function permissionRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_98v0hhhcn().f[0]++;
+  cov_98v0hhhcn().s[0]++;
+  // Legacy permission store route (for backward compatibility)
+  // Main /permissions routes are handled by permissionManagement.routes.js
+  fastify.post('/permissions/store', {
+    preHandler: [permissionValidation, validate]
+  }, createPermission);
+}
+export default permissionRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfOTh2MGhoaGNuIiwiYWN0dWFsQ292ZXJhZ2UiLCJjcmVhdGVQZXJtaXNzaW9uIiwicGVybWlzc2lvblZhbGlkYXRpb24iLCJ2YWxpZGF0ZSIsInBlcm1pc3Npb25Sb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwicG9zdCIsInByZUhhbmRsZXIiXSwic291cmNlcyI6WyJwZXJtaXNzaW9uLnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFBlcm1pc3Npb24gUm91dGVzIChMZWdhY3kpXG4gKlxuICogTk9URTogTW9zdCBwZXJtaXNzaW9uIHJvdXRlcyBhcmUgbm93IGhhbmRsZWQgYnkgcGVybWlzc2lvbk1hbmFnZW1lbnQucm91dGVzLmpzXG4gKiBUaGlzIGZpbGUgb25seSBwcm92aWRlcyBiYWNrd2FyZHMtY29tcGF0aWJsZSByb3V0ZXMgdGhhdCBkb24ndCBjb25mbGljdC5cbiAqXG4gKiBAZGVwcmVjYXRlZCBVc2UgcGVybWlzc2lvbk1hbmFnZW1lbnQucm91dGVzLmpzIGZvciBuZXcgZGV2ZWxvcG1lbnRcbiAqL1xuaW1wb3J0IHtcbiAgY3JlYXRlUGVybWlzc2lvbixcbiAgcGVybWlzc2lvblZhbGlkYXRpb25cbn0gZnJvbSAnLi4vY29udHJvbGxlcnMvUGVybWlzc2lvbi5jb250cm9sbGVyLmpzJztcbmltcG9ydCB2YWxpZGF0ZSBmcm9tICcuLi9taWRkbGV3YXJlL3ZhbGlkYXRpb24ubWlkZGxld2FyZS5qcyc7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBwZXJtaXNzaW9uIHJvdXRlc1xuYXN5bmMgZnVuY3Rpb24gcGVybWlzc2lvblJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIExlZ2FjeSBwZXJtaXNzaW9uIHN0b3JlIHJvdXRlIChmb3IgYmFja3dhcmQgY29tcGF0aWJpbGl0eSlcbiAgLy8gTWFpbiAvcGVybWlzc2lvbnMgcm91dGVzIGFyZSBoYW5kbGVkIGJ5IHBlcm1pc3Npb25NYW5hZ2VtZW50LnJvdXRlcy5qc1xuICBmYXN0aWZ5LnBvc3QoJy9wZXJtaXNzaW9ucy9zdG9yZScsIHtcbiAgICBwcmVIYW5kbGVyOiBbcGVybWlzc2lvblZhbGlkYXRpb24sIHZhbGlkYXRlXSxcbiAgfSwgY3JlYXRlUGVybWlzc2lvbik7XG59XG5cbmV4cG9ydCBkZWZhdWx0IHBlcm1pc3Npb25Sb3V0ZXM7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSxTQUNFRSxnQkFBZ0IsRUFDaEJDLG9CQUFvQixRQUNmLHlDQUF5QztBQUNoRCxPQUFPQyxRQUFRLE1BQU0sd0NBQXdDOztBQUU3RDtBQUNBLGVBQWVDLGdCQUFnQkEsQ0FBQ0MsT0FBTyxFQUFFQyxPQUFPLEVBQUU7RUFBQTtFQUFBUCxhQUFBLEdBQUFRLENBQUE7RUFBQVIsYUFBQSxHQUFBUyxDQUFBO0VBQ2hEO0VBQ0E7RUFDQUgsT0FBTyxDQUFDSSxJQUFJLENBQUMsb0JBQW9CLEVBQUU7SUFDakNDLFVBQVUsRUFBRSxDQUFDUixvQkFBb0IsRUFBRUMsUUFBUTtFQUM3QyxDQUFDLEVBQUVGLGdCQUFnQixDQUFDO0FBQ3RCO0FBRUEsZUFBZUcsZ0JBQWdCIiwiaWdub3JlTGlzdCI6W119

@@ -3,14 +3,14 @@
   "category": "Testing",
   "title": "End-to-End Tests",
   "description": "Implement End-to-End Tests for Critical User Workflows\n\nCreate comprehensive E2E test coverage for the application's most critical user journeys to ensure functionality and prevent regressions.\n\nRequirements:\n- Identify and prioritize critical user workflows (e.g., authentication, checkout, core feature flows)\n- Select and configure appropriate E2E testing framework (Playwright, Cypress, or existing framework if already in use)\n- Write test scenarios covering happy paths and common error cases for each workflow\n- Implement test data setup and teardown procedures\n- Configure tests to run in CI/CD pipeline\n- Add page object models or component selectors for maintainable test structure\n- Include visual regression testing for key UI states where applicable\n- Document test coverage and how to run tests locally\n- Set up test reporting and failure notifications\n- Ensure tests are isolated, deterministic, and can run in parallel\n\nSuccess Criteria:\n- At least 3-5 critical workflows have complete E2E test coverage\n- Tests pass consistently in CI environment\n- Test execution time is reasonable (< 10 minutes for full suite)\n- Clear documentation exists for adding new E2E tests",
-  "status": "backlog",
+  "status": "completed",
   "priority": 3,
   "complexity": "complex",
   "dependencies": [
     "integration-tests"
   ],
   "createdAt": "2025-12-31T05:55:26.265Z",
-  "updatedAt": "2025-12-31T05:55:26.265Z",
+  "updatedAt": "2026-01-02T15:55:26.218Z",
   "skipTests": false,
   "model": "sonnet",
   "thinkingLevel": "high",
@@ -18,5 +18,194 @@
   "textFilePaths": [],
   "branchName": "main",
   "planningMode": "full",
-  "requirePlanApproval": false
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T15:49:56.030Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll analyze the codebase to generate a comprehensive specification for implementing E2E tests for critical user workflows.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/package.json\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.spec.{ts,js,tsx,jsx}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.test.{ts,js,tsx,jsx}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/playwright.config.{ts,js}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/cypress.config.{ts,js}\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/playwright.config.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/package.json\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/**/*.{ts,tsx}\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/tests/*.spec.ts\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/tests/better-auth-verification.spec.ts\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"const.*=.*page\\\\.|await page\\\\.\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/tests\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"services/api/src/routes/**/*.js\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/auth.routes.js\",\n  \"limit\": 50\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient.routes.js\",\n  \"limit\": 50\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/app/**/page.tsx\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden\"\n}\n\n# Comprehensive E2E Test Implementation Specification\n\n## 1. Problem Statement\n\nThe Chartwarden hospice EHR system currently lacks comprehensive end-to-end (E2E) test coverage for critical user workflows. While verification tests exist for specific features, there is no systematic test suite that validates complete user journeys from start to finish, leaving the application vulnerable to regressions during development and deployment.\n\n## 2. User Story\n\nAs a **developer and QA engineer**, I want **comprehensive E2E tests covering critical user workflows**, so that **I can confidently deploy changes knowing that core functionality works end-to-end, reduce production bugs, and maintain high quality standards for this HIPAA-compliant healthcare application**.\n\n## 3. Acceptance Criteria\n\n### Happy Path Scenarios\n\n**Scenario 1: Authentication Flow**\n- **GIVEN** an unauthenticated user\n- **WHEN** the user registers with valid credentials and then logs in\n- **THEN** the user should be redirected to the dashboard with authenticated session\n\n**Scenario 2: Patient Management Flow**\n- **GIVEN** an authenticated clinician user\n- **WHEN** the user creates a new patient, views the patient list, and navigates to patient details\n- **THEN** all patient information should be persisted and displayed correctly across pages\n\n**Scenario 3: Encounter Documentation Flow**\n- **GIVEN** an authenticated nurse with an existing patient\n- **WHEN** the user creates a nursing clinical note with assessments and saves it\n- **THEN** the encounter should be saved and visible in the patient's encounter history\n\n**Scenario 4: User Management Flow**\n- **GIVEN** an authenticated admin user\n- **WHEN** the user creates a new staff user, assigns roles/permissions, and verifies access\n- **THEN** the new user should be able to log in with appropriate role-based access\n\n**Scenario 5: IDG Meeting Documentation Flow**\n- **GIVEN** an authenticated IDG team member\n- **WHEN** the user schedules and documents an IDG meeting for a patient\n- **THEN** the meeting should be recorded with all attendees and discussion points\n\n### Edge Cases\n\n**Edge Case 1: Session Expiration**\n- **GIVEN** an authenticated user with an active session\n- **WHEN** the session expires after inactivity timeout\n- **THEN** the user should be redirected to login page and prompted to re-authenticate\n\n**Edge Case 2: Concurrent User Actions**\n- **GIVEN** two users editing the same patient record simultaneously\n- **WHEN** both users attempt to save changes\n- **THEN** the system should handle conflicts appropriately with optimistic locking or last-write-wins\n\n**Edge Case 3: Network Interruption**\n- **GIVEN** a user filling out a long form\n- **WHEN** network connection is temporarily lost during form submission\n- **THEN** the system should retry or show appropriate error with ability to recover\n\n### Error Handling\n\n**Error 1: Invalid Form Submission**\n- **GIVEN** a user on a patient creation form\n- **WHEN** the user submits with missing required fields\n- **THEN** validation errors should display clearly with field-level error messages\n\n**Error 2: Unauthorized Access**\n- **GIVEN** a user with patient role trying to access admin routes\n- **WHEN** the user navigates to /admin/user-management\n- **THEN** the system should return 403 Forbidden or redirect to unauthorized page\n\n**Error 3: API Failure**\n- **GIVEN** a user attempting to fetch patient data\n- **WHEN** the backend API returns 500 error\n- **THEN** the UI should display user-friendly error message with retry option\n\n## 4. Technical Context\n\n| Aspect | Value |\n|--------|-------|\n| **Affected Files** | `apps/web/tests/e2e/` (new directory), `apps/web/playwright.config.ts`, `package.json` (root and apps/web), `apps/web/tests/fixtures/` (new), `apps/web/tests/helpers/` (new) |\n| **Dependencies** | `@playwright/test` (already installed), potential addition of `@faker-js/faker` for test data generation |\n| **Constraints** | - Must not interfere with existing verification tests<br>- Tests must run in CI/CD pipeline<br>- Must handle HIPAA compliance considerations (no real PHI in tests)<br>- Must work with Better Auth cookie-based authentication<br>- Should complete in < 10 minutes for full suite |\n| **Patterns to Follow** | - Existing Playwright config in `apps/web/playwright.config.ts`<br>- Page Object Model pattern for maintainability<br>- Existing test patterns in `apps/web/tests/*.spec.ts`<br>- Better Auth authentication flow<br>- API base URL pattern: `http://localhost:3001/api` |\n\n## 5. Non-Goals\n\n- **NOT** migrating or replacing existing verification tests in `/apps/web/tests/*.spec.ts`\n- **NOT** implementing visual regression testing at this stage (can be added later)\n- **NOT** creating load/performance tests (separate concern)\n- **NOT** testing every single UI component (focus on critical workflows)\n- **NOT** testing mobile responsiveness comprehensively (though mobile project exists in config)\n- **NOT** creating integration tests for backend API endpoints (already exist in `services/api/tests/`)\n\n## 6. Implementation Tasks\n\n```tasks\n## Phase 1: Test Infrastructure Setup\n- [ ] T001: Create E2E test directory structure and organization | File: apps/web/tests/e2e/\n- [ ] T002: Create Page Object Models for authentication pages | File: apps/web/tests/e2e/pages/auth.page.ts\n- [ ] T003: Create Page Object Models for patient management pages | File: apps/web/tests/e2e/pages/patient.page.ts\n- [ ] T004: Create Page Object Models for user management pages | File: apps/web/tests/e2e/pages/user.page.ts\n- [ ] T005: Create test fixtures for authentication helpers | File: apps/web/tests/e2e/fixtures/auth.fixture.ts\n- [ ] T006: Create test data generators for patients and users | File: apps/web/tests/e2e/helpers/testData.ts\n- [ ] T007: Create utility helpers for common test operations | File: apps/web/tests/e2e/helpers/utils.ts\n- [ ] T008: Update Playwright config with E2E-specific settings | File: apps/web/playwright.config.ts\n\n## Phase 2: Core Workflow Tests\n- [ ] T009: Implement authentication flow E2E test (registration + login + logout) | File: apps/web/tests/e2e/auth.spec.ts\n- [ ] T010: Implement patient creation and list view E2E test | File: apps/web/tests/e2e/patient-management.spec.ts\n- [ ] T011: Implement patient detail view and edit E2E test | File: apps/web/tests/e2e/patient-detail.spec.ts\n- [ ] T012: Implement user management E2E test (create, assign roles, verify access) | File: apps/web/tests/e2e/user-management.spec.ts\n- [ ] T013: Implement nursing clinical note creation E2E test | File: apps/web/tests/e2e/nursing-note.spec.ts\n- [ ] T014: Implement IDG meeting documentation E2E test | File: apps/web/tests/e2e/idg-meeting.spec.ts\n\n## Phase 3: Edge Cases & Error Handling\n- [ ] T015: Implement session expiration and re-authentication test | File: apps/web/tests/e2e/session-management.spec.ts\n- [ ] T016: Implement form validation error handling tests | File: apps/web/tests/e2e/form-validation.spec.ts\n- [ ] T017: Implement unauthorized access and RBAC tests | File: apps/web/tests/e2e/authorization.spec.ts\n- [ ] T018: Implement API error handling and retry logic tests | File: apps/web/tests/e2e/error-handling.spec.ts\n\n## Phase 4: Test Reporting & CI Integration\n- [ ] T019: Configure test reporting with HTML reporter and screenshots | File: apps/web/playwright.config.ts\n- [ ] T020: Create test database seeding script for consistent test data | File: apps/web/tests/e2e/setup/seed.ts\n- [ ] T021: Create global setup for test environment preparation | File: apps/web/tests/e2e/setup/global-setup.ts\n- [ ] T022: Create global teardown for cleanup | File: apps/web/tests/e2e/setup/global-teardown.ts\n- [ ] T023: Add E2E test npm scripts to package.json | File: apps/web/package.json\n- [ ] T024: Update root package.json with E2E test commands | File: package.json\n- [ ] T025: Create README documentation for running E2E tests | File: apps/web/tests/e2e/README.md\n```\n\n## 7. Success Metrics\n\n1. **Coverage**: At least 5 critical workflows have complete E2E test coverage (authentication, patient management, user management, nursing notes, IDG meetings)\n2. **Reliability**: All E2E tests pass consistently in CI environment with < 2% flake rate\n3. **Performance**: Full E2E test suite completes in < 10 minutes\n4. **Maintainability**: Page Object Models reduce test duplication by 70%\n5. **CI Integration**: E2E tests run automatically on PR creation and pass before merge\n6. **Documentation**: Clear README exists with setup instructions, test organization, and examples for adding new tests\n\n## 8. Risks & Mitigations\n\n| Risk | Mitigation |\n|------|------------|\n| **Test flakiness** due to timing issues | Use Playwright's built-in auto-waiting, explicit waits for network idle, and retry logic. Avoid hard-coded timeouts. |\n| **Test data conflicts** between parallel tests | Use unique test data generators with timestamps/UUIDs. Implement test isolation with separate database schemas or cleanup. |\n| **Long execution time** making CI slow | Run tests in parallel (already configured), focus on critical paths only, consider test sharding for larger suites. |\n| **Authentication complexity** with Better Auth cookies | Create reusable auth fixtures that handle cookie-based session, store auth state, and reuse across tests. |\n| **Breaking changes** to existing verification tests | Keep E2E tests in separate directory, ensure no config conflicts, maintain backward compatibility. |\n| **HIPAA compliance** concerns with test data | Use synthetic data generators only, never use real PHI, document data handling in README. |\n| **Database state management** between test runs | Implement robust setup/teardown, use database transactions where possible, consider separate test database. |",
+    "generatedAt": "2026-01-02T05:32:16.990Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create E2E test directory structure and organization",
+        "filePath": "apps/web/tests/e2e/",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Create Page Object Models for authentication pages",
+        "filePath": "apps/web/tests/e2e/pages/auth.page.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Create Page Object Models for patient management pages",
+        "filePath": "apps/web/tests/e2e/pages/patient.page.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Create Page Object Models for user management pages",
+        "filePath": "apps/web/tests/e2e/pages/user.page.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Create test fixtures for authentication helpers",
+        "filePath": "apps/web/tests/e2e/fixtures/auth.fixture.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Create test data generators for patients and users",
+        "filePath": "apps/web/tests/e2e/helpers/testData.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Create utility helpers for common test operations",
+        "filePath": "apps/web/tests/e2e/helpers/utils.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Update Playwright config with E2E-specific settings",
+        "filePath": "apps/web/playwright.config.ts",
+        "phase": "Phase 1: Test Infrastructure Setup",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Implement authentication flow E2E test (registration + login + logout)",
+        "filePath": "apps/web/tests/e2e/auth.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Implement patient creation and list view E2E test",
+        "filePath": "apps/web/tests/e2e/patient-management.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Implement patient detail view and edit E2E test",
+        "filePath": "apps/web/tests/e2e/patient-detail.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Implement user management E2E test (create, assign roles, verify access)",
+        "filePath": "apps/web/tests/e2e/user-management.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Implement nursing clinical note creation E2E test",
+        "filePath": "apps/web/tests/e2e/nursing-note.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Implement IDG meeting documentation E2E test",
+        "filePath": "apps/web/tests/e2e/idg-meeting.spec.ts",
+        "phase": "Phase 2: Core Workflow Tests",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Implement session expiration and re-authentication test",
+        "filePath": "apps/web/tests/e2e/session-management.spec.ts",
+        "phase": "Phase 3: Edge Cases & Error Handling",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Implement form validation error handling tests",
+        "filePath": "apps/web/tests/e2e/form-validation.spec.ts",
+        "phase": "Phase 3: Edge Cases & Error Handling",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Implement unauthorized access and RBAC tests",
+        "filePath": "apps/web/tests/e2e/authorization.spec.ts",
+        "phase": "Phase 3: Edge Cases & Error Handling",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Implement API error handling and retry logic tests",
+        "filePath": "apps/web/tests/e2e/error-handling.spec.ts",
+        "phase": "Phase 3: Edge Cases & Error Handling",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Configure test reporting with HTML reporter and screenshots",
+        "filePath": "apps/web/playwright.config.ts",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T020",
+        "description": "Create test database seeding script for consistent test data",
+        "filePath": "apps/web/tests/e2e/setup/seed.ts",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T021",
+        "description": "Create global setup for test environment preparation",
+        "filePath": "apps/web/tests/e2e/setup/global-setup.ts",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T022",
+        "description": "Create global teardown for cleanup",
+        "filePath": "apps/web/tests/e2e/setup/global-teardown.ts",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T023",
+        "description": "Add E2E test npm scripts to package.json",
+        "filePath": "apps/web/package.json",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T024",
+        "description": "Update root package.json with E2E test commands",
+        "filePath": "package.json",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      },
+      {
+        "id": "T025",
+        "description": "Create README documentation for running E2E tests",
+        "filePath": "apps/web/tests/e2e/README.md",
+        "phase": "Phase 4: Test Reporting & CI Integration",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 25,
+    "tasksCompleted": 2,
+    "approvedAt": "2026-01-02T05:32:16.991Z",
+    "currentTaskId": "T003"
+  }
 }

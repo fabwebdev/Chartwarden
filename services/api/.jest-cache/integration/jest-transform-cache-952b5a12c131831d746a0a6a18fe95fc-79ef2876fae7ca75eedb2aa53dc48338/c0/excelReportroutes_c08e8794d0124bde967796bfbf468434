@@ -1,0 +1,252 @@
+e92a2abcc51373712cf06da1450d8aad
+/* istanbul ignore next */
+function cov_2gr0utqcdb() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/excelReport.routes.js";
+  var hash = "72a1c98f9cd24644d9f2abaeeeac6e18f807858b";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/excelReport.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 29,
+          column: 4
+        },
+        end: {
+          line: 31,
+          column: 51
+        }
+      },
+      "1": {
+        start: {
+          line: 34,
+          column: 4
+        },
+        end: {
+          line: 40,
+          column: 55
+        }
+      },
+      "2": {
+        start: {
+          line: 43,
+          column: 4
+        },
+        end: {
+          line: 48,
+          column: 56
+        }
+      },
+      "3": {
+        start: {
+          line: 51,
+          column: 4
+        },
+        end: {
+          line: 56,
+          column: 56
+        }
+      },
+      "4": {
+        start: {
+          line: 59,
+          column: 4
+        },
+        end: {
+          line: 64,
+          column: 54
+        }
+      },
+      "5": {
+        start: {
+          line: 67,
+          column: 4
+        },
+        end: {
+          line: 72,
+          column: 53
+        }
+      },
+      "6": {
+        start: {
+          line: 75,
+          column: 4
+        },
+        end: {
+          line: 80,
+          column: 61
+        }
+      },
+      "7": {
+        start: {
+          line: 83,
+          column: 4
+        },
+        end: {
+          line: 85,
+          column: 58
+        }
+      },
+      "8": {
+        start: {
+          line: 88,
+          column: 4
+        },
+        end: {
+          line: 90,
+          column: 55
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "excelReportRoutes",
+        decl: {
+          start: {
+            line: 26,
+            column: 30
+          },
+          end: {
+            line: 26,
+            column: 47
+          }
+        },
+        loc: {
+          start: {
+            line: 26,
+            column: 66
+          },
+          end: {
+            line: 91,
+            column: 1
+          }
+        },
+        line: 26
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "72a1c98f9cd24644d9f2abaeeeac6e18f807858b"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2gr0utqcdb = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2gr0utqcdb();
+import controller from '../controllers/ExcelReport.controller.js';
+import { PERMISSIONS } from '../config/rbac.js';
+import { requireAnyPermission } from '../middleware/rbac.middleware.js';
+
+/**
+ * Excel Report Routes
+ * Provides Excel export endpoints for all report types
+ *
+ * Features:
+ * - Multiple worksheet Excel exports
+ * - Professional formatting with styles
+ * - All report types supported (Census, Billing, Staff, QAPI, Analytics)
+ * - Streaming file downloads
+ *
+ * Endpoints:
+ * - GET /api/excel-reports/types - Get available report types
+ * - GET /api/excel-reports/census - Export census report
+ * - GET /api/excel-reports/ar-aging - Export AR aging report
+ * - GET /api/excel-reports/billing - Export billing report
+ * - GET /api/excel-reports/staff - Export staff report
+ * - GET /api/excel-reports/qapi - Export QAPI report
+ * - GET /api/excel-reports/executive-dashboard - Export executive dashboard
+ * - POST /api/excel-reports/analytics - Export analytics report
+ * - POST /api/excel-reports/custom - Export custom report
+ */
+export default async function excelReportRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().f[0]++;
+  cov_2gr0utqcdb().s[0]++;
+  // Get available report types
+  fastify.get('/excel-reports/types', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.getReportTypes.bind(controller));
+
+  // Export Census Report
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[1]++;
+  fastify.get('/excel-reports/census', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_PATIENT_DETAILS, PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportCensusReport.bind(controller));
+
+  // Export AR Aging Report
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[2]++;
+  fastify.get('/excel-reports/ar-aging', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportARAgingReport.bind(controller));
+
+  // Export Billing Report (multiple sheets)
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[3]++;
+  fastify.get('/excel-reports/billing', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportBillingReport.bind(controller));
+
+  // Export Staff Report (multiple sheets)
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[4]++;
+  fastify.get('/excel-reports/staff', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportStaffReport.bind(controller));
+
+  // Export QAPI Report (multiple sheets)
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[5]++;
+  fastify.get('/excel-reports/qapi', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportQAPIReport.bind(controller));
+
+  // Export Executive Dashboard
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[6]++;
+  fastify.get('/excel-reports/executive-dashboard', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_CLINICAL_NOTES, PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportExecutiveDashboard.bind(controller));
+
+  // Export Analytics Report
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[7]++;
+  fastify.post('/excel-reports/analytics', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportAnalyticsReport.bind(controller));
+
+  // Export Custom Report
+  /* istanbul ignore next */
+  cov_2gr0utqcdb().s[8]++;
+  fastify.post('/excel-reports/custom', {
+    preHandler: [requireAnyPermission(PERMISSIONS.VIEW_REPORTS)]
+  }, controller.exportCustomReport.bind(controller));
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmdyMHV0cWNkYiIsImFjdHVhbENvdmVyYWdlIiwiY29udHJvbGxlciIsIlBFUk1JU1NJT05TIiwicmVxdWlyZUFueVBlcm1pc3Npb24iLCJleGNlbFJlcG9ydFJvdXRlcyIsImZhc3RpZnkiLCJvcHRpb25zIiwiZiIsInMiLCJnZXQiLCJwcmVIYW5kbGVyIiwiVklFV19SRVBPUlRTIiwiZ2V0UmVwb3J0VHlwZXMiLCJiaW5kIiwiVklFV19QQVRJRU5UX0RFVEFJTFMiLCJWSUVXX0NMSU5JQ0FMX05PVEVTIiwiZXhwb3J0Q2Vuc3VzUmVwb3J0IiwiZXhwb3J0QVJBZ2luZ1JlcG9ydCIsImV4cG9ydEJpbGxpbmdSZXBvcnQiLCJleHBvcnRTdGFmZlJlcG9ydCIsImV4cG9ydFFBUElSZXBvcnQiLCJleHBvcnRFeGVjdXRpdmVEYXNoYm9hcmQiLCJwb3N0IiwiZXhwb3J0QW5hbHl0aWNzUmVwb3J0IiwiZXhwb3J0Q3VzdG9tUmVwb3J0Il0sInNvdXJjZXMiOlsiZXhjZWxSZXBvcnQucm91dGVzLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBjb250cm9sbGVyIGZyb20gJy4uL2NvbnRyb2xsZXJzL0V4Y2VsUmVwb3J0LmNvbnRyb2xsZXIuanMnO1xuaW1wb3J0IHsgUEVSTUlTU0lPTlMgfSBmcm9tICcuLi9jb25maWcvcmJhYy5qcyc7XG5pbXBvcnQgeyByZXF1aXJlQW55UGVybWlzc2lvbiB9IGZyb20gJy4uL21pZGRsZXdhcmUvcmJhYy5taWRkbGV3YXJlLmpzJztcblxuLyoqXG4gKiBFeGNlbCBSZXBvcnQgUm91dGVzXG4gKiBQcm92aWRlcyBFeGNlbCBleHBvcnQgZW5kcG9pbnRzIGZvciBhbGwgcmVwb3J0IHR5cGVzXG4gKlxuICogRmVhdHVyZXM6XG4gKiAtIE11bHRpcGxlIHdvcmtzaGVldCBFeGNlbCBleHBvcnRzXG4gKiAtIFByb2Zlc3Npb25hbCBmb3JtYXR0aW5nIHdpdGggc3R5bGVzXG4gKiAtIEFsbCByZXBvcnQgdHlwZXMgc3VwcG9ydGVkIChDZW5zdXMsIEJpbGxpbmcsIFN0YWZmLCBRQVBJLCBBbmFseXRpY3MpXG4gKiAtIFN0cmVhbWluZyBmaWxlIGRvd25sb2Fkc1xuICpcbiAqIEVuZHBvaW50czpcbiAqIC0gR0VUIC9hcGkvZXhjZWwtcmVwb3J0cy90eXBlcyAtIEdldCBhdmFpbGFibGUgcmVwb3J0IHR5cGVzXG4gKiAtIEdFVCAvYXBpL2V4Y2VsLXJlcG9ydHMvY2Vuc3VzIC0gRXhwb3J0IGNlbnN1cyByZXBvcnRcbiAqIC0gR0VUIC9hcGkvZXhjZWwtcmVwb3J0cy9hci1hZ2luZyAtIEV4cG9ydCBBUiBhZ2luZyByZXBvcnRcbiAqIC0gR0VUIC9hcGkvZXhjZWwtcmVwb3J0cy9iaWxsaW5nIC0gRXhwb3J0IGJpbGxpbmcgcmVwb3J0XG4gKiAtIEdFVCAvYXBpL2V4Y2VsLXJlcG9ydHMvc3RhZmYgLSBFeHBvcnQgc3RhZmYgcmVwb3J0XG4gKiAtIEdFVCAvYXBpL2V4Y2VsLXJlcG9ydHMvcWFwaSAtIEV4cG9ydCBRQVBJIHJlcG9ydFxuICogLSBHRVQgL2FwaS9leGNlbC1yZXBvcnRzL2V4ZWN1dGl2ZS1kYXNoYm9hcmQgLSBFeHBvcnQgZXhlY3V0aXZlIGRhc2hib2FyZFxuICogLSBQT1NUIC9hcGkvZXhjZWwtcmVwb3J0cy9hbmFseXRpY3MgLSBFeHBvcnQgYW5hbHl0aWNzIHJlcG9ydFxuICogLSBQT1NUIC9hcGkvZXhjZWwtcmVwb3J0cy9jdXN0b20gLSBFeHBvcnQgY3VzdG9tIHJlcG9ydFxuICovXG5leHBvcnQgZGVmYXVsdCBhc3luYyBmdW5jdGlvbiBleGNlbFJlcG9ydFJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG5cbiAgICAvLyBHZXQgYXZhaWxhYmxlIHJlcG9ydCB0eXBlc1xuICAgIGZhc3RpZnkuZ2V0KCcvZXhjZWwtcmVwb3J0cy90eXBlcycsIHtcbiAgICAgICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gICAgfSwgY29udHJvbGxlci5nZXRSZXBvcnRUeXBlcy5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAgIC8vIEV4cG9ydCBDZW5zdXMgUmVwb3J0XG4gICAgZmFzdGlmeS5nZXQoJy9leGNlbC1yZXBvcnRzL2NlbnN1cycsIHtcbiAgICAgICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19QQVRJRU5UX0RFVEFJTFMsXG4gICAgICAgICAgICBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTLFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTXG4gICAgICAgICldXG4gICAgfSwgY29udHJvbGxlci5leHBvcnRDZW5zdXNSZXBvcnQuYmluZChjb250cm9sbGVyKSk7XG5cbiAgICAvLyBFeHBvcnQgQVIgQWdpbmcgUmVwb3J0XG4gICAgZmFzdGlmeS5nZXQoJy9leGNlbC1yZXBvcnRzL2FyLWFnaW5nJywge1xuICAgICAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oXG4gICAgICAgICAgICBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTLFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTXG4gICAgICAgICldXG4gICAgfSwgY29udHJvbGxlci5leHBvcnRBUkFnaW5nUmVwb3J0LmJpbmQoY29udHJvbGxlcikpO1xuXG4gICAgLy8gRXhwb3J0IEJpbGxpbmcgUmVwb3J0IChtdWx0aXBsZSBzaGVldHMpXG4gICAgZmFzdGlmeS5nZXQoJy9leGNlbC1yZXBvcnRzL2JpbGxpbmcnLCB7XG4gICAgICAgIHByZUhhbmRsZXI6IFtyZXF1aXJlQW55UGVybWlzc2lvbihcbiAgICAgICAgICAgIFBFUk1JU1NJT05TLlZJRVdfQ0xJTklDQUxfTk9URVMsXG4gICAgICAgICAgICBQRVJNSVNTSU9OUy5WSUVXX1JFUE9SVFNcbiAgICAgICAgKV1cbiAgICB9LCBjb250cm9sbGVyLmV4cG9ydEJpbGxpbmdSZXBvcnQuYmluZChjb250cm9sbGVyKSk7XG5cbiAgICAvLyBFeHBvcnQgU3RhZmYgUmVwb3J0IChtdWx0aXBsZSBzaGVldHMpXG4gICAgZmFzdGlmeS5nZXQoJy9leGNlbC1yZXBvcnRzL3N0YWZmJywge1xuICAgICAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oXG4gICAgICAgICAgICBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTLFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTXG4gICAgICAgICldXG4gICAgfSwgY29udHJvbGxlci5leHBvcnRTdGFmZlJlcG9ydC5iaW5kKGNvbnRyb2xsZXIpKTtcblxuICAgIC8vIEV4cG9ydCBRQVBJIFJlcG9ydCAobXVsdGlwbGUgc2hlZXRzKVxuICAgIGZhc3RpZnkuZ2V0KCcvZXhjZWwtcmVwb3J0cy9xYXBpJywge1xuICAgICAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oXG4gICAgICAgICAgICBQRVJNSVNTSU9OUy5WSUVXX0NMSU5JQ0FMX05PVEVTLFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTXG4gICAgICAgICldXG4gICAgfSwgY29udHJvbGxlci5leHBvcnRRQVBJUmVwb3J0LmJpbmQoY29udHJvbGxlcikpO1xuXG4gICAgLy8gRXhwb3J0IEV4ZWN1dGl2ZSBEYXNoYm9hcmRcbiAgICBmYXN0aWZ5LmdldCgnL2V4Y2VsLXJlcG9ydHMvZXhlY3V0aXZlLWRhc2hib2FyZCcsIHtcbiAgICAgICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFxuICAgICAgICAgICAgUEVSTUlTU0lPTlMuVklFV19DTElOSUNBTF9OT1RFUyxcbiAgICAgICAgICAgIFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUU1xuICAgICAgICApXVxuICAgIH0sIGNvbnRyb2xsZXIuZXhwb3J0RXhlY3V0aXZlRGFzaGJvYXJkLmJpbmQoY29udHJvbGxlcikpO1xuXG4gICAgLy8gRXhwb3J0IEFuYWx5dGljcyBSZXBvcnRcbiAgICBmYXN0aWZ5LnBvc3QoJy9leGNlbC1yZXBvcnRzL2FuYWx5dGljcycsIHtcbiAgICAgICAgcHJlSGFuZGxlcjogW3JlcXVpcmVBbnlQZXJtaXNzaW9uKFBFUk1JU1NJT05TLlZJRVdfUkVQT1JUUyldXG4gICAgfSwgY29udHJvbGxlci5leHBvcnRBbmFseXRpY3NSZXBvcnQuYmluZChjb250cm9sbGVyKSk7XG5cbiAgICAvLyBFeHBvcnQgQ3VzdG9tIFJlcG9ydFxuICAgIGZhc3RpZnkucG9zdCgnL2V4Y2VsLXJlcG9ydHMvY3VzdG9tJywge1xuICAgICAgICBwcmVIYW5kbGVyOiBbcmVxdWlyZUFueVBlcm1pc3Npb24oUEVSTUlTU0lPTlMuVklFV19SRVBPUlRTKV1cbiAgICB9LCBjb250cm9sbGVyLmV4cG9ydEN1c3RvbVJlcG9ydC5iaW5kKGNvbnRyb2xsZXIpKTtcbn1cbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBZlosT0FBT0UsVUFBVSxNQUFNLDBDQUEwQztBQUNqRSxTQUFTQyxXQUFXLFFBQVEsbUJBQW1CO0FBQy9DLFNBQVNDLG9CQUFvQixRQUFRLGtDQUFrQzs7QUFFdkU7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EsZUFBZSxlQUFlQyxpQkFBaUJBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQVAsY0FBQSxHQUFBUSxDQUFBO0VBQUFSLGNBQUEsR0FBQVMsQ0FBQTtFQUU5RDtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxzQkFBc0IsRUFBRTtJQUNoQ0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUFDRCxXQUFXLENBQUNTLFlBQVksQ0FBQztFQUMvRCxDQUFDLEVBQUVWLFVBQVUsQ0FBQ1csY0FBYyxDQUFDQyxJQUFJLENBQUNaLFVBQVUsQ0FBQyxDQUFDOztFQUU5QztFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyx1QkFBdUIsRUFBRTtJQUNqQ0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUM3QkQsV0FBVyxDQUFDWSxvQkFBb0IsRUFDaENaLFdBQVcsQ0FBQ2EsbUJBQW1CLEVBQy9CYixXQUFXLENBQUNTLFlBQ2hCLENBQUM7RUFDTCxDQUFDLEVBQUVWLFVBQVUsQ0FBQ2Usa0JBQWtCLENBQUNILElBQUksQ0FBQ1osVUFBVSxDQUFDLENBQUM7O0VBRWxEO0VBQUE7RUFBQUYsY0FBQSxHQUFBUyxDQUFBO0VBQ0FILE9BQU8sQ0FBQ0ksR0FBRyxDQUFDLHlCQUF5QixFQUFFO0lBQ25DQyxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQzdCRCxXQUFXLENBQUNhLG1CQUFtQixFQUMvQmIsV0FBVyxDQUFDUyxZQUNoQixDQUFDO0VBQ0wsQ0FBQyxFQUFFVixVQUFVLENBQUNnQixtQkFBbUIsQ0FBQ0osSUFBSSxDQUFDWixVQUFVLENBQUMsQ0FBQzs7RUFFbkQ7RUFBQTtFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsd0JBQXdCLEVBQUU7SUFDbENDLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FDN0JELFdBQVcsQ0FBQ2EsbUJBQW1CLEVBQy9CYixXQUFXLENBQUNTLFlBQ2hCLENBQUM7RUFDTCxDQUFDLEVBQUVWLFVBQVUsQ0FBQ2lCLG1CQUFtQixDQUFDTCxJQUFJLENBQUNaLFVBQVUsQ0FBQyxDQUFDOztFQUVuRDtFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxzQkFBc0IsRUFBRTtJQUNoQ0MsVUFBVSxFQUFFLENBQUNQLG9CQUFvQixDQUM3QkQsV0FBVyxDQUFDYSxtQkFBbUIsRUFDL0JiLFdBQVcsQ0FBQ1MsWUFDaEIsQ0FBQztFQUNMLENBQUMsRUFBRVYsVUFBVSxDQUFDa0IsaUJBQWlCLENBQUNOLElBQUksQ0FBQ1osVUFBVSxDQUFDLENBQUM7O0VBRWpEO0VBQUE7RUFBQUYsY0FBQSxHQUFBUyxDQUFBO0VBQ0FILE9BQU8sQ0FBQ0ksR0FBRyxDQUFDLHFCQUFxQixFQUFFO0lBQy9CQyxVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQzdCRCxXQUFXLENBQUNhLG1CQUFtQixFQUMvQmIsV0FBVyxDQUFDUyxZQUNoQixDQUFDO0VBQ0wsQ0FBQyxFQUFFVixVQUFVLENBQUNtQixnQkFBZ0IsQ0FBQ1AsSUFBSSxDQUFDWixVQUFVLENBQUMsQ0FBQzs7RUFFaEQ7RUFBQTtFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQUMsb0NBQW9DLEVBQUU7SUFDOUNDLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FDN0JELFdBQVcsQ0FBQ2EsbUJBQW1CLEVBQy9CYixXQUFXLENBQUNTLFlBQ2hCLENBQUM7RUFDTCxDQUFDLEVBQUVWLFVBQVUsQ0FBQ29CLHdCQUF3QixDQUFDUixJQUFJLENBQUNaLFVBQVUsQ0FBQyxDQUFDOztFQUV4RDtFQUFBO0VBQUFGLGNBQUEsR0FBQVMsQ0FBQTtFQUNBSCxPQUFPLENBQUNpQixJQUFJLENBQUMsMEJBQTBCLEVBQUU7SUFDckNaLFVBQVUsRUFBRSxDQUFDUCxvQkFBb0IsQ0FBQ0QsV0FBVyxDQUFDUyxZQUFZLENBQUM7RUFDL0QsQ0FBQyxFQUFFVixVQUFVLENBQUNzQixxQkFBcUIsQ0FBQ1YsSUFBSSxDQUFDWixVQUFVLENBQUMsQ0FBQzs7RUFFckQ7RUFBQTtFQUFBRixjQUFBLEdBQUFTLENBQUE7RUFDQUgsT0FBTyxDQUFDaUIsSUFBSSxDQUFDLHVCQUF1QixFQUFFO0lBQ2xDWixVQUFVLEVBQUUsQ0FBQ1Asb0JBQW9CLENBQUNELFdBQVcsQ0FBQ1MsWUFBWSxDQUFDO0VBQy9ELENBQUMsRUFBRVYsVUFBVSxDQUFDdUIsa0JBQWtCLENBQUNYLElBQUksQ0FBQ1osVUFBVSxDQUFDLENBQUM7QUFDdEQiLCJpZ25vcmVMaXN0IjpbXX0=

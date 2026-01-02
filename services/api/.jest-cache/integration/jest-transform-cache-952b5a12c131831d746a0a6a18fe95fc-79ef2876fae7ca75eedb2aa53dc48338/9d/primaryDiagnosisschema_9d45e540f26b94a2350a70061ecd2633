@@ -1,0 +1,66 @@
+311ddf5a9208944cb712f0c2959879c2
+/* istanbul ignore next */
+function cov_bn6i9viei() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/primaryDiagnosis.schema.js";
+  var hash = "345556247c79ca2161a1f3901a8b0c9149b5ff4c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/primaryDiagnosis.schema.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 33
+        },
+        end: {
+          line: 10,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "345556247c79ca2161a1f3901a8b0c9149b5ff4c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_bn6i9viei = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_bn6i9viei();
+import { pgTable, bigint, varchar, timestamp } from 'drizzle-orm/pg-core';
+export const primary_diagnosis =
+/* istanbul ignore next */
+(cov_bn6i9viei().s[0]++, pgTable('primary_diagnosis', {
+  id: bigint('id', {
+    mode: 'number'
+  }).primaryKey().generatedByDefaultAsIdentity(),
+  diagnosis_code: varchar('diagnosis_code', {
+    length: 255
+  }),
+  diagnosis_description: varchar('diagnosis_description', {
+    length: 255
+  }),
+  diagnosis_date: varchar('diagnosis_date', {
+    length: 255
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfYm42aTl2aWVpIiwiYWN0dWFsQ292ZXJhZ2UiLCJwZ1RhYmxlIiwiYmlnaW50IiwidmFyY2hhciIsInRpbWVzdGFtcCIsInByaW1hcnlfZGlhZ25vc2lzIiwicyIsImlkIiwibW9kZSIsInByaW1hcnlLZXkiLCJnZW5lcmF0ZWRCeURlZmF1bHRBc0lkZW50aXR5IiwiZGlhZ25vc2lzX2NvZGUiLCJsZW5ndGgiLCJkaWFnbm9zaXNfZGVzY3JpcHRpb24iLCJkaWFnbm9zaXNfZGF0ZSIsImNyZWF0ZWRBdCIsImRlZmF1bHROb3ciLCJub3ROdWxsIiwidXBkYXRlZEF0Il0sInNvdXJjZXMiOlsicHJpbWFyeURpYWdub3Npcy5zY2hlbWEuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGdUYWJsZSwgYmlnaW50LCB2YXJjaGFyLCB0aW1lc3RhbXAgfSBmcm9tICdkcml6emxlLW9ybS9wZy1jb3JlJztcblxuZXhwb3J0IGNvbnN0IHByaW1hcnlfZGlhZ25vc2lzID0gcGdUYWJsZSgncHJpbWFyeV9kaWFnbm9zaXMnLCB7XG4gIGlkOiBiaWdpbnQoJ2lkJywgeyBtb2RlOiAnbnVtYmVyJyB9KS5wcmltYXJ5S2V5KCkuZ2VuZXJhdGVkQnlEZWZhdWx0QXNJZGVudGl0eSgpLFxuICBkaWFnbm9zaXNfY29kZTogdmFyY2hhcignZGlhZ25vc2lzX2NvZGUnLCB7IGxlbmd0aDogMjU1IH0pLFxuICBkaWFnbm9zaXNfZGVzY3JpcHRpb246IHZhcmNoYXIoJ2RpYWdub3Npc19kZXNjcmlwdGlvbicsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGRpYWdub3Npc19kYXRlOiB2YXJjaGFyKCdkaWFnbm9zaXNfZGF0ZScsIHsgbGVuZ3RoOiAyNTUgfSksXG4gIGNyZWF0ZWRBdDogdGltZXN0YW1wKCdjcmVhdGVkX2F0JykuZGVmYXVsdE5vdygpLm5vdE51bGwoKSxcbiAgdXBkYXRlZEF0OiB0aW1lc3RhbXAoJ3VwZGF0ZWRfYXQnKS5kZWZhdWx0Tm93KCkubm90TnVsbCgpLFxufSk7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLFNBQVNFLE9BQU8sRUFBRUMsTUFBTSxFQUFFQyxPQUFPLEVBQUVDLFNBQVMsUUFBUSxxQkFBcUI7QUFFekUsT0FBTyxNQUFNQyxpQkFBaUI7QUFBQTtBQUFBLENBQUFOLGFBQUEsR0FBQU8sQ0FBQSxPQUFHTCxPQUFPLENBQUMsbUJBQW1CLEVBQUU7RUFDNURNLEVBQUUsRUFBRUwsTUFBTSxDQUFDLElBQUksRUFBRTtJQUFFTSxJQUFJLEVBQUU7RUFBUyxDQUFDLENBQUMsQ0FBQ0MsVUFBVSxDQUFDLENBQUMsQ0FBQ0MsNEJBQTRCLENBQUMsQ0FBQztFQUNoRkMsY0FBYyxFQUFFUixPQUFPLENBQUMsZ0JBQWdCLEVBQUU7SUFBRVMsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzFEQyxxQkFBcUIsRUFBRVYsT0FBTyxDQUFDLHVCQUF1QixFQUFFO0lBQUVTLE1BQU0sRUFBRTtFQUFJLENBQUMsQ0FBQztFQUN4RUUsY0FBYyxFQUFFWCxPQUFPLENBQUMsZ0JBQWdCLEVBQUU7SUFBRVMsTUFBTSxFQUFFO0VBQUksQ0FBQyxDQUFDO0VBQzFERyxTQUFTLEVBQUVYLFNBQVMsQ0FBQyxZQUFZLENBQUMsQ0FBQ1ksVUFBVSxDQUFDLENBQUMsQ0FBQ0MsT0FBTyxDQUFDLENBQUM7RUFDekRDLFNBQVMsRUFBRWQsU0FBUyxDQUFDLFlBQVksQ0FBQyxDQUFDWSxVQUFVLENBQUMsQ0FBQyxDQUFDQyxPQUFPLENBQUM7QUFDMUQsQ0FBQyxDQUFDIiwiaWdub3JlTGlzdCI6W119

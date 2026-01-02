@@ -1,0 +1,122 @@
+bad3b79aaeb82c29055c3053ea46e21e
+/* istanbul ignore next */
+function cov_3mgv2zcfl() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/Signature.routes.js";
+  var hash = "362583b252fae40378da3c46cfd6a90f91f4f32a";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/Signature.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 9,
+          column: 2
+        },
+        end: {
+          line: 11,
+          column: 32
+        }
+      },
+      "1": {
+        start: {
+          line: 13,
+          column: 2
+        },
+        end: {
+          line: 15,
+          column: 32
+        }
+      },
+      "2": {
+        start: {
+          line: 17,
+          column: 2
+        },
+        end: {
+          line: 19,
+          column: 31
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "signatureRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 30
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 49
+          },
+          end: {
+            line: 20,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "362583b252fae40378da3c46cfd6a90f91f4f32a"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_3mgv2zcfl = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_3mgv2zcfl();
+import SignatureController from "../../controllers/patient/Signature.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for signature routes
+async function signatureRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_3mgv2zcfl().f[0]++;
+  cov_3mgv2zcfl().s[0]++;
+  // Signature Routes
+  // Note: These routes are registered with prefix "/signature" in api.routes.js
+  // So "/signature" becomes "/signature/signature", "/signature/:id" becomes "/signature/signature/:id", etc.
+  fastify.get("/signature", {
+    preHandler: [verifyToken]
+  }, SignatureController.index);
+  /* istanbul ignore next */
+  cov_3mgv2zcfl().s[1]++;
+  fastify.post("/signature/store", {
+    preHandler: [verifyToken]
+  }, SignatureController.store);
+  /* istanbul ignore next */
+  cov_3mgv2zcfl().s[2]++;
+  fastify.get("/signature/:id", {
+    preHandler: [verifyToken]
+  }, SignatureController.show);
+}
+export default signatureRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfM21ndjJ6Y2ZsIiwiYWN0dWFsQ292ZXJhZ2UiLCJTaWduYXR1cmVDb250cm9sbGVyIiwidmVyaWZ5VG9rZW4iLCJzaWduYXR1cmVSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsImluZGV4IiwicG9zdCIsInN0b3JlIiwic2hvdyJdLCJzb3VyY2VzIjpbIlNpZ25hdHVyZS5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFNpZ25hdHVyZUNvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvU2lnbmF0dXJlLmNvbnRyb2xsZXIuanNcIjtcbmltcG9ydCB7IHZlcmlmeVRva2VuIH0gZnJvbSBcIi4uLy4uL21pZGRsZXdhcmUvYmV0dGVyQXV0aC5taWRkbGV3YXJlLmpzXCI7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBzaWduYXR1cmUgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBzaWduYXR1cmVSb3V0ZXMoZmFzdGlmeSwgb3B0aW9ucykge1xuICAvLyBTaWduYXR1cmUgUm91dGVzXG4gIC8vIE5vdGU6IFRoZXNlIHJvdXRlcyBhcmUgcmVnaXN0ZXJlZCB3aXRoIHByZWZpeCBcIi9zaWduYXR1cmVcIiBpbiBhcGkucm91dGVzLmpzXG4gIC8vIFNvIFwiL3NpZ25hdHVyZVwiIGJlY29tZXMgXCIvc2lnbmF0dXJlL3NpZ25hdHVyZVwiLCBcIi9zaWduYXR1cmUvOmlkXCIgYmVjb21lcyBcIi9zaWduYXR1cmUvc2lnbmF0dXJlLzppZFwiLCBldGMuXG4gIGZhc3RpZnkuZ2V0KFwiL3NpZ25hdHVyZVwiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgU2lnbmF0dXJlQ29udHJvbGxlci5pbmRleCk7XG4gIFxuICBmYXN0aWZ5LnBvc3QoXCIvc2lnbmF0dXJlL3N0b3JlXCIsIHtcbiAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICB9LCBTaWduYXR1cmVDb250cm9sbGVyLnN0b3JlKTtcbiAgXG4gIGZhc3RpZnkuZ2V0KFwiL3NpZ25hdHVyZS86aWRcIiwge1xuICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gIH0sIFNpZ25hdHVyZUNvbnRyb2xsZXIuc2hvdyk7XG59XG5cbmV4cG9ydCBkZWZhdWx0IHNpZ25hdHVyZVJvdXRlcztcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosT0FBT0UsbUJBQW1CLE1BQU0sbURBQW1EO0FBQ25GLFNBQVNDLFdBQVcsUUFBUSwyQ0FBMkM7O0FBRXZFO0FBQ0EsZUFBZUMsZUFBZUEsQ0FBQ0MsT0FBTyxFQUFFQyxPQUFPLEVBQUU7RUFBQTtFQUFBTixhQUFBLEdBQUFPLENBQUE7RUFBQVAsYUFBQSxHQUFBUSxDQUFBO0VBQy9DO0VBQ0E7RUFDQTtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxZQUFZLEVBQUU7SUFDeEJDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFBRUQsbUJBQW1CLENBQUNTLEtBQUssQ0FBQztFQUFDO0VBQUFYLGFBQUEsR0FBQVEsQ0FBQTtFQUU5QkgsT0FBTyxDQUFDTyxJQUFJLENBQUMsa0JBQWtCLEVBQUU7SUFDL0JGLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFBRUQsbUJBQW1CLENBQUNXLEtBQUssQ0FBQztFQUFDO0VBQUFiLGFBQUEsR0FBQVEsQ0FBQTtFQUU5QkgsT0FBTyxDQUFDSSxHQUFHLENBQUMsZ0JBQWdCLEVBQUU7SUFDNUJDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFBRUQsbUJBQW1CLENBQUNZLElBQUksQ0FBQztBQUM5QjtBQUVBLGVBQWVWLGVBQWUiLCJpZ25vcmVMaXN0IjpbXX0=

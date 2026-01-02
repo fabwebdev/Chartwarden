@@ -1,0 +1,364 @@
+e471d8a1872cd995796a91393c3a40db
+/* istanbul ignore next */
+function cov_2cs3kig2s5() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Cache.js";
+  var hash = "fb5ce9da8d1dc0a9734002d0ce5af9f7aab67ed9";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/facades/Cache.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 12,
+          column: 8
+        },
+        end: {
+          line: 12,
+          column: 49
+        }
+      },
+      "1": {
+        start: {
+          line: 22,
+          column: 22
+        },
+        end: {
+          line: 22,
+          column: 43
+        }
+      },
+      "2": {
+        start: {
+          line: 23,
+          column: 8
+        },
+        end: {
+          line: 23,
+          column: 58
+        }
+      },
+      "3": {
+        start: {
+          line: 32,
+          column: 8
+        },
+        end: {
+          line: 32,
+          column: 37
+        }
+      },
+      "4": {
+        start: {
+          line: 40,
+          column: 8
+        },
+        end: {
+          line: 40,
+          column: 36
+        }
+      },
+      "5": {
+        start: {
+          line: 48,
+          column: 8
+        },
+        end: {
+          line: 48,
+          column: 36
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 11,
+            column: 4
+          },
+          end: {
+            line: 11,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 11,
+            column: 32
+          },
+          end: {
+            line: 13,
+            column: 5
+          }
+        },
+        line: 11
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 21,
+            column: 4
+          },
+          end: {
+            line: 21,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 21,
+            column: 41
+          },
+          end: {
+            line: 24,
+            column: 5
+          }
+        },
+        line: 21
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 31,
+            column: 4
+          },
+          end: {
+            line: 31,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 31,
+            column: 20
+          },
+          end: {
+            line: 33,
+            column: 5
+          }
+        },
+        line: 31
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 39,
+            column: 4
+          },
+          end: {
+            line: 39,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 39,
+            column: 19
+          },
+          end: {
+            line: 41,
+            column: 5
+          }
+        },
+        line: 39
+      },
+      "4": {
+        name: "(anonymous_4)",
+        decl: {
+          start: {
+            line: 47,
+            column: 4
+          },
+          end: {
+            line: 47,
+            column: 5
+          }
+        },
+        loc: {
+          start: {
+            line: 47,
+            column: 19
+          },
+          end: {
+            line: 49,
+            column: 5
+          }
+        },
+        line: 47
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 21,
+            column: 20
+          },
+          end: {
+            line: 21,
+            column: 39
+          }
+        },
+        type: "default-arg",
+        locations: [{
+          start: {
+            line: 21,
+            column: 35
+          },
+          end: {
+            line: 21,
+            column: 39
+          }
+        }],
+        line: 21
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 23,
+            column: 15
+          },
+          end: {
+            line: 23,
+            column: 57
+          }
+        },
+        type: "cond-expr",
+        locations: [{
+          start: {
+            line: 23,
+            column: 37
+          },
+          end: {
+            line: 23,
+            column: 42
+          }
+        }, {
+          start: {
+            line: 23,
+            column: 45
+          },
+          end: {
+            line: 23,
+            column: 57
+          }
+        }],
+        line: 23
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0
+    },
+    b: {
+      "0": [0],
+      "1": [0, 0]
+    },
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "fb5ce9da8d1dc0a9734002d0ce5af9f7aab67ed9"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2cs3kig2s5 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2cs3kig2s5();
+import CacheService from '../services/CacheService.js';
+class Cache {
+  /**
+   * Store an item in the cache
+   * @param {string} key - The cache key
+   * @param {*} value - The value to cache
+   * @param {number} ttl - Time to live in seconds (optional)
+   * @returns {boolean} Success status
+   */
+  static set(key, value, ttl) {
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().f[0]++;
+    cov_2cs3kig2s5().s[0]++;
+    return CacheService.set(key, value, ttl);
+  }
+
+  /**
+   * Retrieve an item from the cache
+   * @param {string} key - The cache key
+   * @param {*} defaultValue - Default value if key not found
+   * @returns {*} The cached value or default value
+   */
+  static get(key, defaultValue =
+  /* istanbul ignore next */
+  (cov_2cs3kig2s5().b[0][0]++, null)) {
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().f[1]++;
+    const value =
+    /* istanbul ignore next */
+    (cov_2cs3kig2s5().s[1]++, CacheService.get(key));
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().s[2]++;
+    return value !== undefined ?
+    /* istanbul ignore next */
+    (cov_2cs3kig2s5().b[1][0]++, value) :
+    /* istanbul ignore next */
+    (cov_2cs3kig2s5().b[1][1]++, defaultValue);
+  }
+
+  /**
+   * Delete an item from the cache
+   * @param {string} key - The cache key
+   * @returns {number} Number of deleted keys
+   */
+  static del(key) {
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().f[2]++;
+    cov_2cs3kig2s5().s[3]++;
+    return CacheService.del(key);
+  }
+
+  /**
+   * Flush all cached items
+   * @returns {boolean} Success status
+   */
+  static flush() {
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().f[3]++;
+    cov_2cs3kig2s5().s[4]++;
+    return CacheService.flush();
+  }
+
+  /**
+   * Get cache statistics
+   * @returns {Object} Cache statistics
+   */
+  static stats() {
+    /* istanbul ignore next */
+    cov_2cs3kig2s5().f[4]++;
+    cov_2cs3kig2s5().s[5]++;
+    return CacheService.stats();
+  }
+}
+export default Cache;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmNzM2tpZzJzNSIsImFjdHVhbENvdmVyYWdlIiwiQ2FjaGVTZXJ2aWNlIiwiQ2FjaGUiLCJzZXQiLCJrZXkiLCJ2YWx1ZSIsInR0bCIsImYiLCJzIiwiZ2V0IiwiZGVmYXVsdFZhbHVlIiwiYiIsInVuZGVmaW5lZCIsImRlbCIsImZsdXNoIiwic3RhdHMiXSwic291cmNlcyI6WyJDYWNoZS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgQ2FjaGVTZXJ2aWNlIGZyb20gJy4uL3NlcnZpY2VzL0NhY2hlU2VydmljZS5qcyc7XG5cbmNsYXNzIENhY2hlIHtcbiAgICAvKipcbiAgICAgKiBTdG9yZSBhbiBpdGVtIGluIHRoZSBjYWNoZVxuICAgICAqIEBwYXJhbSB7c3RyaW5nfSBrZXkgLSBUaGUgY2FjaGUga2V5XG4gICAgICogQHBhcmFtIHsqfSB2YWx1ZSAtIFRoZSB2YWx1ZSB0byBjYWNoZVxuICAgICAqIEBwYXJhbSB7bnVtYmVyfSB0dGwgLSBUaW1lIHRvIGxpdmUgaW4gc2Vjb25kcyAob3B0aW9uYWwpXG4gICAgICogQHJldHVybnMge2Jvb2xlYW59IFN1Y2Nlc3Mgc3RhdHVzXG4gICAgICovXG4gICAgc3RhdGljIHNldChrZXksIHZhbHVlLCB0dGwpIHtcbiAgICAgICAgcmV0dXJuIENhY2hlU2VydmljZS5zZXQoa2V5LCB2YWx1ZSwgdHRsKTtcbiAgICB9XG4gICAgXG4gICAgLyoqXG4gICAgICogUmV0cmlldmUgYW4gaXRlbSBmcm9tIHRoZSBjYWNoZVxuICAgICAqIEBwYXJhbSB7c3RyaW5nfSBrZXkgLSBUaGUgY2FjaGUga2V5XG4gICAgICogQHBhcmFtIHsqfSBkZWZhdWx0VmFsdWUgLSBEZWZhdWx0IHZhbHVlIGlmIGtleSBub3QgZm91bmRcbiAgICAgKiBAcmV0dXJucyB7Kn0gVGhlIGNhY2hlZCB2YWx1ZSBvciBkZWZhdWx0IHZhbHVlXG4gICAgICovXG4gICAgc3RhdGljIGdldChrZXksIGRlZmF1bHRWYWx1ZSA9IG51bGwpIHtcbiAgICAgICAgY29uc3QgdmFsdWUgPSBDYWNoZVNlcnZpY2UuZ2V0KGtleSk7XG4gICAgICAgIHJldHVybiB2YWx1ZSAhPT0gdW5kZWZpbmVkID8gdmFsdWUgOiBkZWZhdWx0VmFsdWU7XG4gICAgfVxuICAgIFxuICAgIC8qKlxuICAgICAqIERlbGV0ZSBhbiBpdGVtIGZyb20gdGhlIGNhY2hlXG4gICAgICogQHBhcmFtIHtzdHJpbmd9IGtleSAtIFRoZSBjYWNoZSBrZXlcbiAgICAgKiBAcmV0dXJucyB7bnVtYmVyfSBOdW1iZXIgb2YgZGVsZXRlZCBrZXlzXG4gICAgICovXG4gICAgc3RhdGljIGRlbChrZXkpIHtcbiAgICAgICAgcmV0dXJuIENhY2hlU2VydmljZS5kZWwoa2V5KTtcbiAgICB9XG4gICAgXG4gICAgLyoqXG4gICAgICogRmx1c2ggYWxsIGNhY2hlZCBpdGVtc1xuICAgICAqIEByZXR1cm5zIHtib29sZWFufSBTdWNjZXNzIHN0YXR1c1xuICAgICAqL1xuICAgIHN0YXRpYyBmbHVzaCgpIHtcbiAgICAgICAgcmV0dXJuIENhY2hlU2VydmljZS5mbHVzaCgpO1xuICAgIH1cbiAgICBcbiAgICAvKipcbiAgICAgKiBHZXQgY2FjaGUgc3RhdGlzdGljc1xuICAgICAqIEByZXR1cm5zIHtPYmplY3R9IENhY2hlIHN0YXRpc3RpY3NcbiAgICAgKi9cbiAgICBzdGF0aWMgc3RhdHMoKSB7XG4gICAgICAgIHJldHVybiBDYWNoZVNlcnZpY2Uuc3RhdHMoKTtcbiAgICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IENhY2hlOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGNBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGNBQUE7QUFmWixPQUFPRSxZQUFZLE1BQU0sNkJBQTZCO0FBRXRELE1BQU1DLEtBQUssQ0FBQztFQUNSO0FBQ0o7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0VBQ0ksT0FBT0MsR0FBR0EsQ0FBQ0MsR0FBRyxFQUFFQyxLQUFLLEVBQUVDLEdBQUcsRUFBRTtJQUFBO0lBQUFQLGNBQUEsR0FBQVEsQ0FBQTtJQUFBUixjQUFBLEdBQUFTLENBQUE7SUFDeEIsT0FBT1AsWUFBWSxDQUFDRSxHQUFHLENBQUNDLEdBQUcsRUFBRUMsS0FBSyxFQUFFQyxHQUFHLENBQUM7RUFDNUM7O0VBRUE7QUFDSjtBQUNBO0FBQ0E7QUFDQTtBQUNBO0VBQ0ksT0FBT0csR0FBR0EsQ0FBQ0wsR0FBRyxFQUFFTSxZQUFZO0VBQUE7RUFBQSxDQUFBWCxjQUFBLEdBQUFZLENBQUEsVUFBRyxJQUFJLEdBQUU7SUFBQTtJQUFBWixjQUFBLEdBQUFRLENBQUE7SUFDakMsTUFBTUYsS0FBSztJQUFBO0lBQUEsQ0FBQU4sY0FBQSxHQUFBUyxDQUFBLE9BQUdQLFlBQVksQ0FBQ1EsR0FBRyxDQUFDTCxHQUFHLENBQUM7SUFBQztJQUFBTCxjQUFBLEdBQUFTLENBQUE7SUFDcEMsT0FBT0gsS0FBSyxLQUFLTyxTQUFTO0lBQUE7SUFBQSxDQUFBYixjQUFBLEdBQUFZLENBQUEsVUFBR04sS0FBSztJQUFBO0lBQUEsQ0FBQU4sY0FBQSxHQUFBWSxDQUFBLFVBQUdELFlBQVk7RUFDckQ7O0VBRUE7QUFDSjtBQUNBO0FBQ0E7QUFDQTtFQUNJLE9BQU9HLEdBQUdBLENBQUNULEdBQUcsRUFBRTtJQUFBO0lBQUFMLGNBQUEsR0FBQVEsQ0FBQTtJQUFBUixjQUFBLEdBQUFTLENBQUE7SUFDWixPQUFPUCxZQUFZLENBQUNZLEdBQUcsQ0FBQ1QsR0FBRyxDQUFDO0VBQ2hDOztFQUVBO0FBQ0o7QUFDQTtBQUNBO0VBQ0ksT0FBT1UsS0FBS0EsQ0FBQSxFQUFHO0lBQUE7SUFBQWYsY0FBQSxHQUFBUSxDQUFBO0lBQUFSLGNBQUEsR0FBQVMsQ0FBQTtJQUNYLE9BQU9QLFlBQVksQ0FBQ2EsS0FBSyxDQUFDLENBQUM7RUFDL0I7O0VBRUE7QUFDSjtBQUNBO0FBQ0E7RUFDSSxPQUFPQyxLQUFLQSxDQUFBLEVBQUc7SUFBQTtJQUFBaEIsY0FBQSxHQUFBUSxDQUFBO0lBQUFSLGNBQUEsR0FBQVMsQ0FBQTtJQUNYLE9BQU9QLFlBQVksQ0FBQ2MsS0FBSyxDQUFDLENBQUM7RUFDL0I7QUFDSjtBQUVBLGVBQWViLEtBQUsiLCJpZ25vcmVMaXN0IjpbXX0=

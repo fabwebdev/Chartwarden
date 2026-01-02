@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Patient API Routes",
   "description": "Create REST API Endpoints for Patient Management System\n\nImplement a complete set of RESTful API routes to handle patient data operations with proper security, validation, and error handling.\n\nRequirements:\n- Create the following endpoints:\n  - POST /api/patients - Create a new patient record\n  - GET /api/patients - Retrieve all patients (with pagination support)\n  - GET /api/patients/:id - Retrieve a specific patient by ID\n  - PUT /api/patients/:id - Update an existing patient record\n  - DELETE /api/patients/:id - Delete a patient record\n\n- Implement authentication and authorization:\n  - Require valid authentication token for all endpoints\n  - Verify user has appropriate permissions for each operation\n  - Return 401 for unauthenticated requests, 403 for unauthorized access\n\n- Add input validation:\n  - Validate required fields (name, date of birth, contact information)\n  - Enforce data type constraints (email format, phone number format, valid dates)\n  - Sanitize inputs to prevent injection attacks\n  - Return 400 with descriptive error messages for invalid inputs\n\n- Include proper error handling:\n  - Return 404 when patient ID not found\n  - Handle database connection errors gracefully\n  - Return consistent error response format with appropriate status codes\n\n- Additional considerations:\n  - Include pagination, filtering, and sorting for GET /api/patients\n  - Ensure sensitive patient data is never exposed in logs\n  - Add rate limiting to prevent abuse\n  - Document endpoints with example requests/responses",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

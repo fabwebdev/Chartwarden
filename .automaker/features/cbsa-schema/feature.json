@@ -2,15 +2,22 @@
   "id": "cbsa-schema",
   "category": "Database",
   "title": "CBSA Code Database Schema",
-  "description": "Create schema for Core-Based Statistical Area codes used for wage index adjustments.",
-  "status": "verified",
+  "description": "Create Schema for Core-Based Statistical Area (CBSA) Codes Used for Wage Index Adjustments\n\nImplement database schema and data models for storing and managing Core-Based Statistical Area codes used in healthcare wage index calculations.\n\nTechnical Implementation:\n- Database: Create `cbsa_codes` table with proper indexing for efficient lookups\n- Schema Fields:\n  - `cbsa_code` (VARCHAR/STRING, primary key): 5-digit CBSA identifier\n  - `cbsa_title` (VARCHAR/STRING): Official metropolitan/micropolitan area name\n  - `wage_index` (DECIMAL): Current wage adjustment factor (precision: 4 decimal places)\n  - `effective_date` (DATE): When this wage index becomes active\n  - `expiration_date` (DATE, nullable): End of validity period\n  - `state_codes` (ARRAY/JSON): Associated state abbreviations\n  - `county_fips_codes` (ARRAY/JSON): Related county FIPS codes\n  - `is_active` (BOOLEAN): Current validity flag\n  - `created_at`, `updated_at` (TIMESTAMP): Audit trail\n\nData Model:\n- ORM model/entity class (e.g., CbsaCode, CBSAWageIndex)\n- Validation rules: CBSA code format (5 digits), wage_index range (0.5-2.0 typical)\n- Unique constraint on (cbsa_code, effective_date)\n\nIndexes:\n- Primary index on `cbsa_code`\n- Composite index on (`cbsa_code`, `effective_date`) for temporal queries\n- Index on `is_active` for filtering current records\n- Index on `state_codes` if querying by state frequently\n\nData Management:\n- Migration script to create table with proper constraints\n- Seed script to import initial CMS wage index data (typically CSV/Excel format)\n- Update mechanism for annual CMS wage index revisions (October updates)\n\nIntegration Points:\n- Service/Repository layer for CBSA lookups by code or location\n- Method to retrieve active wage index for given CBSA and date\n- Relationship to provider/facility records (foreign key or reference field)\n\nEdge Cases:\n- Handle CBSA code changes/mergers over time (historical tracking)\n- Default wage index value (typically 1.0000) for non-CBSA areas\n- Validation for overlapping effective date ranges",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "postgresql-connection"
   ],
   "createdAt": "2025-12-31T05:55:26.259Z",
-  "updatedAt": "2025-12-31T07:48:59.611Z",
+  "updatedAt": "2026-01-02T16:21:37.896Z",
   "branchName": "main",
-  "startedAt": "2025-12-31T07:39:42.970Z"
+  "startedAt": "2026-01-02T16:19:55.968Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

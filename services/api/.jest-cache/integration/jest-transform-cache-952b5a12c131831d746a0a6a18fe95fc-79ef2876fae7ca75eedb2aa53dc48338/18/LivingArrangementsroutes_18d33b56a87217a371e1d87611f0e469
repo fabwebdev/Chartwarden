@@ -1,0 +1,120 @@
+21c331db6e8f79c743d1320569282322
+/* istanbul ignore next */
+function cov_svve3cd4o() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/LivingArrangements.routes.js";
+  var hash = "7afb6fe5b5e28057efd39bf9fe5217fc3e148d6c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/LivingArrangements.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 9,
+          column: 41
+        }
+      },
+      "1": {
+        start: {
+          line: 11,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 41
+        }
+      },
+      "2": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 17,
+          column: 40
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "livingArrangementsRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 39
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 58
+          },
+          end: {
+            line: 18,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "7afb6fe5b5e28057efd39bf9fe5217fc3e148d6c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_svve3cd4o = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_svve3cd4o();
+import LivingArrangementsController from "../../controllers/patient/LivingArrangements.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for living arrangements routes
+async function livingArrangementsRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_svve3cd4o().f[0]++;
+  cov_svve3cd4o().s[0]++;
+  // Living Arrangements Routes
+  fastify.get("/living-arrangements", {
+    preHandler: [verifyToken]
+  }, LivingArrangementsController.index);
+  /* istanbul ignore next */
+  cov_svve3cd4o().s[1]++;
+  fastify.post("/living-arrangements/store", {
+    preHandler: [verifyToken]
+  }, LivingArrangementsController.store);
+  /* istanbul ignore next */
+  cov_svve3cd4o().s[2]++;
+  fastify.get("/living-arrangements/:id", {
+    preHandler: [verifyToken]
+  }, LivingArrangementsController.show);
+}
+export default livingArrangementsRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfc3Z2ZTNjZDRvIiwiYWN0dWFsQ292ZXJhZ2UiLCJMaXZpbmdBcnJhbmdlbWVudHNDb250cm9sbGVyIiwidmVyaWZ5VG9rZW4iLCJsaXZpbmdBcnJhbmdlbWVudHNSb3V0ZXMiLCJmYXN0aWZ5Iiwib3B0aW9ucyIsImYiLCJzIiwiZ2V0IiwicHJlSGFuZGxlciIsImluZGV4IiwicG9zdCIsInN0b3JlIiwic2hvdyJdLCJzb3VyY2VzIjpbIkxpdmluZ0FycmFuZ2VtZW50cy5yb3V0ZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IExpdmluZ0FycmFuZ2VtZW50c0NvbnRyb2xsZXIgZnJvbSBcIi4uLy4uL2NvbnRyb2xsZXJzL3BhdGllbnQvTGl2aW5nQXJyYW5nZW1lbnRzLmNvbnRyb2xsZXIuanNcIjtcbmltcG9ydCB7IHZlcmlmeVRva2VuIH0gZnJvbSBcIi4uLy4uL21pZGRsZXdhcmUvYmV0dGVyQXV0aC5taWRkbGV3YXJlLmpzXCI7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBsaXZpbmcgYXJyYW5nZW1lbnRzIHJvdXRlc1xuYXN5bmMgZnVuY3Rpb24gbGl2aW5nQXJyYW5nZW1lbnRzUm91dGVzKGZhc3RpZnksIG9wdGlvbnMpIHtcbiAgLy8gTGl2aW5nIEFycmFuZ2VtZW50cyBSb3V0ZXNcbiAgZmFzdGlmeS5nZXQoXCIvbGl2aW5nLWFycmFuZ2VtZW50c1wiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgTGl2aW5nQXJyYW5nZW1lbnRzQ29udHJvbGxlci5pbmRleCk7XG4gIFxuICBmYXN0aWZ5LnBvc3QoXCIvbGl2aW5nLWFycmFuZ2VtZW50cy9zdG9yZVwiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgTGl2aW5nQXJyYW5nZW1lbnRzQ29udHJvbGxlci5zdG9yZSk7XG4gIFxuICBmYXN0aWZ5LmdldChcIi9saXZpbmctYXJyYW5nZW1lbnRzLzppZFwiLCB7XG4gICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgfSwgTGl2aW5nQXJyYW5nZW1lbnRzQ29udHJvbGxlci5zaG93KTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgbGl2aW5nQXJyYW5nZW1lbnRzUm91dGVzO1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVZO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFmWixPQUFPRSw0QkFBNEIsTUFBTSw0REFBNEQ7QUFDckcsU0FBU0MsV0FBVyxRQUFRLDJDQUEyQzs7QUFFdkU7QUFDQSxlQUFlQyx3QkFBd0JBLENBQUNDLE9BQU8sRUFBRUMsT0FBTyxFQUFFO0VBQUE7RUFBQU4sYUFBQSxHQUFBTyxDQUFBO0VBQUFQLGFBQUEsR0FBQVEsQ0FBQTtFQUN4RDtFQUNBSCxPQUFPLENBQUNJLEdBQUcsQ0FBQyxzQkFBc0IsRUFBRTtJQUNsQ0MsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUFFRCw0QkFBNEIsQ0FBQ1MsS0FBSyxDQUFDO0VBQUM7RUFBQVgsYUFBQSxHQUFBUSxDQUFBO0VBRXZDSCxPQUFPLENBQUNPLElBQUksQ0FBQyw0QkFBNEIsRUFBRTtJQUN6Q0YsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUFFRCw0QkFBNEIsQ0FBQ1csS0FBSyxDQUFDO0VBQUM7RUFBQWIsYUFBQSxHQUFBUSxDQUFBO0VBRXZDSCxPQUFPLENBQUNJLEdBQUcsQ0FBQywwQkFBMEIsRUFBRTtJQUN0Q0MsVUFBVSxFQUFFLENBQUNQLFdBQVc7RUFDMUIsQ0FBQyxFQUFFRCw0QkFBNEIsQ0FBQ1ksSUFBSSxDQUFDO0FBQ3ZDO0FBRUEsZUFBZVYsd0JBQXdCIiwiaWdub3JlTGlzdCI6W119

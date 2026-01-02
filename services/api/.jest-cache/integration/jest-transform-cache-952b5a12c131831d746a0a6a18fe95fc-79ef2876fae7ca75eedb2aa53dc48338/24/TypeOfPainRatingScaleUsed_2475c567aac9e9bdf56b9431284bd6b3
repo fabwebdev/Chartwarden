@@ -1,0 +1,161 @@
+04a254704a7ac89776104a825a458e44
+/* istanbul ignore next */
+function cov_wp3igbw91() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/TypeOfPainRatingScaleUsed.js";
+  var hash = "fe8724cae8dda4d47fa0697e23e37798cf9a21ea";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/enums/Pain/TypeOfPainRatingScaleUsed.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 34
+        },
+        end: {
+          line: 23,
+          column: 1
+        }
+      },
+      "1": {
+        start: {
+          line: 10,
+          column: 23
+        },
+        end: {
+          line: 16,
+          column: 9
+        }
+      },
+      "2": {
+        start: {
+          line: 18,
+          column: 8
+        },
+        end: {
+          line: 21,
+          column: 12
+        }
+      },
+      "3": {
+        start: {
+          line: 18,
+          column: 45
+        },
+        end: {
+          line: 21,
+          column: 9
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 9,
+            column: 13
+          },
+          end: {
+            line: 9,
+            column: 14
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 25
+          },
+          end: {
+            line: 22,
+            column: 5
+          }
+        },
+        line: 9
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 18,
+            column: 26
+          },
+          end: {
+            line: 18,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 18,
+            column: 45
+          },
+          end: {
+            line: 21,
+            column: 9
+          }
+        },
+        line: 18
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "fe8724cae8dda4d47fa0697e23e37798cf9a21ea"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_wp3igbw91 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_wp3igbw91();
+// TypeOfPainRatingScaleUsed enum equivalent
+const TypeOfPainRatingScaleUsed =
+/* istanbul ignore next */
+(cov_wp3igbw91().s[0]++, {
+  NUMERIC_ESAS: "numeric/esas",
+  VERBAL_DESCRIPTOR: "verbal descriptor",
+  POISE_VISUAL_FACES: "poise visual/faces",
+  STAFF_OBSERVATION_PAINAD: "staff observation/painad",
+  NO_SCALE_USED: "no scale used",
+  toArray: function () {
+    /* istanbul ignore next */
+    cov_wp3igbw91().f[0]++;
+    const values =
+    /* istanbul ignore next */
+    (cov_wp3igbw91().s[1]++, [this.NUMERIC_ESAS, this.VERBAL_DESCRIPTOR, this.POISE_VISUAL_FACES, this.STAFF_OBSERVATION_PAINAD, this.NO_SCALE_USED]);
+    /* istanbul ignore next */
+    cov_wp3igbw91().s[2]++;
+    return values.map((value, index) => {
+      /* istanbul ignore next */
+      cov_wp3igbw91().f[1]++;
+      cov_wp3igbw91().s[3]++;
+      return {
+        id: index + 1,
+        value: value
+      };
+    });
+  }
+});
+export default TypeOfPainRatingScaleUsed;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3Zfd3AzaWdidzkxIiwiYWN0dWFsQ292ZXJhZ2UiLCJUeXBlT2ZQYWluUmF0aW5nU2NhbGVVc2VkIiwicyIsIk5VTUVSSUNfRVNBUyIsIlZFUkJBTF9ERVNDUklQVE9SIiwiUE9JU0VfVklTVUFMX0ZBQ0VTIiwiU1RBRkZfT0JTRVJWQVRJT05fUEFJTkFEIiwiTk9fU0NBTEVfVVNFRCIsInRvQXJyYXkiLCJmIiwidmFsdWVzIiwibWFwIiwidmFsdWUiLCJpbmRleCIsImlkIl0sInNvdXJjZXMiOlsiVHlwZU9mUGFpblJhdGluZ1NjYWxlVXNlZC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvLyBUeXBlT2ZQYWluUmF0aW5nU2NhbGVVc2VkIGVudW0gZXF1aXZhbGVudFxuY29uc3QgVHlwZU9mUGFpblJhdGluZ1NjYWxlVXNlZCA9IHtcbiAgICBOVU1FUklDX0VTQVM6IFwibnVtZXJpYy9lc2FzXCIsXG4gICAgVkVSQkFMX0RFU0NSSVBUT1I6IFwidmVyYmFsIGRlc2NyaXB0b3JcIixcbiAgICBQT0lTRV9WSVNVQUxfRkFDRVM6IFwicG9pc2UgdmlzdWFsL2ZhY2VzXCIsXG4gICAgU1RBRkZfT0JTRVJWQVRJT05fUEFJTkFEOiBcInN0YWZmIG9ic2VydmF0aW9uL3BhaW5hZFwiLFxuICAgIE5PX1NDQUxFX1VTRUQ6IFwibm8gc2NhbGUgdXNlZFwiLFxuXG4gICAgdG9BcnJheTogZnVuY3Rpb24gKCkge1xuICAgICAgICBjb25zdCB2YWx1ZXMgPSBbXG4gICAgICAgICAgICB0aGlzLk5VTUVSSUNfRVNBUyxcbiAgICAgICAgICAgIHRoaXMuVkVSQkFMX0RFU0NSSVBUT1IsXG4gICAgICAgICAgICB0aGlzLlBPSVNFX1ZJU1VBTF9GQUNFUyxcbiAgICAgICAgICAgIHRoaXMuU1RBRkZfT0JTRVJWQVRJT05fUEFJTkFELFxuICAgICAgICAgICAgdGhpcy5OT19TQ0FMRV9VU0VELFxuICAgICAgICBdO1xuXG4gICAgICAgIHJldHVybiB2YWx1ZXMubWFwKCh2YWx1ZSwgaW5kZXgpID0+ICh7XG4gICAgICAgICAgICBpZDogaW5kZXggKyAxLFxuICAgICAgICAgICAgdmFsdWU6IHZhbHVlLFxuICAgICAgICB9KSk7XG4gICAgfSxcbn07XG5cbmV4cG9ydCBkZWZhdWx0IFR5cGVPZlBhaW5SYXRpbmdTY2FsZVVzZWQ7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaO0FBQ0EsTUFBTUUseUJBQXlCO0FBQUE7QUFBQSxDQUFBRixhQUFBLEdBQUFHLENBQUEsT0FBRztFQUM5QkMsWUFBWSxFQUFFLGNBQWM7RUFDNUJDLGlCQUFpQixFQUFFLG1CQUFtQjtFQUN0Q0Msa0JBQWtCLEVBQUUsb0JBQW9CO0VBQ3hDQyx3QkFBd0IsRUFBRSwwQkFBMEI7RUFDcERDLGFBQWEsRUFBRSxlQUFlO0VBRTlCQyxPQUFPLEVBQUUsU0FBQUEsQ0FBQSxFQUFZO0lBQUE7SUFBQVQsYUFBQSxHQUFBVSxDQUFBO0lBQ2pCLE1BQU1DLE1BQU07SUFBQTtJQUFBLENBQUFYLGFBQUEsR0FBQUcsQ0FBQSxPQUFHLENBQ1gsSUFBSSxDQUFDQyxZQUFZLEVBQ2pCLElBQUksQ0FBQ0MsaUJBQWlCLEVBQ3RCLElBQUksQ0FBQ0Msa0JBQWtCLEVBQ3ZCLElBQUksQ0FBQ0Msd0JBQXdCLEVBQzdCLElBQUksQ0FBQ0MsYUFBYSxDQUNyQjtJQUFDO0lBQUFSLGFBQUEsR0FBQUcsQ0FBQTtJQUVGLE9BQU9RLE1BQU0sQ0FBQ0MsR0FBRyxDQUFDLENBQUNDLEtBQUssRUFBRUMsS0FBSyxLQUFNO01BQUE7TUFBQWQsYUFBQSxHQUFBVSxDQUFBO01BQUFWLGFBQUEsR0FBQUcsQ0FBQTtNQUFBO1FBQ2pDWSxFQUFFLEVBQUVELEtBQUssR0FBRyxDQUFDO1FBQ2JELEtBQUssRUFBRUE7TUFDWCxDQUFDO0lBQUQsQ0FBRSxDQUFDO0VBQ1A7QUFDSixDQUFDO0FBRUQsZUFBZVgseUJBQXlCIiwiaWdub3JlTGlzdCI6W119

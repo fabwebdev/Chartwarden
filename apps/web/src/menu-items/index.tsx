@@ -3,6 +3,7 @@ import { NavItemType } from 'types/menu';
 import userManagement from './user-management';
 import hospice from './hospice';
 import billing from './billing';
+import reports from './reports';
 import admin from './admin';
 import applications from './applications';
 import samplePage from './sample-page';
@@ -14,6 +15,7 @@ const menuItems: { items: NavItemType[] } = {
   items: [userManagement
     ,hospice,
     billing,
+    reports,
     admin,
     // applications,
     samplePage,

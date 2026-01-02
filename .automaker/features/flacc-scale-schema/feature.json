@@ -2,14 +2,22 @@
   "id": "flacc-scale-schema",
   "category": "Database",
   "title": "FLACC Scale (Pediatric) Schema",
-  "description": "Create schema for FLACC pain scale for pediatric and non-verbal patients with behavioral scoring.",
-  "status": "verified",
+  "description": "Implement FLACC Pain Scale Assessment Schema\n\nCreate a structured schema to capture and calculate FLACC (Face, Legs, Activity, Cry, Consolability) pain scale assessments for pediatric and non-verbal patients.\n\nRequirements:\n- Define schema for the five FLACC behavioral categories:\n  * Face: Scoring 0-2 (no expression to constant grimace/jaw clenched)\n  * Legs: Scoring 0-2 (normal position to kicked/legs drawn up)\n  * Activity: Scoring 0-2 (lying quietly to arched/rigid/jerking)\n  * Cry: Scoring 0-2 (no cry to steady cry/screams/sobs)\n  * Consolability: Scoring 0-2 (content to difficult to console)\n- Calculate total score (0-10 range) from individual category scores\n- Include metadata fields: patient ID, assessment timestamp, assessor ID\n- Add interpretation guidelines (0=relaxed/comfortable, 1-3=mild discomfort, 4-6=moderate pain, 7-10=severe pain)\n- Store assessment history for tracking pain trends over time\n- Ensure schema supports both pediatric patients and non-verbal adults\n- Include validation rules to ensure scores are within valid ranges\n- Add optional notes field for qualitative observations\n\nEdge Cases to Consider:\n- Patients with limited mobility affecting Legs/Activity scoring\n- Sedated patients where some behaviors may be suppressed\n- Cultural differences in pain expression\n- Baseline behavioral patterns that may affect scoring accuracy",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "pain-assessment-schema"
   ],
   "createdAt": "2025-12-31T05:55:26.243Z",
-  "updatedAt": "2025-12-31T15:39:34.532Z",
-  "startedAt": "2025-12-31T15:26:10.750Z"
+  "updatedAt": "2026-01-02T15:31:18.984Z",
+  "startedAt": "2026-01-02T15:28:30.031Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "medium",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false
 }

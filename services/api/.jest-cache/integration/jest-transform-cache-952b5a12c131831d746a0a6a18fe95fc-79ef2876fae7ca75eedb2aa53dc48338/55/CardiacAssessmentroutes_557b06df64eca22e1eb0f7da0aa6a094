@@ -1,0 +1,136 @@
+5f93a998578a50f9806a6f3594b29b1e
+/* istanbul ignore next */
+function cov_cv6r8z7u9() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/CardiacAssessment.routes.js";
+  var hash = "c6ea4e44195ac69af3d0296caab235de317a5a59";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/CardiacAssessment.routes.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 4
+        }
+      },
+      "1": {
+        start: {
+          line: 15,
+          column: 2
+        },
+        end: {
+          line: 21,
+          column: 4
+        }
+      },
+      "2": {
+        start: {
+          line: 23,
+          column: 2
+        },
+        end: {
+          line: 29,
+          column: 4
+        }
+      },
+      "3": {
+        start: {
+          line: 31,
+          column: 2
+        },
+        end: {
+          line: 37,
+          column: 4
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "cardiacAssessmentRoutes",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 38
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 57
+          },
+          end: {
+            line: 38,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "c6ea4e44195ac69af3d0296caab235de317a5a59"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_cv6r8z7u9 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_cv6r8z7u9();
+import CardiacAssessmentController from "../../controllers/patient/CardiacAssessment.controller.js";
+import { verifyToken } from "../../middleware/betterAuth.middleware.js";
+
+// Fastify plugin for cardiac assessment routes
+async function cardiacAssessmentRoutes(fastify, options) {
+  /* istanbul ignore next */
+  cov_cv6r8z7u9().f[0]++;
+  cov_cv6r8z7u9().s[0]++;
+  // Cardiac Assessment Routes
+  fastify.get("/cardiac-assessment", {
+    preHandler: [verifyToken]
+  }, CardiacAssessmentController.index);
+  /* istanbul ignore next */
+  cov_cv6r8z7u9().s[1]++;
+  fastify.get("/cardiac-list", {
+    preHandler: [verifyToken]
+  }, CardiacAssessmentController.cardiacList);
+  /* istanbul ignore next */
+  cov_cv6r8z7u9().s[2]++;
+  fastify.post("/cardiac-assessment/store", {
+    preHandler: [verifyToken]
+  }, CardiacAssessmentController.store);
+  /* istanbul ignore next */
+  cov_cv6r8z7u9().s[3]++;
+  fastify.get("/cardiac-assessment/:id", {
+    preHandler: [verifyToken]
+  }, CardiacAssessmentController.show);
+}
+export default cardiacAssessmentRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfY3Y2cjh6N3U5IiwiYWN0dWFsQ292ZXJhZ2UiLCJDYXJkaWFjQXNzZXNzbWVudENvbnRyb2xsZXIiLCJ2ZXJpZnlUb2tlbiIsImNhcmRpYWNBc3Nlc3NtZW50Um91dGVzIiwiZmFzdGlmeSIsIm9wdGlvbnMiLCJmIiwicyIsImdldCIsInByZUhhbmRsZXIiLCJpbmRleCIsImNhcmRpYWNMaXN0IiwicG9zdCIsInN0b3JlIiwic2hvdyJdLCJzb3VyY2VzIjpbIkNhcmRpYWNBc3Nlc3NtZW50LnJvdXRlcy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgQ2FyZGlhY0Fzc2Vzc21lbnRDb250cm9sbGVyIGZyb20gXCIuLi8uLi9jb250cm9sbGVycy9wYXRpZW50L0NhcmRpYWNBc3Nlc3NtZW50LmNvbnRyb2xsZXIuanNcIjtcbmltcG9ydCB7IHZlcmlmeVRva2VuIH0gZnJvbSBcIi4uLy4uL21pZGRsZXdhcmUvYmV0dGVyQXV0aC5taWRkbGV3YXJlLmpzXCI7XG5cbi8vIEZhc3RpZnkgcGx1Z2luIGZvciBjYXJkaWFjIGFzc2Vzc21lbnQgcm91dGVzXG5hc3luYyBmdW5jdGlvbiBjYXJkaWFjQXNzZXNzbWVudFJvdXRlcyhmYXN0aWZ5LCBvcHRpb25zKSB7XG4gIC8vIENhcmRpYWMgQXNzZXNzbWVudCBSb3V0ZXNcbiAgZmFzdGlmeS5nZXQoXG4gICAgXCIvY2FyZGlhYy1hc3Nlc3NtZW50XCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgICB9LFxuICAgIENhcmRpYWNBc3Nlc3NtZW50Q29udHJvbGxlci5pbmRleFxuICApO1xuICBcbiAgZmFzdGlmeS5nZXQoXG4gICAgXCIvY2FyZGlhYy1saXN0XCIsXG4gICAge1xuICAgICAgcHJlSGFuZGxlcjogW3ZlcmlmeVRva2VuXSxcbiAgICB9LFxuICAgIENhcmRpYWNBc3Nlc3NtZW50Q29udHJvbGxlci5jYXJkaWFjTGlzdFxuICApO1xuICBcbiAgZmFzdGlmeS5wb3N0KFxuICAgIFwiL2NhcmRpYWMtYXNzZXNzbWVudC9zdG9yZVwiLFxuICAgIHtcbiAgICAgIHByZUhhbmRsZXI6IFt2ZXJpZnlUb2tlbl0sXG4gICAgfSxcbiAgICBDYXJkaWFjQXNzZXNzbWVudENvbnRyb2xsZXIuc3RvcmVcbiAgKTtcbiAgXG4gIGZhc3RpZnkuZ2V0KFxuICAgIFwiL2NhcmRpYWMtYXNzZXNzbWVudC86aWRcIixcbiAgICB7XG4gICAgICBwcmVIYW5kbGVyOiBbdmVyaWZ5VG9rZW5dLFxuICAgIH0sXG4gICAgQ2FyZGlhY0Fzc2Vzc21lbnRDb250cm9sbGVyLnNob3dcbiAgKTtcbn1cblxuZXhwb3J0IGRlZmF1bHQgY2FyZGlhY0Fzc2Vzc21lbnRSb3V0ZXM7XG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlWTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBZlosT0FBT0UsMkJBQTJCLE1BQU0sMkRBQTJEO0FBQ25HLFNBQVNDLFdBQVcsUUFBUSwyQ0FBMkM7O0FBRXZFO0FBQ0EsZUFBZUMsdUJBQXVCQSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sRUFBRTtFQUFBO0VBQUFOLGFBQUEsR0FBQU8sQ0FBQTtFQUFBUCxhQUFBLEdBQUFRLENBQUE7RUFDdkQ7RUFDQUgsT0FBTyxDQUFDSSxHQUFHLENBQ1QscUJBQXFCLEVBQ3JCO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsMkJBQTJCLENBQUNTLEtBQzlCLENBQUM7RUFBQztFQUFBWCxhQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDSSxHQUFHLENBQ1QsZUFBZSxFQUNmO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsMkJBQTJCLENBQUNVLFdBQzlCLENBQUM7RUFBQztFQUFBWixhQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDUSxJQUFJLENBQ1YsMkJBQTJCLEVBQzNCO0lBQ0VILFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsMkJBQTJCLENBQUNZLEtBQzlCLENBQUM7RUFBQztFQUFBZCxhQUFBLEdBQUFRLENBQUE7RUFFRkgsT0FBTyxDQUFDSSxHQUFHLENBQ1QseUJBQXlCLEVBQ3pCO0lBQ0VDLFVBQVUsRUFBRSxDQUFDUCxXQUFXO0VBQzFCLENBQUMsRUFDREQsMkJBQTJCLENBQUNhLElBQzlCLENBQUM7QUFDSDtBQUVBLGVBQWVYLHVCQUF1QiIsImlnbm9yZUxpc3QiOltdfQ==

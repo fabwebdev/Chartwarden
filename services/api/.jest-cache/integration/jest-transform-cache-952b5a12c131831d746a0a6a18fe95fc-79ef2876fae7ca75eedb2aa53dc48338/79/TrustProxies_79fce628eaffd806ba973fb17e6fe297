@@ -1,0 +1,100 @@
+00be39d5400d9fd52fea08a72e55c76d
+/* istanbul ignore next */
+function cov_6y3n4wltx() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/TrustProxies.js";
+  var hash = "36eb0cf5b5c36df4182586fef5fb0c2b2f4308bc";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/Http/Middleware/TrustProxies.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 4,
+          column: 4
+        },
+        end: {
+          line: 4,
+          column: 24
+        }
+      },
+      "1": {
+        start: {
+          line: 7,
+          column: 4
+        },
+        end: {
+          line: 13,
+          column: 6
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 2,
+            column: 2
+          },
+          end: {
+            line: 2,
+            column: 3
+          }
+        },
+        loc: {
+          start: {
+            line: 2,
+            column: 16
+          },
+          end: {
+            line: 14,
+            column: 3
+          }
+        },
+        line: 2
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "36eb0cf5b5c36df4182586fef5fb0c2b2f4308bc"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_6y3n4wltx = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_6y3n4wltx();
+class TrustProxies {
+  constructor() {
+    /* istanbul ignore next */
+    cov_6y3n4wltx().f[0]++;
+    cov_6y3n4wltx().s[0]++;
+    // The trusted proxies for this application
+    this.proxies = null;
+
+    // The headers that should be used to detect proxies
+    /* istanbul ignore next */
+    cov_6y3n4wltx().s[1]++;
+    this.headers = ['X-Forwarded-For', 'X-Forwarded-Host', 'X-Forwarded-Port', 'X-Forwarded-Proto', 'X-Forwarded-AWS-ELB'];
+  }
+}
+export default TrustProxies;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfNnkzbjR3bHR4IiwiYWN0dWFsQ292ZXJhZ2UiLCJUcnVzdFByb3hpZXMiLCJjb25zdHJ1Y3RvciIsImYiLCJzIiwicHJveGllcyIsImhlYWRlcnMiXSwic291cmNlcyI6WyJUcnVzdFByb3hpZXMuanMiXSwic291cmNlc0NvbnRlbnQiOlsiY2xhc3MgVHJ1c3RQcm94aWVzIHtcbiAgY29uc3RydWN0b3IoKSB7XG4gICAgLy8gVGhlIHRydXN0ZWQgcHJveGllcyBmb3IgdGhpcyBhcHBsaWNhdGlvblxuICAgIHRoaXMucHJveGllcyA9IG51bGw7XG5cbiAgICAvLyBUaGUgaGVhZGVycyB0aGF0IHNob3VsZCBiZSB1c2VkIHRvIGRldGVjdCBwcm94aWVzXG4gICAgdGhpcy5oZWFkZXJzID0gW1xuICAgICAgJ1gtRm9yd2FyZGVkLUZvcicsXG4gICAgICAnWC1Gb3J3YXJkZWQtSG9zdCcsIFxuICAgICAgJ1gtRm9yd2FyZGVkLVBvcnQnLFxuICAgICAgJ1gtRm9yd2FyZGVkLVByb3RvJyxcbiAgICAgICdYLUZvcndhcmRlZC1BV1MtRUxCJ1xuICAgIF07XG4gIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgVHJ1c3RQcm94aWVzOyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQWZaLE1BQU1FLFlBQVksQ0FBQztFQUNqQkMsV0FBV0EsQ0FBQSxFQUFHO0lBQUE7SUFBQUgsYUFBQSxHQUFBSSxDQUFBO0lBQUFKLGFBQUEsR0FBQUssQ0FBQTtJQUNaO0lBQ0EsSUFBSSxDQUFDQyxPQUFPLEdBQUcsSUFBSTs7SUFFbkI7SUFBQTtJQUFBTixhQUFBLEdBQUFLLENBQUE7SUFDQSxJQUFJLENBQUNFLE9BQU8sR0FBRyxDQUNiLGlCQUFpQixFQUNqQixrQkFBa0IsRUFDbEIsa0JBQWtCLEVBQ2xCLG1CQUFtQixFQUNuQixxQkFBcUIsQ0FDdEI7RUFDSDtBQUNGO0FBRUEsZUFBZUwsWUFBWSIsImlnbm9yZUxpc3QiOltdfQ==

@@ -1,0 +1,171 @@
+847590ed892fac08bb19398323932d57
+/* istanbul ignore next */
+function cov_1xwto9jvgc() {
+  var path = "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/migrate.drizzle.js";
+  var hash = "27f9160204f8ad96bde2bd80526ecad134a04d79";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/database/migrate.drizzle.js",
+    statementMap: {
+      "0": {
+        start: {
+          line: 6,
+          column: 2
+        },
+        end: {
+          line: 13,
+          column: 3
+        }
+      },
+      "1": {
+        start: {
+          line: 7,
+          column: 4
+        },
+        end: {
+          line: 7,
+          column: 40
+        }
+      },
+      "2": {
+        start: {
+          line: 8,
+          column: 4
+        },
+        end: {
+          line: 8,
+          column: 77
+        }
+      },
+      "3": {
+        start: {
+          line: 9,
+          column: 4
+        },
+        end: {
+          line: 9,
+          column: 53
+        }
+      },
+      "4": {
+        start: {
+          line: 11,
+          column: 4
+        },
+        end: {
+          line: 11,
+          column: 52
+        }
+      },
+      "5": {
+        start: {
+          line: 12,
+          column: 4
+        },
+        end: {
+          line: 12,
+          column: 20
+        }
+      },
+      "6": {
+        start: {
+          line: 16,
+          column: 0
+        },
+        end: {
+          line: 16,
+          column: 16
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "runMigrations",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 28
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 31
+          },
+          end: {
+            line: 14,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: null,
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "27f9160204f8ad96bde2bd80526ecad134a04d79"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1xwto9jvgc = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1xwto9jvgc();
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { db } from '../config/db.drizzle.js';
+import { logger } from '../utils/logger.js';
+async function runMigrations() {
+  /* istanbul ignore next */
+  cov_1xwto9jvgc().f[0]++;
+  cov_1xwto9jvgc().s[0]++;
+  try {
+    /* istanbul ignore next */
+    cov_1xwto9jvgc().s[1]++;
+    logger.info('Running migrations...');
+    /* istanbul ignore next */
+    cov_1xwto9jvgc().s[2]++;
+    await migrate(db, {
+      migrationsFolder: './database/migrations/drizzle'
+    });
+    /* istanbul ignore next */
+    cov_1xwto9jvgc().s[3]++;
+    logger.info('Migrations completed successfully!');
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_1xwto9jvgc().s[4]++;
+    logger.error('Error running migrations:', error);
+    /* istanbul ignore next */
+    cov_1xwto9jvgc().s[5]++;
+    process.exit(1);
+  }
+}
+/* istanbul ignore next */
+cov_1xwto9jvgc().s[6]++;
+runMigrations();
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXh3dG85anZnYyIsImFjdHVhbENvdmVyYWdlIiwibWlncmF0ZSIsImRiIiwibG9nZ2VyIiwicnVuTWlncmF0aW9ucyIsImYiLCJzIiwiaW5mbyIsIm1pZ3JhdGlvbnNGb2xkZXIiLCJlcnJvciIsInByb2Nlc3MiLCJleGl0Il0sInNvdXJjZXMiOlsibWlncmF0ZS5kcml6emxlLmpzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IG1pZ3JhdGUgfSBmcm9tICdkcml6emxlLW9ybS9ub2RlLXBvc3RncmVzL21pZ3JhdG9yJztcbmltcG9ydCB7IGRiIH0gZnJvbSAnLi4vY29uZmlnL2RiLmRyaXp6bGUuanMnO1xuXG5pbXBvcnQgeyBsb2dnZXIgfSBmcm9tICcuLi91dGlscy9sb2dnZXIuanMnO1xuYXN5bmMgZnVuY3Rpb24gcnVuTWlncmF0aW9ucygpIHtcbiAgdHJ5IHtcbiAgICBsb2dnZXIuaW5mbygnUnVubmluZyBtaWdyYXRpb25zLi4uJylcbiAgICBhd2FpdCBtaWdyYXRlKGRiLCB7IG1pZ3JhdGlvbnNGb2xkZXI6ICcuL2RhdGFiYXNlL21pZ3JhdGlvbnMvZHJpenpsZScgfSk7XG4gICAgbG9nZ2VyLmluZm8oJ01pZ3JhdGlvbnMgY29tcGxldGVkIHN1Y2Nlc3NmdWxseSEnKVxuICB9IGNhdGNoIChlcnJvcikge1xuICAgIGxvZ2dlci5lcnJvcignRXJyb3IgcnVubmluZyBtaWdyYXRpb25zOicsIGVycm9yKVxuICAgIHByb2Nlc3MuZXhpdCgxKTtcbiAgfVxufVxuXG5ydW5NaWdyYXRpb25zKCk7Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBZVk7SUFBQUEsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsY0FBQTtBQWZaLFNBQVNFLE9BQU8sUUFBUSxvQ0FBb0M7QUFDNUQsU0FBU0MsRUFBRSxRQUFRLHlCQUF5QjtBQUU1QyxTQUFTQyxNQUFNLFFBQVEsb0JBQW9CO0FBQzNDLGVBQWVDLGFBQWFBLENBQUEsRUFBRztFQUFBO0VBQUFMLGNBQUEsR0FBQU0sQ0FBQTtFQUFBTixjQUFBLEdBQUFPLENBQUE7RUFDN0IsSUFBSTtJQUFBO0lBQUFQLGNBQUEsR0FBQU8sQ0FBQTtJQUNGSCxNQUFNLENBQUNJLElBQUksQ0FBQyx1QkFBdUIsQ0FBQztJQUFBO0lBQUFSLGNBQUEsR0FBQU8sQ0FBQTtJQUNwQyxNQUFNTCxPQUFPLENBQUNDLEVBQUUsRUFBRTtNQUFFTSxnQkFBZ0IsRUFBRTtJQUFnQyxDQUFDLENBQUM7SUFBQztJQUFBVCxjQUFBLEdBQUFPLENBQUE7SUFDekVILE1BQU0sQ0FBQ0ksSUFBSSxDQUFDLG9DQUFvQyxDQUFDO0VBQ25ELENBQUMsQ0FBQyxPQUFPRSxLQUFLLEVBQUU7SUFBQTtJQUFBVixjQUFBLEdBQUFPLENBQUE7SUFDZEgsTUFBTSxDQUFDTSxLQUFLLENBQUMsMkJBQTJCLEVBQUVBLEtBQUssQ0FBQztJQUFBO0lBQUFWLGNBQUEsR0FBQU8sQ0FBQTtJQUNoREksT0FBTyxDQUFDQyxJQUFJLENBQUMsQ0FBQyxDQUFDO0VBQ2pCO0FBQ0Y7QUFBQztBQUFBWixjQUFBLEdBQUFPLENBQUE7QUFFREYsYUFBYSxDQUFDLENBQUMiLCJpZ25vcmVMaXN0IjpbXX0=
