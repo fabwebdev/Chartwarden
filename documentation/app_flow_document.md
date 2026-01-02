@@ -1,0 +1,47 @@
+# App Flow Document
+
+## Onboarding and Sign-In/Sign-Up
+
+When a new user first encounters the EHR system, they will typically arrive at a public landing page that briefly describes the hospice care software and offers options to either log in or sign up. If the user does not yet have an account, they can click on a "Sign Up" link which leads to a registration page laid out as a simple form asking for their full name, professional email address, phone number, and a password. The form also requires acceptance of privacy and HIPAA compliance terms. Once the user submits this form, a verification email is sent to confirm their address. After clicking the verification link, the user is redirected back to a welcome page where they are guided to complete their profile by adding relevant role information, organization details, and possibly inviting other colleagues.
+
+Alternatively, users may be invited directly by an administrator through an email invitation containing a one-time link. Clicking this link takes the invitee to a page where they set their password and finalize their profile details. The system supports password recovery via a "Forgot Password" link on the sign-in page. When a user requests a password reset, an email is sent with a secure reset link. Following the link opens a form to enter and confirm a new password. After successfully resetting, the user can sign in normally.
+
+On any page after authentication, there is a clearly visible "Sign Out" button, usually found in the user menu in the top navigation bar. Selecting this option ends the session and redirects the user back to the landing page.
+
+## Main Dashboard or Home Page
+
+After logging in, the user lands on the main dashboard, which displays a high-level overview of their hospice operations. The top of the page shows a header with the application logo on the left, the user’s name and role on the right, and a notification bell icon that surfaces alerts such as upcoming interdisciplinary group meetings or pending document reviews. A collapsible sidebar on the left provides navigation links to key modules: Patient Management, Clinical Documentation, Scheduling, Billing & Claims, Reports, Bereavement Services, Messaging, and Administration (for users with admin rights).
+
+The central area of the dashboard shows a set of summary widgets. These include the current census of active patients, tasks due today, recent clinical notes awaiting review, and a mini calendar highlighting scheduled visits. Below the summary, there may be a quick-access panel where users can start a new patient admission, log a visit, or generate a report with a single click. Each widget title is clickable, taking the user to the detailed page for that section. The sidebar remains visible at all times, enabling smooth transitions between modules.
+
+## Detailed Feature Flows and Page Transitions
+
+When a user selects Patient Management from the sidebar, they arrive at a searchable list of patients with options to filter by status, admission date, or care team. Clicking on a patient name opens the Patient Detail page, which is organized into tabs such as Overview, Clinical Assessments, Medications, Goals & Problems, and Documents. To admit a new patient, the user clicks an "Add Patient" button that launches a multi-step form. This form collects general demographics, admission diagnostics, primary caregiver information, and insurance details. Upon submission, the patient record is created and the user is taken to that patient’s Overview tab.
+
+In the Clinical Documentation module, users log clinical visits by selecting a patient, choosing the type of assessment (for example, cardiac or neurologic), and filling out structured fields. Each form can be saved as a draft or signed electronically when complete. Signing invokes an electronic signature flow compliant with regulatory requirements, where the user re-enters their password to confirm. After signing, the note is locked and becomes part of the audit log.
+
+Scheduling is accessed by clicking the Schedule link in the sidebar. The schedule page displays a calendar view showing assigned visits for each clinician. Users can drag and drop visits to reschedule, or click on an open time slot to schedule a new visit. When scheduling, the user selects a patient, a clinician, and the visit type, and the system automatically checks for conflicts. For users in the field, a mobile check-in/out function is available via a GPS-enabled button on the visit detail, which records timestamps and location.
+
+In the Billing & Claims module, users view claims grouped by status such as pending, submitted, rejected, or paid. Clicking on a claim opens its detail page, where users can view line items, attach clinical documentation, and update billing codes. To submit a claim electronically, the user clicks "Submit Claim," and behind the scenes an EDI 837 transmission is generated. For remittance advice, the system parses incoming EDI 835 files and auto-posts payments, which the user can review and edit before final posting.
+
+Reports are found under the Reports link. Users see a list of built-in report templates for financial, clinical, and operational metrics. Selecting a report launches a parameter form where date ranges, care teams, or patient filters can be applied. After running the report, results display as a table and chart. Users may export the report to PDF or CSV. For more advanced needs, users can build custom reports by defining data fields, filters, and layout options via a guided form. Scheduled reporting allows users to set up recurring reports that are delivered by email.
+
+Bereavement Services is a dedicated module accessible from the sidebar for staff responsible for following up with families after a patient’s passing. It shows a list of bereavement cases and upcoming contacts. Users click into a case to record notes, schedule memorial events, or set reminders for future outreach. The module integrates with the main patient record but retains its own workflow and reporting.
+
+If the user has administrative rights, they see an Administration link. In the Administration panel, they can configure system-wide settings such as code tables (diagnoses, billing codes), user roles and permissions, and workflow rules. Clicking on a configuration item opens a simple table editor where values can be added or modified. Changes are logged for audit purposes.
+
+## Settings and Account Management
+
+Users access their personal settings by clicking their name in the top header and choosing "Profile." In the Profile section, they can update contact information, change their password, and set two-factor authentication preferences via SMS or an authenticator app. Notification settings allow users to choose which alerts they receive by email or in-app, such as reminders for upcoming visits, new messages, or policy updates. If the system has billing or subscription management, it appears as a sub-tab in Settings. Here, organization owners can view the plan, upgrade or downgrade features, and update payment methods. After saving changes in Settings, a confirmation message appears and the user is redirected back to the main dashboard.
+
+## Error States and Alternate Paths
+
+If a user enters incorrect credentials at sign-in, the system displays an error message above the form prompting them to try again. After multiple failed attempts, the account is temporarily locked and a message instructs the user to contact support or use the password recovery flow. When filling out any form, leaving required fields blank or entering invalid data triggers inline validation errors next to each field. A summary error message at the top reminds the user to correct highlighted fields.
+
+In the event of network loss or server unavailability, a banner appears at the top of the screen indicating that connectivity is lost and attempts to automatically reconnect. While disconnected, the user may only view cached data and is prevented from saving new entries. Once the connection is restored, the banner disappears and pending actions are synchronized.
+
+If a user tries to access a page or perform an action for which they lack permission, they are redirected to an "Access Denied" page explaining that they do not have the required rights and may contact an administrator. All unexpected application errors are caught by a global error handler that logs details securely and shows a friendly fallback page with an error code and suggestion to reload or reach out to support.
+
+## Conclusion and Overall App Journey
+
+From the first visit to the landing page, the user is guided through account creation, confirming their identity by email, and completing their profile. Logging in brings them to a clear, modular dashboard where key clinical, administrative, and financial tasks are summarized. Through the sidebar navigation or direct widget links, the user can admit patients, record clinical visits, schedule staff, manage billing, generate reports, and follow up on bereavement cases. Administrators have added configuration flows to keep code tables and permissions up to date. At any time, users can update personal settings, recover forgotten passwords, or sign out securely. Comprehensive error handling and feedback keep the experience smooth, even when things go wrong. Overall, the system connects each action seamlessly from sign-up to everyday usage, empowering hospice care teams to focus on patient needs rather than software hurdles.
