@@ -1,99 +1,64 @@
-# Chartwarden - Hospice EHR System
+# Codespace Task Management Guide
 
-## Project Overview
+## Documentation Available
 
-Chartwarden is a **HIPAA-compliant Electronic Health Record (EHR) system** for hospice care providers. It combines a high-performance Fastify backend with a modern Next.js frontend in a monorepo structure.
+📚 **Project Documentation**: Check the documentation files in this directory for project-specific setup instructions and guides.
+**Project Tasks**: Check the tasks directory in documentation/tasks for the list of tasks to be completed. Use the CLI commands below to interact with them.
 
-## Architecture
+## MANDATORY Task Management Workflow
 
-```
-Chartwarden/
-├── apps/
-│   └── web/                  # Next.js frontend (port 3000)
-├── services/
-│   └── api/                  # Fastify backend (port 3001)
-├── packages/
-│   ├── types/                # @chartwarden/types - Shared interfaces
-│   └── utils/                # @chartwarden/utils - Shared utilities
-├── infra/                    # Docker, deployment scripts
-├── .automaker/               # AutoMaker working directory
-├── docker-compose.yml        # Local development services
-├── turbo.json                # Turborepo configuration
-└── package.json              # Root workspace configuration
-```
+🚨 **YOU MUST FOLLOW THIS EXACT WORKFLOW - NO EXCEPTIONS** 🚨
 
-## Tech Stack
-
-### Backend (services/api)
-- **Framework**: Fastify (high-performance)
-- **ORM**: Drizzle ORM + PostgreSQL
-- **Auth**: Better Auth (cookie-based sessions)
-- **Authorization**: RBAC + ABAC + CASL
-- **Testing**: Jest
-
-### Frontend (apps/web)
-- **Framework**: Next.js 14+ with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-
-### Database
-- **PostgreSQL 16** with 50+ tables
-- **Drizzle ORM** for type-safe queries
-
-## Development Commands
-
+### **STEP 1: DISCOVER TASKS (MANDATORY)**
+You MUST start by running this command to see all available tasks:
 ```bash
-# Start everything
-docker-compose up -d          # PostgreSQL + Redis
-npm run dev                   # Frontend + Backend
-
-# Individual apps
-npm run dev:web               # Next.js (port 3000)
-npm run dev:api               # Fastify (port 3001)
-
-# Database
-npm run db:migrate            # Run migrations
-npm run db:generate           # Generate migration
-
-# Sync with upstream
-npm run sync:frontend         # Pull from ehr_frontend
-npm run sync:backend          # Pull from ehr_backend
+task-manager list-tasks
 ```
 
-## API Patterns
-
-**Base URL**: `http://localhost:3001/api`
-
-**Key Endpoints**:
-- `POST /api/auth/sign-in` - Login
-- `GET /api/patients` - List patients
-- `GET /api/patients/:id/encounters` - Patient encounters
-- `GET /api/patients/:id/medications` - Patient medications
-
-**Response Format**:
-```typescript
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: { code: string; message: string; };
-}
+### **STEP 2: START EACH TASK (MANDATORY)**
+Before working on any task, you MUST mark it as started:
+```bash
+task-manager start-task <task_id>
 ```
 
-## Adding Features
+### **STEP 3: COMPLETE OR CANCEL EACH TASK (MANDATORY)**
+After finishing implementation, you MUST mark the task as completed, or cancel if you cannot complete it:
+```bash
+task-manager complete-task <task_id> "Brief description of what was implemented"
+# or
+task-manager cancel-task <task_id> "Reason for cancellation"
+```
 
-1. **Backend Schema** → `services/api/src/db/schemas/`
-2. **Controller** → `services/api/src/controllers/`
-3. **Routes** → `services/api/src/routes/`
-4. **Shared Types** → `packages/types/src/`
-5. **Frontend** → `apps/web/src/`
+## Task Files Location
 
-## Compliance
+📁 **Task Data**: Your tasks are organized in the `documentation/tasks/` directory:
+- Task JSON files contain complete task information
+- Use ONLY the `task-manager` commands listed above
+- Follow the mandatory workflow sequence for each task
 
-- **HIPAA**: Audit logging, RBAC, encryption
-- **CMS**: HOPE, F2F, 14-day IDG, NOE
-- **21 CFR Part 11**: Electronic signatures
+## MANDATORY Task Workflow Sequence
 
-## Git Subtree Remotes
+🔄 **For EACH individual task, you MUST follow this sequence:**
 
-- `frontend-upstream` → ehr_frontend
-- `backend-upstream` → ehr_backend
+1. 📋 **DISCOVER**: `task-manager list-tasks` (first time only)
+2. 🚀 **START**: `task-manager start-task <task_id>` (mark as in progress)
+3. 💻 **IMPLEMENT**: Do the actual coding/implementation work
+4. ✅ **COMPLETE**: `task-manager complete-task <task_id> "What was done"` (or cancel with `task-manager cancel-task <task_id> "Reason"`)
+5. 🔁 **REPEAT**: Go to next task (start from step 2)
+
+## Task Status Options
+
+- `pending` - Ready to work on
+- `in_progress` - Currently being worked on  
+- `completed` - Successfully finished
+- `blocked` - Cannot proceed (waiting for dependencies)
+- `cancelled` - No longer needed
+
+## CRITICAL WORKFLOW RULES
+
+❌ **NEVER skip** the `task-manager start-task` command
+❌ **NEVER skip** the `task-manager complete-task` command  (use `task-manager cancel-task` if a task is not planned, not required, or you must stop it)
+❌ **NEVER work on multiple tasks simultaneously**
+✅ **ALWAYS complete one task fully before starting the next**
+✅ **ALWAYS provide completion details in the complete command**
+✅ **ALWAYS follow the exact 3-step sequence: list → start → complete (or cancel if not required)**
