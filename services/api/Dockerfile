@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Dependencies
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS dependencies
+FROM node:25-alpine AS dependencies
 
 # Install build dependencies for native modules
 RUN apk add --no-cache \
@@ -29,7 +29,7 @@ RUN npm ci --only=production && \
 # -----------------------------------------------------------------------------
 # Stage 2: Builder
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
@@ -45,7 +45,7 @@ RUN rm -rf tests docs *.md .git .github docker
 # -----------------------------------------------------------------------------
 # Stage 3: Production Runtime
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS production
+FROM node:25-alpine AS production
 
 # Install runtime dependencies
 RUN apk add --no-cache \
@@ -90,7 +90,7 @@ CMD ["node", "start.js"]
 # -----------------------------------------------------------------------------
 # Stage 4: Development
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS development
+FROM node:25-alpine AS development
 
 # Install development dependencies
 RUN apk add --no-cache \
