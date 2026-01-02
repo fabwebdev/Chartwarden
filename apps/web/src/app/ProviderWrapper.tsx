@@ -13,7 +13,6 @@ import ScrollTop from 'components/ScrollTop';
 
 import Notistack from 'components/third-party/Notistack';
 import Snackbar from 'components/@extended/Snackbar';
-import ToastNotification from 'components/notifications/ToastNotification';
 
 // ==============================|| PROVIDER WRAPPER  ||============================== //
 
@@ -28,7 +27,6 @@ const ProviderWrapper = ({ children }: { children: ReactElement }) => {
                 <ScrollTop>
                   <Notistack>
                     <Snackbar />
-                    <ToastNotification />
                     {children}
                   </Notistack>
                 </ScrollTop>

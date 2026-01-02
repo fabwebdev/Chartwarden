@@ -4,6 +4,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 
 // Simple component for testing
 function Greeting({ name }: { name: string }) {
