@@ -126,7 +126,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure cloud credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
           aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
@@ -211,7 +211,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure cloud credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
           aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
