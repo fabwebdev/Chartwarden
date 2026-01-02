@@ -54,11 +54,7 @@ class PatientController {
       // Build filter conditions
       const conditions = [];
 
-      // By default, exclude soft-deleted records unless admin requests them
-      const isAdmin = request.user?.role === ROLES.ADMIN;
-      if (!include_deleted || !isAdmin) {
-        conditions.push(isNull(patients.deleted_at));
-      }
+      // Note: deleted_at and status columns don't exist yet - skipping soft delete filter
 
       // Apply filters
       if (first_name) {
@@ -70,12 +66,7 @@ class PatientController {
       if (date_of_birth) {
         conditions.push(eq(patients.date_of_birth, date_of_birth));
       }
-      if (status) {
-        conditions.push(eq(patients.status, status));
-      }
-      if (medical_record_number) {
-        conditions.push(eq(patients.medical_record_number, medical_record_number));
-      }
+      // Note: status and medical_record_number columns don't exist yet
 
       // Role-based data scoping for patients role (can only see own record)
       if (request.user?.role === ROLES.PATIENT && request.user?.patientId) {
@@ -106,7 +97,7 @@ class PatientController {
           sortColumn = patients.date_of_birth;
           break;
         default:
-          sortColumn = patients.createdAt;
+          sortColumn = patients.created_at;
       }
       const sortOrder = order === 'asc' ? asc(sortColumn) : desc(sortColumn);
 
@@ -115,39 +106,20 @@ class PatientController {
         first_name: patients.first_name,
         last_name: patients.last_name,
         middle_name: patients.middle_name,
-        mi: patients.mi,
-        preferred_name: patients.preferred_name,
-        suffix: patients.suffix,
         date_of_birth: patients.date_of_birth,
         gender: patients.gender,
-        marital_status: patients.marital_status,
-        preferred_language: patients.preferred_language,
         ssn: patients.ssn,
-        medicare_beneficiary_id: patients.medicare_beneficiary_id,
-        medicaid_id: patients.medicaid_id,
-        medical_record_number: patients.medical_record_number,
-        email: patients.email,
-        primary_phone: patients.primary_phone,
-        emergency_contact_name: patients.emergency_contact_name,
-        emergency_contact_phone: patients.emergency_contact_phone,
-        emergency_contact_relationship: patients.emergency_contact_relationship,
-        oxygen_dependent: patients.oxygen_dependent,
-        patient_consents: patients.patient_consents,
-        hipaa_received: patients.hipaa_received,
-        veterans_status: patients.veterans_status,
-        dme_provider: patients.dme_provider,
         patient_pharmacy_id: patients.patient_pharmacy_id,
         primary_diagnosis_id: patients.primary_diagnosis_id,
         race_ethnicity_id: patients.race_ethnicity_id,
+        dme_provider_id: patients.dme_provider_id,
         liaison_primary_id: patients.liaison_primary_id,
         liaison_secondary_id: patients.liaison_secondary_id,
         dnr_id: patients.dnr_id,
         emergency_preparedness_level_id: patients.emergency_preparedness_level_id,
         patient_identifier_id: patients.patient_identifier_id,
-        status: patients.status,
-        deleted_at: patients.deleted_at,
-        createdAt: patients.createdAt,
-        updatedAt: patients.updatedAt
+        created_at: patients.created_at,
+        updated_at: patients.updated_at
       })
         .from(patients)
         .where(conditions.length > 0 ? and(...conditions) : undefined)

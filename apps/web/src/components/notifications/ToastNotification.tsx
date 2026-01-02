@@ -34,14 +34,14 @@ type NotificationVariant = 'success' | 'error' | 'warning' | 'info' | 'default';
 // ==============================|| TOAST NOTIFICATION - STYLED ||============================== //
 
 interface StyledToastProps {
-  variant: NotificationVariant;
+  notificationVariant: NotificationVariant;
   priority?: 'low' | 'normal' | 'high' | 'urgent';
 }
 
 const StyledToast = styled(Alert, {
-  shouldForwardProp: (prop) => prop !== 'variant' && prop !== 'priority'
-})<StyledToastProps>(({ theme, variant, priority }) => {
-  const colors = getColors(theme, variant === 'default' ? 'primary' : variant);
+  shouldForwardProp: (prop) => prop !== 'notificationVariant' && prop !== 'priority'
+})<StyledToastProps>(({ theme, notificationVariant, priority }) => {
+  const colors = getColors(theme, notificationVariant === 'default' ? 'primary' : notificationVariant);
   const { main, lighter, light } = colors;
 
   const priorityBorderWidth = {
@@ -212,7 +212,7 @@ const ToastNotification = forwardRef<HTMLDivElement, ToastNotificationProps>(
     const [open, setOpen] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
 
-    const variant = getNotificationVariant(notification.type, notification.priority);
+    const variant = getNotificationVariant(notification?.type, notification?.priority);
 
     // Handle manual close
     const handleClose = useCallback(
@@ -225,10 +225,12 @@ const ToastNotification = forwardRef<HTMLDivElement, ToastNotificationProps>(
 
         // Wait for collapse animation to complete before calling onClose
         setTimeout(() => {
-          onClose?.(notification.id);
+          if (notification?.id) {
+            onClose?.(notification.id);
+          }
         }, 300);
       },
-      [notification.id, onClose]
+      [notification?.id, onClose]
     );
 
     // Auto-dismiss timer
@@ -250,7 +252,8 @@ const ToastNotification = forwardRef<HTMLDivElement, ToastNotificationProps>(
           ref={ref}
           variant="outlined"
           severity={variant === 'default' ? 'info' : variant}
-          priority={notification.priority}
+          notificationVariant={variant}
+          priority={notification?.priority}
           icon={getNotificationIcon(variant)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -272,18 +275,18 @@ const ToastNotification = forwardRef<HTMLDivElement, ToastNotificationProps>(
           <Stack spacing={0.5}>
             {/* Title */}
             <Typography variant="subtitle1" fontWeight={600} sx={{ lineHeight: 1.2 }}>
-              {notification.title}
+              {notification?.title}
             </Typography>
 
             {/* Message */}
-            {notification.message && (
+            {notification?.message && (
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
                 {notification.message}
               </Typography>
             )}
 
             {/* Additional data rendering (optional) */}
-            {notification.data && Object.keys(notification.data).length > 0 && (
+            {notification?.data && Object.keys(notification.data).length > 0 && (
               <Box sx={{ mt: 0.5 }}>
                 {Object.entries(notification.data).slice(0, 2).map(([key, value]) => (
                   <Typography key={key} variant="caption" display="block" color="text.disabled">

@@ -1,4 +1,6 @@
-import { useLayoutEffect, useState } from 'react';
+'use client';
+
+import { useState, useMemo } from 'react';
 
 // MATERIAL - UI
 import { useTheme } from '@mui/material/styles';
@@ -11,7 +13,7 @@ import Typography from '@mui/material/Typography';
 // PROJECT IMPORTS
 import NavItem from './NavItem';
 import NavGroup from './NavGroup';
-import menuItem from 'menu-items';
+import { getMenuItems } from 'menu-items';
 
 import useConfig from 'hooks/useConfig';
 import { HORIZONTAL_MAX_ITEM } from 'config';
@@ -37,16 +39,9 @@ const Navigation = () => {
 
   const [selectedItems, setSelectedItems] = useState<string | undefined>('');
   const [selectedLevel, setSelectedLevel] = useState<number>(0);
-  const [menuItems, setMenuItems] = useState<{ items: NavItemType[] }>({ items: [] });
 
-  // Re-evaluate menu items when permissions change
-  useLayoutEffect(() => {
-    // Force re-import menu items to get fresh permission checks
-    // Since menu items check localStorage directly, we need to trigger a re-render
-    // by updating state when permissions change
-    setMenuItems(menuItem);
-    // eslint-disable-next-line
-  }, [menuItem, permissions]);
+  // Build menu items and rebuild when permissions change
+  const menuItems = useMemo(() => getMenuItems(), [permissions]);
 
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode, useMemo } from 'react';
 
 // MATERIAL - UI

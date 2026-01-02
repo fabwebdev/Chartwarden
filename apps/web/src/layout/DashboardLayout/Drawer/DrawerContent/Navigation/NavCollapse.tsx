@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState, useMemo, Dispatch, MouseEvent, SetStateAction } from 'react';
 
 // NEXT

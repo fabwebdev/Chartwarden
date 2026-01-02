@@ -191,7 +191,7 @@ const PatientsPage = () => {
 
     if (result.isConfirmed) {
       http
-        .delete(`/patient/${patientId}`)
+        .delete(`/patients/${patientId}`)
         .then((response: any) => {
           Swal.fire({
             icon: 'success',
@@ -214,7 +214,7 @@ const PatientsPage = () => {
   const fetchPatientData = async () => {
     setLoading(true);
     http
-      .get('/patient')
+      .get('/patients')
       .then((response: any) => {
         let patients: Patient[] = [];
         if (Array.isArray(response.data)) {

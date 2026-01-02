@@ -370,7 +370,7 @@ const AddPatientPage = () => {
         setPatientPharmacyData(response.data);
       })
       .catch((error: any) => {
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -388,7 +388,7 @@ const AddPatientPage = () => {
         fetchPatientPharmacyData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -410,13 +410,13 @@ const AddPatientPage = () => {
         fetchPatientPharmacyData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: error.response.data.errors.name
           });
-        } else  if(error.response.status === 401){
+        } else  if(error?.response?.status === 401){
           logout();
         }
       });
@@ -429,7 +429,7 @@ const AddPatientPage = () => {
         setDmeProviderData(response.data || []);
       })
       .catch((error: any) => { 
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -442,7 +442,7 @@ const AddPatientPage = () => {
         setLiaisonSecondaryData(response.data);
       })
       .catch((error: any) => { 
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
         logout();
       }});
   };
@@ -520,13 +520,13 @@ const AddPatientPage = () => {
         fetchLiaisonSecondaryData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: error.response.data.errors.name
           });
-        }else  if(error.response.status === 401){
+        }else  if(error?.response?.status === 401){
           logout();
         }
       });
@@ -539,7 +539,7 @@ const AddPatientPage = () => {
         setLiaisonPrimaryData(response.data);
       })
       .catch((error: any) => {
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -618,7 +618,7 @@ const AddPatientPage = () => {
         fetchLiaisonPrimaryData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -635,7 +635,7 @@ const AddPatientPage = () => {
         setDnrData(response.data);
       })
       .catch((error: any) => {
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -700,7 +700,7 @@ const AddPatientPage = () => {
         fetchDNRData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -718,7 +718,7 @@ const AddPatientPage = () => {
         setEmergencyPreparednessLevelData(response.data);
       })
       .catch((error: any) => {
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -788,13 +788,13 @@ const AddPatientPage = () => {
         fetchEmergencyPreparednessLevelData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: error.response.data.errors.name
           });
-        }else  if(error.response.status === 401){
+        }else  if(error?.response?.status === 401){
           logout();
         }
       });
@@ -823,7 +823,7 @@ const AddPatientPage = () => {
         setRaceEthnicityData(response.data);
       })
       .catch((error: any) => {
-        if(error.response.status === 401){
+        if(error?.response?.status === 401){
           logout();
         }
       });
@@ -884,13 +884,13 @@ const AddPatientPage = () => {
         fetchRaceEthnicityData();
       })
       .catch((error: any) => {
-        if (error.response.status === 422) {
+        if (error?.response?.status === 422) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: error.response.data.errors.name
           });
-        }else  if(error.response.status === 401){
+        }else  if(error?.response?.status === 401){
           logout();
         }
       });
