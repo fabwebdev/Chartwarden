@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 # Stage 1: Dependencies
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS dependencies
+FROM node:25-alpine AS dependencies
 
 # Install build dependencies
 RUN apk add --no-cache libc6-compat
@@ -22,7 +22,7 @@ RUN npm ci && npm cache clean --force
 # -----------------------------------------------------------------------------
 # Stage 2: Builder
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
@@ -40,7 +40,7 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 # Stage 3: Production Runner
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS production
+FROM node:25-alpine AS production
 
 WORKDIR /app
 
@@ -77,7 +77,7 @@ CMD ["node", "server.js"]
 # -----------------------------------------------------------------------------
 # Stage 4: Development
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS development
+FROM node:25-alpine AS development
 
 WORKDIR /app
 
