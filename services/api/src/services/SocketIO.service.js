@@ -19,10 +19,12 @@
 import { Server } from "socket.io";
 import auth from "../config/betterAuth.js";
 import { db } from "../config/db.drizzle.js";
-import { users, user_has_roles, roles, sessions } from "../db/schemas/index.js";
-import { eq } from "drizzle-orm";
+import { users, user_has_roles, roles, sessions, chat_messages, chat_participants, user_presence } from "../db/schemas/index.js";
+import { eq, and } from "drizzle-orm";
 import { ROLES, ROLE_PERMISSIONS } from "../config/rbac.js";
 import { info, warn, error, debug } from "../utils/logger.js";
+import { nanoid } from "nanoid";
+import DOMPurify from "isomorphic-dompurify";
 
 // Connection state tracking
 const connectionState = new Map(); // socketId -> { userId, user, connectedAt, rooms, lastActivity }
@@ -373,19 +375,47 @@ class SocketIOService {
         this.handleChatMessage(socket, data, callback);
       });
 
-      socket.on("typing:start", (conversationId) => {
-        socket.to(`conversation:${conversationId}`).emit("user:typing", {
-          userId: socket.user.id,
-          userName: `${socket.user.firstName || ""} ${socket.user.lastName || ""}`.trim(),
-          conversationId,
-        });
+      socket.on("typing:start", async (conversationId) => {
+        try {
+          // Update presence to track typing
+          await db
+            .update(user_presence)
+            .set({
+              typing_in_room_id: conversationId,
+              last_active_at: new Date(),
+              updated_at: new Date()
+            })
+            .where(eq(user_presence.user_id, socket.user.id));
+
+          socket.to(`conversation:${conversationId}`).emit("user:typing", {
+            userId: socket.user.id,
+            userName: `${socket.user.firstName || ""} ${socket.user.lastName || ""}`.trim(),
+            conversationId,
+          });
+        } catch (err) {
+          error("Error updating typing status", { error: err.message });
+        }
       });
 
-      socket.on("typing:stop", (conversationId) => {
-        socket.to(`conversation:${conversationId}`).emit("user:stopped_typing", {
-          userId: socket.user.id,
-          conversationId,
-        });
+      socket.on("typing:stop", async (conversationId) => {
+        try {
+          // Clear typing status
+          await db
+            .update(user_presence)
+            .set({
+              typing_in_room_id: null,
+              last_active_at: new Date(),
+              updated_at: new Date()
+            })
+            .where(eq(user_presence.user_id, socket.user.id));
+
+          socket.to(`conversation:${conversationId}`).emit("user:stopped_typing", {
+            userId: socket.user.id,
+            conversationId,
+          });
+        } catch (err) {
+          error("Error clearing typing status", { error: err.message });
+        }
       });
 
       socket.on("disconnect", () => {
@@ -442,7 +472,7 @@ class SocketIOService {
   /**
    * Handle new connection
    */
-  handleConnection(socket) {
+  async handleConnection(socket) {
     metrics.totalConnections++;
     metrics.activeConnections++;
 
@@ -464,6 +494,38 @@ class SocketIOService {
         userConnections.set(userId, new Set());
       }
       userConnections.get(userId).add(socket.id);
+
+      // Update or create user presence
+      try {
+        await db
+          .insert(user_presence)
+          .values({
+            id: nanoid(),
+            user_id: userId,
+            status: 'online',
+            socket_id: socket.id,
+            is_connected: true,
+            last_seen_at: new Date(),
+            last_active_at: new Date(),
+            user_agent: socket.handshake.headers['user-agent'] || null,
+            ip_address: socket.handshake.address || null
+          })
+          .onConflictDoUpdate({
+            target: user_presence.user_id,
+            set: {
+              status: 'online',
+              socket_id: socket.id,
+              is_connected: true,
+              last_seen_at: new Date(),
+              last_active_at: new Date(),
+              user_agent: socket.handshake.headers['user-agent'] || null,
+              ip_address: socket.handshake.address || null,
+              updated_at: new Date()
+            }
+          });
+      } catch (err) {
+        error("Error updating user presence on connection", { error: err.message, userId });
+      }
     }
 
     info("Socket connected", {
@@ -485,7 +547,7 @@ class SocketIOService {
   /**
    * Handle disconnection
    */
-  handleDisconnect(socket, reason) {
+  async handleDisconnect(socket, reason) {
     metrics.activeConnections = Math.max(0, metrics.activeConnections - 1);
 
     const connectionInfo = connectionState.get(socket.id);
@@ -494,11 +556,29 @@ class SocketIOService {
     // Clean up connection state
     connectionState.delete(socket.id);
 
-    // Clean up user connections
+    // Clean up user connections and update presence
     if (userId && userConnections.has(userId)) {
       userConnections.get(userId).delete(socket.id);
+
+      // If user has no more active connections, mark as offline
       if (userConnections.get(userId).size === 0) {
         userConnections.delete(userId);
+
+        try {
+          await db
+            .update(user_presence)
+            .set({
+              status: 'offline',
+              is_connected: false,
+              socket_id: null,
+              typing_in_room_id: null,
+              last_seen_at: new Date(),
+              updated_at: new Date()
+            })
+            .where(eq(user_presence.user_id, userId));
+        } catch (err) {
+          error("Error updating user presence on disconnect", { error: err.message, userId });
+        }
       }
     }
 
@@ -724,11 +804,37 @@ class SocketIOService {
   /**
    * Handle joining a chat conversation
    */
-  handleJoinConversation(socket, conversationId, callback) {
+  async handleJoinConversation(socket, conversationId, callback) {
     try {
-      // TODO: Validate user has access to this conversation
+      // Validate user has access to this conversation
+      const participation = await db
+        .select()
+        .from(chat_participants)
+        .where(
+          and(
+            eq(chat_participants.room_id, conversationId),
+            eq(chat_participants.user_id, socket.user.id),
+            eq(chat_participants.is_active, true)
+          )
+        )
+        .limit(1);
+
+      if (participation.length === 0) {
+        throw new Error("Not authorized to access this conversation");
+      }
+
       const room = `conversation:${conversationId}`;
       socket.join(room);
+
+      // Update user presence to indicate they're in this room
+      await db
+        .update(user_presence)
+        .set({
+          typing_in_room_id: null,
+          last_active_at: new Date(),
+          updated_at: new Date()
+        })
+        .where(eq(user_presence.user_id, socket.user.id));
 
       debug("Joined conversation", {
         socketId: socket.id,
@@ -747,6 +853,7 @@ class SocketIOService {
         callback({ success: true, conversationId });
       }
     } catch (err) {
+      error("Error joining conversation", { error: err.message, conversationId });
       if (typeof callback === "function") {
         callback({ success: false, error: err.message });
       }
@@ -778,39 +885,96 @@ class SocketIOService {
   }
 
   /**
-   * Handle chat message
+   * Handle chat message with database persistence
    */
-  handleChatMessage(socket, data, callback) {
+  async handleChatMessage(socket, data, callback) {
     try {
-      const { conversationId, content, type = "text" } = data;
+      const { conversationId, content, replyToId } = data;
 
       if (!conversationId || !content) {
         throw new Error("Missing required fields: conversationId and content");
       }
 
-      const message = {
-        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        conversationId,
-        senderId: socket.user.id,
+      // Validate user is participant
+      const participation = await db
+        .select()
+        .from(chat_participants)
+        .where(
+          and(
+            eq(chat_participants.room_id, conversationId),
+            eq(chat_participants.user_id, socket.user.id),
+            eq(chat_participants.is_active, true)
+          )
+        )
+        .limit(1);
+
+      if (participation.length === 0) {
+        throw new Error("Not authorized to send messages to this room");
+      }
+
+      // Sanitize content to prevent XSS
+      const sanitizedContent = DOMPurify.sanitize(content, {
+        ALLOWED_TAGS: [],
+        ALLOWED_ATTR: []
+      });
+
+      // Persist message to database
+      const [message] = await db
+        .insert(chat_messages)
+        .values({
+          id: nanoid(),
+          room_id: conversationId,
+          sender_id: socket.user.id,
+          content: sanitizedContent,
+          reply_to_id: replyToId || null,
+          is_deleted: false
+        })
+        .returning();
+
+      // Format message for broadcast
+      const broadcastMessage = {
+        id: message.id,
+        room_id: message.room_id,
+        sender_id: message.sender_id,
         senderName: `${socket.user.firstName || ""} ${socket.user.lastName || ""}`.trim(),
-        content,
-        type,
-        timestamp: Date.now(),
+        content: message.content,
+        reply_to_id: message.reply_to_id,
+        is_edited: message.is_edited,
+        is_deleted: message.is_deleted,
+        created_at: message.created_at,
+        updated_at: message.updated_at
       };
 
       // Broadcast to conversation room (including sender)
-      this.io.of("/chat").to(`conversation:${conversationId}`).emit("new:message", message);
+      this.io.of("/chat").to(`conversation:${conversationId}`).emit("new:message", broadcastMessage);
 
-      debug("Chat message sent", {
+      // Clear typing indicator for sender
+      await db
+        .update(user_presence)
+        .set({
+          typing_in_room_id: null,
+          last_active_at: new Date(),
+          updated_at: new Date()
+        })
+        .where(eq(user_presence.user_id, socket.user.id));
+
+      // Notify typing stopped
+      socket.to(`conversation:${conversationId}`).emit("user:stopped_typing", {
+        userId: socket.user.id,
+        conversationId,
+      });
+
+      debug("Chat message persisted and sent", {
         messageId: message.id,
         conversationId,
         senderId: socket.user.id,
       });
 
       if (typeof callback === "function") {
-        callback({ success: true, message });
+        callback({ success: true, message: broadcastMessage });
       }
     } catch (err) {
+      error("Error handling chat message", { error: err.message, conversationId: data.conversationId });
       if (typeof callback === "function") {
         callback({ success: false, error: err.message });
       }

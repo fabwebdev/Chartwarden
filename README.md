@@ -1,5 +1,9 @@
 # Chartwarden
 
+[![CI](https://github.com/fabwebdev/Chartwarden/actions/workflows/ci.yml/badge.svg)](https://github.com/fabwebdev/Chartwarden/actions/workflows/ci.yml)
+[![Deploy](https://github.com/fabwebdev/Chartwarden/actions/workflows/deploy.yml/badge.svg)](https://github.com/fabwebdev/Chartwarden/actions/workflows/deploy.yml)
+[![codecov](https://codecov.io/gh/fabwebdev/Chartwarden/branch/main/graph/badge.svg)](https://codecov.io/gh/fabwebdev/Chartwarden)
+
 > HIPAA-compliant Electronic Health Record system for hospice care providers
 
 ## Quick Start

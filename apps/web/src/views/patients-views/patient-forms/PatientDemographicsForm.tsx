@@ -195,7 +195,7 @@ const PatientDemographicsForm = ({
         payload.oxygen_dependent = Boolean(values.oxygen_dependent);
         payload.veterans_status = Boolean(values.veterans_status);
 
-        const response = await updatePatient(patientId, payload);
+        await updatePatient(patientId, payload);
 
         openSnackbar({
           open: true,

@@ -10,6 +10,7 @@ import hematologicalAssessmentRoutes from "./patient/HematologicalAssessment.rou
 import integumentaryAssessmentRoutes from "./patient/IntegumentaryAssessment.routes.js";
 import nursingClinicalNoteRoutes from "./patient/NursingClinicalNote.routes.js";
 import nutritionRoutes from "./patient/Nutrition.routes.js";
+import nutritionAssessmentRoutes from "./nutritionAssessment.routes.js"; // Comprehensive Nutrition Assessment Controller
 import painRoutes from "./patient/Pain.routes.js";
 import painTypeRoutes from "./pain-type.routes.js";
 import detailedPainAssessmentRoutes from "./detailedPainAssessment.routes.js";
@@ -48,9 +49,12 @@ import revenueRecognitionRoutes from "./revenueRecognition.routes.js";
 import asc606Routes from "./asc606.routes.js";
 import staffRoutes from "./staff.routes.js";
 import schedulingRoutes from "./scheduling.routes.js";
+import chatRoutes from "./chat.routes.js";
 import bereavementRoutes from "./bereavement.routes.js";
 import qapiRoutes from "./qapi.routes.js";
+import qapiMetricsRoutes from "./qapiMetrics.routes.js";
 import reportsRoutes from "./reports.routes.js";
+import reportsRESTRoutes from "./reportsREST.routes.js"; // Unified Reports REST API
 import addressRoutes from "./patient/Address.routes.js";
 import admissionInformationRoutes from "./patient/AdmissionInformation.routes.js";
 import dmeProviderRoutes from "./patient/DmeProvider.routes.js";
@@ -99,6 +103,8 @@ import respiratorySystemAssessmentRoutes from "./respiratorySystemAssessment.rou
 import { authenticate } from "../middleware/betterAuth.middleware.js";
 import errorTestRoutes from "./errorTest.routes.js";
 import docsRoutes from "./docs.routes.js";
+import reportManagementRoutes from "./reportManagement.routes.js"; // Report Management - Configurations, Schedules, Generated Reports
+import cashFlowProjectionEngineRoutes from "./cashFlowProjectionEngine.routes.js"; // Cash Flow Projection Engine - Comprehensive forecasting
 // Note: validationTestRoutes is registered in server.js (public route)
 
 // Fastify plugin for API routes
@@ -206,6 +212,7 @@ async function apiRoutes(fastify, options) {
   await fastify.register(integumentaryAssessmentRoutes, { prefix: "/integumentary-assessment" });
   await fastify.register(nursingClinicalNoteRoutes, { prefix: "/nursing-clinical-notes" });
   await fastify.register(nutritionRoutes, { prefix: "/nutrition-assessment" });
+  await fastify.register(nutritionAssessmentRoutes); // Comprehensive Nutrition Assessment Controller with dietary tracking
   await fastify.register(painRoutes, { prefix: "/pain" });
   
   // Register pain-type routes at root level for backward compatibility
@@ -264,7 +271,9 @@ async function apiRoutes(fastify, options) {
   await fastify.register(schedulingRoutes, { prefix: "/scheduling" }); // Scheduling - Calendar management, GPS check-in/out, on-call rotations
   await fastify.register(bereavementRoutes); // Bereavement (no prefix, routes define their own paths)
   await fastify.register(qapiRoutes); // QAPI (no prefix, routes define their own paths)
+  await fastify.register(qapiMetricsRoutes, { prefix: "/qapi-metrics" }); // QAPI Metrics - Comprehensive Quality Assurance & Performance Tracking
   await fastify.register(reportsRoutes); // Reports (no prefix, routes define their own paths)
+  await fastify.register(reportsRESTRoutes); // Unified Reports REST API - CRUD operations for generated reports
   await fastify.register(addressRoutes, { prefix: "/address" });
   await fastify.register(admissionInformationRoutes, { prefix: "/admission-information" });
   await fastify.register(dmeProviderRoutes, { prefix: "/dme-provider" });
@@ -300,6 +309,9 @@ async function apiRoutes(fastify, options) {
   await fastify.register(dataExportRoutes); // Data Export - Multi-format export (CSV, JSON, XML, Excel)
   await fastify.register(adminSettingsRoutes); // Admin Settings - System Configuration & Clearinghouse Settings
   await fastify.register(apmRoutes); // APM - Application Performance Monitoring Dashboard & Metrics
+  await fastify.register(reportManagementRoutes); // Report Management - Configurations, Schedules, Generated Reports
+  await fastify.register(cashFlowProjectionEngineRoutes, { prefix: "/cashflow" }); // Cash Flow Projection Engine - Comprehensive forecasting
+  await fastify.register(chatRoutes, { prefix: "/chat" }); // Chat - Real-time team messaging with persistence
 
   // Error handling test routes (development/testing only)
   if (process.env.NODE_ENV !== 'production') {

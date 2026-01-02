@@ -1,0 +1,30 @@
+# =============================================================================
+# Code Owners
+# Chartwarden - HIPAA-Compliant Hospice EHR System
+# =============================================================================
+# These owners will be requested for review when changes are made to the
+# corresponding paths. Order matters - last matching pattern takes precedence.
+# =============================================================================
+
+# Default owners for everything
+* @fabwebdev
+
+# CI/CD workflows require careful review
+/.github/ @fabwebdev
+
+# Infrastructure changes
+/docker-compose*.yml @fabwebdev
+/infra/ @fabwebdev
+
+# Frontend application
+/apps/web/ @fabwebdev
+
+# Backend API
+/services/api/ @fabwebdev
+
+# Shared packages
+/packages/ @fabwebdev
+
+# Security-sensitive files
+/.github/workflows/deploy.yml @fabwebdev
+/services/api/src/config/ @fabwebdev

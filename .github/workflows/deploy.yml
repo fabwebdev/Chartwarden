@@ -1,0 +1,408 @@
+# =============================================================================
+# Continuous Deployment Pipeline
+# Chartwarden - HIPAA-Compliant Hospice EHR System
+# =============================================================================
+# Triggers:
+#   - Merge to main: Deploy to staging
+#   - Version tag (v*.*.*): Deploy to production (with approval)
+# =============================================================================
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+
+# Cancel in-progress runs for the same deployment target
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ===========================================================================
+  # Build Docker Images
+  # ===========================================================================
+  build-images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      web-image: ${{ steps.meta-web.outputs.tags }}
+      api-image: ${{ steps.meta-api.outputs.tags }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+          else
+            echo "version=staging-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Web
+        id: meta-web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web
+          tags: |
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
+            type=sha,prefix=sha-
+
+      - name: Extract metadata for API
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
+          tags: |
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
+            type=sha,prefix=sha-
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/web
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/api
+          file: ./services/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ===========================================================================
+  # Deploy to Staging (on merge to main)
+  # ===========================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-images]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure cloud credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+        continue-on-error: true
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          echo "Web Image: ${{ needs.build-images.outputs.web-image }}"
+          echo "API Image: ${{ needs.build-images.outputs.api-image }}"
+          echo "Version: ${{ needs.build-images.outputs.version }}"
+
+          # Placeholder for actual deployment commands
+          # Replace with your deployment strategy (ECS, Kubernetes, etc.)
+          #
+          # Example for AWS ECS:
+          # aws ecs update-service --cluster chartwarden-staging --service web --force-new-deployment
+          # aws ecs update-service --cluster chartwarden-staging --service api --force-new-deployment
+          #
+          # Example for Kubernetes:
+          # kubectl set image deployment/web web=${{ needs.build-images.outputs.web-image }}
+          # kubectl set image deployment/api api=${{ needs.build-images.outputs.api-image }}
+          #
+          # Example for Docker Compose on remote server:
+          # ssh deploy@staging.chartwarden.com "cd /app && docker-compose pull && docker-compose up -d"
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for deployment to stabilize..."
+          sleep 30
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests against staging..."
+
+          # Health check for API
+          for i in {1..5}; do
+            if curl -sf "${{ vars.STAGING_API_URL }}/health" > /dev/null 2>&1; then
+              echo "API health check passed"
+              break
+            fi
+            echo "Waiting for API... attempt $i/5"
+            sleep 10
+          done
+
+          # Health check for Web
+          for i in {1..5}; do
+            if curl -sf "${{ vars.STAGING_URL }}" > /dev/null 2>&1; then
+              echo "Web health check passed"
+              break
+            fi
+            echo "Waiting for Web... attempt $i/5"
+            sleep 10
+          done
+
+      - name: Create deployment summary
+        run: |
+          echo "## Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | Staging |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ needs.build-images.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ vars.STAGING_URL }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployed At | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+
+  # ===========================================================================
+  # Deploy to Production (on release/tag with approval)
+  # ===========================================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build-images]
+    if: github.event_name == 'release'
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure cloud credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+        continue-on-error: true
+
+      - name: Pre-deployment validation
+        run: |
+          echo "Running pre-deployment validation..."
+          echo "Release: ${{ github.event.release.tag_name }}"
+          echo "Release Notes: ${{ github.event.release.body }}"
+
+          # Validate release tag format
+          if [[ ! "${{ github.event.release.tag_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Warning: Release tag doesn't follow semver format (v*.*.*))"
+          fi
+
+      - name: Create database backup
+        run: |
+          echo "Creating database backup before deployment..."
+          # Placeholder for database backup command
+          # Example: pg_dump -h $DB_HOST -U $DB_USER -d chartwarden > backup_$(date +%Y%m%d_%H%M%S).sql
+          # aws s3 cp backup.sql s3://chartwarden-backups/
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          echo "Web Image: ${{ needs.build-images.outputs.web-image }}"
+          echo "API Image: ${{ needs.build-images.outputs.api-image }}"
+          echo "Version: ${{ github.event.release.tag_name }}"
+
+          # Placeholder for actual deployment commands
+          # Replace with your deployment strategy (ECS, Kubernetes, etc.)
+          #
+          # Blue-Green Deployment Example:
+          # 1. Deploy to green environment
+          # 2. Run health checks
+          # 3. Switch traffic from blue to green
+          # 4. Keep blue as rollback target
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for production deployment to stabilize..."
+          sleep 60
+
+      - name: Run production smoke tests
+        run: |
+          echo "Running smoke tests against production..."
+
+          # Health check for API
+          for i in {1..10}; do
+            if curl -sf "${{ vars.PRODUCTION_API_URL }}/health" > /dev/null 2>&1; then
+              echo "Production API health check passed"
+              break
+            fi
+            if [ $i -eq 10 ]; then
+              echo "Production API health check failed!"
+              exit 1
+            fi
+            echo "Waiting for production API... attempt $i/10"
+            sleep 15
+          done
+
+          # Health check for Web
+          for i in {1..10}; do
+            if curl -sf "${{ vars.PRODUCTION_URL }}" > /dev/null 2>&1; then
+              echo "Production Web health check passed"
+              break
+            fi
+            if [ $i -eq 10 ]; then
+              echo "Production Web health check failed!"
+              exit 1
+            fi
+            echo "Waiting for production Web... attempt $i/10"
+            sleep 15
+          done
+
+      - name: Verify deployment
+        run: |
+          echo "Verifying production deployment..."
+
+          # Additional verification checks
+          # - Verify API version endpoint returns correct version
+          # - Check critical API endpoints
+          # - Verify frontend loads correctly
+
+      - name: Create deployment summary
+        run: |
+          echo "## Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | Production |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ github.event.release.tag_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Release | ${{ github.event.release.name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ vars.PRODUCTION_URL }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployed At | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+
+  # ===========================================================================
+  # Rollback Job (Manual trigger for emergencies)
+  # ===========================================================================
+  rollback:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - name: Rollback to previous version
+        run: |
+          echo "Rolling back to previous version..."
+          # Placeholder for rollback commands
+          # Example:
+          # - Revert to previous Docker image tag
+          # - Restore database backup if needed
+          # - Update load balancer to point to previous deployment
+
+  # ===========================================================================
+  # Notifications
+  # ===========================================================================
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.25.0
+        if: vars.SLACK_WEBHOOK_URL != ''
+        with:
+          payload: |
+            {
+              "text": "Deployment Successful :rocket:",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Chartwarden Deployment Successful* :white_check_mark:\n\n*Environment:* ${{ github.event_name == 'release' && 'Production' || 'Staging' }}\n*Version:* ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}\n*Triggered by:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: [build-images, deploy-staging, deploy-production]
+    if: failure()
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.25.0
+        if: vars.SLACK_WEBHOOK_URL != ''
+        with:
+          payload: |
+            {
+              "text": "Deployment Failed :x:",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Chartwarden Deployment Failed* :x:\n\n*Environment:* ${{ github.event_name == 'release' && 'Production' || 'Staging' }}\n*Commit:* ${{ github.sha }}\n*Triggered by:* ${{ github.actor }}\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        if: vars.NOTIFY_EMAIL != ''
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Chartwarden Deployment Failed - ${{ github.event_name == 'release' && 'Production' || 'Staging' }}"
+          body: |
+            Deployment has failed for Chartwarden.
+
+            Environment: ${{ github.event_name == 'release' && 'Production' || 'Staging' }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+
+            View details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ vars.NOTIFY_EMAIL }}
+          from: Chartwarden CI/CD <noreply@chartwarden.com>
+        continue-on-error: true

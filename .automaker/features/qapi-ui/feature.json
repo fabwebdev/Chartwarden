@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "QAPI Dashboard UI",
   "description": "QAPI Dashboard - Quality Assurance Performance Improvement System\n\nBuild a comprehensive dashboard for tracking and visualizing Quality Assurance and Performance Improvement (QAPI) metrics, initiatives, and outcomes.\n\nRequirements:\n\nCore Features:\n- Display key QAPI metrics with visual charts (trend lines, bar charts, pie charts)\n- Track active quality improvement initiatives with status indicators\n- Generate performance reports for specified time periods\n- Provide drill-down capability from summary metrics to detailed data\n- Support filtering by date range, department, initiative type, or metric category\n\nMetrics Visualization:\n- Real-time or near-real-time metric updates\n- Configurable dashboard widgets that users can arrange\n- Export charts and reports to PDF/Excel formats\n- Color-coded indicators for metrics meeting/not meeting targets\n- Historical trend analysis with comparison periods\n\nInitiative Tracking:\n- List view of all active and completed initiatives\n- Progress tracking with milestones and completion percentages\n- Assignment of owners and team members to initiatives\n- Status workflow (planned, in-progress, completed, on-hold)\n- Document attachments and notes for each initiative\n\nPerformance Reporting:\n- Automated report generation on scheduled intervals\n- Customizable report templates\n- Key performance indicators (KPIs) with target vs. actual comparisons\n- Summary dashboards for executive/leadership review\n- Audit trail of changes and data updates\n\nTechnical Considerations:\n- Define data sources and integration points\n- Determine user roles and access permissions\n- Establish performance benchmarks for dashboard load times\n- Plan for scalability as data volume grows\n- Consider mobile responsiveness for dashboard access",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
@@ -11,13 +11,111 @@
     "material-ui-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.251Z",
-  "updatedAt": "2025-12-31T05:55:26.251Z",
+  "updatedAt": "2026-01-02T05:25:52.394Z",
   "skipTests": false,
-  "model": "opus",
-  "thinkingLevel": "none",
+  "model": "sonnet",
+  "thinkingLevel": "medium",
   "imagePaths": [],
   "textFilePaths": [],
   "branchName": "main",
-  "planningMode": "skip",
-  "requirePlanApproval": false
+  "planningMode": "spec",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T05:15:47.513Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll analyze the codebase to understand the existing structure and then generate a comprehensive specification for the QAPI Dashboard feature.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*qapi*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/.automaker/features/qapi-ui/feature.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/.automaker/features/qapi-schema/agent-output.md\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/.automaker/features/qapi-controller/feature.json\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"services/api/src/db/schemas/*.schema.js\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/app/(dashboard)/**/*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/qapiMetrics.schema.js\",\n  \"limit\": 100\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/qapiMetrics.routes.js\",\n  \"limit\": 50\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/app/(dashboard)/**/page.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/app/(dashboard)/patients/page.tsx\",\n  \"limit\": 100\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/menu-items/user-management.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/views/admin/PerformanceDashboard.tsx\",\n  \"limit\": 100\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/views/**/*.tsx\"\n}\n\n# QAPI Dashboard - Quality Assurance Performance Improvement System\n\n## Specification\n\n### 1. Problem\nHealthcare organizations need a comprehensive dashboard to track and visualize Quality Assurance and Performance Improvement (QAPI) metrics, initiatives, and outcomes. Currently, there's no centralized UI to view quality metrics, monitor improvement initiatives, generate performance reports, and ensure compliance with CMS Quality Assurance and Performance Improvement requirements.\n\n### 2. Solution\nBuild a comprehensive QAPI dashboard UI that leverages the existing backend API endpoints (`/api/qapi-metrics/*`) to display metrics visualizations, track quality improvement initiatives, generate performance reports, and provide drill-down capabilities with filtering by date range, department, initiative type, and metric category.\n\n### 3. Acceptance Criteria\n- GIVEN a user with appropriate permissions, WHEN they navigate to the QAPI dashboard, THEN they see a summary of key quality metrics with visual charts (trend lines, bar charts) and color-coded status indicators\n- GIVEN a user viewing the dashboard, WHEN they select a specific time period filter, THEN the dashboard updates to show metrics and initiatives for that period with historical trend comparisons\n- GIVEN a user viewing active initiatives, WHEN they click on an initiative, THEN they see detailed information including progress tracking, linked metrics, milestones, and team members\n- GIVEN a user with create permissions, WHEN they add a new quality improvement initiative, THEN they can link metrics, set targets, assign owners, and define success criteria\n- GIVEN a user viewing metric details, WHEN a metric breaches a threshold, THEN the system displays a color-coded alert indicator and shows the threshold comparison\n\n### 4. Files to Modify\n\n| File | Purpose | Action |\n|------|---------|--------|\n| apps/web/src/app/(dashboard)/admin/qapi/page.tsx | Main QAPI dashboard page route | create |\n| apps/web/src/views/qapi/QAPIDashboard.tsx | Main dashboard view component | create |\n| apps/web/src/views/qapi/components/MetricsOverview.tsx | Metrics summary cards with charts | create |\n| apps/web/src/views/qapi/components/InitiativesList.tsx | Active initiatives list view | create |\n| apps/web/src/views/qapi/components/InitiativeDetail.tsx | Initiative detail modal/drawer | create |\n| apps/web/src/views/qapi/components/MetricChart.tsx | Reusable metric visualization component | create |\n| apps/web/src/views/qapi/components/CreateInitiativeDialog.tsx | Form to create new initiative | create |\n| apps/web/src/views/qapi/components/MetricDefinitionsList.tsx | List of available metric definitions | create |\n| apps/web/src/views/qapi/components/FiltersPanel.tsx | Date range, department, category filters | create |\n| apps/web/src/api/qapi.ts | API client for QAPI endpoints | create |\n| apps/web/src/menu-items/admin.tsx | Add QAPI dashboard menu item | create/modify |\n| apps/web/src/types/qapi.ts | TypeScript interfaces for QAPI data | create |\n\n### 5. Implementation Tasks\n\n```tasks\n- [ ] T001: Create TypeScript interfaces for QAPI entities | File: apps/web/src/types/qapi.ts\n- [ ] T002: Create API client with methods for QAPI endpoints | File: apps/web/src/api/qapi.ts\n- [ ] T003: Create main dashboard page route | File: apps/web/src/app/(dashboard)/admin/qapi/page.tsx\n- [ ] T004: Create main dashboard view component with tab layout | File: apps/web/src/views/qapi/QAPIDashboard.tsx\n- [ ] T005: Create metrics overview component with KPI cards | File: apps/web/src/views/qapi/components/MetricsOverview.tsx\n- [ ] T006: Create reusable metric chart component with trend visualization | File: apps/web/src/views/qapi/components/MetricChart.tsx\n- [ ] T007: Create initiatives list component with status indicators | File: apps/web/src/views/qapi/components/InitiativesList.tsx\n- [ ] T008: Create initiative detail view with linked metrics | File: apps/web/src/views/qapi/components/InitiativeDetail.tsx\n- [ ] T009: Create create initiative dialog with form validation | File: apps/web/src/views/qapi/components/CreateInitiativeDialog.tsx\n- [ ] T010: Create metric definitions list component | File: apps/web/src/views/qapi/components/MetricDefinitionsList.tsx\n- [ ] T011: Create filters panel with date range and category filters | File: apps/web/src/views/qapi/components/FiltersPanel.tsx\n- [ ] T012: Add QAPI menu item to admin navigation | File: apps/web/src/menu-items/admin.tsx\n- [ ] T013: Create Playwright verification test | File: apps/web/tests/qapi-ui-verification.spec.ts\n- [ ] T014: Run verification test and delete test file | File: apps/web/tests/qapi-ui-verification.spec.ts\n```\n\n### 6. Verification\n1. Start the development server and navigate to `/admin/qapi`\n2. Verify the dashboard displays metrics overview with charts\n3. Verify filtering by date range updates the displayed data\n4. Verify creating a new initiative opens the form dialog\n5. Verify clicking an initiative shows the detail view with linked metrics\n6. Verify threshold breach indicators are color-coded correctly\n7. Run Playwright test to verify API integration and UI functionality",
+    "generatedAt": "2026-01-01T19:48:00.775Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create TypeScript interfaces for QAPI entities",
+        "filePath": "apps/web/src/types/qapi.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Create API client with methods for QAPI endpoints",
+        "filePath": "apps/web/src/api/qapi.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Create main dashboard page route",
+        "filePath": "apps/web/src/app/(dashboard)/admin/qapi/page.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Create main dashboard view component with tab layout",
+        "filePath": "apps/web/src/views/qapi/QAPIDashboard.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Create metrics overview component with KPI cards",
+        "filePath": "apps/web/src/views/qapi/components/MetricsOverview.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Create reusable metric chart component with trend visualization",
+        "filePath": "apps/web/src/views/qapi/components/MetricChart.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Create initiatives list component with status indicators",
+        "filePath": "apps/web/src/views/qapi/components/InitiativesList.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Create initiative detail view with linked metrics",
+        "filePath": "apps/web/src/views/qapi/components/InitiativeDetail.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Create create initiative dialog with form validation",
+        "filePath": "apps/web/src/views/qapi/components/CreateInitiativeDialog.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Create metric definitions list component",
+        "filePath": "apps/web/src/views/qapi/components/MetricDefinitionsList.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Create filters panel with date range and category filters",
+        "filePath": "apps/web/src/views/qapi/components/FiltersPanel.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Add QAPI menu item to admin navigation",
+        "filePath": "apps/web/src/menu-items/admin.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Create Playwright verification test",
+        "filePath": "apps/web/tests/qapi-ui-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Run verification test and delete test file",
+        "filePath": "apps/web/tests/qapi-ui-verification.spec.ts",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 14,
+    "tasksCompleted": 1,
+    "approvedAt": "2026-01-01T19:48:00.776Z",
+    "currentTaskId": "T002"
+  }
 }

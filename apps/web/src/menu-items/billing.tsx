@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // ASSETS
-import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle, ReceiptItem } from 'iconsax-react';
+import { MoneyRecive, Chart2, DocumentText, Receipt21, RefreshCircle, ReceiptItem, DollarCircle } from 'iconsax-react';
 
 // TYPE
 import { NavItemType } from 'types/menu';
@@ -14,7 +14,8 @@ const icons = {
   analytics: Chart2,
   claims: DocumentText,
   payments: Receipt21,
-  era: ReceiptItem
+  era: ReceiptItem,
+  revenue: DollarCircle
 };
 
 // ==============================|| MENU ITEMS - BILLING ||============================== //
@@ -69,6 +70,20 @@ const hasBillingAccess = () => {
   return false;
 };
 
+// Check if user has revenue permissions
+const hasRevenueAccess = () => {
+  if (isAdmin) {
+    return true;
+  }
+
+  if (Array.isArray(userPermissions)) {
+    return userPermissions.includes('revenue:view') ||
+           userPermissions.includes('revenue:forecast') ||
+           userPermissions.includes('revenue:analyze');
+  }
+  return false;
+};
+
 const billing: NavItemType = {
   id: 'group-billing',
   title: <FormattedMessage id="billing" defaultMessage="Billing" />,
@@ -81,6 +96,14 @@ const billing: NavItemType = {
       type: 'item',
       url: '/billing',
       icon: icons.claims,
+      breadcrumbs: false
+    }] : [],
+    hasRevenueAccess() ? [{
+      id: 'revenue-dashboard',
+      title: <FormattedMessage id="revenue-dashboard" defaultMessage="Revenue Dashboard" />,
+      type: 'item',
+      url: '/revenue',
+      icon: icons.revenue,
       breadcrumbs: false
     }] : [],
     hasBillingAccess() ? [{

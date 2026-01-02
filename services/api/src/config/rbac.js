@@ -42,6 +42,12 @@ export const PERMISSIONS = {
   UPDATE_PAIN_ASSESSMENTS: "update:pain_assessments",
   DELETE_PAIN_ASSESSMENTS: "delete:pain_assessments",
 
+  // Nutrition Assessments
+  VIEW_NUTRITION: "view:nutrition",
+  CREATE_NUTRITION: "create:nutrition",
+  UPDATE_NUTRITION: "update:nutrition",
+  DELETE_NUTRITION: "delete:nutrition",
+
   // Eligibility & Coverage Verification
   ELIGIBILITY_VIEW: "eligibility:view",
   ELIGIBILITY_VERIFY: "eligibility:verify",
@@ -58,6 +64,10 @@ export const PERMISSIONS = {
   // Reports
   VIEW_REPORTS: "view:reports",
   GENERATE_REPORTS: "generate:reports",
+  DELETE_REPORTS: "delete:reports",
+
+  // Patient Details (used by report access)
+  VIEW_PATIENT_DETAILS: "view:patient_details",
 
   // Admin
   MANAGE_USERS: "manage:users",
@@ -91,6 +101,11 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
     PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
     PERMISSIONS.DELETE_PAIN_ASSESSMENTS,
+    // Nutrition Assessments - Admin has all permissions
+    PERMISSIONS.VIEW_NUTRITION,
+    PERMISSIONS.CREATE_NUTRITION,
+    PERMISSIONS.UPDATE_NUTRITION,
+    PERMISSIONS.DELETE_NUTRITION,
     // Eligibility - Admin has all permissions
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
@@ -104,6 +119,8 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.DELETE_USER,
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.GENERATE_REPORTS,
+    PERMISSIONS.DELETE_REPORTS,
+    PERMISSIONS.VIEW_PATIENT_DETAILS,
     PERMISSIONS.MANAGE_USERS,
     PERMISSIONS.MANAGE_ROLES,
     PERMISSIONS.MANAGE_PERMISSIONS,
@@ -128,6 +145,10 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
     PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
     PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
+    // Nutrition Assessments - Doctors can view, create, and update
+    PERMISSIONS.VIEW_NUTRITION,
+    PERMISSIONS.CREATE_NUTRITION,
+    PERMISSIONS.UPDATE_NUTRITION,
     // Eligibility - Doctors can view and verify
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
@@ -135,6 +156,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_USERS,
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.GENERATE_REPORTS,
+    PERMISSIONS.VIEW_PATIENT_DETAILS,
   ],
 
   [ROLES.NURSE]: [
@@ -151,10 +173,16 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
     PERMISSIONS.CREATE_PAIN_ASSESSMENTS,
     PERMISSIONS.UPDATE_PAIN_ASSESSMENTS,
+    // Nutrition Assessments - Nurses can view, create, and update
+    PERMISSIONS.VIEW_NUTRITION,
+    PERMISSIONS.CREATE_NUTRITION,
+    PERMISSIONS.UPDATE_NUTRITION,
     // Eligibility - Nurses can view coverage
     PERMISSIONS.ELIGIBILITY_VIEW,
     // Staff/User Management - Nurses can view staff
     PERMISSIONS.VIEW_USERS,
+    PERMISSIONS.VIEW_REPORTS,
+    PERMISSIONS.VIEW_PATIENT_DETAILS,
   ],
 
   [ROLES.PATIENT]: [PERMISSIONS.VIEW_PATIENT],
@@ -166,12 +194,16 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_MEDICATIONS,
     // Pain Assessments - Staff can view
     PERMISSIONS.VIEW_PAIN_ASSESSMENTS,
+    // Nutrition Assessments - Staff can view
+    PERMISSIONS.VIEW_NUTRITION,
     // Eligibility - Staff can view and verify (billing staff role)
     PERMISSIONS.ELIGIBILITY_VIEW,
     PERMISSIONS.ELIGIBILITY_VERIFY,
     PERMISSIONS.ELIGIBILITY_BATCH_VERIFY,
     // Staff/User Management - Staff can view other staff
     PERMISSIONS.VIEW_USERS,
+    PERMISSIONS.VIEW_REPORTS,
+    PERMISSIONS.VIEW_PATIENT_DETAILS,
   ],
 };
 

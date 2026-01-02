@@ -414,6 +414,357 @@ class RevenueRecognitionController {
   }
 
   // ============================================
+  // CENSUS-BASED FORECASTING ENDPOINTS
+  // ============================================
+
+  /**
+   * GET /api/revenue/forecasts/census
+   * Get current census data
+   */
+  async getCurrentCensus(req, res) {
+    try {
+      const census = await RevenueForecastingService.getCurrentCensus();
+      const locBreakdown = await RevenueForecastingService.getCensusByLevelOfCare();
+
+      res.json({
+        success: true,
+        data: {
+          totalCensus: census,
+          byLevelOfCare: locBreakdown,
+          asOf: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      logger.error('Error getting current census:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve census data',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * GET /api/revenue/forecasts/census/history
+   * Get historical census data
+   */
+  async getHistoricalCensus(req, res) {
+    try {
+      const { months = 12 } = req.query;
+
+      const censusHistory = await RevenueForecastingService.getHistoricalCensus(
+        parseInt(months)
+      );
+
+      res.json({
+        success: true,
+        data: {
+          months: parseInt(months),
+          history: censusHistory
+        }
+      });
+    } catch (error) {
+      logger.error('Error getting historical census:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve historical census',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * POST /api/revenue/forecasts/census-based
+   * Generate census-based revenue forecast
+   */
+  async generateCensusBasedForecast(req, res) {
+    try {
+      const {
+        forecastPeriod,
+        projectedCensusGrowth,
+        locMixOverride,
+        customRates,
+        forecastMonths = 3
+      } = req.body;
+
+      if (!forecastPeriod) {
+        return res.status(400).json({
+          success: false,
+          error: 'forecastPeriod is required (format: YYYY-MM)'
+        });
+      }
+
+      const forecast = await RevenueForecastingService.generateCensusBasedForecast(
+        forecastPeriod,
+        {
+          projectedCensusGrowth: projectedCensusGrowth ? parseFloat(projectedCensusGrowth) : 0,
+          locMixOverride,
+          customRates,
+          forecastMonths: parseInt(forecastMonths)
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Census-based forecast generated successfully',
+        forecast
+      });
+    } catch (error) {
+      logger.error('Error generating census-based forecast:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate census-based forecast',
+        message: error.message
+      });
+    }
+  }
+
+  // ============================================
+  // LOC-BASED FORECASTING ENDPOINTS
+  // ============================================
+
+  /**
+   * GET /api/revenue/forecasts/loc/history
+   * Get historical level of care distribution
+   */
+  async getHistoricalLocDistribution(req, res) {
+    try {
+      const { months = 12 } = req.query;
+
+      const locHistory = await RevenueForecastingService.getHistoricalLocDistribution(
+        parseInt(months)
+      );
+
+      res.json({
+        success: true,
+        data: {
+          months: parseInt(months),
+          history: locHistory
+        }
+      });
+    } catch (error) {
+      logger.error('Error getting historical LOC distribution:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve historical LOC distribution',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * POST /api/revenue/forecasts/loc-based
+   * Generate LOC-based revenue forecast
+   */
+  async generateLocBasedForecast(req, res) {
+    try {
+      const {
+        forecastPeriod,
+        historicalMonths = 12,
+        forecastMonths = 3,
+        locGrowthRates
+      } = req.body;
+
+      if (!forecastPeriod) {
+        return res.status(400).json({
+          success: false,
+          error: 'forecastPeriod is required (format: YYYY-MM)'
+        });
+      }
+
+      const forecast = await RevenueForecastingService.generateLocBasedForecast(
+        forecastPeriod,
+        {
+          historicalMonths: parseInt(historicalMonths),
+          forecastMonths: parseInt(forecastMonths),
+          locGrowthRates
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'LOC-based forecast generated successfully',
+        forecast
+      });
+    } catch (error) {
+      logger.error('Error generating LOC-based forecast:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate LOC-based forecast',
+        message: error.message
+      });
+    }
+  }
+
+  // ============================================
+  // COMPREHENSIVE & SCENARIO FORECASTING
+  // ============================================
+
+  /**
+   * POST /api/revenue/forecasts/comprehensive
+   * Generate comprehensive revenue forecast using multiple models
+   */
+  async generateComprehensiveForecast(req, res) {
+    try {
+      const {
+        forecastPeriod,
+        forecastMonths = 3,
+        historicalMonths = 12,
+        weights = { census: 0.3, loc: 0.3, historical: 0.4 }
+      } = req.body;
+
+      if (!forecastPeriod) {
+        return res.status(400).json({
+          success: false,
+          error: 'forecastPeriod is required (format: YYYY-MM)'
+        });
+      }
+
+      const forecast = await RevenueForecastingService.generateComprehensiveForecast(
+        forecastPeriod,
+        {
+          forecastMonths: parseInt(forecastMonths),
+          historicalMonths: parseInt(historicalMonths),
+          weights
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Comprehensive forecast generated successfully',
+        forecast
+      });
+    } catch (error) {
+      logger.error('Error generating comprehensive forecast:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate comprehensive forecast',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * POST /api/revenue/forecasts/scenarios
+   * Generate scenario-based forecasts (optimistic, base, pessimistic)
+   */
+  async generateScenarioForecasts(req, res) {
+    try {
+      const {
+        forecastPeriod,
+        forecastMonths = 6,
+        scenarios = ['optimistic', 'base', 'pessimistic']
+      } = req.body;
+
+      if (!forecastPeriod) {
+        return res.status(400).json({
+          success: false,
+          error: 'forecastPeriod is required (format: YYYY-MM)'
+        });
+      }
+
+      const forecast = await RevenueForecastingService.generateScenarioForecasts(
+        forecastPeriod,
+        {
+          forecastMonths: parseInt(forecastMonths),
+          scenarios
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Scenario forecasts generated successfully',
+        forecast
+      });
+    } catch (error) {
+      logger.error('Error generating scenario forecasts:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate scenario forecasts',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * POST /api/revenue/forecasts/payer/:id
+   * Generate payer-specific revenue forecast
+   */
+  async generatePayerForecast(req, res) {
+    try {
+      const { id } = req.params;
+      const {
+        forecastPeriod,
+        forecastMonths = 3,
+        historicalMonths = 12
+      } = req.body;
+
+      if (!forecastPeriod) {
+        return res.status(400).json({
+          success: false,
+          error: 'forecastPeriod is required (format: YYYY-MM)'
+        });
+      }
+
+      const forecast = await RevenueForecastingService.generatePayerForecast(
+        parseInt(id),
+        forecastPeriod,
+        {
+          forecastMonths: parseInt(forecastMonths),
+          historicalMonths: parseInt(historicalMonths)
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Payer-specific forecast generated successfully',
+        forecast
+      });
+    } catch (error) {
+      logger.error('Error generating payer forecast:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate payer forecast',
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * GET /api/revenue/forecasts/historical
+   * Get historical revenue data
+   */
+  async getHistoricalRevenue(req, res) {
+    try {
+      const { months = 12, payerId, levelOfCare } = req.query;
+
+      const historicalData = await RevenueForecastingService.getHistoricalRevenue(
+        parseInt(months),
+        {
+          payerId: payerId ? parseInt(payerId) : null,
+          levelOfCare
+        }
+      );
+
+      res.json({
+        success: true,
+        data: {
+          months: parseInt(months),
+          filters: { payerId, levelOfCare },
+          history: historicalData
+        }
+      });
+    } catch (error) {
+      logger.error('Error getting historical revenue:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve historical revenue',
+        message: error.message
+      });
+    }
+  }
+
+  // ============================================
   // CASH FLOW ENDPOINTS
   // ============================================
 

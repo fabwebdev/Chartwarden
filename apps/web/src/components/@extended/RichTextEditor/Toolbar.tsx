@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { Editor } from '@tiptap/react';
 
 // MATERIAL - UI
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -20,19 +20,15 @@ import {
   TextBold,
   TextItalic,
   TextUnderline,
-  TextStrikethrough,
   TextalignLeft,
   TextalignCenter,
   TextalignRight,
-  TextalignJustifycenter,
-  Firstline,
   TaskSquare,
   Code,
-  Quote,
   Minus,
-  Highlighter,
-  Undo,
-  Redo
+  ArrowRotateLeft,
+  Refresh,
+  DocumentText
 } from 'iconsax-react';
 
 // ==============================|| TOOLBAR - STYLED ||============================== //
@@ -101,7 +97,6 @@ interface ToolbarProps {
 }
 
 const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProps) => {
-  const theme = useTheme();
   const iconSize = 18;
 
   // Get current heading level
@@ -111,6 +106,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
     if (editor.isActive('heading', { level: 3 })) return '3';
     if (editor.isActive('heading', { level: 4 })) return '4';
     return '0';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor.isActive('heading')]);
 
   // Handle heading change
@@ -215,7 +211,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Strikethrough"
       >
-        <TextStrikethrough size={iconSize} variant="Bold" />
+        <Minus size={iconSize} variant="Bold" />
       </ToolbarButton>
 
       <ToolbarButton
@@ -224,7 +220,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Highlight"
       >
-        <Highlighter size={iconSize} variant="Bold" />
+        <DocumentText size={iconSize} variant="Bold" />
       </ToolbarButton>
 
       <ToolbarDivider orientation="vertical" />
@@ -236,7 +232,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Bullet List"
       >
-        <Firstline size={iconSize} variant="Bold" />
+        <TaskSquare size={iconSize} variant="Bold" />
       </ToolbarButton>
 
       <ToolbarButton
@@ -245,7 +241,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Numbered List"
       >
-        <TaskSquare size={iconSize} variant="Bold" />
+        <TaskSquare size={iconSize} variant="Outline" />
       </ToolbarButton>
 
       <ToolbarDivider orientation="vertical" />
@@ -287,7 +283,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Quote"
       >
-        <Quote size={iconSize} variant="Bold" />
+        <DocumentText size={iconSize} variant="Outline" />
       </ToolbarButton>
 
       <ToolbarButton
@@ -295,7 +291,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled}
         tooltip="Horizontal Rule"
       >
-        <Minus size={iconSize} variant="Bold" />
+        <Minus size={iconSize} variant="Outline" />
       </ToolbarButton>
 
       <ToolbarDivider orientation="vertical" />
@@ -306,7 +302,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled || !editor.can().undo()}
         tooltip="Undo (Ctrl+Z)"
       >
-        <Undo size={iconSize} variant="Bold" />
+        <ArrowRotateLeft size={iconSize} variant="Bold" />
       </ToolbarButton>
 
       <ToolbarButton
@@ -314,7 +310,7 @@ const Toolbar = ({ editor, variant = 'clinical', disabled = false }: ToolbarProp
         disabled={disabled || !editor.can().redo()}
         tooltip="Redo (Ctrl+Y)"
       >
-        <Redo size={iconSize} variant="Bold" />
+        <Refresh size={iconSize} variant="Bold" />
       </ToolbarButton>
     </>
   );

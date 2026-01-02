@@ -121,3 +121,7 @@ export * from './patientAllergy.schema.js';
 export * from './idgMeetingDocumentation.schema.js';
 export * from './complianceTracking.schema.js';
 export * from './multiScalePainAssessment.schema.js';
+export * from './reportManagement.schema.js';
+export * from './cashFlowProjection.schema.js';
+export * from './chat.schema.js';
+export * from './userPresence.schema.js';

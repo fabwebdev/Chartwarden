@@ -3,7 +3,7 @@
   "category": "Real-time",
   "title": "Team Communication Chat",
   "description": "Implement Real-Time Team Chat with Persistence and Presence\n\nBuild a fully functional team chat system that enables real-time messaging between users, persists message history, and displays user online/offline status.\n\nRequirements:\n\n**Core Chat Functionality:**\n- Create a chat interface with message input and conversation display\n- Implement real-time message delivery using WebSockets or similar technology\n- Support multiple chat rooms or channels\n- Display timestamps for each message\n- Show sender information (name, avatar) for each message\n- Implement message ordering (chronological)\n\n**Message Persistence:**\n- Store all messages in database with sender, timestamp, room/channel ID\n- Load message history when users join a chat room\n- Implement pagination or infinite scroll for loading older messages\n- Ensure messages persist across user sessions and page refreshes\n\n**User Presence Indicators:**\n- Track and display online/offline status for all users\n- Update presence in real-time when users connect/disconnect\n- Show \"typing\" indicator when users are composing messages\n- Display last seen timestamp for offline users\n- Handle presence updates on connection loss/network issues\n\n**Additional Considerations:**\n- Handle connection failures and automatic reconnection\n- Implement rate limiting to prevent message spam\n- Sanitize message content to prevent XSS attacks\n- Optimize for concurrent users in the same chat room\n- Add error handling for failed message delivery\n- Consider delivery confirmation/read receipts\n- Test with multiple simultaneous users across different rooms\n\n**Success Criteria:**\n- Messages appear instantly for all connected users (<500ms latency)\n- Message history loads correctly when joining any room\n- Presence status updates within 5 seconds of user connection changes\n- System handles at least 100 concurrent users reliably",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
@@ -11,13 +11,183 @@
     "socketio-client-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.263Z",
-  "updatedAt": "2025-12-31T05:55:26.263Z",
+  "updatedAt": "2026-01-02T05:26:12.830Z",
   "skipTests": false,
-  "model": "opus",
-  "thinkingLevel": "none",
+  "model": "sonnet",
+  "thinkingLevel": "high",
   "imagePaths": [],
   "textFilePaths": [],
   "branchName": "main",
-  "planningMode": "skip",
-  "requirePlanApproval": false
+  "planningMode": "spec",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T05:15:59.117Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll analyze the codebase to understand the existing structure before generating the specification.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*socket*\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/socket.io*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/package.json\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/schemas/*.schema.js\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/lib/socket/client.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/contexts/SocketContext.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/index.js\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"server\\\\.register.*websocket|fastify-websocket|@fastify/websocket\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/server.js\",\n  \"limit\": 100\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"services/api/**/*socket*.js\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"chat|message|conversation\",\n  \"path\": \"services/api/src/db/schemas\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/services/SocketIO.service.js\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/lib/socket/**/*.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/socketio.routes.js\"\n}\n\n# Team Chat Feature Specification\n\n## 1. Problem\nHealthcare teams need a real-time communication system to collaborate on patient care, coordinate tasks, and share time-sensitive information. Currently, the system lacks a dedicated team chat feature with message persistence, user presence tracking, and real-time delivery, forcing staff to use external communication tools that may not comply with HIPAA requirements.\n\n## 2. Solution\nBuild a HIPAA-compliant team chat system leveraging the existing Socket.IO infrastructure (/chat namespace) with database persistence for message history, real-time presence tracking, and secure authentication. The system will support multiple chat rooms/channels, typing indicators, and message delivery confirmation.\n\n## 3. Acceptance Criteria\n\n- GIVEN an authenticated user WHEN they join a chat room THEN they see the complete message history for that room and their presence is broadcasted to other participants\n- GIVEN multiple users in the same chat room WHEN one user sends a message THEN all other connected users receive the message within 500ms with proper sender information and timestamp\n- GIVEN a user is composing a message WHEN they type in the input field THEN other users in the room see a \"typing\" indicator that disappears when typing stops or message is sent\n- GIVEN a user's connection status changes WHEN they go online/offline THEN their presence status updates within 5 seconds and persists across page refreshes\n- GIVEN a user rejoins a chat room WHEN they disconnect and reconnect THEN they see all messages sent during their absence loaded from the database\n\n## 4. Files to Modify\n\n| File | Purpose | Action |\n|------|---------|--------|\n| services/api/src/db/schemas/chat.schema.js | Define chat room and message database schema | create |\n| services/api/src/db/schemas/userPresence.schema.js | Define user presence/status schema | create |\n| services/api/src/db/schemas/index.js | Export new schemas | modify |\n| services/api/src/controllers/Chat.controller.js | Chat business logic (CRUD operations) | create |\n| services/api/src/routes/chat.routes.js | REST endpoints for chat management | create |\n| services/api/src/routes/api.routes.js | Register chat routes | modify |\n| services/api/src/services/SocketIO.service.js | Enhance chat handlers with persistence | modify |\n| packages/types/src/chat.ts | Shared TypeScript types for chat | create |\n| packages/types/src/index.ts | Export chat types | modify |\n| apps/web/src/lib/socket/types.ts | Add chat event types | modify |\n| apps/web/src/hooks/useChat.ts | React hook for chat operations | create |\n| apps/web/src/hooks/usePresence.ts | React hook for presence tracking | create |\n| apps/web/src/components/chat/ChatRoom.tsx | Main chat room component | create |\n| apps/web/src/components/chat/MessageList.tsx | Message display component | create |\n| apps/web/src/components/chat/MessageInput.tsx | Message input with typing indicator | create |\n| apps/web/src/components/chat/UserPresenceList.tsx | Online users list component | create |\n| apps/web/src/app/(dashboard)/chat/page.tsx | Chat page route | create |\n| apps/web/src/menu-items/chat.tsx | Add chat to navigation menu | create |\n| apps/web/src/menu-items/index.tsx | Include chat menu items | modify |\n\n## 5. Implementation Tasks\n\n```tasks\n- [ ] T001: Create chat room database schema with tables for rooms, messages, and participants | File: services/api/src/db/schemas/chat.schema.js\n- [ ] T002: Create user presence database schema for tracking online/offline status | File: services/api/src/db/schemas/userPresence.schema.js\n- [ ] T003: Export new chat and presence schemas in index | File: services/api/src/db/schemas/index.js\n- [ ] T004: Generate and run database migration for chat tables | File: services/api/database/migrations/\n- [ ] T005: Create Chat controller with methods for creating rooms, fetching messages, and managing participants | File: services/api/src/controllers/Chat.controller.js\n- [ ] T006: Create chat routes for REST API endpoints (GET rooms, GET messages, POST room, etc.) | File: services/api/src/routes/chat.routes.js\n- [ ] T007: Register chat routes in main API routes file | File: services/api/src/routes/api.routes.js\n- [ ] T008: Enhance SocketIO service chat handlers to persist messages to database | File: services/api/src/services/SocketIO.service.js\n- [ ] T009: Add presence tracking handlers to SocketIO service (online/offline events) | File: services/api/src/services/SocketIO.service.js\n- [ ] T010: Create shared TypeScript types for chat (Room, Message, Participant, Presence) | File: packages/types/src/chat.ts\n- [ ] T011: Export chat types from packages/types index | File: packages/types/src/index.ts\n- [ ] T012: Add chat event types to frontend socket types | File: apps/web/src/lib/socket/types.ts\n- [ ] T013: Create useChat hook for chat room operations (join, send, load history) | File: apps/web/src/hooks/useChat.ts\n- [ ] T014: Create usePresence hook for tracking online users and typing indicators | File: apps/web/src/hooks/usePresence.ts\n- [ ] T015: Build ChatRoom component with room selection and message display | File: apps/web/src/components/chat/ChatRoom.tsx\n- [ ] T016: Build MessageList component with infinite scroll and timestamp formatting | File: apps/web/src/components/chat/MessageList.tsx\n- [ ] T017: Build MessageInput component with typing indicator logic | File: apps/web/src/components/chat/MessageInput.tsx\n- [ ] T018: Build UserPresenceList component showing online users with status badges | File: apps/web/src/components/chat/UserPresenceList.tsx\n- [ ] T019: Create chat page route integrating all chat components | File: apps/web/src/app/(dashboard)/chat/page.tsx\n- [ ] T020: Add chat menu item to navigation configuration | File: apps/web/src/menu-items/chat.tsx\n- [ ] T021: Include chat menu items in main menu exports | File: apps/web/src/menu-items/index.tsx\n- [ ] T022: Implement message sanitization to prevent XSS attacks in chat content | File: services/api/src/controllers/Chat.controller.js\n- [ ] T023: Add rate limiting for chat message endpoints to prevent spam | File: services/api/src/routes/chat.routes.js\n- [ ] T024: Create Playwright verification test for chat functionality | File: apps/web/tests/team-chat-verification.spec.ts\n- [ ] T025: Run Playwright test and verify all features work correctly | File: apps/web/tests/team-chat-verification.spec.ts\n- [ ] T026: Delete temporary verification test file | File: apps/web/tests/team-chat-verification.spec.ts\n```\n\n## 6. Verification\n\n**Automated Testing:**\n1. Create and run Playwright test that:\n   - Creates two browser contexts (simulating two users)\n   - Both users authenticate and join the same chat room\n   - User A sends a message, verify User B receives it within 500ms\n   - User B starts typing, verify User A sees typing indicator\n   - Verify message history loads when rejoining room\n   - Test presence status updates on connect/disconnect\n   - Verify XSS prevention by sending HTML/script tags\n\n2. Delete the test file after successful verification\n\n**Manual Testing:**\n1. Open two browser windows, authenticate as different users\n2. Join the same chat room from both windows\n3. Send messages from one window and verify receipt in the other\n4. Test typing indicators appear and disappear correctly\n5. Disconnect one user and verify their status changes to offline\n6. Refresh page and verify message history persists\n7. Send 10+ messages rapidly to test rate limiting\n\n**Performance Testing:**\n1. Test with 10-20 concurrent users in a single room\n2. Verify messages deliver within 500ms even under load\n3. Check database queries are efficient (use indexes on conversationId, timestamp)\n4. Monitor memory usage for connection state tracking",
+    "generatedAt": "2026-01-01T19:48:25.354Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create chat room database schema with tables for rooms, messages, and participants",
+        "filePath": "services/api/src/db/schemas/chat.schema.js",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Create user presence database schema for tracking online/offline status",
+        "filePath": "services/api/src/db/schemas/userPresence.schema.js",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Export new chat and presence schemas in index",
+        "filePath": "services/api/src/db/schemas/index.js",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Generate and run database migration for chat tables",
+        "filePath": "services/api/database/migrations/",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Create Chat controller with methods for creating rooms, fetching messages, and managing participants",
+        "filePath": "services/api/src/controllers/Chat.controller.js",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Create chat routes for REST API endpoints (GET rooms, GET messages, POST room, etc.)",
+        "filePath": "services/api/src/routes/chat.routes.js",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Register chat routes in main API routes file",
+        "filePath": "services/api/src/routes/api.routes.js",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Enhance SocketIO service chat handlers to persist messages to database",
+        "filePath": "services/api/src/services/SocketIO.service.js",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Add presence tracking handlers to SocketIO service (online/offline events)",
+        "filePath": "services/api/src/services/SocketIO.service.js",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Create shared TypeScript types for chat (Room, Message, Participant, Presence)",
+        "filePath": "packages/types/src/chat.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Export chat types from packages/types index",
+        "filePath": "packages/types/src/index.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Add chat event types to frontend socket types",
+        "filePath": "apps/web/src/lib/socket/types.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Create useChat hook for chat room operations (join, send, load history)",
+        "filePath": "apps/web/src/hooks/useChat.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Create usePresence hook for tracking online users and typing indicators",
+        "filePath": "apps/web/src/hooks/usePresence.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Build ChatRoom component with room selection and message display",
+        "filePath": "apps/web/src/components/chat/ChatRoom.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Build MessageList component with infinite scroll and timestamp formatting",
+        "filePath": "apps/web/src/components/chat/MessageList.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Build MessageInput component with typing indicator logic",
+        "filePath": "apps/web/src/components/chat/MessageInput.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Build UserPresenceList component showing online users with status badges",
+        "filePath": "apps/web/src/components/chat/UserPresenceList.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Create chat page route integrating all chat components",
+        "filePath": "apps/web/src/app/(dashboard)/chat/page.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T020",
+        "description": "Add chat menu item to navigation configuration",
+        "filePath": "apps/web/src/menu-items/chat.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T021",
+        "description": "Include chat menu items in main menu exports",
+        "filePath": "apps/web/src/menu-items/index.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T022",
+        "description": "Implement message sanitization to prevent XSS attacks in chat content",
+        "filePath": "services/api/src/controllers/Chat.controller.js",
+        "status": "pending"
+      },
+      {
+        "id": "T023",
+        "description": "Add rate limiting for chat message endpoints to prevent spam",
+        "filePath": "services/api/src/routes/chat.routes.js",
+        "status": "pending"
+      },
+      {
+        "id": "T024",
+        "description": "Create Playwright verification test for chat functionality",
+        "filePath": "apps/web/tests/team-chat-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T025",
+        "description": "Run Playwright test and verify all features work correctly",
+        "filePath": "apps/web/tests/team-chat-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T026",
+        "description": "Delete temporary verification test file",
+        "filePath": "apps/web/tests/team-chat-verification.spec.ts",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 26,
+    "tasksCompleted": 1,
+    "approvedAt": "2026-01-01T19:48:25.355Z",
+    "currentTaskId": "T002"
+  }
 }

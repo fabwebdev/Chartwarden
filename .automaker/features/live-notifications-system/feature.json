@@ -3,7 +3,7 @@
   "category": "Real-time",
   "title": "Live Notifications System",
   "description": "Implement Real-Time Notification System with Toast Notifications and Notification Center\n\nBuild a comprehensive notification system that displays real-time updates to users through both temporary toast messages and a persistent notification center.\n\nRequirements:\n\nToast Notifications:\n- Display temporary pop-up notifications for immediate user feedback\n- Support multiple notification types (success, error, warning, info)\n- Include auto-dismiss functionality with configurable timeout\n- Allow manual dismissal with close button\n- Stack multiple toasts appropriately without overlap\n- Position toasts consistently (e.g., top-right corner)\n- Animate toast entry and exit smoothly\n\nNotification Center:\n- Create a centralized notification inbox accessible from the UI\n- Display notification history with timestamps\n- Show unread count badge on notification center icon\n- Mark notifications as read/unread\n- Allow individual notification dismissal\n- Support bulk actions (mark all as read, clear all)\n- Persist notification history across sessions\n\nReal-Time Functionality:\n- Establish WebSocket or SSE connection for live updates\n- Handle connection failures and automatic reconnection\n- Queue notifications received while offline\n- Ensure notifications trigger immediately when events occur\n- Handle multiple browser tabs/windows gracefully\n\nTechnical Considerations:\n- Design notification data structure (id, type, message, timestamp, read status, metadata)\n- Implement notification state management\n- Create reusable notification components\n- Add appropriate ARIA labels for accessibility\n- Ensure notifications don't interfere with user workflows\n- Set limits on notification history storage\n- Handle edge cases (network interruptions, rapid notification bursts)\n\nSuccess Criteria:\n- Users receive notifications within 1 second of event occurrence\n- Toast notifications are visible and dismissible\n- Notification center maintains complete history\n- System handles at least 100 notifications without performance degradation",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
@@ -11,13 +11,93 @@
     "socketio-client-setup"
   ],
   "createdAt": "2025-12-31T05:55:26.263Z",
-  "updatedAt": "2025-12-31T05:55:26.263Z",
+  "updatedAt": "2026-01-02T05:23:48.762Z",
   "skipTests": false,
-  "model": "opus",
-  "thinkingLevel": "none",
+  "model": "sonnet",
+  "thinkingLevel": "high",
   "imagePaths": [],
   "textFilePaths": [],
   "branchName": "main",
-  "planningMode": "skip",
-  "requirePlanApproval": false
+  "planningMode": "spec",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T05:15:45.842Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll explore the codebase to understand the existing structure for implementing the real-time notification system, then create a specification for your approval.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*socket*\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*notification*\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*toast*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/contexts/SocketContext.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/hooks/useSocket.ts\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/lib/socket/**/*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/lib/socket/types.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/store/socketStore.ts\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/components/**/*\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/app/ProviderWrapper.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/components/third-party/Notistack.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/components/@extended/Snackbar.tsx\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"useSnackbar\",\n  \"path\": \"apps/web/src\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Bash\nInput: {\n  \"command\": \"ls apps/web/src/layout\",\n  \"description\": \"List layout directory structure\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/layout/DashboardLayout/**/*\"\n}\n\n🔧 Tool: Bash\nInput: {\n  \"command\": \"find services/api/src -name \\\"*socket*\\\" -o -name \\\"*notification*\\\" | head -20\",\n  \"description\": \"Find socket and notification files in backend\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/layout/DashboardLayout/Header/HeaderContent/Notification.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/socketio.routes.js\"\n}\n\n🔧 Tool: Bash\nInput: {\n  \"command\": \"find services/api/src -name \\\"*SocketIO*\\\" -o -name \\\"*socket*\\\" | grep -v node_modules\",\n  \"description\": \"Find socket service files\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/services/SocketIO.service.js\",\n  \"limit\": 100\n}\n\n🔧 Tool: Bash\nInput: {\n  \"command\": \"grep -r \\\"NotificationPayload\\\" apps/web/src --include=\\\"*.ts\\\" --include=\\\"*.tsx\\\" | head -5\",\n  \"description\": \"Check how NotificationPayload is used\"\n}\n\nNow I have enough context to create the specification. The codebase already has:\n- Socket.IO infrastructure fully set up (SocketContext, hooks, store)\n- Backend Socket.IO service with notification support\n- Notistack for toast notifications\n- Basic notification UI component\n\nI need to enhance these components to create a complete real-time notification system.\n\n---\n\n## Real-Time Notification System Specification\n\n### 1. Problem\nUsers need immediate feedback about system events and the ability to review past notifications. Currently, there's a basic notification infrastructure but no complete integration between WebSocket notifications, toast displays, and a persistent notification center.\n\n### 2. Solution\nEnhance the existing Socket.IO notification system with a comprehensive toast notification component and fully integrated notification center that displays real-time updates.\n\n### 3. Acceptance Criteria\n- GIVEN a user is logged in, WHEN a notification event occurs, THEN a toast notification appears within 1 second\n- GIVEN multiple notifications arrive, WHEN they are displayed as toasts, THEN they stack vertically without overlapping\n- GIVEN a user clicks the notification bell icon, WHEN the notification center opens, THEN all notifications are displayed with timestamps and unread count\n- GIVEN a user has unread notifications, WHEN they are viewing the notification center, THEN they can mark individual or all notifications as read\n- GIVEN the WebSocket connection drops, WHEN it reconnects, THEN queued notifications are delivered and displayed\n\n### 4. Files to Modify\n\n| File | Purpose | Action |\n|------|---------|--------|\n| apps/web/src/components/notifications/ToastNotification.tsx | Toast component for real-time alerts | create |\n| apps/web/src/components/notifications/NotificationCenter.tsx | Full notification center component | create |\n| apps/web/src/components/notifications/NotificationItem.tsx | Individual notification list item | create |\n| apps/web/src/components/notifications/index.ts | Export barrel file | create |\n| apps/web/src/layout/DashboardLayout/Header/HeaderContent/Notification.tsx | Integrate real notification center | modify |\n| apps/web/src/app/ProviderWrapper.tsx | Add toast notification provider | modify |\n| apps/web/src/store/socketStore.ts | Add toast queue and persistence | modify |\n| apps/web/src/hooks/useSocket.ts | Add useNotificationToast hook | modify |\n\n### 5. Implementation Tasks\n\n```tasks\n- [ ] T001: Create ToastNotification component with auto-dismiss and manual close | File: apps/web/src/components/notifications/ToastNotification.tsx\n- [ ] T002: Create NotificationItem component for notification list display | File: apps/web/src/components/notifications/NotificationItem.tsx\n- [ ] T003: Create NotificationCenter component with full notification history | File: apps/web/src/components/notifications/NotificationCenter.tsx\n- [ ] T004: Create barrel export for notification components | File: apps/web/src/components/notifications/index.ts\n- [ ] T005: Enhance socketStore with toast queue and localStorage persistence | File: apps/web/src/store/socketStore.ts\n- [ ] T006: Add useNotificationToast hook for toast management | File: apps/web/src/hooks/useSocket.ts\n- [ ] T007: Integrate ToastNotification into ProviderWrapper | File: apps/web/src/app/ProviderWrapper.tsx\n- [ ] T008: Replace mock Notification component with real NotificationCenter | File: apps/web/src/layout/DashboardLayout/Header/HeaderContent/Notification.tsx\n- [ ] T009: Create Playwright verification test to ensure notifications work | File: apps/web/tests/notification-system-verification.spec.ts\n- [ ] T010: Run Playwright test to verify notification system | File: apps/web/tests/notification-system-verification.spec.ts\n- [ ] T011: Delete verification test after successful validation | File: apps/web/tests/notification-system-verification.spec.ts\n```\n\n### 6. Verification\n1. Open the application and log in\n2. Trigger a test notification via backend API endpoint\n3. Verify toast notification appears in top-right corner\n4. Verify toast auto-dismisses after timeout\n5. Click notification bell icon to open notification center\n6. Verify notification appears in center with timestamp\n7. Verify unread count badge displays correctly\n8. Mark notification as read and verify badge updates\n9. Verify notifications persist across page refreshes\n10. Run Playwright test to automate verification",
+    "generatedAt": "2026-01-01T19:48:15.216Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create ToastNotification component with auto-dismiss and manual close",
+        "filePath": "apps/web/src/components/notifications/ToastNotification.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Create NotificationItem component for notification list display",
+        "filePath": "apps/web/src/components/notifications/NotificationItem.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Create NotificationCenter component with full notification history",
+        "filePath": "apps/web/src/components/notifications/NotificationCenter.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Create barrel export for notification components",
+        "filePath": "apps/web/src/components/notifications/index.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Enhance socketStore with toast queue and localStorage persistence",
+        "filePath": "apps/web/src/store/socketStore.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Add useNotificationToast hook for toast management",
+        "filePath": "apps/web/src/hooks/useSocket.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Integrate ToastNotification into ProviderWrapper",
+        "filePath": "apps/web/src/app/ProviderWrapper.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Replace mock Notification component with real NotificationCenter",
+        "filePath": "apps/web/src/layout/DashboardLayout/Header/HeaderContent/Notification.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Create Playwright verification test to ensure notifications work",
+        "filePath": "apps/web/tests/notification-system-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Run Playwright test to verify notification system",
+        "filePath": "apps/web/tests/notification-system-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Delete verification test after successful validation",
+        "filePath": "apps/web/tests/notification-system-verification.spec.ts",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 11,
+    "tasksCompleted": 0,
+    "approvedAt": "2026-01-01T19:48:15.217Z",
+    "currentTaskId": "T001"
+  }
 }

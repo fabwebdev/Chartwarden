@@ -14,9 +14,8 @@ import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
 
 // MATERIAL - UI
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 
@@ -193,12 +192,12 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     },
     ref
   ) => {
-    const theme = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Configure TipTap extensions
     const extensions = useMemo(() => {
-      const exts = [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const exts: any[] = [
         StarterKit.configure({
           heading: {
             levels: [1, 2, 3, 4]

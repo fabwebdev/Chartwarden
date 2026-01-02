@@ -6,38 +6,20 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Link from '@mui/material/Link';
-import List from '@mui/material/List';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
 // PROJECT IMPORTS
-import MainCard from 'components/MainCard';
 import IconButton from 'components/@extended/IconButton';
 import Transitions from 'components/@extended/Transitions';
+import NotificationCenter from 'components/notifications/NotificationCenter';
+import { useSocketStore } from 'store/socketStore';
 
 // ASSETS
-import { Gift, MessageText1, Notification, Setting2 } from 'iconsax-react';
-import Avatar from 'components/@extended/Avatar';
+import { Notification } from 'iconsax-react';
 
 // TYPES
 import { ThemeMode } from 'types/config';
-
-const actionSX = {
-  mt: '6px',
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-
-  transform: 'none'
-};
 
 // ==============================|| HEADER CONTENT - NOTIFICATION ||============================== //
 
@@ -46,8 +28,11 @@ const NotificationPage = () => {
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
 
   const anchorRef = useRef<any>(null);
-  const [read] = useState(2);
   const [open, setOpen] = useState(false);
+
+  // Get unread count from socket store
+  const unreadCount = useSocketStore((state) => state.unreadCount);
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -67,15 +52,15 @@ const NotificationPage = () => {
       <IconButton
         color="secondary"
         variant="light"
-        aria-label="open profile"
+        aria-label="open notifications"
         ref={anchorRef}
-        aria-controls={open ? 'profile-grow' : undefined}
+        aria-controls={open ? 'notification-center' : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
         size="large"
         sx={{ color: 'secondary.main', bgcolor: open ? iconBackColorOpen : iconBackColor, p: 1 }}
       >
-        <Badge badgeContent={read} color="success" sx={{ '& .MuiBadge-badge': { top: 2, right: 4 } }}>
+        <Badge badgeContent={unreadCount} color="error" sx={{ '& .MuiBadge-badge': { top: 2, right: 4 } }}>
           <Notification variant="Bold" />
         </Badge>
       </IconButton>
@@ -104,140 +89,17 @@ const NotificationPage = () => {
                 boxShadow: theme.customShadows.z1,
                 borderRadius: 1.5,
                 width: '100%',
-                minWidth: 285,
-                maxWidth: 420,
+                minWidth: 320,
+                maxWidth: 480,
                 [theme.breakpoints.down('md')]: {
-                  maxWidth: 285
+                  maxWidth: 320
                 }
               }}
             >
               <ClickAwayListener onClickAway={handleClose}>
-                <MainCard elevation={0} border={false}>
-                  <Stack direction="row" alignItems="center" justifyContent="space-between">
-                    <Typography variant="h5">Notifications</Typography>
-                    <Link href="#" variant="h6" color="primary">
-                      Mark all read
-                    </Link>
-                  </Stack>
-                  <List
-                    component="nav"
-                    sx={{
-                      '& .MuiListItemButton-root': {
-                        p: 1.5,
-                        my: 1.5,
-                        border: `1px solid ${theme.palette.divider}`,
-                        '&:hover': {
-                          bgcolor: 'primary.lighter',
-                          borderColor: theme.palette.primary.light
-                        },
-                        '& .MuiListItemSecondaryAction-root': { ...actionSX, position: 'relative' }
-                      }
-                    }}
-                  >
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar type="filled">
-                          <Gift size={20} variant="Bold" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="h6">
-                            It&apos;s{' '}
-                            <Typography component="span" variant="subtitle1">
-                              Cristina danny&apos;s
-                            </Typography>{' '}
-                            birthday today.
-                          </Typography>
-                        }
-                        secondary="2 min ago"
-                      />
-                      <ListItemSecondaryAction>
-                        <Typography variant="caption" noWrap>
-                          3:00 AM
-                        </Typography>
-                      </ListItemSecondaryAction>
-                    </ListItemButton>
-
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar type="outlined">
-                          <MessageText1 size={20} variant="Bold" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="h6">
-                            <Typography component="span" variant="subtitle1">
-                              Aida Burg
-                            </Typography>{' '}
-                            commented your post.
-                          </Typography>
-                        }
-                        secondary="5 August"
-                      />
-                      <ListItemSecondaryAction>
-                        <Typography variant="caption" noWrap>
-                          6:00 PM
-                        </Typography>
-                      </ListItemSecondaryAction>
-                    </ListItemButton>
-
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <Setting2 size={20} variant="Bold" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="h6">
-                            Your Profile is Complete &nbsp;
-                            <Typography component="span" variant="subtitle1">
-                              60%
-                            </Typography>{' '}
-                          </Typography>
-                        }
-                        secondary="7 hours ago"
-                      />
-                      <ListItemSecondaryAction>
-                        <Typography variant="caption" noWrap>
-                          2:45 PM
-                        </Typography>
-                      </ListItemSecondaryAction>
-                    </ListItemButton>
-
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar type="combined">C</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="h6">
-                            <Typography component="span" variant="subtitle1">
-                              Cristina Danny
-                            </Typography>{' '}
-                            invited to join{' '}
-                            <Typography component="span" variant="subtitle1">
-                              Meeting.
-                            </Typography>
-                          </Typography>
-                        }
-                        secondary="Daily scrum meeting time"
-                      />
-                      <ListItemSecondaryAction>
-                        <Typography variant="caption" noWrap>
-                          9:10 PM
-                        </Typography>
-                      </ListItemSecondaryAction>
-                    </ListItemButton>
-                  </List>
-                  <Stack direction="row" justifyContent="center">
-                    <Link href="#" variant="h6" color="primary">
-                      View all
-                    </Link>
-                  </Stack>
-                </MainCard>
+                <Box>
+                  <NotificationCenter maxHeight={500} showFilters={true} />
+                </Box>
               </ClickAwayListener>
             </Paper>
           </Transitions>

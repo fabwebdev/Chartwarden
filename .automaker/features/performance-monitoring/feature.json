@@ -3,14 +3,14 @@
   "category": "Monitoring",
   "title": "Application Performance Monitoring",
   "description": "Implement Application Performance Monitoring (APM) System\n\nSet up comprehensive application performance monitoring to track database queries, API response times, and identify system bottlenecks in real-time.\n\nRequirements:\n- Integrate an APM solution (e.g., New Relic, DataDog, Elastic APM, or custom instrumentation)\n- Implement database query monitoring with the following metrics:\n  * Query execution time\n  * Query frequency and patterns\n  * Slow query identification (queries exceeding defined threshold)\n  * Connection pool utilization\n  * Query-level error rates\n- Track API endpoint performance including:\n  * Response time for each endpoint (p50, p95, p99 percentiles)\n  * Request throughput and rate\n  * Error rates and types per endpoint\n  * Payload size monitoring\n- Create automated bottleneck detection:\n  * Identify endpoints consistently exceeding response time thresholds\n  * Flag resource-intensive database queries\n  * Monitor memory and CPU usage patterns\n  * Track third-party service dependencies and latency\n- Set up alerting for performance degradation:\n  * Define thresholds for critical metrics\n  * Configure notifications for anomalies\n- Build dashboards for visualization:\n  * Real-time performance overview\n  * Historical trend analysis\n  * Query performance breakdown\n  * API endpoint comparison\n- Document baseline performance metrics before implementation\n- Ensure minimal overhead from monitoring instrumentation (< 5% performance impact)",
-  "status": "in_progress",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
     "logging-configuration"
   ],
   "createdAt": "2025-12-31T05:55:26.265Z",
-  "updatedAt": "2026-01-01T19:17:32.094Z",
+  "updatedAt": "2026-01-01T19:24:41.427Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",

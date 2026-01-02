@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Nursing Note Entry and Display UI",
   "description": "Create Nursing Notes Management System with Rich Text Editor and History View\n\nBuild a comprehensive nursing notes feature that allows healthcare staff to create, edit, and review patient nursing notes with formatting capabilities.\n\nRequirements:\n\nForm Component:\n- Implement rich text editor supporting common formatting (bold, italic, underline, lists, headings)\n- Include required metadata fields (patient ID, timestamp, nurse name/ID, note type/category)\n- Add auto-save functionality to prevent data loss\n- Validate required fields before submission\n- Provide character count and word count indicators\n- Support mentions/tags for other staff members if applicable\n\nHistory/Display View:\n- Show chronological list of all nursing notes for a patient\n- Display note metadata (author, timestamp, last modified date)\n- Render formatted content with proper styling\n- Implement filtering options (date range, note type, author)\n- Add search functionality within note content\n- Support pagination or infinite scroll for large note histories\n- Provide print/export capabilities for documentation\n\nTechnical Considerations:\n- Choose appropriate rich text editor library (e.g., Quill, TipTap, Draft.js)\n- Implement proper sanitization of HTML content to prevent XSS attacks\n- Ensure HIPAA compliance for storing and transmitting patient data\n- Design responsive layout for both desktop and tablet use\n- Add loading states and error handling for API calls\n- Consider edit/delete permissions and audit trail requirements",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,13 +11,105 @@
     "rich-text-editor-component"
   ],
   "createdAt": "2025-12-31T05:55:26.242Z",
-  "updatedAt": "2025-12-31T05:55:26.242Z",
+  "updatedAt": "2026-01-02T05:23:35.381Z",
   "skipTests": false,
-  "model": "opus",
+  "model": "sonnet",
   "thinkingLevel": "none",
   "imagePaths": [],
   "textFilePaths": [],
   "branchName": "main",
-  "planningMode": "skip",
-  "requirePlanApproval": false
+  "planningMode": "spec",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T05:15:43.837Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll analyze the codebase to understand the existing structure and create a specification for the Nursing Notes Management System.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/patient*/**/*.{tsx,ts,jsx,js}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/schemas/**/*.{ts,js}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/controllers/**/*.{ts,js}\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/routes/**/*.{ts,js}\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/components/@extended/RichTextEditor/index.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/apps/web/src/views/patients-views/NursingClinicalNotePage.tsx\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/db/schemas/nursingClinicalNote.schema.js\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/controllers/patient/NursingClinicalNote.controller.js\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"nursing.*note.*route\",\n  \"output_mode\": \"files_with_matches\",\n  \"glob\": \"**/*.{js,ts}\",\n  \"-i\": true\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/api.routes.js\",\n  \"offset\": 0,\n  \"limit\": 100\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/patient/NursingClinicalNote.routes.js\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"apps/web/src/app/**/nursing*/**/*.{tsx,ts}\"\n}\n\nBased on my analysis of the codebase, I can see that there's already an existing nursing clinical note system with a comprehensive backend implementation. Let me create the specification for the enhanced Nursing Notes Management System.\n\n---\n\n## Nursing Notes Management System with Rich Text Editor and History View\n\n### 1. Problem\nHealthcare staff need a comprehensive interface to create, edit, and review patient nursing notes with rich text formatting capabilities, proper metadata tracking, and chronological history view to maintain HIPAA-compliant clinical documentation.\n\n### 2. Solution\nBuild enhanced UI components for the existing nursing notes backend system, providing a form with rich text editing (using the existing TipTap editor component), metadata fields, auto-save functionality, and a history view with filtering, search, and export capabilities.\n\n### 3. Acceptance Criteria\n- GIVEN a nurse is documenting a patient visit, WHEN they open the nursing note form, THEN they can create notes with rich text formatting (bold, italic, lists, headings) and see character/word counts\n- GIVEN a nurse is entering clinical data, WHEN they type content, THEN the system auto-saves every 30 seconds and validates required fields before final submission\n- GIVEN a clinician needs to review patient history, WHEN they view the nursing notes history, THEN they see a chronological list with filters (date range, note type, author), search functionality, and pagination\n- GIVEN staff need documentation for audits, WHEN they request a note export, THEN the system generates a print-friendly or PDF version with proper formatting and signatures\n- GIVEN the system handles PHI data, WHEN notes are created or transmitted, THEN all content is properly sanitized to prevent XSS and stored with HIPAA-compliant audit trails\n\n### 4. Files to Modify\n\n| File | Purpose | Action |\n|------|---------|--------|\n| apps/web/src/views/nursing-notes/NursingNoteForm.tsx | Main form component with rich text editor | create |\n| apps/web/src/views/nursing-notes/NursingNoteHistory.tsx | History/list view with filtering | create |\n| apps/web/src/views/nursing-notes/NursingNoteCard.tsx | Individual note display card | create |\n| apps/web/src/views/nursing-notes/hooks/useNursingNote.ts | Custom hook for note CRUD operations | create |\n| apps/web/src/views/nursing-notes/hooks/useAutoSave.ts | Auto-save hook with debouncing | create |\n| apps/web/src/views/nursing-notes/utils/sanitize.ts | HTML sanitization utility | create |\n| apps/web/src/views/nursing-notes/index.ts | Barrel export file | create |\n| apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/page.tsx | Main nursing notes page route | create |\n| apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/[noteId]/page.tsx | Individual note view/edit page | create |\n| packages/types/src/nursingNote.ts | TypeScript interfaces for nursing notes | create |\n\n### 5. Implementation Tasks\n\n```tasks\n- [ ] T001: Create TypeScript interfaces and types for nursing notes | File: packages/types/src/nursingNote.ts\n- [ ] T002: Create HTML sanitization utility for XSS prevention | File: apps/web/src/views/nursing-notes/utils/sanitize.ts\n- [ ] T003: Create auto-save custom hook with debouncing | File: apps/web/src/views/nursing-notes/hooks/useAutoSave.ts\n- [ ] T004: Create nursing note CRUD operations hook | File: apps/web/src/views/nursing-notes/hooks/useNursingNote.ts\n- [ ] T005: Create NursingNoteCard component for history display | File: apps/web/src/views/nursing-notes/NursingNoteCard.tsx\n- [ ] T006: Create NursingNoteForm component with rich text editor | File: apps/web/src/views/nursing-notes/NursingNoteForm.tsx\n- [ ] T007: Create NursingNoteHistory component with filters and search | File: apps/web/src/views/nursing-notes/NursingNoteHistory.tsx\n- [ ] T008: Create barrel export file for nursing notes module | File: apps/web/src/views/nursing-notes/index.ts\n- [ ] T009: Create patient nursing notes list page route | File: apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/page.tsx\n- [ ] T010: Create individual note view/edit page route | File: apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/[noteId]/page.tsx\n- [ ] T011: Create Playwright verification test for nursing notes workflow | File: apps/web/tests/nursing-notes-verification.spec.ts\n- [ ] T012: Run Playwright test to verify feature functionality | File: apps/web/tests/nursing-notes-verification.spec.ts\n- [ ] T013: Delete temporary Playwright verification test | File: apps/web/tests/nursing-notes-verification.spec.ts\n```\n\n### 6. Verification\nCreate and run a Playwright test that:\n1. Navigates to a patient's nursing notes page\n2. Creates a new note with rich text content (bold, italic, lists)\n3. Verifies auto-save functionality\n4. Submits the note with required metadata\n5. Filters notes by date range and author\n6. Searches for specific content within notes\n7. Views a note in detail with formatted content\n8. Verifies character/word count display\n9. After successful verification, delete the test file\n\n---",
+    "generatedAt": "2026-01-01T19:29:54.385Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create TypeScript interfaces and types for nursing notes",
+        "filePath": "packages/types/src/nursingNote.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Create HTML sanitization utility for XSS prevention",
+        "filePath": "apps/web/src/views/nursing-notes/utils/sanitize.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Create auto-save custom hook with debouncing",
+        "filePath": "apps/web/src/views/nursing-notes/hooks/useAutoSave.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Create nursing note CRUD operations hook",
+        "filePath": "apps/web/src/views/nursing-notes/hooks/useNursingNote.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Create NursingNoteCard component for history display",
+        "filePath": "apps/web/src/views/nursing-notes/NursingNoteCard.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Create NursingNoteForm component with rich text editor",
+        "filePath": "apps/web/src/views/nursing-notes/NursingNoteForm.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Create NursingNoteHistory component with filters and search",
+        "filePath": "apps/web/src/views/nursing-notes/NursingNoteHistory.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Create barrel export file for nursing notes module",
+        "filePath": "apps/web/src/views/nursing-notes/index.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Create patient nursing notes list page route",
+        "filePath": "apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/page.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Create individual note view/edit page route",
+        "filePath": "apps/web/src/app/(dashboard)/patients/nursing-notes/[patientId]/[noteId]/page.tsx",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Create Playwright verification test for nursing notes workflow",
+        "filePath": "apps/web/tests/nursing-notes-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Run Playwright test to verify feature functionality",
+        "filePath": "apps/web/tests/nursing-notes-verification.spec.ts",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Delete temporary Playwright verification test",
+        "filePath": "apps/web/tests/nursing-notes-verification.spec.ts",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 13,
+    "tasksCompleted": 5,
+    "approvedAt": "2026-01-01T19:29:54.385Z",
+    "currentTaskId": "T006"
+  }
 }

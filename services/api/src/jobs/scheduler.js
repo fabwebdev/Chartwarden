@@ -3,6 +3,7 @@ import { recalculateAllCaps } from './capRecalculation.job.js';
 import { processCertificationAlerts, checkOverdueCertifications } from './certificationAlerts.job.js';
 import { runRetentionJob, checkRetentionCompliance } from './auditRetention.job.js';
 import { processComplianceAlerts, checkOverdueDocumentation, generateMonthlyComplianceReport } from './idgComplianceAlerts.job.js';
+import { processScheduledReports, triggerScheduledReports } from './scheduledReports.job.js';
 
 import { logger } from '../utils/logger.js';
 /**
@@ -148,6 +149,26 @@ class JobScheduler {
       })
     );
 
+    // ============================================================================
+    // SCHEDULED REPORTS PROCESSING
+    // ============================================================================
+
+    // Scheduled Reports - Every 5 minutes
+    // Checks for reports due and executes them with delivery
+    this.jobs.push(
+      cron.schedule('*/5 * * * *', async () => {
+        logger.info('Running scheduled reports processing')
+        try {
+          await processScheduledReports();
+        } catch (error) {
+          logger.error('Scheduled reports processing failed:', error)
+        }
+      }, {
+        scheduled: true,
+        timezone: process.env.TZ || 'America/New_York'
+      })
+    );
+
     logger.info(`Initialized ${this.jobs.length} scheduled jobs`)
   }
 
@@ -184,6 +205,8 @@ class JobScheduler {
       case 'idg-monthly-report':
         const now = new Date();
         return await generateMonthlyComplianceReport(now.getMonth() + 1, now.getFullYear());
+      case 'scheduled-reports':
+        return await triggerScheduledReports();
       default:
         throw new Error(`Unknown job: ${jobName}`);
     }

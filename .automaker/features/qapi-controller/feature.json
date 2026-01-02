@@ -3,7 +3,7 @@
   "category": "API",
   "title": "QAPI Controller",
   "description": "Implement QAPI Metrics Controller for Quality Tracking and Improvement Initiatives\n\nCreate a comprehensive controller to manage QAPI (Quality Assurance and Performance Improvement) metrics tracking, reporting, and improvement initiative lifecycle management.\n\nRequirements:\n- Design and implement RESTful API endpoints for QAPI metrics CRUD operations\n- Support creating, reading, updating, and deleting quality metrics and performance indicators\n- Implement endpoints for managing improvement initiatives with status tracking (planned, in-progress, completed, on-hold)\n- Enable linking metrics to specific improvement initiatives\n- Provide data aggregation and filtering capabilities (by date range, department, metric type, initiative status)\n- Implement input validation and error handling with meaningful error messages\n- Support metric trend analysis over time periods\n- Include pagination for list endpoints\n- Add proper authentication and authorization middleware\n- Document API endpoints with request/response schemas\n\nData Management:\n- Define data models for metrics (type, value, target, measurement date, responsible party)\n- Define data models for initiatives (title, description, goals, timeline, status, assigned team)\n- Establish relationships between metrics and initiatives\n- Implement data persistence layer with appropriate database queries\n\nTesting and Documentation:\n- Write unit tests for controller logic\n- Create integration tests for API endpoints\n- Document endpoint specifications (OpenAPI/Swagger recommended)\n- Include example requests and responses in documentation",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
@@ -11,7 +11,7 @@
     "casl-authorization"
   ],
   "createdAt": "2025-12-31T05:55:26.251Z",
-  "updatedAt": "2025-12-31T05:55:26.251Z",
+  "updatedAt": "2026-01-01T19:32:59.255Z",
   "skipTests": false,
   "model": "opus",
   "thinkingLevel": "none",
@@ -19,5 +19,6 @@
   "textFilePaths": [],
   "branchName": "main",
   "planningMode": "skip",
-  "requirePlanApproval": false
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-01T19:26:45.975Z"
 }

@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // ASSETS
-import {BrifecaseTick,User,KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag,Unlock, Setting2 } from 'iconsax-react';
+import {BrifecaseTick,User,KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag,Unlock, Setting2, People } from 'iconsax-react';
 
 // TYPE
 import { NavItemType } from 'types/menu';
@@ -21,6 +21,7 @@ const icons = {
   permissions: Unlock,
   roles: BrifecaseTick,
   adminDashboard: Setting2,
+  staff: People,
 };
 
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
@@ -93,6 +94,15 @@ const userManagement: NavItemType = {
         type: 'item',
         url: '/users',
         icon: icons.users,
+        breadcrumbs: false
+    }] : [],
+    // Staff Directory - shown to admins and users with staff permissions
+    (isAdmin || hasPermission('manage:staff') || hasPermission('view:staff')) ? [{
+        id: 'staff-directory',
+        title: <FormattedMessage id="Staff Directory" />,
+        type: 'item',
+        url: '/admin/staff',
+        icon: icons.staff,
         breadcrumbs: false
     }] : []
   ),

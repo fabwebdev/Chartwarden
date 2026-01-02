@@ -430,6 +430,345 @@ export default async function revenueRecognitionRoutes(fastify, options) {
   );
 
   // ============================================
+  // CENSUS-BASED FORECASTING ENDPOINTS
+  // ============================================
+
+  /**
+   * 11. Get current census data
+   * GET /api/revenue/forecasts/census
+   * Permission: revenue:view
+   */
+  fastify.get(
+    '/forecasts/census',
+    {
+      preHandler: checkPermission('revenue:view'),
+      schema: {
+        description: 'Get current census and level of care breakdown',
+        tags: ['Revenue Forecasting - Census'],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.getCurrentCensus.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 12. Get historical census data
+   * GET /api/revenue/forecasts/census/history
+   * Permission: revenue:view
+   */
+  fastify.get(
+    '/forecasts/census/history',
+    {
+      preHandler: checkPermission('revenue:view'),
+      schema: {
+        description: 'Get historical census data by month',
+        tags: ['Revenue Forecasting - Census'],
+        querystring: {
+          type: 'object',
+          properties: {
+            months: { type: 'number', default: 12, description: 'Number of months of history' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.getHistoricalCensus.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 13. Generate census-based revenue forecast
+   * POST /api/revenue/forecasts/census-based
+   * Permission: revenue:forecast
+   */
+  fastify.post(
+    '/forecasts/census-based',
+    {
+      preHandler: checkPermission('revenue:forecast'),
+      schema: {
+        description: 'Generate revenue forecast based on census and LOC mix',
+        tags: ['Revenue Forecasting - Census'],
+        body: {
+          type: 'object',
+          required: ['forecastPeriod'],
+          properties: {
+            forecastPeriod: { type: 'string', description: 'Start period for forecast (YYYY-MM)' },
+            projectedCensusGrowth: { type: 'number', description: 'Monthly census growth rate (e.g., 0.02 for 2%)' },
+            locMixOverride: { type: 'object', description: 'Override LOC distribution percentages' },
+            customRates: { type: 'object', description: 'Custom payment rates by LOC' },
+            forecastMonths: { type: 'number', default: 3, description: 'Number of months to forecast' }
+          }
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              forecast: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.generateCensusBasedForecast.bind(RevenueRecognitionController)
+  );
+
+  // ============================================
+  // LOC-BASED FORECASTING ENDPOINTS
+  // ============================================
+
+  /**
+   * 14. Get historical LOC distribution
+   * GET /api/revenue/forecasts/loc/history
+   * Permission: revenue:view
+   */
+  fastify.get(
+    '/forecasts/loc/history',
+    {
+      preHandler: checkPermission('revenue:view'),
+      schema: {
+        description: 'Get historical level of care distribution by month',
+        tags: ['Revenue Forecasting - LOC'],
+        querystring: {
+          type: 'object',
+          properties: {
+            months: { type: 'number', default: 12, description: 'Number of months of history' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.getHistoricalLocDistribution.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 15. Generate LOC-based revenue forecast
+   * POST /api/revenue/forecasts/loc-based
+   * Permission: revenue:forecast
+   */
+  fastify.post(
+    '/forecasts/loc-based',
+    {
+      preHandler: checkPermission('revenue:forecast'),
+      schema: {
+        description: 'Generate revenue forecast based on level of care trends',
+        tags: ['Revenue Forecasting - LOC'],
+        body: {
+          type: 'object',
+          required: ['forecastPeriod'],
+          properties: {
+            forecastPeriod: { type: 'string', description: 'Start period for forecast (YYYY-MM)' },
+            historicalMonths: { type: 'number', default: 12, description: 'Months of historical data to analyze' },
+            forecastMonths: { type: 'number', default: 3, description: 'Number of months to forecast' },
+            locGrowthRates: { type: 'object', description: 'Custom growth rates by LOC' }
+          }
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              forecast: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.generateLocBasedForecast.bind(RevenueRecognitionController)
+  );
+
+  // ============================================
+  // COMPREHENSIVE FORECASTING ENDPOINTS
+  // ============================================
+
+  /**
+   * 16. Generate comprehensive revenue forecast
+   * POST /api/revenue/forecasts/comprehensive
+   * Permission: revenue:forecast
+   */
+  fastify.post(
+    '/forecasts/comprehensive',
+    {
+      preHandler: checkPermission('revenue:forecast'),
+      schema: {
+        description: 'Generate comprehensive forecast using multiple models (census, LOC, historical)',
+        tags: ['Revenue Forecasting - Comprehensive'],
+        body: {
+          type: 'object',
+          required: ['forecastPeriod'],
+          properties: {
+            forecastPeriod: { type: 'string', description: 'Start period for forecast (YYYY-MM)' },
+            forecastMonths: { type: 'number', default: 3, description: 'Number of months to forecast' },
+            historicalMonths: { type: 'number', default: 12, description: 'Months of historical data' },
+            weights: {
+              type: 'object',
+              description: 'Model weights (must sum to 1.0)',
+              properties: {
+                census: { type: 'number', default: 0.3 },
+                loc: { type: 'number', default: 0.3 },
+                historical: { type: 'number', default: 0.4 }
+              }
+            }
+          }
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              forecast: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.generateComprehensiveForecast.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 17. Generate scenario-based forecasts
+   * POST /api/revenue/forecasts/scenarios
+   * Permission: revenue:forecast
+   */
+  fastify.post(
+    '/forecasts/scenarios',
+    {
+      preHandler: checkPermission('revenue:forecast'),
+      schema: {
+        description: 'Generate scenario-based forecasts (optimistic, base, pessimistic)',
+        tags: ['Revenue Forecasting - Scenarios'],
+        body: {
+          type: 'object',
+          required: ['forecastPeriod'],
+          properties: {
+            forecastPeriod: { type: 'string', description: 'Start period for forecast (YYYY-MM)' },
+            forecastMonths: { type: 'number', default: 6, description: 'Number of months to forecast' },
+            scenarios: {
+              type: 'array',
+              items: { type: 'string', enum: ['optimistic', 'base', 'pessimistic'] },
+              default: ['optimistic', 'base', 'pessimistic']
+            }
+          }
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              forecast: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.generateScenarioForecasts.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 18. Generate payer-specific forecast
+   * POST /api/revenue/forecasts/payer/:id
+   * Permission: revenue:forecast
+   */
+  fastify.post(
+    '/forecasts/payer/:id',
+    {
+      preHandler: checkPermission('revenue:forecast'),
+      schema: {
+        description: 'Generate payer-specific revenue forecast',
+        tags: ['Revenue Forecasting - Payer'],
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: {
+            id: { type: 'number', description: 'Payer ID' }
+          }
+        },
+        body: {
+          type: 'object',
+          required: ['forecastPeriod'],
+          properties: {
+            forecastPeriod: { type: 'string', description: 'Start period for forecast (YYYY-MM)' },
+            forecastMonths: { type: 'number', default: 3, description: 'Number of months to forecast' },
+            historicalMonths: { type: 'number', default: 12, description: 'Months of historical data' }
+          }
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+              forecast: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.generatePayerForecast.bind(RevenueRecognitionController)
+  );
+
+  /**
+   * 19. Get historical revenue data
+   * GET /api/revenue/forecasts/historical
+   * Permission: revenue:view
+   */
+  fastify.get(
+    '/forecasts/historical',
+    {
+      preHandler: checkPermission('revenue:view'),
+      schema: {
+        description: 'Get historical revenue data for analysis',
+        tags: ['Revenue Forecasting - Historical'],
+        querystring: {
+          type: 'object',
+          properties: {
+            months: { type: 'number', default: 12, description: 'Number of months of history' },
+            payerId: { type: 'number', description: 'Filter by payer ID' },
+            levelOfCare: { type: 'string', description: 'Filter by level of care' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: { type: 'object' }
+            }
+          }
+        }
+      }
+    },
+    RevenueRecognitionController.getHistoricalRevenue.bind(RevenueRecognitionController)
+  );
+
+  // ============================================
   // CASH FLOW ENDPOINTS
   // ============================================
 

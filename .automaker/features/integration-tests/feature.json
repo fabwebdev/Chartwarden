@@ -3,20 +3,154 @@
   "category": "Testing",
   "title": "Integration Tests",
   "description": "Integration Test Suite for Critical Workflows and API Endpoints\n\nDevelop comprehensive integration tests that verify the correct interaction between different components, services, and API endpoints across critical user workflows.\n\nRequirements:\n- Identify and document all critical user workflows (e.g., authentication, data creation/modification, checkout process)\n- Create integration tests for each major API endpoint covering:\n  - Successful request/response cycles\n  - Error handling and validation\n  - Authentication/authorization checks\n  - Data persistence verification\n- Test end-to-end workflows that span multiple API calls or services\n- Include database state verification before and after operations\n- Test edge cases such as:\n  - Concurrent requests\n  - Invalid or malformed data\n  - Missing or expired authentication tokens\n  - Rate limiting behavior\n- Set up test database/environment isolation to prevent interference\n- Ensure tests are idempotent and can run in any order\n- Add CI/CD integration to run tests automatically on pull requests\n- Achieve minimum 80% coverage of critical paths\n- Document test scenarios and expected outcomes",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
     "unit-tests-infrastructure"
   ],
   "createdAt": "2025-12-31T05:55:26.264Z",
-  "updatedAt": "2025-12-31T05:55:26.264Z",
+  "updatedAt": "2026-01-02T05:28:10.171Z",
   "skipTests": false,
-  "model": "opus",
-  "thinkingLevel": "none",
+  "model": "sonnet",
+  "thinkingLevel": "ultrathink",
   "imagePaths": [],
   "textFilePaths": [],
   "branchName": "main",
-  "planningMode": "skip",
-  "requirePlanApproval": false
+  "planningMode": "spec",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-02T05:27:02.919Z",
+  "planSpec": {
+    "status": "approved",
+    "version": 1,
+    "reviewedByUser": false,
+    "content": "I'll analyze the codebase to understand the current testing infrastructure and then generate a comprehensive specification for the integration test suite.\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.test.js\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.test.ts\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.spec.js\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"**/*.spec.ts\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/jest.config.cjs\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/tests/setup.js\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/tests/reportsREST.test.js\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/tests/qapi.test.js\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"export (default )?app\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api\",\n  \"glob\": \"*.js\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/server.js\"\n}\n\n🔧 Tool: Grep\nInput: {\n  \"pattern\": \"buildApp|createApp\",\n  \"path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api\",\n  \"glob\": \"*.js\",\n  \"output_mode\": \"files_with_matches\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/services/api/src/routes/api.routes.js\",\n  \"limit\": 100\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \"services/api/src/controllers/*.controller.js\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/.github/workflows\"\n}\n\n🔧 Tool: Glob\nInput: {\n  \"pattern\": \".github/workflows/*.yml\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/turbo.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/package.json\"\n}\n\n🔧 Tool: Read\nInput: {\n  \"file_path\": \"/Users/fabrice/Sites/chartwarden/Chartwarden/.github/workflows/ci.yml\"\n}\n\nNow I'll generate the specification for the integration test suite based on my analysis of the codebase.\n\n---\n\n## Integration Test Suite for Critical Workflows and API Endpoints\n\n### 1. Problem\nThe Chartwarden hospice EHR system currently lacks comprehensive integration tests to verify that critical workflows (authentication, patient management, clinical assessments, billing, etc.) function correctly across multiple components, services, and database operations. This creates risks for production deployments and makes it difficult to catch regressions when modifying interconnected features.\n\n### 2. Solution\nImplement a comprehensive integration testing framework using Jest that validates end-to-end workflows, API endpoint interactions, database state changes, authentication/authorization flows, and error handling across critical hospice EHR operations.\n\n### 3. Acceptance Criteria\n\n**AC1**: GIVEN a critical user workflow (e.g., patient admission, clinical assessment), WHEN integration tests run, THEN all API endpoints in the workflow execute successfully with valid data persistence\n\n**AC2**: GIVEN an API endpoint with authentication requirements, WHEN integration tests execute with invalid/missing credentials, THEN appropriate 401/403 responses are returned with audit logging\n\n**AC3**: GIVEN concurrent API requests to the same resource, WHEN integration tests run with race conditions, THEN data integrity is maintained and appropriate locking/transaction handling prevents corruption\n\n**AC4**: GIVEN the test suite execution in CI/CD, WHEN tests run on pull requests, THEN minimum 80% coverage of critical API paths is achieved with idempotent, order-independent tests\n\n**AC5**: GIVEN failed integration tests, WHEN reviewing results, THEN clear error messages indicate which workflow step failed, expected vs actual database state, and relevant API responses\n\n### 4. Files to Modify\n\n| File | Purpose | Action |\n|------|---------|--------|\n| services/api/tests/integration/setup.js | Global integration test setup with database initialization | create |\n| services/api/tests/integration/teardown.js | Global integration test teardown with database cleanup | create |\n| services/api/tests/integration/helpers/testDb.js | Test database utilities (fixtures, cleanup, state verification) | create |\n| services/api/tests/integration/helpers/testServer.js | Test server builder with full middleware stack | create |\n| services/api/tests/integration/helpers/authHelper.js | Authentication helpers for test users/sessions | create |\n| services/api/tests/integration/workflows/authentication.integration.test.js | Auth workflow tests (sign-up, sign-in, session, permissions) | create |\n| services/api/tests/integration/workflows/patient-management.integration.test.js | Patient CRUD workflow tests | create |\n| services/api/tests/integration/workflows/clinical-assessment.integration.test.js | Clinical assessments workflow tests (HOPE, pain, vitals) | create |\n| services/api/tests/integration/workflows/billing.integration.test.js | Billing workflow tests (claims, eligibility, ERA processing) | create |\n| services/api/tests/integration/workflows/care-coordination.integration.test.js | IDG meetings, care plans, certifications workflow | create |\n| services/api/tests/integration/endpoints/patients.integration.test.js | Patient API endpoint integration tests | create |\n| services/api/tests/integration/endpoints/medications.integration.test.js | Medication API endpoint integration tests | create |\n| services/api/tests/integration/endpoints/billing.integration.test.js | Billing API endpoint integration tests | create |\n| services/api/tests/integration/edge-cases/concurrency.integration.test.js | Concurrent request handling tests | create |\n| services/api/tests/integration/edge-cases/validation.integration.test.js | Input validation and malformed data tests | create |\n| services/api/tests/integration/edge-cases/rate-limiting.integration.test.js | Rate limiting behavior tests | create |\n| services/api/jest.integration.config.cjs | Jest configuration for integration tests | create |\n| services/api/package.json | Add integration test scripts | modify |\n| .github/workflows/ci.yml | Add integration test job to CI pipeline | modify |\n\n### 5. Implementation Tasks\n\n```tasks\n- [ ] T001: Create integration test infrastructure and helpers | File: services/api/tests/integration/setup.js\n- [ ] T002: Implement test database utilities with fixtures and cleanup | File: services/api/tests/integration/helpers/testDb.js\n- [ ] T003: Create test server builder with full Fastify app initialization | File: services/api/tests/integration/helpers/testServer.js\n- [ ] T004: Implement authentication helpers for creating test users and sessions | File: services/api/tests/integration/helpers/authHelper.js\n- [ ] T005: Create authentication workflow integration tests | File: services/api/tests/integration/workflows/authentication.integration.test.js\n- [ ] T006: Create patient management workflow integration tests | File: services/api/tests/integration/workflows/patient-management.integration.test.js\n- [ ] T007: Create clinical assessment workflow integration tests | File: services/api/tests/integration/workflows/clinical-assessment.integration.test.js\n- [ ] T008: Create billing workflow integration tests | File: services/api/tests/integration/workflows/billing.integration.test.js\n- [ ] T009: Create care coordination workflow integration tests | File: services/api/tests/integration/workflows/care-coordination.integration.test.js\n- [ ] T010: Create patient API endpoint integration tests | File: services/api/tests/integration/endpoints/patients.integration.test.js\n- [ ] T011: Create medication API endpoint integration tests | File: services/api/tests/integration/endpoints/medications.integration.test.js\n- [ ] T012: Create billing API endpoint integration tests | File: services/api/tests/integration/endpoints/billing.integration.test.js\n- [ ] T013: Create concurrency edge case tests | File: services/api/tests/integration/edge-cases/concurrency.integration.test.js\n- [ ] T014: Create validation edge case tests | File: services/api/tests/integration/edge-cases/validation.integration.test.js\n- [ ] T015: Create rate limiting edge case tests | File: services/api/tests/integration/edge-cases/rate-limiting.integration.test.js\n- [ ] T016: Configure Jest for integration tests | File: services/api/jest.integration.config.cjs\n- [ ] T017: Add integration test scripts to package.json | File: services/api/package.json\n- [ ] T018: Update CI pipeline with integration test job | File: .github/workflows/ci.yml\n- [ ] T019: Run integration tests and verify coverage thresholds | File: services/api\n- [ ] T020: Create verification test with Playwright for integration suite | File: apps/web/tests/integration-test-suite-verification.spec.ts\n```\n\n### 6. Verification\n\n**Manual Verification**:\n1. Run `npm run test:integration` in services/api directory\n2. Verify all integration tests pass with minimum 80% coverage\n3. Confirm tests are idempotent (can run multiple times without failure)\n4. Check test execution time is reasonable (<5 minutes for full suite)\n5. Verify CI pipeline runs integration tests on pull requests\n\n**Automated Verification with Playwright**:\n1. Create temporary Playwright test that verifies:\n   - Integration test suite exists and is configured\n   - Tests can execute successfully\n   - Database isolation works correctly\n   - Test server starts and stops cleanly\n2. Run the verification test\n3. Delete the verification test after confirmation\n\n**Success Criteria**:\n- All integration tests pass\n- Code coverage ≥80% for critical API endpoints\n- Tests complete in <5 minutes\n- No test interference or order dependencies\n- CI pipeline includes integration test job\n\n---",
+    "generatedAt": "2026-01-02T05:28:10.169Z",
+    "tasks": [
+      {
+        "id": "T001",
+        "description": "Create integration test infrastructure and helpers",
+        "filePath": "services/api/tests/integration/setup.js",
+        "status": "pending"
+      },
+      {
+        "id": "T002",
+        "description": "Implement test database utilities with fixtures and cleanup",
+        "filePath": "services/api/tests/integration/helpers/testDb.js",
+        "status": "pending"
+      },
+      {
+        "id": "T003",
+        "description": "Create test server builder with full Fastify app initialization",
+        "filePath": "services/api/tests/integration/helpers/testServer.js",
+        "status": "pending"
+      },
+      {
+        "id": "T004",
+        "description": "Implement authentication helpers for creating test users and sessions",
+        "filePath": "services/api/tests/integration/helpers/authHelper.js",
+        "status": "pending"
+      },
+      {
+        "id": "T005",
+        "description": "Create authentication workflow integration tests",
+        "filePath": "services/api/tests/integration/workflows/authentication.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T006",
+        "description": "Create patient management workflow integration tests",
+        "filePath": "services/api/tests/integration/workflows/patient-management.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T007",
+        "description": "Create clinical assessment workflow integration tests",
+        "filePath": "services/api/tests/integration/workflows/clinical-assessment.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T008",
+        "description": "Create billing workflow integration tests",
+        "filePath": "services/api/tests/integration/workflows/billing.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T009",
+        "description": "Create care coordination workflow integration tests",
+        "filePath": "services/api/tests/integration/workflows/care-coordination.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T010",
+        "description": "Create patient API endpoint integration tests",
+        "filePath": "services/api/tests/integration/endpoints/patients.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T011",
+        "description": "Create medication API endpoint integration tests",
+        "filePath": "services/api/tests/integration/endpoints/medications.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T012",
+        "description": "Create billing API endpoint integration tests",
+        "filePath": "services/api/tests/integration/endpoints/billing.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T013",
+        "description": "Create concurrency edge case tests",
+        "filePath": "services/api/tests/integration/edge-cases/concurrency.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T014",
+        "description": "Create validation edge case tests",
+        "filePath": "services/api/tests/integration/edge-cases/validation.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T015",
+        "description": "Create rate limiting edge case tests",
+        "filePath": "services/api/tests/integration/edge-cases/rate-limiting.integration.test.js",
+        "status": "pending"
+      },
+      {
+        "id": "T016",
+        "description": "Configure Jest for integration tests",
+        "filePath": "services/api/jest.integration.config.cjs",
+        "status": "pending"
+      },
+      {
+        "id": "T017",
+        "description": "Add integration test scripts to package.json",
+        "filePath": "services/api/package.json",
+        "status": "pending"
+      },
+      {
+        "id": "T018",
+        "description": "Update CI pipeline with integration test job",
+        "filePath": ".github/workflows/ci.yml",
+        "status": "pending"
+      },
+      {
+        "id": "T019",
+        "description": "Run integration tests and verify coverage thresholds",
+        "filePath": "services/api",
+        "status": "pending"
+      },
+      {
+        "id": "T020",
+        "description": "Create verification test with Playwright for integration suite",
+        "filePath": "apps/web/tests/integration-test-suite-verification.spec.ts",
+        "status": "pending"
+      }
+    ],
+    "tasksTotal": 20,
+    "tasksCompleted": 0,
+    "approvedAt": "2026-01-02T05:28:10.170Z",
+    "currentTaskId": "T001"
+  }
 }
