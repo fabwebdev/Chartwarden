@@ -42,7 +42,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Determine version
         id: version
@@ -123,7 +123,7 @@ jobs:
       url: ${{ vars.STAGING_URL }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure cloud credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -208,7 +208,7 @@ jobs:
       url: ${{ vars.PRODUCTION_URL }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure cloud credentials
         uses: aws-actions/configure-aws-credentials@v4
