@@ -12,7 +12,7 @@ export async function GET() {
   const targetUrl = `${apiBase}/his-pdf/generate-his-pdf`;
 
   try {
-    const incomingHeaders = headers();
+    const incomingHeaders = await headers();
     const cookie = incomingHeaders.get('cookie');
 
     const upstreamResponse = await fetch(targetUrl, {
