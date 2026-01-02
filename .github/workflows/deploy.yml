@@ -387,7 +387,7 @@ jobs:
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
       - name: Send email notification
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@v7
         if: vars.NOTIFY_EMAIL != ''
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
