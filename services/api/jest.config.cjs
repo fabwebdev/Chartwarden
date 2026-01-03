@@ -44,9 +44,8 @@ module.exports = {
   ],
   transform: {},
   verbose: true,
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1'
-  },
+  // Note: No moduleNameMapper needed with experimental VM modules
+  // Node.js handles .js extensions natively in ES module mode
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,

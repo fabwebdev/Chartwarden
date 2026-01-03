@@ -125,3 +125,31 @@ export * from './reportManagement.schema.js';
 export * from './cashFlowProjection.schema.js';
 export * from './chat.schema.js';
 export * from './userPresence.schema.js';
+
+// Better Auth Relations
+import { relations } from 'drizzle-orm';
+import { users } from './user.schema.js';
+import { sessions } from './session.schema.js';
+import { accounts } from './account.schema.js';
+
+// User has many sessions and accounts
+export const usersRelations = relations(users, ({ many }) => ({
+  sessions: many(sessions),
+  accounts: many(accounts),
+}));
+
+// Session belongs to one user
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+// Account belongs to one user
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));

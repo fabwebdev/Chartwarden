@@ -40,8 +40,9 @@ const Navigation = () => {
   const [selectedItems, setSelectedItems] = useState<string | undefined>('');
   const [selectedLevel, setSelectedLevel] = useState<number>(0);
 
-  // Build menu items and rebuild when permissions change
-  const menuItems = useMemo(() => getMenuItems(), [permissions]);
+  // Build menu items once on initial render to avoid re-render issues that break navigation
+  // The menu will be rebuilt on full page refresh which is when permissions would change
+  const menuItems = useMemo(() => getMenuItems(), []);
 
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
 

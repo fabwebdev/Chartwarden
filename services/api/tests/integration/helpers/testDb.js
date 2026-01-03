@@ -528,7 +528,7 @@ export class FixtureBuilder {
  * @returns {FixtureBuilder}
  */
 export function createFixtures() {
-  return new FixtureBuilder();
+  return Promise.resolve(new FixtureBuilder());
 }
 
 /**

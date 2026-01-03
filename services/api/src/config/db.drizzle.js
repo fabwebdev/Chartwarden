@@ -91,6 +91,8 @@ pool.on("remove", () => {
 });
 
 // Create Drizzle ORM instance
+// NOTE: Schema with relations not passed here to avoid circular dependency issues
+// Better Auth relations are defined in schemas/index.js but may not work with adapter
 const db = drizzle(pool);
 
 export { db, pool };

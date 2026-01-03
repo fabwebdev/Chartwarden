@@ -61,7 +61,7 @@ import {
 // Project Imports
 import MainCard from 'components/MainCard';
 import Avatar from 'components/@extended/Avatar';
-import http from '../../hooks/useCookie';
+import http from 'hooks/useCookie';
 import AuthService from 'types/AuthService';
 
 // Types
@@ -164,9 +164,10 @@ const UserManagementDashboard: React.FC = () => {
   });
 
   // Check permissions
-  const isAdmin = currentUser?.role === 'admin' ||
-                  currentUser?.role?.name === 'admin' ||
-                  currentUser?.role?.toLowerCase() === 'admin';
+  const isAdmin =
+    currentUser?.role === 'admin' ||
+    (typeof currentUser?.role === 'object' && currentUser?.role?.name === 'admin') ||
+    (typeof currentUser?.role === 'string' && currentUser.role.toLowerCase() === 'admin');
 
   const hasPermission = (permissionName: string) => {
     if (isAdmin) return true;
@@ -341,7 +342,15 @@ const UserManagementDashboard: React.FC = () => {
   };
 
   const handleAddUser = () => {
-    router.push('/users/add-new-user');
+    console.log('[UserManagement] Add User button clicked');
+    console.log('[UserManagement] Navigating to /users/add-new-user');
+    try {
+      router.push('/users/add-new-user');
+      console.log('[UserManagement] Navigation initiated');
+    } catch (error) {
+      console.error('[UserManagement] Navigation failed:', error);
+      Swal.fire('Error', 'Failed to navigate to Add User page', 'error');
+    }
   };
 
   const handleEditUser = (userId: string) => {

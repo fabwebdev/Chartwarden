@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { nanoid } from 'nanoid';
 import {
   createAuthUser,
   createAuthSession,
@@ -213,14 +214,21 @@ describe('Auth Helper - Session Management', () => {
     // Create one valid session
     await createAuthSession(testUser.id);
 
-    // Create an expired session directly
-    const expiredSession = await createUserWithExpiredSession({
-      email: testUser.email,
+    // Create an expired session for the same user directly in database
+    await db.insert(sessions).values({
+      id: nanoid(),
+      userId: testUser.id,
+      token: nanoid(32),
+      expiresAt: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
+      ipAddress: '127.0.0.1',
+      userAgent: 'Test Agent',
+      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000),
     });
 
     const userSessions = await getUserSessions(testUser.id);
 
-    // Should only return the valid session
+    // Should only return the valid session (getUserSessions filters out expired ones)
     expect(userSessions).toHaveLength(1);
     expect(userSessions[0].expiresAt.getTime()).toBeGreaterThan(Date.now());
   });

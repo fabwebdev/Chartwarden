@@ -326,4 +326,4 @@ This project is proprietary software. All rights reserved.
 
 ---
 
-**Built with ❤️ for hospice care providers**
+**Built with ❤️ for hospice care providers - Courtesy of Engrace Hospice LLC**

@@ -48,31 +48,72 @@ export const authenticate = async (request, reply) => {
     }
 
     if (!session) {
-      // Debug: Check if session exists in database
+      // WORKAROUND: Better Auth v1.4.9 has a bug where getSession() returns null
+      // even when valid sessions exist. Validate directly from database.
       if (sessionToken) {
         try {
           const { db } = await import("../config/db.drizzle.js");
-          const { sessions } = await import("../db/schemas/index.js");
-          const { eq } = await import("drizzle-orm");
+          const { sessions, users } = await import("../db/schemas/index.js");
+          const { eq, and, gt } = await import("drizzle-orm");
 
-          const dbSession = await db
+          const [dbSession] = await db
             .select()
             .from(sessions)
-            .where(eq(sessions.token, sessionToken))
+            .where(
+              and(
+                eq(sessions.token, sessionToken),
+                gt(sessions.expiresAt, new Date()) // Check not expired
+              )
+            )
             .limit(1);
 
-          warn("Better Auth cannot read session, but DB has record", {
-            foundInDB: dbSession.length > 0,
-          });
+          if (dbSession) {
+            // Session found and valid - manually construct session object
+            const [dbUser] = await db
+              .select()
+              .from(users)
+              .where(eq(users.id, dbSession.userId))
+              .limit(1);
+
+            if (dbUser) {
+              // Manually construct session object matching Better Auth format
+              session = {
+                session: {
+                  id: dbSession.id,
+                  userId: dbSession.userId,
+                  expiresAt: dbSession.expiresAt,
+                  token: dbSession.token,
+                  ipAddress: dbSession.ipAddress,
+                  userAgent: dbSession.userAgent,
+                },
+                user: {
+                  id: dbUser.id,
+                  email: dbUser.email,
+                  name: dbUser.name,
+                  emailVerified: dbUser.emailVerified,
+                  image: dbUser.image,
+                  createdAt: dbUser.createdAt,
+                  updatedAt: dbUser.updatedAt,
+                },
+              };
+
+              debug("Session validated via database workaround");
+            }
+          } else {
+            warn("Session token invalid or expired");
+          }
         } catch (dbError) {
-          error("Error checking database session", dbError);
+          error("Error validating session from database", dbError);
         }
       }
 
-      return reply.code(401).send({
-        status: 401,
-        message: "Access denied. No valid session found.",
-      });
+      // If still no session after database check, return 401
+      if (!session) {
+        return reply.code(401).send({
+          status: 401,
+          message: "Access denied. No valid session found.",
+        });
+      }
     }
 
     debug("Session found for authenticated user");

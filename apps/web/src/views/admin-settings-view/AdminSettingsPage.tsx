@@ -31,7 +31,7 @@ import MainCard from 'components/MainCard';
 import Swal from 'sweetalert2';
 import { Refresh, Eye, EyeSlash, Wifi, Setting2, ShieldTick, Cloud, ArrowRotateLeft, InfoCircle } from 'iconsax-react';
 import AuthService from 'types/AuthService';
-import http from '../../hooks/useCookie';
+import http from 'hooks/useCookie';
 
 interface Setting {
   id: number;

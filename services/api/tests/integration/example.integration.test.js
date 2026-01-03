@@ -12,6 +12,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { db } from '../../src/config/db.drizzle.js';
+import { importHelper } from './setup.js';
 
 describe('Integration Test Infrastructure', () => {
   describe('Environment Configuration', () => {
@@ -117,15 +118,11 @@ describe('Integration Test Infrastructure', () => {
 
   describe('Helper Functions', () => {
     it('should have importHelper available from setup', async () => {
-      const { importHelper } = await import('./setup.js');
-
       expect(importHelper).toBeDefined();
       expect(typeof importHelper).toBe('function');
     });
 
     it('should be able to import modules using importHelper', async () => {
-      const { importHelper } = await import('./setup.js');
-
       const module = await importHelper('../../src/config/db.drizzle.js');
 
       expect(module).toBeDefined();

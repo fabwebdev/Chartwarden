@@ -462,12 +462,18 @@ export function validateSafeHtml(html: string): {
   let nestingLevel = 0;
   let maxNesting = 0;
 
-  for (const char of html) {
-    if (char === '<') {
+  // Track opening and closing tags to measure actual nesting depth
+  const tagPattern = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+  const tags = html.match(tagPattern) || [];
+
+  for (const tag of tags) {
+    if (tag.startsWith('</')) {
+      // Closing tag
+      nestingLevel--;
+    } else if (!tag.endsWith('/>')) {
+      // Opening tag (not self-closing)
       nestingLevel++;
       maxNesting = Math.max(maxNesting, nestingLevel);
-    } else if (char === '>') {
-      nestingLevel--;
     }
   }
 

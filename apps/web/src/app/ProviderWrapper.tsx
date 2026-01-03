@@ -10,6 +10,7 @@ import { SocketProvider } from 'contexts/SocketContext';
 import RTLLayout from 'components/RTLLayout';
 import Locales from 'components/Locales';
 import ScrollTop from 'components/ScrollTop';
+import AutoLogin from 'components/AutoLogin';
 
 import Notistack from 'components/third-party/Notistack';
 import Snackbar from 'components/@extended/Snackbar';
@@ -27,6 +28,7 @@ const ProviderWrapper = ({ children }: { children: ReactElement }) => {
                 <ScrollTop>
                   <Notistack>
                     <Snackbar />
+                    <AutoLogin />
                     {children}
                   </Notistack>
                 </ScrollTop>

@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactElement }) {
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <ProviderWrapper>{children}</ProviderWrapper>
       </body>
     </html>

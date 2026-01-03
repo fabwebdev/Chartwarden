@@ -6,6 +6,7 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 export const users = pgTable("users", {
@@ -36,3 +37,5 @@ export const users = pgTable("users", {
   is_active_idx: index("users_is_active_idx").on(table.is_active),
   role_idx: index("users_role_idx").on(table.role),
 }));
+
+// Relations will be defined in index.js to avoid circular dependencies

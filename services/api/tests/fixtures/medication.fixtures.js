@@ -3,6 +3,8 @@
  * Sample data for testing medications, MAR, comfort kits, and reconciliation
  */
 
+import { jest } from '@jest/globals';
+
 export const mockPatient = {
   id: 1,
   firstName: 'John',

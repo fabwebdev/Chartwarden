@@ -3,6 +3,8 @@
  * Sample data for testing certifications, F2F encounters, and orders
  */
 
+import { jest } from '@jest/globals';
+
 export const mockPatient = {
   id: 1,
   firstName: 'John',

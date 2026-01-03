@@ -117,7 +117,28 @@ export const store = async (request, reply) => {
             'hipaa_received',
             'veterans_status'
         ]);
-        
+
+        // Convert empty strings to null for foreign key fields (bigint columns)
+        const foreignKeyFields = [
+            'patient_pharmacy_id',
+            'primary_diagnosis_id',
+            'race_ethnicity_id',
+            'liaison_primary_id',
+            'liaison_secondary_id',
+            'dnr_id',
+            'emergency_preparedness_level_id',
+            'patient_identifier_id'
+        ];
+        foreignKeyFields.forEach(field => {
+            if (patientData[field] === '' || patientData[field] === null || patientData[field] === undefined) {
+                patientData[field] = undefined; // Let Drizzle handle undefined as NULL
+            } else if (typeof patientData[field] === 'string') {
+                // Convert string numbers to actual numbers
+                const num = parseInt(patientData[field], 10);
+                patientData[field] = isNaN(num) ? undefined : num;
+            }
+        });
+
         // Explicitly set timestamps - Drizzle might not apply defaults correctly
         const now = new Date();
         patientData.createdAt = now;

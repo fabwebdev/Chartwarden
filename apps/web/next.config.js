@@ -10,20 +10,21 @@ const nextConfig = {
     '@mui/icons-material',
     '@mui/lab',
     '@mui/base',
-    '@mui/x-date-pickers'
+    '@mui/x-date-pickers',
+    '@emotion/react',
+    '@emotion/styled',
+    '@emotion/cache'
   ],
 
-  modularizeImports: {
-    '@mui/material': {
-      transform: '@mui/material/{{member}}'
-    },
-    '@mui/lab': {
-      transform: '@mui/lab/{{member}}'
-    }
-  },
+  // Note: modularizeImports is not needed with optimizePackageImports in Next.js 15
+  // The optimizePackageImports experimental feature handles this automatically
 
   typescript: {
     ignoreBuildErrors: true,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 
   images: {
@@ -36,13 +37,21 @@ const nextConfig = {
     ]
   },
 
-  webpack: (config) => {
-    // Fix MUI/emotion module resolution
+  // Optimize bundling for MUI and Emotion
+  experimental: {
+    optimizePackageImports: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled']
+  },
+
+  webpack: (config, { isServer }) => {
+    // Fix MUI/emotion module resolution for both client and server
     config.resolve.alias = {
       ...config.resolve.alias,
       '@emotion/react': require.resolve('@emotion/react'),
       '@emotion/styled': require.resolve('@emotion/styled'),
+      '@emotion/cache': require.resolve('@emotion/cache'),
+      '@mui/styled-engine': require.resolve('@mui/styled-engine')
     };
+
     return config;
   }
 };

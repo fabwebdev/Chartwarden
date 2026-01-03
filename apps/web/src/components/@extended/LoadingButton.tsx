@@ -136,7 +136,7 @@ interface StyleProps extends LoadingButtonStyleProps {
   loading: LoadingButtonProps['loading'];
 }
 
-const LoadingButtonStyle = styled(MuiLoadingButton, { shouldForwardProp: (prop) => prop !== 'shape' && prop !== 'variant' })(
+const LoadingButtonStyle = styled(MuiLoadingButton, { shouldForwardProp: (prop) => prop !== 'shape' && prop !== 'variant' && prop !== 'color' && prop !== 'theme' && prop !== 'loading' && prop !== 'loadingPosition' })(
   ({ theme, variant, shape, color, loading, loadingPosition }: StyleProps) => ({
     '::after': {
       content: '""',
@@ -224,14 +224,11 @@ interface Props extends LoadingButtonProps {
 
 const LoadingButton = forwardRef(
   ({ variant = 'text', shape, children, color = 'primary', ...others }: Props, ref: Ref<HTMLButtonElement>) => {
-    const theme = useTheme();
-
     return (
       <LoadingButtonStyle
         ref={ref}
         variant={variant!}
         shape={shape}
-        theme={theme}
         loadingPosition={others.loadingPosition}
         loading={others.loading}
         color={color}

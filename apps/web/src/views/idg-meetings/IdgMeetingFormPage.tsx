@@ -28,14 +28,14 @@ import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-picker
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import {
-  Save,
+  TickCircle,
   ArrowLeft,
   DocumentUpload,
   Clock,
   Warning2,
 } from 'iconsax-react';
 import MainCard from 'components/MainCard';
-import http from '../../hooks/useCookie';
+import http from 'hooks/useCookie';
 import AuthService from 'types/AuthService';
 
 // Sub-components
@@ -491,7 +491,7 @@ const IdgMeetingFormPage = ({ meetingId }: IdgMeetingFormPageProps) => {
             )}
             <Button
               variant="contained"
-              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <Save size={20} />}
+              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : <TickCircle size={20} />}
               onClick={() => handleSave()}
               disabled={saving || formData.meeting_status === 'COMPLETED'}
             >

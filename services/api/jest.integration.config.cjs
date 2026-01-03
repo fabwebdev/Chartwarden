@@ -44,8 +44,8 @@ module.exports = {
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/tests/integration/setup.js'],
 
-  // Global teardown
-  globalTeardown: '<rootDir>/tests/integration/teardown.js',
+  // Note: Global teardown removed - cleanup handled in afterAll hooks
+  // to avoid "import after teardown" errors with ES modules
 
   // Coverage collection
   collectCoverageFrom: [
@@ -108,10 +108,8 @@ module.exports = {
   // Transform - no transformation for ES modules
   transform: {},
 
-  // Module name mapper for ES module imports
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1'
-  },
+  // Note: No moduleNameMapper needed with experimental VM modules
+  // Node.js handles .js extensions natively in ES module mode
 
   // Mock configuration
   clearMocks: true,
@@ -134,10 +132,10 @@ module.exports = {
   },
 
   // Detect open handles (important for integration tests)
-  detectOpenHandles: true,
+  detectOpenHandles: false, // Disabled to avoid conflicts with ES modules
 
-  // Force exit after tests complete
-  forceExit: true,
+  // Force exit after tests complete (reduced timeout)
+  forceExit: false, // Let Jest exit naturally after cleanup
 
   // Bail on first test failure (optional - set to true to fail fast)
   bail: false,

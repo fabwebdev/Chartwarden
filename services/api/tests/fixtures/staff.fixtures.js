@@ -3,6 +3,8 @@
  * Mock data for testing staff profiles, credentials, caseload, schedule, productivity, and training
  */
 
+import { jest } from '@jest/globals';
+
 // ============================================================================
 // MOCK DATA
 // ============================================================================

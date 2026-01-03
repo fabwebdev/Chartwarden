@@ -25,7 +25,7 @@ import { accounts } from '../../../src/db/schemas/account.schema.js';
 import { sessions } from '../../../src/db/schemas/session.schema.js';
 import { roles } from '../../../src/db/schemas/role.schema.js';
 import { user_has_roles } from '../../../src/db/schemas/userRole.schema.js';
-import { eq, and, gt, sql } from 'drizzle-orm';
+import { eq, and, gt, sql, desc } from 'drizzle-orm';
 
 /**
  * Default password for test users
@@ -58,6 +58,7 @@ export const TEST_ROLES = {
  * @param {string} options.role - User role (defaults to 'staff')
  * @param {boolean} options.emailVerified - Email verification status (defaults to true)
  * @param {boolean} options.createSession - Whether to create a session (defaults to false)
+ * @param {boolean} options.keepAutoSession - Keep Better Auth's auto-created session (defaults to false)
  * @param {Object} options.overrides - Additional user properties to override
  * @returns {Promise<Object>} Created user with plainPassword and optional session
  */
@@ -70,54 +71,79 @@ export async function createAuthUser(options = {}) {
     role = TEST_ROLES.STAFF,
     emailVerified = true,
     createSession = false,
+    keepAutoSession = false,
     overrides = {},
   } = options;
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // Use Better Auth's sign-up API to create user with properly hashed password
+  try {
+    const signUpResponse = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name: `${firstName} ${lastName}`,
+      },
+      headers: new Headers({
+        'content-type': 'application/json',
+        'origin': 'http://localhost:3000',
+      }),
+    });
 
-  // Create user data
-  const userData = {
-    id: nanoid(),
-    name: `${firstName} ${lastName}`,
-    firstName,
-    lastName,
-    email,
-    emailVerified,
-    password: hashedPassword,
-    role,
-    is_active: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
+    // Get the created user from the database
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
 
-  // Insert user into database
-  const [user] = await db.insert(users).values(userData).returning();
+    if (!user) {
+      throw new Error(`User ${email} was created via Better Auth but not found in database`);
+    }
 
-  // Create account for Better Auth compatibility
-  await createTestAccount(user.id, {
-    providerId: 'credential',
-    password: hashedPassword,
-  });
+    // Update user with additional fields
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        firstName,
+        lastName,
+        role,
+        is_active: true,
+        emailVerified,
+        ...overrides,
+      })
+      .where(eq(users.id, user.id))
+      .returning();
 
-  // Assign role to user if specified
-  if (role) {
-    await assignRoleToUser(user.id, role);
+    // Assign role to user if specified
+    if (role) {
+      await assignRoleToUser(updatedUser.id, role);
+    }
+
+    // Handle session management
+    // Better Auth creates a session automatically during sign-up when autoSignIn: true
+    // For tests that explicitly manage sessions, we need to clean up the auto-created one
+    let session = null;
+    if (createSession) {
+      // Delete any auto-created sessions first to ensure clean state
+      await db.delete(sessions).where(eq(sessions.userId, updatedUser.id));
+      // Create a fresh session with controlled parameters
+      session = await createAuthSession(updatedUser.id);
+    } else if (!keepAutoSession) {
+      // Delete auto-created session when we don't want one
+      // unless keepAutoSession is true (used when caller will sign in immediately)
+      await db.delete(sessions).where(eq(sessions.userId, updatedUser.id));
+    }
+
+    // Return user with plaintext password for testing
+    return {
+      ...updatedUser,
+      plainPassword: password,
+      session,
+    };
+  } catch (error) {
+    console.error('Failed to create auth user via Better Auth:', error);
+    throw error;
   }
-
-  // Create session if requested
-  let session = null;
-  if (createSession) {
-    session = await createAuthSession(user.id);
-  }
-
-  // Return user with plaintext password for testing
-  return {
-    ...user,
-    plainPassword: password,
-    session,
-  };
 }
 
 /**
@@ -208,17 +234,40 @@ export async function assignRoleToUser(userId, roleName) {
       console.warn(`Role "${roleName}" not found. Creating a basic role entry.`);
 
       // Create the role if it doesn't exist (for testing)
-      const [newRole] = await db
-        .insert(roles)
-        .values({
-          name: roleName,
-          display_name: roleName.charAt(0).toUpperCase() + roleName.slice(1),
-          description: `Test role: ${roleName}`,
-          guard_name: 'web',
-          created_at: new Date(),
-          updated_at: new Date(),
-        })
-        .returning();
+      let newRole;
+      try {
+        [newRole] = await db
+          .insert(roles)
+          .values({
+            name: roleName,
+            display_name: roleName.charAt(0).toUpperCase() + roleName.slice(1),
+            description: `Test role: ${roleName}`,
+            guard_name: 'web',
+            created_at: new Date(),
+            updated_at: new Date(),
+          })
+          .returning();
+      } catch (roleInsertError) {
+        // Handle race condition - another concurrent operation may have created the role
+        // Check both the error itself and the cause (for Drizzle wrapped errors)
+        const pgError = roleInsertError.cause || roleInsertError;
+        if (pgError.code === '23505' && pgError.constraint === 'roles_name_key') {
+          // Role was created by another concurrent operation, fetch it
+          const [existingRole] = await db
+            .select()
+            .from(roles)
+            .where(eq(roles.name, roleName))
+            .limit(1);
+
+          if (existingRole) {
+            newRole = existingRole;
+          } else {
+            throw roleInsertError;
+          }
+        } else {
+          throw roleInsertError;
+        }
+      }
 
       // Assign the newly created role
       // Only insert required columns (assigned_at and assigned_by may not exist in older schemas)
@@ -439,7 +488,6 @@ export async function authenticateUser(email, password) {
  */
 export function getAuthHeaders(sessionToken, additionalHeaders = {}) {
   return {
-    'content-type': 'application/json',
     'origin': 'http://localhost:3000',
     'cookie': `better-auth.session_token=${sessionToken}`,
     ...additionalHeaders,
@@ -563,17 +611,56 @@ export async function getUserSessions(userId) {
  * @returns {Promise<Object>} Created user with session token
  */
 export async function createAuthenticatedUser(options = {}) {
+  // Create user without session first
+  // Don't keep auto-session - we'll create a fresh one via signIn
   const user = await createAuthUser({
     ...options,
-    createSession: true,
+    createSession: false,
+    keepAutoSession: false,
   });
 
-  return {
-    ...user,
-    sessionToken: user.session.token,
-    authHeaders: getAuthHeaders(user.session.token),
-    authCookies: getAuthCookies(user.session.token),
-  };
+  // Sign in via Better Auth to get a valid session
+  try {
+    const signInResponse = await auth.api.signInEmail({
+      body: {
+        email: user.email,
+        password: user.plainPassword,
+      },
+      headers: new Headers({
+        'content-type': 'application/json',
+        'origin': 'http://localhost:3000',
+      }),
+    });
+
+    // Extract session token from Better Auth's signIn response
+    const sessionToken = signInResponse.token;
+
+    if (!sessionToken) {
+      throw new Error('No session token returned from sign-in');
+    }
+
+    // Get the full session record from database for additional info
+    const [sessionRecord] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.token, sessionToken))
+      .limit(1);
+
+    if (!sessionRecord) {
+      throw new Error('Session token exists but not found in database');
+    }
+
+    return {
+      ...user,
+      session: sessionRecord,
+      sessionToken: sessionToken,
+      authHeaders: getAuthHeaders(sessionToken),
+      authCookies: getAuthCookies(sessionToken),
+    };
+  } catch (error) {
+    console.error('Failed to authenticate user:', error);
+    throw error;
+  }
 }
 
 /**

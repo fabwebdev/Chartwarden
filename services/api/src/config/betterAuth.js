@@ -1,12 +1,25 @@
 import dotenv from "dotenv";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import { db } from "./db.drizzle.js";
 import * as schema from "../db/schemas/index.js";
 import config from "./config.js";
 
-dotenv.config();
+// Get directory for path resolution
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment-specific .env file
+// In test mode, use .env.test to match test setup configuration
+// Use override: true to ensure test env vars take precedence
+if (process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.join(__dirname, '../../.env.test'), override: true });
+} else {
+  dotenv.config();
+}
 
 // Get database configuration
 const dbConfig = config.get("database");
@@ -93,9 +106,10 @@ const auth = betterAuth({
   // Cookies configuration for cross-origin support
   // For cross-origin requests (frontend on different domain), use sameSite: 'none' with secure: true
   // IMPORTANT: Always use 'none' when backend and frontend are on different domains
+  // In test environment, use lax/false for HTTP compatibility
   cookies: {
-    secure: true, // Required when sameSite is 'none' - MUST be true for HTTPS
-    sameSite: "none", // Always 'none' to support cross-origin cookies (local frontend → production backend)
+    secure: process.env.NODE_ENV === 'test' ? false : true, // false in tests for HTTP
+    sameSite: process.env.NODE_ENV === 'test' ? "lax" : "none", // lax in tests for same-origin
     domain: process.env.COOKIE_DOMAIN || undefined, // Don't set domain for cross-origin
     httpOnly: true,
     maxAge: 60 * 60 * 8, // 8 hours - aligned with session expiration (TICKET #013)
@@ -117,7 +131,7 @@ const auth = betterAuth({
     // Cookie settings for better security
     // Use 'none' for cross-origin cookies (required when frontend and backend are on different domains)
     cookiePrefix: "better-auth",
-    cookieSameSite: "none", // Always 'none' for cross-origin support
+    cookieSameSite: process.env.NODE_ENV === 'test' ? "lax" : "none", // lax in tests
   },
 
   // Trusted origins for CORS (frontend URLs)

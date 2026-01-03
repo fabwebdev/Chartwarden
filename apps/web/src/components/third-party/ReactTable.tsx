@@ -257,7 +257,9 @@ export const DraggableHeader = ({ children, column, index, reorder }: DraggableH
 
 // ==============================|| DRAG & DROP - DRAG PREVIEW ||============================== //
 
-const DragHeader = styled('div')(({ theme, x, y }: { theme: Theme; x: number; y: number }) => ({
+const DragHeader = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'theme' && prop !== 'x' && prop !== 'y'
+})(({ theme, x, y }: { theme: Theme; x: number; y: number }) => ({
   color: theme.palette.text.secondary,
   position: 'fixed',
   pointerEvents: 'none',
@@ -268,8 +270,6 @@ const DragHeader = styled('div')(({ theme, x, y }: { theme: Theme; x: number; y:
 }));
 
 export const DragPreview = () => {
-  const theme = useTheme();
-
   const { isDragging, item, currentOffset } = useDragLayer((monitor: DragLayerMonitor<{}>) => ({
     item: monitor.getItem(),
     itemType: monitor.getItemType(),
@@ -281,7 +281,7 @@ export const DragPreview = () => {
   const { x, y } = currentOffset || {};
 
   return isDragging ? (
-    <DragHeader theme={theme} x={x!} y={y!}>
+    <DragHeader x={x!} y={y!}>
       {item.header && (
         <Stack direction="row" spacing={1} alignItems="center">
           <Maximize1 style={{ fontSize: '1rem' }} />

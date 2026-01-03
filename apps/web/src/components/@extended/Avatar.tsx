@@ -131,7 +131,9 @@ interface StyleProps {
   size?: SizeProps;
 }
 
-const AvatarStyle = styled(MuiAvatar, { shouldForwardProp: (prop) => prop !== 'color' && prop !== 'type' && prop !== 'size' })(
+const AvatarStyle = styled(MuiAvatar, {
+  shouldForwardProp: (prop) => prop !== 'color' && prop !== 'type' && prop !== 'size' && prop !== 'theme'
+})(
   ({ theme, variant, color, type, size }: StyleProps) => ({
     ...getSizeStyle(size),
     ...getColorStyle({ variant, theme, color, type }),
@@ -151,10 +153,8 @@ export interface Props extends AvatarProps {
 }
 
 export default function Avatar({ variant = 'circular', children, color = 'primary', type, size = 'md', ...others }: Props) {
-  const theme = useTheme();
-
   return (
-    <AvatarStyle variant={variant} theme={theme} color={color} type={type} size={size} {...others}>
+    <AvatarStyle variant={variant} color={color} type={type} size={size} {...others}>
       {children}
     </AvatarStyle>
   );

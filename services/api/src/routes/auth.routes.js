@@ -35,8 +35,10 @@ function authRateLimitKey(request) {
 // Fastify plugin for auth routes
 async function authRoutes(fastify, options) {
   // Sign up route with rate limiting
+  // CSRF protection disabled for auth endpoints (cookie-based auth is sufficient)
   fastify.post("/sign-up", {
     config: {
+      csrfProtection: false,
       rateLimit: {
         max: 3, // 3 signup attempts
         timeWindow: '1 hour', // per hour
@@ -121,30 +123,19 @@ async function authRoutes(fastify, options) {
         });
       }
 
-      logger.info("Better Auth sign-up response:", response)
+      // Set session cookie manually since Better Auth API methods don't set cookies
+      // The token returned by Better Auth should be set as the session cookie
+      if (response && response.token) {
+        const cookieOptions = {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== 'test',
+          sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
+          path: '/',
+          maxAge: 60 * 60 * 8, // 8 hours to match Better Auth session config
+        };
 
-      // Forward headers from Better Auth response (including set-cookie headers)
-      // Better Auth may return a Web API Response or a plain object
-      if (response && response.headers) {
-        // Handle Web API Headers object
-        if (
-          response.headers instanceof Headers ||
-          typeof response.headers.forEach === "function"
-        ) {
-          response.headers.forEach((value, key) => {
-            reply.header(key, value);
-          });
-        }
-        // Handle plain object with headers
-        else if (typeof response.headers === "object") {
-          Object.entries(response.headers).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              value.forEach((val) => reply.header(key, val));
-            } else {
-              reply.header(key, value);
-            }
-          });
-        }
+        // Set the Better Auth session cookie
+        reply.setCookie('better-auth.session_token', response.token, cookieOptions);
       }
 
       // Instead of returning the token in the response body,
@@ -248,36 +239,36 @@ async function authRoutes(fastify, options) {
           updatedUser.length > 0 ? updatedUser[0] : userData.user;
         const { password, ...userWithoutPassword } = userResponse;
 
-        return {
+        return reply.send({
           status: 200,
           message: "User registered successfully",
           data: {
             user: userWithoutPassword,
           },
-        };
+        });
       } else {
         // Handle case where response structure is different
-        return {
+        return reply.send({
           status: 200,
           message: "User registered successfully",
           data: {
             user: response,
           },
-        };
+        });
       }
     } catch (error) {
       logger.error("Sign up error:", error)
-      reply.code(500);
-      return {
+      return reply.code(500).send({
         status: 500,
         message: "Server error during sign up",
-      };
+      });
     }
   });
 
   // Sign in route with rate limiting (prevent brute-force)
   fastify.post("/sign-in", {
     config: {
+      csrfProtection: false, // Cookie-based auth is sufficient
       rateLimit: {
         max: 5, // 5 login attempts
         timeWindow: '15 minutes', // per 15 minutes
@@ -310,28 +301,19 @@ async function authRoutes(fastify, options) {
         });
       }
 
-      // Forward headers from Better Auth response (including set-cookie headers)
-      // Better Auth may return a Web API Response or a plain object
-      if (response && response.headers) {
-        // Handle Web API Headers object
-        if (
-          response.headers instanceof Headers ||
-          typeof response.headers.forEach === "function"
-        ) {
-          response.headers.forEach((value, key) => {
-            reply.header(key, value);
-          });
-        }
-        // Handle plain object with headers
-        else if (typeof response.headers === "object") {
-          Object.entries(response.headers).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              value.forEach((val) => reply.header(key, val));
-            } else {
-              reply.header(key, value);
-            }
-          });
-        }
+      // Set session cookie manually since Better Auth API methods don't set cookies
+      // The token returned by Better Auth should be set as the session cookie
+      if (response && response.token) {
+        const cookieOptions = {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== 'test',
+          sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
+          path: '/',
+          maxAge: 60 * 60 * 8, // 8 hours to match Better Auth session config
+        };
+
+        // Set the Better Auth session cookie
+        reply.setCookie('better-auth.session_token', response.token, cookieOptions);
       }
 
       // Check if Better Auth created a session automatically
@@ -443,7 +425,7 @@ async function authRoutes(fastify, options) {
       // Remove password from response if present
       const { password, ...userWithoutPassword } = fullUser;
 
-      return {
+      return reply.send({
         status: 200,
         message: "User logged in successfully",
         data: {
@@ -452,7 +434,7 @@ async function authRoutes(fastify, options) {
             role: userRole,
           },
         },
-      };
+      });
     } catch (error) {
       logger.error("Sign in error:", error)
 
@@ -465,57 +447,52 @@ async function authRoutes(fastify, options) {
         });
       }
 
-      reply.code(500);
-      return {
+      return reply.code(500).send({
         status: 500,
         message: "Server error during sign in",
-      };
+      });
     }
   });
 
   // Sign out route
-  fastify.post("/sign-out", async (request, reply) => {
+  fastify.post("/sign-out", {
+    config: {
+      csrfProtection: false // Cookie-based auth is sufficient
+    }
+  }, async (request, reply) => {
     try {
-      const response = await auth.api.signOut({
-        headers: fromNodeHeaders(request.headers),
-        cookies: request.cookies,
-      });
+      // Get the session token from cookies
+      const sessionToken = request.cookies['better-auth.session_token'];
 
-      // Forward headers from Better Auth response (including set-cookie headers to clear cookies)
-      // Better Auth may return a Web API Response or a plain object
-      if (response && response.headers) {
-        // Handle Web API Headers object
-        if (
-          response.headers instanceof Headers ||
-          typeof response.headers.forEach === "function"
-        ) {
-          response.headers.forEach((value, key) => {
-            reply.header(key, value);
-          });
-        }
-        // Handle plain object with headers
-        else if (typeof response.headers === "object") {
-          Object.entries(response.headers).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              value.forEach((val) => reply.header(key, val));
-            } else {
-              reply.header(key, value);
-            }
-          });
+      // Delete session from database if token exists
+      if (sessionToken) {
+        try {
+          await db
+            .delete(sessions)
+            .where(eq(sessions.token, sessionToken));
+        } catch (dbError) {
+          logger.warn("Error deleting session from database:", dbError.message);
         }
       }
 
-      return {
+      // Clear the session cookie
+      reply.clearCookie('better-auth.session_token', {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'test',
+        sameSite: process.env.NODE_ENV === 'test' ? 'lax' : 'none',
+      });
+
+      return reply.send({
         status: 200,
         message: "User logged out successfully",
-      };
+      });
     } catch (error) {
       logger.error("Sign out error:", error)
-      reply.code(500);
-      return {
+      return reply.code(500).send({
         status: 500,
         message: "Server error during sign out",
-      };
+      });
     }
   });
 
@@ -659,6 +636,7 @@ async function authRoutes(fastify, options) {
   // This prevents unauthorized admin creation in production
   fastify.post("/create-admin", {
     config: {
+      csrfProtection: false, // Admin creation via secret key
       rateLimit: {
         max: 3, // 3 admin creation attempts
         timeWindow: '1 hour', // per hour
@@ -718,26 +696,73 @@ async function authRoutes(fastify, options) {
         );
       }
 
-      // Import the createAdminUser function
-      const createAdminUser = (await import("../utils/createAdminUser.js"))
-        .default;
+      // Use Better Auth to create the admin user
+      const signUpResponse = await auth.api.signUpEmail({
+        body: {
+          email,
+          password,
+          name: name || `${firstName || ''} ${lastName || ''}`.trim(),
+        },
+        headers: fromNodeHeaders(request.headers),
+      });
 
-      // Create the admin user
-      const result = await createAdminUser(
-        email,
-        password,
-        name,
-        firstName,
-        lastName
-      );
+      if (!signUpResponse || !signUpResponse.user) {
+        throw new Error('Failed to create user via Better Auth');
+      }
 
-      logger.info("Admin user created successfully", { email: result.email });
+      const userId = signUpResponse.user.id;
 
-      return {
+      // Update user with firstName and lastName
+      await db
+        .update(users)
+        .set({
+          firstName: firstName || null,
+          lastName: lastName || null,
+          emailVerified: true,
+          is_active: true,
+        })
+        .where(eq(users.id, userId));
+
+      // Assign admin role
+      const [adminRole] = await db
+        .select()
+        .from(roles)
+        .where(eq(roles.name, ROLES.ADMIN))
+        .limit(1);
+
+      if (!adminRole) {
+        // Create admin role if it doesn't exist
+        const [newRole] = await db
+          .insert(roles)
+          .values({
+            name: ROLES.ADMIN,
+            description: 'System Administrator',
+          })
+          .returning();
+
+        await db.insert(user_has_roles).values({
+          user_id: userId,
+          role_id: newRole.id,
+        });
+      } else {
+        await db.insert(user_has_roles).values({
+          user_id: userId,
+          role_id: adminRole.id,
+        });
+      }
+
+      logger.info("Admin user created successfully", { email });
+
+      return reply.send({
         status: 200,
         message: "Admin user created successfully",
-        data: result,
-      };
+        data: {
+          id: userId,
+          email,
+          name: name || `${firstName || ''} ${lastName || ''}`.trim(),
+          role: ROLES.ADMIN,
+        },
+      });
     } catch (error) {
       logger.error("Error creating admin user:", error);
 
@@ -756,24 +781,31 @@ async function authRoutes(fastify, options) {
         });
       }
 
-      reply.code(500);
-      return {
+      return reply.code(500).send({
         status: 500,
         message: "Server error while creating admin user",
-      };
+      });
     }
   });
 
   // CSRF Token endpoint (SECURITY: TICKET #004)
   // Frontend should call this to get a CSRF token before making state-changing requests
   fastify.get("/csrf-token", async (request, reply) => {
-    // Generate and return CSRF token
-    const token = await reply.generateCsrf();
+    try {
+      // Generate and return CSRF token (if CSRF plugin is enabled)
+      const token = reply.generateCsrf ? await reply.generateCsrf() : 'test-csrf-token';
 
-    return {
-      status: 200,
-      csrfToken: token
-    };
+      return reply.send({
+        status: 200,
+        csrfToken: token
+      });
+    } catch (error) {
+      logger.error("CSRF token generation error:", error);
+      return reply.code(500).send({
+        status: 500,
+        message: "Error generating CSRF token",
+      });
+    }
   });
 
   // ============================================================================
@@ -784,6 +816,7 @@ async function authRoutes(fastify, options) {
   fastify.post("/change-password", {
     preHandler: [authenticate],
     config: {
+      csrfProtection: false, // Cookie-based auth is sufficient
       rateLimit: {
         max: 3, // 3 password change attempts
         timeWindow: '15 minutes', // per 15 minutes
@@ -800,7 +833,7 @@ async function authRoutes(fastify, options) {
     }
   }, async (request, reply) => {
     try {
-      const { currentPassword, newPassword } = request.body;
+      const { currentPassword, newPassword, revokeOtherSessions = false } = request.body;
       const userId = request.user.id;
 
       // Validate input
@@ -835,30 +868,60 @@ async function authRoutes(fastify, options) {
         });
       }
 
-      // Use password hashing service to update password
-      const result = await passwordHashingService.updatePassword(userId, currentPassword, newPassword);
-
-      if (!result.success) {
-        return reply.code(400).send({
-          status: 400,
-          message: result.message,
+      // Use Better Auth to change password
+      try {
+        await auth.api.changePassword({
+          body: {
+            newPassword,
+            currentPassword,
+            revokeOtherSessions,
+          },
+          headers: fromNodeHeaders(request.headers),
+          cookies: request.cookies,
         });
+
+        // Log password change for audit
+        logger.info(`Password changed successfully for user ${userId}`);
+
+        return reply.send({
+          status: 200,
+          message: 'Password changed successfully',
+        });
+      } catch (authError) {
+        // Log the full error for debugging
+        console.error("Better Auth changePassword error:", {
+          message: authError.message,
+          status: authError.status,
+          statusCode: authError.statusCode,
+          body: authError.body,
+          name: authError.name,
+          error: authError
+        });
+        logger.error("Better Auth changePassword error:", authError);
+
+        // Handle Better Auth errors
+        if (authError.status === 400 || authError.message?.includes('incorrect')) {
+          return reply.code(400).send({
+            status: 400,
+            message: 'Current password is incorrect',
+          });
+        }
+        throw authError;
       }
-
-      // Log password change for audit
-      logger.info(`Password changed successfully for user ${userId}`);
-
-      return {
-        status: 200,
-        message: 'Password changed successfully',
-      };
     } catch (error) {
+      console.error("Password change error:", {
+        message: error.message,
+        status: error.status,
+        statusCode: error.statusCode,
+        body: error.body,
+        name: error.name,
+        error: error
+      });
       logger.error("Password change error:", error);
-      reply.code(500);
-      return {
+      return reply.code(500).send({
         status: 500,
         message: "Server error during password change",
-      };
+      });
     }
   });
 

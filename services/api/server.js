@@ -124,7 +124,11 @@ async function buildUserProfile(userPayload, originalEmail) {
 }
 
 // Register Fastify plugins
-app.register(import("@fastify/cookie"));
+// Cookie plugin with secret for signed cookies (required for CSRF protection)
+app.register(import("@fastify/cookie"), {
+  secret: process.env.COOKIE_SECRET || "fallback-secret-for-development-only-change-in-production",
+  parseOptions: {}
+});
 
 // CSRF Protection (SECURITY: TICKET #004 - Prevent Cross-Site Request Forgery)
 app.register(import("@fastify/csrf-protection"), {
@@ -339,15 +343,19 @@ app.all("/api/auth/*", async (request, reply) => {
       "/api/auth/view-patients",
       "/api/auth/me",
       "/api/auth/create-admin",
+      "/api/auth/change-password",
+      "/api/auth/csrf-token",
+      "/api/auth/abilities",
+      "/api/auth/check-password-strength",
+      "/api/auth/password-policy",
+      "/api/auth/validate-password",
     ];
 
     // Check if this is a custom route (exact match only, not sub-paths)
+    // If it is, skip this wildcard handler and let Fastify route to the registered handler
     if (customRoutes.some((route) => url === route)) {
-      // This should have been handled by authRoutes, but if we reach here, it's a 404
-      return reply.code(404).send({
-        status: 404,
-        message: "Route not found",
-      });
+      // Skip this handler - let the registered authRoutes handle it
+      return;
     }
 
     // Handle /api/auth/sign-in/email preflight

@@ -591,6 +591,11 @@ class APMService extends EventEmitter {
     this.alerts.push(alert);
     this.emit('alert', alert);
 
+    // Skip logging memory alerts in development to reduce noise
+    if (process.env.NODE_ENV === 'development' && type.includes('memory')) {
+      return;
+    }
+
     // Log alert
     const logLevel = type.includes('critical') ? 'error' : 'warn';
     logger[logLevel](`APM Alert: ${type}`, data);

@@ -18,22 +18,22 @@
     }
   },
   "rules": {
-    "react/jsx-filename-extension": "true",
-    "no-param-reassign": "true",
-    "react/prop-types": "true",
-    "react/require-default-props": "true",
-    "react/no-array-index-key": "true",
-    "react/react-in-jsx-scope": "true",
-    "react/jsx-props-no-spreading": "true",
-    "import/order": "true",
+    "react/jsx-filename-extension": 0,
+    "no-param-reassign": 0,
+    "react/prop-types": 0,
+    "react/require-default-props": 0,
+    "react/no-array-index-key": 0,
+    "react/react-in-jsx-scope": 0,
+    "react/jsx-props-no-spreading": 0,
+    "import/order": 1,
     "no-console": "warn",
-    "no-shadow": "true",
-    "@typescript-eslint/naming-convention": "true",
-    "import/no-cycle": "true",
-    "prefer-destructuring": "true",
-    "import/no-extraneous-dependencies": "true",
-    "react/display-name": "true",
-    "import/no-unresolved": ["true", { "caseSensitive": true }],
+    "no-shadow": 0,
+    "@typescript-eslint/naming-convention": 0,
+    "import/no-cycle": 1,
+    "prefer-destructuring": 0,
+    "import/no-extraneous-dependencies": 0,
+    "react/display-name": 0,
+    "import/no-unresolved": [0, { "caseSensitive": true }],
     "no-restricted-imports": [
       "error",
       {
@@ -48,7 +48,7 @@
       }
     ],
     "prettier/prettier": [
-      "warn",
+      0,
       {
         "bracketSpacing": true,
         "printWidth": 140,

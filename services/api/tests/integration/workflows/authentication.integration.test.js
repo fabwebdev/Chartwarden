@@ -179,7 +179,7 @@ describe('Authentication Workflow Integration Tests', () => {
         payload: userData,
       });
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(422); // 422 Unprocessable Entity for validation errors
 
       const body = JSON.parse(response.payload);
       expect(body.errors).toBeDefined();
@@ -714,7 +714,10 @@ describe('Authentication Workflow Integration Tests', () => {
         const response = await app.inject({
           method: 'POST',
           url: '/api/auth/change-password',
-          headers: testUser.authHeaders,
+          headers: {
+            ...testUser.authHeaders,
+            'content-type': 'application/json',
+          },
           payload: {
             currentPassword: testUser.plainPassword,
             newPassword: newPassword,
@@ -886,6 +889,7 @@ describe('Authentication Workflow Integration Tests', () => {
       const adminData = {
         email: faker.internet.email().toLowerCase(),
         password: uniquePassword,
+        name: 'Admin User',
         firstName: 'Admin',
         lastName: 'User',
         adminSecret: 'test-admin-secret-123',
@@ -1030,7 +1034,6 @@ describe('Authentication Workflow Integration Tests', () => {
         method: 'POST',
         url: '/api/auth/sign-out',
         headers: {
-          'content-type': 'application/json',
           'origin': 'http://localhost:3000',
           'cookie': sessionCookie || '',
         },
@@ -1078,7 +1081,6 @@ describe('Authentication Workflow Integration Tests', () => {
         method: 'POST',
         url: '/api/auth/sign-out',
         headers: {
-          'content-type': 'application/json',
           'origin': 'http://localhost:3000',
           'cookie': newSessionCookie || '',
         },

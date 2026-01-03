@@ -147,7 +147,7 @@ function deepRedactPHI(data, depth = 0) {
  */
 function createSafeLogEntry(message, data = {}) {
   return {
-    message: phiRedactionService.redactPatterns(message),
+    message: phiRedactionService.redactStringPatterns(message),
     data: deepRedactPHI(data),
     timestamp: new Date().toISOString(),
   };

@@ -105,7 +105,7 @@ interface StyleProps extends IconButtonStyleProps {
   shape?: IconButtonShapeProps;
 }
 
-const IconButtonStyle = styled(MuiIconButton, { shouldForwardProp: (prop) => prop !== 'variant' && prop !== 'shape' })(
+const IconButtonStyle = styled(MuiIconButton, { shouldForwardProp: (prop) => prop !== 'variant' && prop !== 'shape' && prop !== 'color' && prop !== 'theme' })(
   ({ theme, variant, shape, color }: StyleProps) => ({
     position: 'relative',
     '::after': {
@@ -160,10 +160,8 @@ export interface Props extends IconButtonProps {
 
 const IconButton = forwardRef(
   ({ variant = 'text', shape = 'square', children, color = 'primary', tooltip, ...others }: Props, ref: Ref<HTMLButtonElement>) => {
-    const theme = useTheme();
-
     return (
-      <IconButtonStyle ref={ref} variant={variant} shape={shape} theme={theme} color={color} {...others}>
+      <IconButtonStyle ref={ref} variant={variant} shape={shape} color={color} {...others}>
         {children}
       </IconButtonStyle>
     );
